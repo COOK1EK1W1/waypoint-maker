@@ -1,0 +1,9 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+h1 {
+  padding-top: 10px;
+  padding-bottom: 10px;
+  font-size: 24px;
+}
