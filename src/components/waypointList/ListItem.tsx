@@ -1,7 +1,11 @@
 import { useWaypointContext } from "../WaypointContext";
 
 export default function ListItem({id}: {id: number}){
-  const [waypoints, setWaypoints] = useWaypointContext()
+  const {setWaypoints, setActive} = useWaypointContext()
+  function open(){
+    setActive(id)
+
+  }
 
   function bruh(){
 
@@ -12,12 +16,14 @@ export default function ListItem({id}: {id: number}){
     })
   }
   return (
-    <tr>
-      <td>{id}</td>
-      <td>{waypoints[id].lat.toFixed(5)}</td>
-      <td>{waypoints[id].lng.toFixed(5)}</td>
-      <td><button onClick={bruh}>delete</button></td>
-    </tr>
+      <div className="rounded p-2 m-2 border-grey border-2 cursor-pointer" onClick={open}>
+
+        <span>{id}</span>
+        <span className="pl-2">Waypoint</span>
+        <button className="pl-4" onClick={bruh}>delete</button>
+
+      </div>
+      
   )
 
 }

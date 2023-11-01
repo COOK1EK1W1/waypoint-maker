@@ -1,7 +1,7 @@
 "use client";
 import { Dispatch, SetStateAction, createContext, useContext } from 'react';
 
-export const waypointContext = createContext<[Waypoint[], Dispatch<SetStateAction<Waypoint[]>>]>(undefined as any);
+export const waypointContext = createContext<{waypoints: Waypoint[], setWaypoints: Dispatch<SetStateAction<Waypoint[]>>, active: number|null, setActive: Dispatch<SetStateAction<number|null>>}>(undefined as any);
 
 export function useWaypointContext() {
   const context = useContext(waypointContext);

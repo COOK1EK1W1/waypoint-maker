@@ -4,7 +4,7 @@ import * as Leaflet from "leaflet"
 import { useWaypointContext } from "./WaypointContext"
 
 export default function DraggableMarker({id} : {id :number}) {
-  const [waypoints, setWaypoints] = useWaypointContext()
+  const {waypoints, setWaypoints} = useWaypointContext()
   const markerRef = useRef<Leaflet.Marker>(null)
 
   const eventHandlers = useMemo(

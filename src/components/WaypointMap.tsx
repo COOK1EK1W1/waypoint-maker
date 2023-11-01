@@ -10,7 +10,7 @@ import { useWaypointContext } from "./WaypointContext";
 const limeOptions = { color: 'lime' }
 
 export default function MapStuff() {
-  let [waypoints, setWaypoints] = useWaypointContext()
+  let {waypoints, setWaypoints} = useWaypointContext()
 
   // Handler function to add marker
   function Yourmum(){
