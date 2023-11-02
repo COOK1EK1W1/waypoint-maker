@@ -1,7 +1,8 @@
 import { useWaypointContext } from "../WaypointContext";
+import { commandTypes } from "@/util/commandTypes";
 
 export default function ListItem({id}: {id: number}){
-  const {setWaypoints, setActive, active } = useWaypointContext()
+  const {waypoints, setWaypoints, setActive, active } = useWaypointContext()
   function open(){
     setActive(id)
 
@@ -27,7 +28,7 @@ export default function ListItem({id}: {id: number}){
       <div className={`rounded p-2 m-2 border-grey border-2 cursor-pointer ${active == id ? "bg-slate-200" : ""}`} onClick={open}>
 
         <span>{id}</span>
-        <span className="pl-2">Waypoint</span>
+        <span className="pl-2">{commandTypes[commandTypes.findIndex(a => a.value==waypoints[id].type)].name}</span>
         <button className="pl-4" onClick={remove}>delete</button>
 
       </div>

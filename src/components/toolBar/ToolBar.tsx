@@ -1,4 +1,5 @@
 import { downloadTextAsFile, waypointToFile } from "@/util/waypointToFile"
+import { getData } from "@/util/commandTypes"
 import { useWaypointContext } from "../WaypointContext"
 
 export default function ToolBar(){
@@ -13,5 +14,6 @@ export default function ToolBar(){
   return <div>
     <button onClick={download} className="p-2 border-1 border-slate-100 rounded bg-slate-200">.waypoints (QGC) download</button>
     TOOOL BAR
+    <button onClick={getData}>test</button>
   </div>
 }
