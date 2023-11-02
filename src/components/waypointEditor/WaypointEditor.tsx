@@ -1,3 +1,4 @@
+import { formatDistance, haversineDistance, gradient } from "@/util/distance";
 import { useWaypointContext } from "../WaypointContext"
 import WaypointTypeSelector from "./WaypointTypeSelector";
 
@@ -33,6 +34,10 @@ export default function WaypointEditor(){
     <input type="number" name="param2" onChange={change} value={waypoints[active].param2}/>
     <input type="number" name="param3" onChange={change} value={waypoints[active].param3}/>
     <input type="number" name="param4" onChange={change} value={waypoints[active].param4}/>
+    <div>
+      {active > 0 && formatDistance( haversineDistance(waypoints[active].lat, waypoints[active].lng, waypoints[active-1].lat, waypoints[active-1].lng))}
+      {active > 0 && gradient(haversineDistance(waypoints[active].lat, waypoints[active].lng, waypoints[active-1].lat, waypoints[active-1].lng), waypoints[active-1].alt, waypoints[active].alt)}
+    </div>
 
   </div>
 }
