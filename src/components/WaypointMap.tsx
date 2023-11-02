@@ -13,12 +13,20 @@ export default function MapStuff() {
   let {waypoints, setWaypoints} = useWaypointContext()
 
   // Handler function to add marker
-  function Yourmum(){
+  function CreateHandler(){
     useMapEvent("click", (e)=>{
       const newMarker = {
           id: waypoints.length,
           lat: e.latlng.lat,
-          lng: e.latlng.lng
+          lng: e.latlng.lng,
+          alt: 100,
+          frame: 0,
+          type: 16,
+          param1: 0,
+          param2: 0,
+          param3: 0,
+          param4: 0,
+          autocontinue: 1
       };
       setWaypoints(prevMarkers => [...prevMarkers, newMarker]);
 
@@ -44,7 +52,7 @@ return (
             <DraggableMarker id={idx} key={idx}/>
           )}
           <Polyline pathOptions={limeOptions} positions={waypoints} />
-          <Yourmum/>
+          <CreateHandler/>
           
         </MapContainer>
     </div>
