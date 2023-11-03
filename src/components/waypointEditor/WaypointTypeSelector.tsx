@@ -1,7 +1,5 @@
-import { getData } from "@/util/commandTypes";
-import { useState } from "react";
 import { useWaypointContext } from "../WaypointContext";
-import { commandTypes } from "@/util/commandTypes";
+import { commands } from "@/util/commands";
 
 
 export default function WaypointTypeSelector(){
@@ -20,12 +18,12 @@ export default function WaypointTypeSelector(){
       return newWaypoints;
     })
   }
-  commandTypes[commandTypes.findIndex(a => a.value==waypoints[active || 0].type)].name
+  commands[commands.findIndex(a => a.value==waypoints[active || 0].type)].name
 
   return (
     <div>
-      <select onChange={bruh} value={  commandTypes[commandTypes.findIndex(a => a.value==waypoints[active || 0].type)].name}>
-        {commandTypes.map((cmd, index) => (
+      <select onChange={bruh} value={  commands[commands.findIndex(a => a.value==waypoints[active || 0].type)].name}>
+        {commands.map((cmd, index) => (
           <option key={index} data-cmd={cmd.value}>{cmd.name}</option>
         ))}
       </select>
