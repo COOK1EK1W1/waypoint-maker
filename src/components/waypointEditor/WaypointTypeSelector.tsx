@@ -24,7 +24,7 @@ export default function WaypointTypeSelector(){
 
   return (
     <div>
-      <select onChange={bruh} value={  commands[commands.findIndex(a => a.value==waypoints[active || 0].type)].name}>
+      <select onChange={bruh} value={  commandName(commands[commands.findIndex(a => a.value==waypoints[active || 0].type)].name)}>
         {commands.map((cmd, index) => (
           <option key={index} data-cmd={cmd.value}>{commandName(cmd.name)}</option>
         ))}

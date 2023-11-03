@@ -35,7 +35,7 @@ function serializeValue(value) {
 
 function serializeToTypeScript(object) {
   const serializedObject = serializeValue(object);
-  return `export const object: Command[] = ${serializedObject};\n`;
+  return `export const commands: Command[] = ${serializedObject};\n`;
 }
 
 async function getData() {
@@ -57,50 +57,53 @@ async function getData() {
       parameters: [null, null, null, null, null, null, null]
     }
 
-
-
-    const params = Array.from(command.children).filter((a) => a.tagName == "param")
+    const params = Array.from(command.children)
 
     for (param of params) {
-      const attributes = param.getAttributeNames()
+      if (param.tagName == "param") {
+        const attributes = param.getAttributeNames()
 
-      let newParameter = {
-        index: -1,
-        label: "",
-        description: param.innerHTML,
-        units: "",
-        minValue: null,
-        maxValue: null,
-        increment: null,
-        default: null,
-        options: []
-      }
-      for (let i = 0; i < attributes.length; i++) {
-        if (attributes[i] === "index") {
-          newParameter.index = Number(param.getAttribute(attributes[i]))
-
-        } else if (attributes[i] === "label") {
-          newParameter.label = param.getAttribute(attributes[i])
-        } else if (attributes[i] === "units") {
-          newParameter.units = param.getAttribute(attributes[i])
-        } else if (attributes[i] === "minValue") {
-          newParameter.minValue = Number(param.getAttribute(attributes[i]))
-        } else if (attributes[i] === "increment") {
-          newParameter.increment = Number(param.getAttribute(attributes[i]))
-        } else if (attributes[i] === "maxValue") {
-          newParameter.maxValue = Number(param.getAttribute(attributes[i]))
-        } else if (attributes[i] === "default") {
-          newParameter.default = Number(param.getAttribute(attributes[i]))
-        } else if (attributes[i] === "enum") {
-          console.log("TODO enum options")
-          // newParameter.options == child.getAttribute(attributes[i])
-        } else {
-          console.log(attributes[i])
+        let newParameter = {
+          index: -1,
+          label: "",
+          description: param.innerHTML,
+          units: "",
+          minValue: null,
+          maxValue: null,
+          increment: null,
+          default: null,
+          options: []
         }
+        for (let i = 0; i < attributes.length; i++) {
+          if (attributes[i] === "index") {
+            newParameter.index = Number(param.getAttribute(attributes[i]))
 
-      }
-      if (param.innerHTML != "Empty" && param.innerHTML != "Empty.") {
-        newCommand.parameters[newParameter.index - 1] = newParameter
+          } else if (attributes[i] === "label") {
+            newParameter.label = param.getAttribute(attributes[i])
+          } else if (attributes[i] === "units") {
+            newParameter.units = param.getAttribute(attributes[i])
+          } else if (attributes[i] === "minValue") {
+            newParameter.minValue = Number(param.getAttribute(attributes[i]))
+          } else if (attributes[i] === "increment") {
+            newParameter.increment = Number(param.getAttribute(attributes[i]))
+          } else if (attributes[i] === "maxValue") {
+            newParameter.maxValue = Number(param.getAttribute(attributes[i]))
+          } else if (attributes[i] === "default") {
+            newParameter.default = Number(param.getAttribute(attributes[i]))
+          } else if (attributes[i] === "enum") {
+            console.log("TODO enum options")
+            // newParameter.options == child.getAttribute(attributes[i])
+          } else {
+            console.log(attributes[i])
+          }
+
+        }
+        if (param.innerHTML != "Empty" && param.innerHTML != "Empty.") {
+          newCommand.parameters[newParameter.index - 1] = newParameter
+        }
+      } else if (param.tagName == "description") {
+
+        newCommand.description = param.innerHTML
       }
     }
     return newCommand
