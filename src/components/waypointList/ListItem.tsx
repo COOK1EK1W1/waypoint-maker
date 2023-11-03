@@ -1,5 +1,6 @@
 import { useWaypointContext } from "../WaypointContext";
 import { commands } from "@/util/commands";
+import {commandName} from "@/util/translationTable"
 
 export default function ListItem({id}: {id: number}){
   const {waypoints, setWaypoints, setActive, active } = useWaypointContext()
@@ -28,7 +29,7 @@ export default function ListItem({id}: {id: number}){
       <div className={`rounded p-2 m-2 border-grey border-2 cursor-pointer ${active == id ? "bg-slate-200" : ""}`} onClick={open}>
 
         <span>{id}</span>
-        <span className="pl-2">{commands[commands.findIndex(a => a.value==waypoints[id].type)].name}</span>
+        <span className="pl-2">{commandName(commands[commands.findIndex(a => a.value==waypoints[id].type)].name)}</span>
         <button className="pl-4" onClick={remove}>delete</button>
 
       </div>

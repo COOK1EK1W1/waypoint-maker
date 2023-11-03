@@ -1,5 +1,7 @@
+import { commandName } from "@/util/translationTable";
 import { useWaypointContext } from "../WaypointContext";
 import { commands } from "@/util/commands";
+
 
 
 export default function WaypointTypeSelector(){
@@ -24,7 +26,7 @@ export default function WaypointTypeSelector(){
     <div>
       <select onChange={bruh} value={  commands[commands.findIndex(a => a.value==waypoints[active || 0].type)].name}>
         {commands.map((cmd, index) => (
-          <option key={index} data-cmd={cmd.value}>{cmd.name}</option>
+          <option key={index} data-cmd={cmd.value}>{commandName(cmd.name)}</option>
         ))}
       </select>
     </div>

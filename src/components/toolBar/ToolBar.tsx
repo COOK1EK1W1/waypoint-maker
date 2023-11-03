@@ -1,11 +1,11 @@
-import { downloadTextAsFile, waypointToFile } from "@/util/waypointToFile"
+import { downloadTextAsFile, waypointTo_waypoints_file } from "@/util/waypointToFile"
 import { useWaypointContext } from "../WaypointContext"
 
 export default function ToolBar(){
   const {waypoints} = useWaypointContext()
 
   function download(){
-    const output = waypointToFile(waypoints)
+    const output = waypointTo_waypoints_file(waypoints)
     downloadTextAsFile("mission.waypoints", output)
     console.log(output)
     
