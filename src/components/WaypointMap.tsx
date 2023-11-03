@@ -5,6 +5,7 @@ import { useState } from "react";
 import 'leaflet/dist/leaflet.css';
 import DraggableMarker from "./DraggableMarker";
 import { useWaypointContext } from "./WaypointContext";
+import { toPolyline } from "@/util/waypointToLeaflet";
 
 
 const limeOptions = { color: 'lime' }
@@ -17,15 +18,15 @@ export default function MapStuff() {
     useMapEvent("click", (e)=>{
       const newMarker = {
           id: waypoints.length,
-          lat: e.latlng.lat,
-          lng: e.latlng.lng,
-          alt: 100,
           frame: 0,
           type: 16,
           param1: 0,
           param2: 0,
           param3: 0,
           param4: 0,
+          param5: e.latlng.lat,
+          param6: e.latlng.lng,
+          param7: 100,
           autocontinue: 1
       };
       setWaypoints(prevMarkers => [...prevMarkers, newMarker]);
@@ -51,7 +52,7 @@ return (
           {waypoints.map((waypoint, idx) => 
             <DraggableMarker id={idx} key={idx}/>
           )}
-          <Polyline pathOptions={limeOptions} positions={waypoints} />
+          <Polyline pathOptions={limeOptions} positions={toPolyline(waypoints)} />
           <CreateHandler/>
           
         </MapContainer>
