@@ -1,7 +1,7 @@
 import { useMemo, useRef } from "react"
 import { Marker } from "react-leaflet"
 import * as Leaflet from "leaflet"
-import { useWaypointContext } from "./WaypointContext"
+import { useWaypointContext } from "../../util/context/WaypointContext"
 import { activeIcon, normalIcon } from "./waypoint"
 import { toLatLng } from "@/util/waypointToLeaflet"
 

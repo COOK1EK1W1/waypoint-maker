@@ -1,4 +1,4 @@
-import { useWaypointContext } from "../WaypointContext";
+import { useWaypointContext } from "../../util/context/WaypointContext";
 
 export function LatLngEditor(){
   const {active, waypoints, setWaypoints} = useWaypointContext()

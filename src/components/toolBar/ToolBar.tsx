@@ -1,5 +1,5 @@
 import { downloadTextAsFile, waypointTo_waypoints_file } from "@/util/waypointToFile"
-import { useWaypointContext } from "../WaypointContext"
+import { useWaypointContext } from "../../util/context/WaypointContext"
 
 export default function ToolBar(){
   const {waypoints} = useWaypointContext()
@@ -11,7 +11,7 @@ export default function ToolBar(){
     
   }
   return <div>
-    <button onClick={download} className="p-2 border-1 border-slate-100 rounded bg-slate-200">.waypoints (QGC) download</button>
+    <button onClick={download} className="p-2 border-1 border-slate-100 rounded bg-slate-200">.waypoints (QGC, MP) download</button>
     TOOOL BAR
   </div>
 }

@@ -5,7 +5,7 @@ import ListView from "@/components/waypointList/ListView";
 import dynamic from "next/dynamic";
 
 const NonSSRMap = dynamic(
-    () => import("@/components/WaypointMap"),
+    () => import("@/components/map/WaypointMap"),
     { ssr: false }
 );
 

@@ -1,4 +1,4 @@
-import { useWaypointContext } from "../WaypointContext";
+import { useWaypointContext } from "../../util/context/WaypointContext";
 import { commands } from "@/util/commands";
 import {commandName} from "@/util/translationTable"
 

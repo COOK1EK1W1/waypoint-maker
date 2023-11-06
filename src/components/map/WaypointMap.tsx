@@ -3,8 +3,8 @@
 import { MapContainer, Polyline, TileLayer, useMapEvent } from "react-leaflet"
 import { useState } from "react";
 import 'leaflet/dist/leaflet.css';
-import DraggableMarker from "./DraggableMarker";
-import { useWaypointContext } from "./WaypointContext";
+import DraggableMarker from "../marker/DraggableMarker";
+import { useWaypointContext } from "../../util/context/WaypointContext";
 import { toPolyline } from "@/util/waypointToLeaflet";
 
 

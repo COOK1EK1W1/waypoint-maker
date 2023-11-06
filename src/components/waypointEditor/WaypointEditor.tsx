@@ -1,5 +1,5 @@
 import { formatDistance, haversineDistance, gradient } from "@/util/distance";
-import { useWaypointContext } from "../WaypointContext"
+import { useWaypointContext } from "../../util/context/WaypointContext"
 import WaypointTypeSelector from "./WaypointTypeSelector";
 import { commands } from "@/util/commands";
 import Parameter from "./Parameter";

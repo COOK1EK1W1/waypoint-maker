@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
-import WaypointProvider from '@/components/WaypointProvider'
+import WaypointProvider from '@/util/context/WaypointProvider'
 
 const inter = Inter({ subsets: ['latin'] })
 
