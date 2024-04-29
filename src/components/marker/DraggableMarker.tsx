@@ -1,31 +1,21 @@
 import { useMemo, useRef } from "react"
 import { Marker } from "react-leaflet"
 import * as Leaflet from "leaflet"
-import { useWaypointContext } from "../../util/context/WaypointContext"
 import { activeIcon, normalIcon } from "./waypoint"
 import { toLatLng } from "@/util/waypointToLeaflet"
+import {Waypoint} from "@/types/waypoints"
 
-export default function DraggableMarker({id} : {id :number}) {
-  const {active, waypoints, setWaypoints} = useWaypointContext()
+export default function DraggableMarker({waypoint, active, onMove} : {waypoint :Waypoint, active: boolean, onMove: (lat:number, lng:number)=>void}) {
   const markerRef = useRef<Leaflet.Marker>(null)
+  if (typeof waypoint == "string") return
 
   const eventHandlers = useMemo(
     () => ({
       dragend() {
         const marker = markerRef.current
         if (marker != null) {
-          setWaypoints((prevWaypoints) =>{
-            
-            const newLocation = marker.getLatLng()
-            const newWaypoints = [...prevWaypoints]
-            newWaypoints[id] = {
-              ...newWaypoints[id],
-              param5: newLocation.lat,
-              param6: newLocation.lng
-            }
-            
-            return newWaypoints
-          })
+          const newLocation = marker.getLatLng()
+          onMove(newLocation.lat, newLocation.lng)
         }
       },
     }),
@@ -36,9 +26,9 @@ export default function DraggableMarker({id} : {id :number}) {
     <Marker
       draggable={true}
       eventHandlers={eventHandlers}
-      position={toLatLng(waypoints[id])}
+      position={toLatLng(waypoint)}
       ref={markerRef}
-      icon={active == id ? activeIcon: normalIcon}>
+      icon={active ? activeIcon: normalIcon}>
     </Marker>
   )
 }

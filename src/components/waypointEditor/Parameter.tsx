@@ -3,7 +3,6 @@ export default function Parameter({param, name, value, change}: {param: Paramete
   if (param == null){
     return
   }
-  console.log(param)
   return (
     <div className="p-2">
       <p>{param.label} ({param.units})</p>

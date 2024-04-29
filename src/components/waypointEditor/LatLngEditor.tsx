@@ -1,7 +1,13 @@
+import { AvgLatLng } from "@/util/WPCollection";
 import { useWaypointContext } from "../../util/context/WaypointContext";
 
 export function LatLngEditor(){
-  const {active, waypoints, setWaypoints} = useWaypointContext()
+  const {selectedWPs, waypoints, setWaypoints, activeMission} = useWaypointContext()
+
+  const mission = waypoints.get(activeMission)
+  if (mission == undefined) return
+
+  const wps = mission.filter((node, id)=>{return selectedWPs.includes(id)})
 
   function change(e: React.ChangeEvent<HTMLInputElement>){
     setWaypoints((prevWaypoints) => {
@@ -25,13 +31,14 @@ export function LatLngEditor(){
 
       return newWaypoints;
     })
-
   }
-  const current = waypoints[active || 0]
+
+  const [lat, lng] = AvgLatLng(wps, waypoints)
+
   return <div className="flex flex-row border-2 p-2 rounded-3xl" >
     <div className="flex flex-col place-content-around">
-      <div>Latitude <input type="number" name="param5" onChange={change} value={current.param5} step={0.0001}/></div>
-      <div>Longitude <input type="number" name="param6" onChange={change} value={current.param6} step={0.0001}/></div>
+      <div>Latitude <input type="number" name="param5" onChange={change} value={lat} step={0.0001}/></div>
+      <div>Longitude <input type="number" name="param6" onChange={change} value={lng} step={0.0001}/></div>
     </div>
     <div>
       <div className="flex flex-row">

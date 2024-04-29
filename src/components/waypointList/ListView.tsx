@@ -1,12 +1,7 @@
-import { useWaypointContext } from "../../util/context/WaypointContext"
-import ListItem from "./ListItem"
+import MainMission from "./mainMission"
 
 export default function ListView(){
-  const {waypoints, setWaypoints} = useWaypointContext()
   return <div style={{width: "400px"}}>
-    {waypoints.map((i, id) => (
-      <ListItem id={id} key={id}></ListItem>
-    ))}
-
+    <MainMission/>
   </div>
 }

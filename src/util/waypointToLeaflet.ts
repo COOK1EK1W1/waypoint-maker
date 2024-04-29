@@ -1,5 +1,11 @@
-export function toPolyline(waypoints: Waypoint[]) {
-  return waypoints.map((waypoint) => toLatLng(waypoint))
+export function toPolyline(waypoints: (string|Waypoint)[]) {
+  const points: {lat: number, lng: number}[] = []
+  waypoints.map((waypoint)=>{
+    if (typeof waypoint != "string"){
+      points.push(toLatLng(waypoint))
+    }
+  })
+  return points
 }
 
 export function toLatLng(waypoint: Waypoint) {

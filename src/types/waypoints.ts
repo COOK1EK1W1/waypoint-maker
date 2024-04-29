@@ -1,4 +1,4 @@
-type Waypoint = {
+export type Waypoint = {
   frame: number
   type: number
 
@@ -12,3 +12,21 @@ type Waypoint = {
 
   autocontinue: number
 }
+
+export enum CollectionType {
+  Mission,
+  Overlay,
+  Geofence
+}
+
+export type WPNode = {
+  type:"Collection"
+  name: string
+  ColType: CollectionType
+  collectionID: string
+} | {
+  type: "Waypoint"
+  wps: Waypoint
+}
+
+export type WaypointCollection = Map<string, WPNode[]>
