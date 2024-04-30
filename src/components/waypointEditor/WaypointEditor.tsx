@@ -39,8 +39,9 @@ export default function WaypointEditor(){
   let distanceFromPrev = undefined
   if (active > 0){
     prev = mission[active-1]
-    if (prev.type == "Collection") return
-    distanceFromPrev = haversineDistance(current.wps.param5, current.wps.param6, prev.wps.param5, prev.wps.param6)
+    if (prev.type != "Collection"){
+      distanceFromPrev = haversineDistance(current.wps.param5, current.wps.param6, prev.wps.param5, prev.wps.param6)
+    }
     
   }
   
@@ -69,10 +70,10 @@ export default function WaypointEditor(){
     
     {hasLocationParams && <LatLngEditor/>}
 
-    {/*<div>
+    <div>
       {distanceFromPrev && formatDistance(distanceFromPrev)}
-      {distanceFromPrev && gradient(distanceFromPrev, (prev || current).param7, current.param7)}
-    </div>*/}
+      {distanceFromPrev && gradient(distanceFromPrev, (prev || current).wps.param7, current.wps.param7)}
+    </div>
 
   </div>
 }

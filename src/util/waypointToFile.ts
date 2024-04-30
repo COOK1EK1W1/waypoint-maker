@@ -1,4 +1,4 @@
-import { WaypointCollection, CollectionType, Waypoint, WPNode } from "@/types/waypoints";
+import { WaypointCollection, CollectionType, Waypoint } from "@/types/waypoints";
 
 export function waypointTo_waypoints_file(waypoints: WaypointCollection) {
   let returnString = "QGC WPL 110\n"

@@ -1,4 +1,4 @@
-import { AvgLatLng } from "@/util/WPCollection";
+import { AvgLatLng, changeParam } from "@/util/WPCollection";
 import { useWaypointContext } from "../../util/context/WaypointContext";
 
 export function LatLngEditor(){
@@ -9,36 +9,42 @@ export function LatLngEditor(){
 
   const wps = mission.filter((node, id)=>{return selectedWPs.includes(id)})
 
+  const [lat, lng] = AvgLatLng(wps, waypoints)
+
   function change(e: React.ChangeEvent<HTMLInputElement>){
     setWaypoints((prevWaypoints) => {
-      let newWaypoints = [...prevWaypoints];
-      let key = e.target.name as keyof Waypoint;
-      let updatedWaypoint = { ...prevWaypoints[active || 0] };
-      updatedWaypoint[key] = Number(e.target.value);
-      newWaypoints[active || 0] = updatedWaypoint;
-
-      return newWaypoints;
+      for (let i = 0; i < selectedWPs.length; i++){
+        prevWaypoints = changeParam(selectedWPs[i], activeMission, prevWaypoints, (wp)=>{
+          if (e.target.name == "lng"){
+            wp.param6 -= lng - Number(e.target.value)
+          }else if (e.target.name == "lat"){
+            wp.param5 -= lat - Number(e.target.value)
+          }
+          return wp
+        })
+      }
+      return new Map(prevWaypoints);
     })
   }
 
   function nudge(x: number, y: number){
     setWaypoints((prevWaypoints) => {
-      let newWaypoints = [...prevWaypoints];
-      let updatedWaypoint = { ...prevWaypoints[active || 0] };
-      updatedWaypoint.param5 = updatedWaypoint.param5 + 0.0004 * y
-      updatedWaypoint.param6 = updatedWaypoint.param6 + 0.0004 * x
-      newWaypoints[active || 0] = updatedWaypoint;
-
-      return newWaypoints;
+      for (let i = 0; i < selectedWPs.length; i++){
+        prevWaypoints = changeParam(selectedWPs[i], activeMission, prevWaypoints, (wp)=>{
+          wp.param5 += 0.0004 * y
+          wp.param6 += 0.0004 * x
+          return wp
+        })
+      }
+      return new Map(prevWaypoints);
     })
   }
 
-  const [lat, lng] = AvgLatLng(wps, waypoints)
 
   return <div className="flex flex-row border-2 p-2 rounded-3xl" >
     <div className="flex flex-col place-content-around">
-      <div>Latitude <input type="number" name="param5" onChange={change} value={lat} step={0.0001}/></div>
-      <div>Longitude <input type="number" name="param6" onChange={change} value={lng} step={0.0001}/></div>
+      <div>Latitude <input type="number" name="lat" onChange={change} value={lat} step={0.0001}/></div>
+      <div>Longitude <input type="number" name="lng" onChange={change} value={lng} step={0.0001}/></div>
     </div>
     <div>
       <div className="flex flex-row">

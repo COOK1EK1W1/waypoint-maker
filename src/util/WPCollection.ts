@@ -1,5 +1,5 @@
 
-import { WaypointCollection, CollectionType, Waypoint, WPNode } from "@/types/waypoints";
+import { WaypointCollection, Waypoint, WPNode } from "@/types/waypoints";
 import { commands } from "./commands";
 
 export function add_waypoint(missionName: string, waypoint: Waypoint, waypoints: WaypointCollection): WaypointCollection{
@@ -58,15 +58,20 @@ export function AvgLatLng(nodes: WPNode[], store: WaypointCollection): [number, 
         break;
       }
       case "Collection":{
+        const subCol = store.get(curNode.collectionID)
+        if (subCol != undefined){
+          const [subLat, subLng] = AvgLatLng(subCol, store)
+          count += 1
+          latTotal += subLat
+          lngTotal += subLng
+        }
         break
       }
       default: {
         const _exhaustiveCheck: never = curNode;
         return _exhaustiveCheck
       }
-
     }
-
   }
   return [latTotal / count, lngTotal / count]
 }
@@ -82,4 +87,12 @@ export function changeParam(id: number, mission: string, waypoints: WaypointColl
   waypoints.set(mission, curMission)
   return waypoints;
 
+}
+
+export function deleteNode(id: number, mission: string, waypoints: WaypointCollection){
+  const curMission = waypoints.get(mission)
+  if (curMission == undefined){return waypoints}
+  curMission.splice(id, 1)
+  waypoints.set(mission, curMission)
+  return waypoints;
 }
