@@ -1,4 +1,5 @@
 import * as L from "leaflet"
+
 export var normalIcon = L.icon({
   iconUrl: 'marker-icon.png',
   shadowUrl: 'marker-shadow.png',

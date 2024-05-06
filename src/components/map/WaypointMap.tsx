@@ -5,7 +5,7 @@ import 'leaflet/dist/leaflet.css';
 import DraggableMarker from "../marker/DraggableMarker";
 import { useWaypointContext } from "../../util/context/WaypointContext";
 import { toPolyline } from "@/util/waypointToLeaflet";
-import { add_waypoint, get_waypoints } from "@/util/WPCollection";
+import { add_waypoint, changeParam, findnthwaypoint, get_waypoints } from "@/util/WPCollection";
 
 
 const limeOptions = { color: 'lime' }
@@ -38,15 +38,10 @@ export default function MapStuff() {
   }
 
   function onMove(lat: number, lng: number, id: number){
-    setWaypoints(prevWaypoints => {
-      let wps = prevWaypoints.get(activeMission)
-      if (wps == undefined) return prevWaypoints
-      const prevWP = wps[id]
-      if (prevWP.type != "Waypoint") return prevWaypoints
-      wps[id] = {...prevWP, wps: {...prevWP.wps, param5: lat, param6: lng}}
-      prevWaypoints.set(activeMission, wps)
-      return new Map(prevWaypoints)
-    })
+    const a = findnthwaypoint(activeMission, id, waypoints) 
+    if (a == null) return
+    const [mission, pos] = a
+    setWaypoints(new Map(changeParam(pos, mission, waypoints, (wp)=>({...wp, param5: lat, param6:lng}))))
 
   }
 
@@ -56,7 +51,7 @@ export default function MapStuff() {
     if (mission == undefined) return
 
     return (
-      <div className="flex-grow">
+      <div className="">
 
 
         <MapContainer 
@@ -65,7 +60,9 @@ export default function MapStuff() {
           style={{ width: '100%', height: '500px' }}
         >
           <TileLayer
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            url='https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}'
+            maxZoom= {20}
+            subdomains={['mt1','mt2','mt3']}
           />
 
           {get_waypoints(activeMission, waypoints).map((waypoint, idx) => 

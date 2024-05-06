@@ -53,13 +53,13 @@ export default function WaypointEditor(){
   commanddesc.parameters[5].label == "Longitude"
 
 
-  return <div className="w-full p-2">
+  return <div className="p-2">
     <WaypointTypeSelector/>
     <div>
       <span>{commanddesc.description}</span>
     </div>
 
-    <div className="flex flex-wrap flex-row">
+    <div className="">
       <Parameter param={commanddesc.parameters[0]} name="param1" change={change} value={current.wps.param1}/>
       <Parameter param={commanddesc.parameters[1]} name="param2" change={change} value={current.wps.param2}/>
       <Parameter param={commanddesc.parameters[2]} name="param3" change={change} value={current.wps.param3}/>

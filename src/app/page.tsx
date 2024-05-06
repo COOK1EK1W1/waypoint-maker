@@ -11,15 +11,17 @@ const NonSSRMap = dynamic(
 
 export default function Home() {
   return (
-    <main>
+    <main style={{height: "100vh"}} className="flex flex-col">
       <h1>Waypoint Maker</h1>
       <ToolBar/>
-      <div className="flex flex-row">
-        <NonSSRMap></NonSSRMap>
-        <ListView></ListView>
+      <div className="flex flex-row w-full grow">
+        <div className="flex flex-col grow">
+          <NonSSRMap></NonSSRMap>
+        <WaypointEditor></WaypointEditor>
+        </div>
 
+        <ListView></ListView>
       </div>
-      <WaypointEditor></WaypointEditor>
       
     </main>
     

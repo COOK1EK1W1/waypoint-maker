@@ -96,3 +96,36 @@ export function deleteNode(id: number, mission: string, waypoints: WaypointColle
   waypoints.set(mission, curMission)
   return waypoints;
 }
+
+export function findnthwaypoint(mission: string, n: number, waypoints: WaypointCollection): [string, number] | null {
+  const missionNodes = waypoints.get(mission);
+  
+  if (missionNodes === undefined) {
+    return null; // Mission not found
+  }
+
+  let count = 0;
+
+  function findNth(node: Node[], name: string): [string, number] | null {
+    for (let i = 0; i < node.length; i++) {
+      const curNode = node[i];
+      if (curNode.type === "Waypoint") {
+        if (count === n) {
+          return [name, i]; // Found nth waypoint
+        }
+        count++;
+      } else if (curNode.type === "Collection") {
+        const subMission = waypoints.get(curNode.collectionID);
+        if (subMission !== undefined) {
+          const result = findNth(subMission, curNode.collectionID);
+          if (result !== null) {
+            return result;
+          }
+        }
+      }
+    }
+    return null; // Nth waypoint not found in this collection
+  }
+
+  return findNth(missionNodes, mission);
+}
