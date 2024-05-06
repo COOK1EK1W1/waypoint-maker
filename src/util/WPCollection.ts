@@ -19,7 +19,7 @@ export function get_waypoints(missionstr: string, store: WaypointCollection): Wa
     const node = waypoints[i]
     switch (node.type){
       case "Collection":{
-        retlist.concat(get_waypoints(node.collectionID, store))
+        retlist = retlist.concat(get_waypoints(node.collectionID, store))
         break
       }
       case "Waypoint":{
