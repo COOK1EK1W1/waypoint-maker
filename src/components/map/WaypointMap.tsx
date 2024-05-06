@@ -31,7 +31,7 @@ export default function MapStuff() {
         param7: 100,
         autocontinue: 1
       };
-      setWaypoints(add_waypoint(activeMission, newMarker, waypoints));
+      setWaypoints(add_waypoint(activeMission, {type:"Waypoint", wps:newMarker}, waypoints));
 
     })
     return null

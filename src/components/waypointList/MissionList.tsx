@@ -4,12 +4,10 @@ import { deleteNode } from "@/util/WPCollection";
 import CreateCollection from "./createCollection";
 import CollectionItem from "./collectionItem";
 
-export default function MainMission(){
-  const {waypoints, setSelectedWPs, selectedWPs, setWaypoints } = useWaypointContext()
-  console.log(waypoints)
-  console.log(selectedWPs)
+export default function MissionList(){
+  const {waypoints, setSelectedWPs, selectedWPs, setWaypoints, activeMission } = useWaypointContext()
 
-  const mainMission = waypoints.get("main")
+  const mainMission = waypoints.get(activeMission)
   if (mainMission == null) return null
 
   function handleClick(id: number, e: React.MouseEvent<HTMLDivElement>){
@@ -28,12 +26,12 @@ export default function MainMission(){
 
   function onDelete(id: number){
     setSelectedWPs([])
-    setWaypoints(deleteNode(id, "main", waypoints))
+    setWaypoints(deleteNode(id, activeMission, waypoints))
   }
 
   return (
     <div>
-      <h2>main mission</h2>
+      <h2 className="px-2">{activeMission}</h2>
       {mainMission.map((waypoint, i) => {
         if (waypoint.type == "Collection"){
           return <CollectionItem node={waypoint} selected={selectedWPs.includes(i)} onClick={(e)=>handleClick(i, e)} key={i} onDelete={()=>onDelete(i)}/>

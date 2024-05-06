@@ -4,10 +4,13 @@ import WaypointTypeSelector from "./WaypointTypeSelector";
 import { commands } from "@/util/commands";
 import Parameter from "./Parameter";
 import { LatLngEditor } from "./LatLngEditor";
-import { CollectionType } from "@/types/waypoints";
+import { Waypoint } from "@/types/waypoints";
+import { changeParam } from "@/util/WPCollection";
 
 export default function WaypointEditor(){
   const {activeMission, selectedWPs, waypoints, setWaypoints} = useWaypointContext()
+
+  if (selectedWPs.length == 0) return <div>editor</div>
 
   const mission = waypoints.get(activeMission)
   if (mission == undefined) return null
@@ -17,19 +20,15 @@ export default function WaypointEditor(){
   //on change function
   function change(e: React.ChangeEvent<HTMLInputElement>){
     setWaypoints((prevWaypoints) => {
-      let newWaypoints = [...mission];
+      if (mission == undefined) return prevWaypoints
       let key = e.target.name as keyof Waypoint;
-      let updatedWaypoint = { ...prevWaypoints[active || 0] };
-      updatedWaypoint[key] = Number(e.target.value);
-      newWaypoints[active || 0] = updatedWaypoint;
-
-      return prevWaypoints.set(activeMission, newWaypoints);
+      let b = changeParam(active, activeMission, prevWaypoints, (wp)=>{
+        let a = {...wp}
+        a[key] = Number(e.target.value)
+        return a
+      })
+      return new Map(b)
     })
-  }
-
-  // if there is no waypoint selected show editor default
-  if (selectedWPs.length == 0){
-    return <div>editor</div>
   }
 
   const current = mission[active]
@@ -37,10 +36,12 @@ export default function WaypointEditor(){
   let prev = undefined
 
   let distanceFromPrev = undefined
+  let gradientV = undefined
   if (active > 0){
     prev = mission[active-1]
     if (prev.type != "Collection"){
       distanceFromPrev = haversineDistance(current.wps.param5, current.wps.param6, prev.wps.param5, prev.wps.param6)
+      gradientV = gradient(distanceFromPrev, (prev || current).wps.param7, current.wps.param7)
     }
     
   }
@@ -72,7 +73,7 @@ export default function WaypointEditor(){
 
     <div>
       {distanceFromPrev && formatDistance(distanceFromPrev)}
-      {distanceFromPrev && gradient(distanceFromPrev, (prev || current).wps.param7, current.wps.param7)}
+      {distanceFromPrev && gradientV}
     </div>
 
   </div>

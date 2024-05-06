@@ -1,11 +1,11 @@
 
-import { WaypointCollection, Waypoint, WPNode } from "@/types/waypoints";
+import { WaypointCollection, Waypoint, Node } from "@/types/waypoints";
 import { commands } from "./commands";
 
-export function add_waypoint(missionName: string, waypoint: Waypoint, waypoints: WaypointCollection): WaypointCollection{
+export function add_waypoint(missionName: string, waypoint: Node, waypoints: WaypointCollection): WaypointCollection{
   const mission = waypoints.get(missionName)
   if (mission == undefined) return waypoints
-  mission.push({type: "Waypoint", wps: waypoint})
+  mission.push(waypoint)
   let newMap = new Map(waypoints)
   newMap.set(missionName, mission)
   return newMap
@@ -37,7 +37,7 @@ export function get_waypoints(missionstr: string, store: WaypointCollection): Wa
 
 }
 
-export function AvgLatLng(nodes: WPNode[], store: WaypointCollection): [number, number]{
+export function AvgLatLng(nodes: Node[], store: WaypointCollection): [number, number]{
   let latTotal = 0
   let lngTotal = 0
   let count = 0

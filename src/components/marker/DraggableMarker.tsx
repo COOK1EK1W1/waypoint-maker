@@ -7,7 +7,6 @@ import {Waypoint} from "@/types/waypoints"
 
 export default function DraggableMarker({waypoint, active, onMove} : {waypoint :Waypoint, active: boolean, onMove: (lat:number, lng:number)=>void}) {
   const markerRef = useRef<Leaflet.Marker>(null)
-  if (typeof waypoint == "string") return
 
   const eventHandlers = useMemo(
     () => ({
@@ -19,7 +18,7 @@ export default function DraggableMarker({waypoint, active, onMove} : {waypoint :
         }
       },
     }),
-    [],
+    [onMove],
   )
 
   return (

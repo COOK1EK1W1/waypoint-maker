@@ -14,7 +14,7 @@ export default function CreateCollection(){
     if (curMission == undefined) return
     const newWPs = curMission.filter((wp, id) => selectedWPs.includes(id))
     const oldWPs = curMission.filter((wp, id) => !selectedWPs.includes(id))
-    oldWPs.splice(Math.min(...selectedWPs), 0, {type: "Collection", name: name, ColType: CollectionType.Mission, collectionID: name})
+    oldWPs.splice(Math.min(...selectedWPs), 0, {type: "Collection", name: name, ColType: CollectionType.Mission, collectionID: name, offsetLng: 0, offsetLat:0})
     setWaypoints((prev)=>{
       prev.set(activeMission, oldWPs)
       if (name == null) return prev

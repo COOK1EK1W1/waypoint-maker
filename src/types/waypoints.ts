@@ -20,13 +20,20 @@ export enum CollectionType {
 }
 
 export type WPNode = {
-  type:"Collection"
-  name: string
-  ColType: CollectionType
-  collectionID: string
-} | {
   type: "Waypoint"
   wps: Waypoint
 }
 
-export type WaypointCollection = Map<string, WPNode[]>
+export type ColNode = {
+  type:"Collection"
+  name: string
+  ColType: CollectionType
+  collectionID: string
+  offsetLat: number
+  offsetLng: number
+
+}
+
+export type Node = WPNode | ColNode
+
+export type WaypointCollection = Map<string, Node[]>

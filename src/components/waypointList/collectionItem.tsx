@@ -1,8 +1,8 @@
-import { WPNode, Waypoint } from "@/types/waypoints";
+import { ColNode } from "@/types/waypoints";
 import { useWaypointContext } from "@/util/context/WaypointContext";
 import { useState } from "react";
 
-export default function CollectionItem({node, selected, onClick, onDelete}: {node: WPNode, selected: boolean, onClick: (e: React.MouseEvent<HTMLDivElement>)=>void, onDelete: ()=>void}){
+export default function CollectionItem({node, selected, onClick, onDelete}: {node: ColNode, selected: boolean, onClick: (e: React.MouseEvent<HTMLDivElement>)=>void, onDelete: ()=>void}){
   const [expand, setExpand] = useState(false)
   const {waypoints} = useWaypointContext()
 
@@ -10,7 +10,6 @@ export default function CollectionItem({node, selected, onClick, onDelete}: {nod
     e.stopPropagation()
     onDelete()
   }
-  if (node.type != "Collection") return
   const wps = waypoints.get(node.collectionID)
   if (wps == undefined) return null
 
@@ -20,8 +19,8 @@ export default function CollectionItem({node, selected, onClick, onDelete}: {nod
       <button className="pl-4" onClick={remove}>delete</button>
       <button onClick={()=>{setExpand(!expand)}}>expand</button>
       <div className={`overflow-hidden ${expand?`h-20`:`h-0`}`}>
-        {wps.map((wp)=>(
-          <div>
+        {wps.map((wp, id)=>(
+          <div key={id}>
             {wp.type}
           </div>
 
