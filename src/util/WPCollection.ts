@@ -1,5 +1,5 @@
 
-import { WaypointCollection, Waypoint, Node } from "@/types/waypoints";
+import { WaypointCollection, Waypoint, Node, ColNode } from "@/types/waypoints";
 import { commands } from "./commands";
 
 export function add_waypoint(missionName: string, waypoint: Node, waypoints: WaypointCollection): WaypointCollection{

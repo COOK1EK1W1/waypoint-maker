@@ -1,5 +1,6 @@
 import { AvgLatLng, changeParam } from "@/util/WPCollection";
 import { useWaypointContext } from "../../util/context/WaypointContext";
+import { Node } from "@/types/waypoints";
 
 export function LatLngEditor(){
   const {selectedWPs, waypoints, setWaypoints, activeMission} = useWaypointContext()
@@ -7,14 +8,24 @@ export function LatLngEditor(){
   const mission = waypoints.get(activeMission)
   if (mission == undefined) return
 
-  const wps = mission.filter((node, id)=>{return selectedWPs.includes(id)})
+  let wps: Node[] = []
+  let wpsIds: number[] = []
+  if (selectedWPs.length == 0){
+    wps = mission
+    wpsIds = [...Array.from(Array(mission.length).keys())]
+  }else{
+    wps = mission.filter((node, id)=>{return selectedWPs.includes(id)})
+    wpsIds = selectedWPs
+  }
 
   const [lat, lng] = AvgLatLng(wps, waypoints)
 
   function change(e: React.ChangeEvent<HTMLInputElement>){
     setWaypoints((prevWaypoints) => {
-      for (let i = 0; i < selectedWPs.length; i++){
-        prevWaypoints = changeParam(selectedWPs[i], activeMission, prevWaypoints, (wp)=>{
+      for (let i = 0; i < wps.length; i++){
+        console.log(wpsIds)
+
+        prevWaypoints = changeParam(wpsIds[i], activeMission, prevWaypoints, (wp)=>{
           if (e.target.name == "lng"){
             wp.param6 -= lng - Number(e.target.value)
           }else if (e.target.name == "lat"){
@@ -29,8 +40,8 @@ export function LatLngEditor(){
 
   function nudge(x: number, y: number){
     setWaypoints((prevWaypoints) => {
-      for (let i = 0; i < selectedWPs.length; i++){
-        prevWaypoints = changeParam(selectedWPs[i], activeMission, prevWaypoints, (wp)=>{
+      for (let i = 0; i < wpsIds.length; i++){
+        prevWaypoints = changeParam(wpsIds[i], activeMission, prevWaypoints, (wp)=>{
           wp.param5 += 0.0004 * y
           wp.param6 += 0.0004 * x
           return wp

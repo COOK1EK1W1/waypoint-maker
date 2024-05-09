@@ -23,8 +23,9 @@ export default function WaypointEditor(){
       if (mission == undefined) return prevWaypoints
       let key = e.target.name as keyof Waypoint;
       let b = changeParam(active, activeMission, prevWaypoints, (wp)=>{
+        if (wp.type != "Waypoint") return wp
         let a = {...wp}
-        a[key] = Number(e.target.value)
+        a.wps[key] = Number(e.target.value)
         return a
       })
       return new Map(b)
@@ -69,8 +70,6 @@ export default function WaypointEditor(){
       <Parameter param={commanddesc.parameters[6]} name="param7" change={change} value={current.wps.param7}/>
     </div>
     
-    {hasLocationParams && <LatLngEditor/>}
-
     <div>
       {distanceFromPrev && formatDistance(distanceFromPrev)}
       {distanceFromPrev && gradientV}
