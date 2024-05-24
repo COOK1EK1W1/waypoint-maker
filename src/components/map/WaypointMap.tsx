@@ -6,6 +6,7 @@ import DraggableMarker from "../marker/DraggableMarker";
 import { useWaypointContext } from "../../util/context/WaypointContext";
 import { toPolyline } from "@/util/waypointToLeaflet";
 import { add_waypoint, changeParam, findnthwaypoint, get_waypoints } from "@/util/WPCollection";
+import GeofenceMarker from "../marker/geofenceMarker";
 
 
 const limeOptions = { color: 'lime' }
@@ -70,6 +71,11 @@ export default function MapStuff() {
           )}
           <Polyline pathOptions={limeOptions} positions={toPolyline(get_waypoints(activeMission, waypoints))} />
           <CreateHandler/>
+
+          {get_waypoints("geofence", waypoints).map((waypoint, idx) =>
+            <GeofenceMarker key={idx} waypoint={waypoint} active={false}/>
+          )}
+          <Polyline pathOptions={limeOptions} positions={toPolyline(get_waypoints("geofence", waypoints))} />
 
         </MapContainer>
       </div>
