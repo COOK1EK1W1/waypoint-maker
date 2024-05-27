@@ -3,12 +3,13 @@ import { WaypointCollection, CollectionType, Waypoint } from "@/types/waypoints"
 export function waypointTo_waypoints_file(waypoints: WaypointCollection) {
   let returnString = "QGC WPL 110\n"
 
-  returnString += renderWaypoints(0, "main", waypoints)
+  const [cnt, wpstr] = renderWaypoints(0, "main", waypoints)
+  returnString += wpstr
   return returnString
 }
 
 function renderWaypoints(curWP: number, missionName: string, store: WaypointCollection): [number, string]{
-  let returnString:string = ""
+  let returnString: string = ""
   const waypoints = store.get(missionName)
   if (waypoints == undefined) return [0, ""]
 
