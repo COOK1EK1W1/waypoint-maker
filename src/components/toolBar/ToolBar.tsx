@@ -1,5 +1,6 @@
 import { downloadTextAsFile, waypointTo_waypoints_file } from "@/util/waypointToFile"
 import { useWaypointContext } from "../../util/context/WaypointContext"
+import WPCheck from "./WPcheck"
 
 export default function ToolBar(){
   const {waypoints} = useWaypointContext()
@@ -10,8 +11,8 @@ export default function ToolBar(){
     console.log(output)
     
   }
-  return <div>
+  return <div className="flex">
     <button onClick={download} className="p-2 border-1 border-slate-100 rounded bg-slate-200">.waypoints (QGC, MP) download</button>
-    TOOOL BAR
+    <WPCheck/>
   </div>
 }

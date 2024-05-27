@@ -58,7 +58,7 @@ export default function MapStuff() {
         <MapContainer 
           center={{ lat: 55.91289, lng: -3.32560 }}
           zoom={13} 
-          style={{ width: '100%', height: '500px' }}
+          style={{ width: '100%', height: '800px' }}
         >
           <TileLayer
             url='https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}'
