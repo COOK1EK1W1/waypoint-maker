@@ -30,7 +30,7 @@ export default function MissionList(){
   }
 
   return (
-    <div>
+    <div className="flex-grow overflow-auto">
       <h2 className="px-2">{activeMission}</h2>
       {mainMission.map((waypoint, i) => {
         if (waypoint.type == "Collection"){
@@ -41,7 +41,6 @@ export default function MissionList(){
         }
       })}
       {selectedWPs.length > 1 && <CreateCollection/>}
-      
     </div>
   )
 

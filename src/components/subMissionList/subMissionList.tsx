@@ -45,7 +45,7 @@ export default function SubMissionList(){
   }
 
   return (
-    <div>
+    <div className="">
       <div className="flex">
         {hasTakeoff ? null: <Button onClick={createTakeoff}>Add Takeoff</Button>}
         {hasLanding ? null : <Button onClick={createLanding}>Add Landing</Button>}
