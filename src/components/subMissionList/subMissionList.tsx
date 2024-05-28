@@ -22,34 +22,32 @@ export default function SubMissionList(){
   const hasTakeoff = Array.from(waypoints.keys()).includes("Takeoff")
 
   function createTakeoff(){
-    setWaypoints((prevWaypoints)=>{
-      let newMission: Node[] = []
-      let wps = prevWaypoints.set("Takeoff", newMission)
-      let main = prevWaypoints.get("main")
-      if (main == undefined) return prevWaypoints
+    let newMission: Node[] = []
+    let wps = waypoints.set("Takeoff", newMission)
+    let main = waypoints.get("Main")
+    if (main == undefined) return waypoints
 
-      main.splice(0, 0, {type: "Collection", collectionID: "Takeoff", ColType:CollectionType.Mission, offsetLng: 0, offsetLat: 0, name: "Takeoff"})
-      return new Map(wps)
-    })
-
+    main.splice(0, 0, {type: "Collection", collectionID: "Takeoff", ColType:CollectionType.Mission, offsetLng: 0, offsetLat: 0, name: "Takeoff"})
+    setWaypoints(new Map(wps))
+    setActiveMission("Takeoff")
   }
+
   function createLanding(){
-    setWaypoints((prevWaypoints)=>{
-      let newMission: Node[] = []
-      let wps = prevWaypoints.set("Landing", newMission)
-      let main = prevWaypoints.get("main")
-      if (main == undefined) return prevWaypoints
-      main.push({type: "Collection", collectionID: "Landing", ColType:CollectionType.Mission, offsetLng: 0, offsetLat: 0, name: "Landing"})
-      return new Map(wps)
-    })
+    let newMission: Node[] = []
+    let wps = waypoints.set("Landing", newMission)
+    let main = waypoints.get("Main")
+    if (main == undefined) return waypoints
+    main.push({type: "Collection", collectionID: "Landing", ColType:CollectionType.Mission, offsetLng: 0, offsetLat: 0, name: "Landing"})
+    setWaypoints(new Map(wps))
+    setActiveMission("Landing")
   }
 
   return (
     <div className="">
-      <div className="flex">
+      {activeMission == "Main" ? <div className="flex">
         {hasTakeoff ? null: <Button onClick={createTakeoff}>Add Takeoff</Button>}
         {hasLanding ? null : <Button onClick={createLanding}>Add Landing</Button>}
-      </div>
+      </div> : null}
       {Array.from(waypoints.keys()).map((waypoint, id)=>{
         const wp = waypoints.get(waypoint)
         if (wp != undefined){

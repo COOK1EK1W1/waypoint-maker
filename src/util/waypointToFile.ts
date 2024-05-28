@@ -3,7 +3,7 @@ import { WaypointCollection, CollectionType, Waypoint } from "@/types/waypoints"
 export function waypointTo_waypoints_file(waypoints: WaypointCollection) {
   let returnString = "QGC WPL 110\n"
 
-  const [cnt, wpstr] = renderWaypoints(0, "main", waypoints)
+  const [cnt, wpstr] = renderWaypoints(0, "Main", waypoints)
   returnString += wpstr
   return returnString
 }

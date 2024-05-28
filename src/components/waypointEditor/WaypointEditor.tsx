@@ -3,7 +3,6 @@ import { useWaypointContext } from "../../util/context/WaypointContext"
 import WaypointTypeSelector from "./WaypointTypeSelector";
 import { commands } from "@/util/commands";
 import Parameter from "./Parameter";
-import { LatLngEditor } from "./LatLngEditor";
 import { Waypoint } from "@/types/waypoints";
 import { changeParam } from "@/util/WPCollection";
 
@@ -19,17 +18,14 @@ export default function WaypointEditor(){
 
   //on change function
   function change(e: React.ChangeEvent<HTMLInputElement>){
-    setWaypoints((prevWaypoints) => {
-      if (mission == undefined) return prevWaypoints
+    setWaypoints( new Map(changeParam(active, activeMission, waypoints, (x)=>{
       let key = e.target.name as keyof Waypoint;
-      let b = changeParam(active, activeMission, prevWaypoints, (wp)=>{
-        if (wp.type != "Waypoint") return wp
-        let a = {...wp}
-        a.wps[key] = Number(e.target.value)
-        return a
-      })
-      return new Map(b)
-    })
+      let a = {...x}
+      a[key] = Number(e.target.value)
+      console.log(a)
+      return a
+
+    })))
   }
 
   const current = mission[active]
@@ -60,7 +56,7 @@ export default function WaypointEditor(){
       <span>{commanddesc.description}</span>
     </div>
 
-    <div className="">
+    <div className="flex flex-wrap">
       <Parameter param={commanddesc.parameters[0]} name="param1" change={change} value={current.wps.param1}/>
       <Parameter param={commanddesc.parameters[1]} name="param2" change={change} value={current.wps.param2}/>
       <Parameter param={commanddesc.parameters[2]} name="param3" change={change} value={current.wps.param3}/>

@@ -4,7 +4,7 @@ import { Severity, wpCheck } from "@/util/wpcheck"
 
 export default function WPCheck(){
   const {waypoints} = useWaypointContext()
-  const msg = wpCheck(get_waypoints("main", waypoints))
+  const msg = wpCheck(get_waypoints("Main", waypoints))
   console.log(msg)
   const bad = msg.filter((x) => x[1] == Severity.Bad)
 

@@ -8,8 +8,8 @@ type Props = {
 };
 
 const default_missions: [string, Node[]][] = [
-  ["main", []],
-  ["geofence", []],
+  ["Main", []],
+  ["Geofence", []],
 ]
 
 export default function WaypointProvider({ children }: Props) {
@@ -18,7 +18,7 @@ export default function WaypointProvider({ children }: Props) {
 
   const [selectedWPs, setSelectedWPs] = useState<number[]>([]);
 
-  const [activeMission, setActiveMission] = useState<string>("main");
+  const [activeMission, setActiveMission] = useState<string>("Main");
 
   return (
     <waypointContext.Provider value={{waypoints, setWaypoints, activeMission, setActiveMission, selectedWPs, setSelectedWPs}}>

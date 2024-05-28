@@ -1,6 +1,6 @@
 "use client"
 
-import { MapContainer, Polyline, TileLayer, useMapEvent } from "react-leaflet"
+import { MapContainer, Polygon, Polyline, TileLayer, useMapEvent } from "react-leaflet"
 import 'leaflet/dist/leaflet.css';
 import DraggableMarker from "../marker/DraggableMarker";
 import { useWaypointContext } from "../../util/context/WaypointContext";
@@ -9,6 +9,7 @@ import { add_waypoint, changeParam, findnthwaypoint, get_waypoints } from "@/uti
 import GeofenceMarker from "../marker/geofenceMarker";
 
 
+const fenceOptions = { color: 'red', fillOpacity: 0.1 }
 const limeOptions = { color: 'lime' }
 
 export default function MapStuff() {
@@ -72,10 +73,7 @@ export default function MapStuff() {
           <Polyline pathOptions={limeOptions} positions={toPolyline(get_waypoints(activeMission, waypoints))} />
           <CreateHandler/>
 
-          {get_waypoints("geofence", waypoints).map((waypoint, idx) =>
-            <GeofenceMarker key={idx} waypoint={waypoint} active={false}/>
-          )}
-          <Polyline pathOptions={limeOptions} positions={toPolyline(get_waypoints("geofence", waypoints))} />
+          <Polygon pathOptions={fenceOptions} positions={toPolyline(get_waypoints("Geofence", waypoints))} />
 
         </MapContainer>
       </div>

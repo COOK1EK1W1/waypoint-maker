@@ -12,7 +12,8 @@ export default function ToolBar(){
     
   }
   return <div className="flex">
-    <button onClick={download} className="p-2 border-1 border-slate-100 rounded bg-slate-200">.waypoints (QGC, MP) download</button>
+    <h1>Waypoint Maker</h1>
+    <button onClick={download} className="p-1 m-1 border-1 rounded-lg bg-slate-200">.waypoints (QGC, MP) download</button>
     <WPCheck/>
   </div>
 }
