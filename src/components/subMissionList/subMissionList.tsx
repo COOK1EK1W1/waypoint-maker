@@ -30,16 +30,19 @@ export default function SubMissionList(){
     main.splice(0, 0, {type: "Collection", collectionID: "Takeoff", ColType:CollectionType.Mission, offsetLng: 0, offsetLat: 0, name: "Takeoff"})
     setWaypoints(new Map(wps))
     setActiveMission("Takeoff")
+    setSelectedWPs([])
   }
 
   function createLanding(){
-    let newMission: Node[] = []
+    console.log(waypoints)
+    let newMission: Node[] = [{type: "Waypoint", wps:{frame: 0, type: 189, param1: 0, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0, autocontinue: 0}}]
     let wps = waypoints.set("Landing", newMission)
     let main = waypoints.get("Main")
     if (main == undefined) return waypoints
     main.push({type: "Collection", collectionID: "Landing", ColType:CollectionType.Mission, offsetLng: 0, offsetLat: 0, name: "Landing"})
     setWaypoints(new Map(wps))
     setActiveMission("Landing")
+    setSelectedWPs([])
   }
 
   return (
