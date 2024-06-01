@@ -11,7 +11,7 @@ export default function Page(){
       </p>
       <div>
         <button className="p-2 m-2 border-2 rounded-lg shadow" onMouseDown={()=>setCount((prev) => prev+1)}>click me</button>
-        <button className="p-2 m-2 border-2 rounded-lg shadow" onClick={()=>setCount((prev) => prev+1)}>click me</button>
+        <button className="p-2 m-2 border-2 rounded-lg shadow" onMouseDown={()=>setCount((prev) => prev+1)}>click me</button>
       </div>
   </div>
   )

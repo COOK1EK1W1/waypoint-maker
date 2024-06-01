@@ -25,7 +25,7 @@ export default function SubMissionList(){
       {Array.from(waypoints.keys()).map((waypoint, id)=>{
         const wp = waypoints.get(waypoint)
         if (wp != undefined){
-          return <div key={id}><ListItem name={waypoint} nodes={wp} onClick={()=>click(waypoint)} active={waypoint == activeMission} add={(e)=>addSub(e, waypoint)}/></div>
+          return <div key={id}><ListItem name={waypoint} nodes={wp} onMouseDown={()=>click(waypoint)} active={waypoint == activeMission} add={(e)=>addSub(e, waypoint)}/></div>
         }
 
       })}

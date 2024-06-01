@@ -9,8 +9,6 @@ export default function ToolBar(){
   function download(){
     const output = waypointTo_waypoints_file(waypoints)
     downloadTextAsFile("mission.waypoints", output)
-    console.log(output)
-    
   }
 
   function jsonStringifyWaypointCollection(collection: WaypointCollection): string {
@@ -30,8 +28,8 @@ export default function ToolBar(){
   }
   return <div className="flex">
     <h1>Waypoint Maker</h1>
-    <button onClick={download} className="p-1 m-1 border-1 rounded-lg bg-slate-200">.waypoints (QGC, MP) download</button>
-    <button onClick={a} className="p-1 m-1 border-1 rounded-lg bg-slate-200">.json (WM) download</button>
+    <button onMouseDown={download} className="p-1 m-1 border-1 rounded-lg bg-slate-200">.waypoints (QGC, MP) download</button>
+    <button onMouseDown={a} className="p-1 m-1 border-1 rounded-lg bg-slate-200">.json (WM) download</button>
     <WPCheck/>
   </div>
 }

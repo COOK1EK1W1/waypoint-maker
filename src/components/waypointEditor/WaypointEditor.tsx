@@ -15,6 +15,7 @@ export default function WaypointEditor(){
   if (mission == undefined) return null
 
   const active = selectedWPs[0]
+  if (active == undefined) {return}
 
   //on change function
   function change(e: React.ChangeEvent<HTMLInputElement>){
@@ -22,7 +23,6 @@ export default function WaypointEditor(){
       let key = e.target.name as keyof Waypoint;
       let a = {...x}
       a[key] = Number(e.target.value)
-      console.log(a)
       return a
 
     })))

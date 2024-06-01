@@ -73,7 +73,6 @@ export function AvgLatLng(nodes: Node[], store: WaypointCollection): [number, nu
       }
     }
   }
-  console.log(count)
   return [latTotal / count, lngTotal / count]
 }
 

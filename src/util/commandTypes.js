@@ -94,7 +94,7 @@ async function getData() {
             console.log("TODO enum options")
             // newParameter.options == child.getAttribute(attributes[i])
           } else {
-            console.log(attributes[i])
+            //console.log(attributes[i])
           }
 
         }

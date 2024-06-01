@@ -31,7 +31,6 @@ export default function MissionList(){
     setWaypoints(deleteNode(id, activeMission, waypoints))
   }
 
-  console.log(activeMission)
   const hasLanding = Array.from(waypoints.keys()).includes("Landing")
   const hasTakeoff = Array.from(waypoints.keys()).includes("Takeoff")
 
@@ -48,7 +47,6 @@ export default function MissionList(){
   }
 
   function createLanding(){
-    console.log(waypoints)
     let newMission: Node[] = [{type: "Waypoint", wps:{frame: 0, type: 189, param1: 0, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0, autocontinue: 0}}]
     let wps = waypoints.set("Landing", newMission)
     let main = waypoints.get("Main")
@@ -64,7 +62,7 @@ export default function MissionList(){
       <h2 className="px-2">{activeMission}</h2>
 
       {!hasTakeoff && activeMission == "Main" ? 
-        <ListItem2 onClick={createTakeoff} className="text-center">
+        <ListItem2 onMouseDown={createTakeoff} className="text-center">
           Add Takeoff
         </ListItem2> : null
       }
@@ -73,16 +71,16 @@ export default function MissionList(){
 
       {mainMission.map((waypoint, i) => {
         if (waypoint.type == "Collection"){
-          return <CollectionItem node={waypoint} selected={selectedWPs.includes(i)} onClick={(e)=>handleClick(i, e)} key={i} onDelete={()=>onDelete(i)}/>
+          return <CollectionItem node={waypoint} selected={selectedWPs.includes(i)} onMouseDown={(e)=>handleClick(i, e)} key={i} onDelete={()=>onDelete(i)}/>
 
         }else{
-          return <ListItem waypoint={waypoint.wps} selected={selectedWPs.includes(i)} onClick={(e)=>handleClick(i, e)} key={i} onDelete={()=>onDelete(i)}/>
+          return <ListItem waypoint={waypoint.wps} selected={selectedWPs.includes(i)} onMouseDown={(e)=>handleClick(i, e)} key={i} onDelete={()=>onDelete(i)}/>
         }
       })}
       {selectedWPs.length > 1 && <CreateCollection/>}
 
       {!hasLanding && activeMission == "Main" ?
-        <ListItem2 onClick={createLanding} className="text-center">
+        <ListItem2 onMouseDown={createLanding} className="text-center">
            Add Landing
         </ListItem2>: null
       }
