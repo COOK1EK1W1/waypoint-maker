@@ -3,6 +3,7 @@ import { useWaypointContext } from "@/util/context/WaypointContext";
 import { useState } from "react";
 import { FaTrashAlt } from "react-icons/fa";
 import { TbTopologyRing } from "react-icons/tb";
+import ListItem2 from "./ListItem2";
 
 export default function CollectionItem({node, selected, onClick, onDelete}: {node: ColNode, selected: boolean, onClick: (e: React.MouseEvent<HTMLDivElement>)=>void, onDelete: ()=>void}){
   const [expand, setExpand] = useState(false)
@@ -16,7 +17,7 @@ export default function CollectionItem({node, selected, onClick, onDelete}: {nod
   if (wps == undefined) return null
 
   return (
-    <div className={`rounded p-2 m-2 border-grey border-2 cursor-pointer ${selected ? "bg-slate-200" : ""}`} onClick={onClick}>
+    <ListItem2 onClick={onClick} selected={selected}>
       <div className="flex justify-between">
         <span><TbTopologyRing className="inline m-1"/>Group &apos;{node.name}&apos;</span>
         <button onClick={()=>{setExpand(!expand)}}>expand</button>
@@ -31,8 +32,7 @@ export default function CollectionItem({node, selected, onClick, onDelete}: {nod
         ))}
 
       </div>
-
-    </div>
+    </ListItem2>
 
   )
 
