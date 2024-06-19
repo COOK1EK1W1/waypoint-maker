@@ -1,5 +1,1 @@
-enum Tool {
-  Waypoint,
-  Place,
-
-}
+export type Tool = "Waypoint" | "Place"

@@ -21,12 +21,13 @@ export default function LoadJson(){
 
     reader.onload = ()=>{
       try {
-        const parsedData = JSON.parse(reader.result);
+        if (reader.result == null) return
+        const parsedData = JSON.parse(""+reader.result);
         console.log(parsedData)
         console.log(waypoints)
         setWaypoints(new Map(parsedData))
       } catch (err) {
-        console.error("error parsing json" + err.message)
+        console.error(err)
       }
     };
 
@@ -35,7 +36,7 @@ export default function LoadJson(){
   return (
     <div>
       <input type="file" accept=".json" id="fileInput" className="hidden" onChange={handleFileChange} />
-      <button onClick={() => document.getElementById('fileInput').click()}>
+      <button onClick={() => document.getElementById('fileInput')?.click()}>
         Load JSON
       </button>
     </div>

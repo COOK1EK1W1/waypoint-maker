@@ -1,4 +1,5 @@
-import { AvgLatLng, changeParam } from "@/util/WPCollection";
+import { AvgLatLng, MoveWPsAvgTo, changeParam } from "@/util/WPCollection";
+import { Tool} from '@/types/tools'
 import { useWaypointContext } from "../../util/context/WaypointContext";
 import { Node, Waypoint } from "@/types/waypoints";
 
@@ -14,7 +15,7 @@ export function LatLngEditor(){
     wps = mission;
     wpsIds = mission.map((_, index) => index);
   } else {
-    wps = mission.filter((node, id) => selectedWPs.includes(id));
+    wps = mission.filter((_, id) => selectedWPs.includes(id));
     wpsIds = selectedWPs;
   }
 
@@ -37,22 +38,10 @@ export function LatLngEditor(){
   function move() {
     const newLat = prompt("Enter latitude");
     const newLng = prompt("Enter Longitude");
-
-    setWaypoints((prevWaypoints: Map<string, Node[]>) => {
-      let waypointsUpdated = new Map(prevWaypoints);
-      for (let i = 0; i < wps.length; i++) {
-        waypointsUpdated = changeParam(wpsIds[i], activeMission, waypointsUpdated, (wp: Waypoint) => {
-          if (newLng == null || newLat == null) {
-            return wp;
-          }
-          wp.param5 += (Number(newLat) - lat);
-          wp.param6 += (Number(newLng) - lng);
-          return wp;
-        });
-      }
-      return waypointsUpdated;
-    });
+    if (newLat == null) return
+    setWaypoints(MoveWPsAvgTo(Number(newLat), Number(newLng), waypoints, selectedWPs, activeMission))
   }
+
 
   function rotate() {
     const angleDegrees = prompt("Enter rotation angle in degrees");
@@ -81,7 +70,7 @@ export function LatLngEditor(){
   }
 
   function place(){
-    setTool(Tool.Place)
+    setTool("Place")
 
   }
 

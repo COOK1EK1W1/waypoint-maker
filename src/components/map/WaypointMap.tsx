@@ -5,20 +5,22 @@ import 'leaflet/dist/leaflet.css';
 import DraggableMarker from "../marker/DraggableMarker";
 import { useWaypointContext } from "../../util/context/WaypointContext";
 import { toPolyline } from "@/util/waypointToLeaflet";
-import { add_waypoint, changeParam, findnthwaypoint, get_waypoints } from "@/util/WPCollection";
-import GeofenceMarker from "../marker/geofenceMarker";
+import { AvgLatLng, MoveWPsAvgTo, add_waypoint, changeParam, findnthwaypoint, get_waypoints } from "@/util/WPCollection";
+import { Tool } from "@/types/tools";
+import { LeafletMouseEvent } from "leaflet";
+import { Node, Waypoint } from "@/types/waypoints";
 
 
 const fenceOptions = { color: 'red', fillOpacity: 0.1 }
 const limeOptions = { color: 'lime' }
 
 export default function MapStuff() {
-  const {waypoints, setWaypoints, activeMission, tool} = useWaypointContext()
+  const {waypoints, setWaypoints, activeMission, tool, setTool, selectedWPs} = useWaypointContext()
 
-  // Handler function to add marker
-  function CreateHandler(){
-    useMapEvent("click", (e)=>{
-      if (tool == Tool.Waypoint){
+  function handleClick(tool: Tool, e: LeafletMouseEvent){
+    switch (tool){
+      case "Waypoint": {
+
         const mission = waypoints.get(activeMission)
         if (mission == null) return
 
@@ -35,8 +37,24 @@ export default function MapStuff() {
           autocontinue: 1
         };
         setWaypoints(add_waypoint(activeMission, {type:"Waypoint", wps:newMarker}, waypoints));
+        break;
       }
+      case "Place":{
+        setTool("Waypoint")
+        setWaypoints(MoveWPsAvgTo(e.latlng.lat, e.latlng.lng, waypoints, selectedWPs, activeMission))
+        break;
+      }
+      default: 
+        const _exhaustiveCheck: never = tool
+        return _exhaustiveCheck
+    }
+  }
 
+
+  // Handler function to add marker
+  function CreateHandler(){
+    useMapEvent("click", (e)=>{
+      handleClick(tool, e)
     })
     return null
   }

@@ -129,3 +129,33 @@ export function findnthwaypoint(mission: string, n: number, waypoints: WaypointC
 
   return findNth(missionNodes, mission);
 }
+
+
+export function MoveWPsAvgTo(newLat: number, newLng: number, waypoints: WaypointCollection, selectedWPs: number[], active: string): WaypointCollection{
+  const mission: Node[] | undefined = waypoints.get(active);
+  if (!mission) return waypoints;
+
+  let wps: Node[] = [];
+  let wpsIds: number[] = [];
+  if (selectedWPs.length === 0) {
+    wps = mission;
+    wpsIds = mission.map((_, index) => index);
+  } else {
+    wps = mission.filter((_, id) => selectedWPs.includes(id));
+    wpsIds = selectedWPs;
+  }
+
+  const [lat, lng] = AvgLatLng(wps, waypoints);
+  let waypointsUpdated = new Map(waypoints);
+  for (let i = 0; i < wps.length; i++) {
+    waypointsUpdated = changeParam(wpsIds[i], active, waypointsUpdated, (wp: Waypoint) => {
+      if (newLng == null || newLat == null) {
+        return wp;
+      }
+      wp.param5 += (Number(newLat) - lat);
+      wp.param6 += (Number(newLng) - lng);
+      return wp;
+    });
+  }
+  return waypointsUpdated;
+}
