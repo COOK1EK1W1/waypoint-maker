@@ -1,33 +1,28 @@
 import { downloadTextAsFile, waypointTo_waypoints_file } from "@/util/waypointToFile"
 import { useWaypointContext } from "../../util/context/WaypointContext"
 import WPCheck from "./WPcheck"
-import { Node, WaypointCollection } from "@/types/waypoints"
 import LoadJson from "./load"
+import Button from "./button"
+import { FaFileDownload } from "react-icons/fa"
 
 export default function ToolBar(){
   const {waypoints} = useWaypointContext()
 
-  function download(){
+  function downloadQGC(){
     const output = waypointTo_waypoints_file(waypoints)
     downloadTextAsFile("mission.waypoints", output)
   }
 
-  function jsonStringifyWaypointCollection(collection: WaypointCollection): string {
-    // Convert the Map to an object first
-    console.log(Array.from(collection))
-    // JSON stringify the object
-    return JSON.stringify(Array.from(collection), null, 2); // 'null, 2' for pretty printing
-  }
 
-  function a(){
-    downloadTextAsFile("mission.json", jsonStringifyWaypointCollection(waypoints))
-
+  function downloadWM(){
+    const output = JSON.stringify(Array.from(waypoints), null, 2)
+    downloadTextAsFile("mission.json", output)
   }
 
   return <div className="flex">
     <h1>Waypoint Maker</h1>
-    <button onMouseDown={download} className="p-1 m-1 border-1 rounded-lg bg-slate-200">.waypoints (QGC, MP) download</button>
-    <button onMouseDown={a} className="p-1 m-1 border-1 rounded-lg bg-slate-200">.json (WM) download</button>
+    <Button onClick={downloadQGC}><FaFileDownload className="inline mx-2"/>.waypoints (QGC, MP) download</Button>
+    <Button onClick={downloadWM}><FaFileDownload className="inline mx-2"/>.json (WM) download</Button>
     <LoadJson/>
     <WPCheck/>
   </div>

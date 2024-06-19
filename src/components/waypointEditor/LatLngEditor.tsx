@@ -38,7 +38,6 @@ export function LatLngEditor(){
   function move() {
     const newLat = prompt("Enter latitude");
     const newLng = prompt("Enter Longitude");
-    if (newLat == null) return
     setWaypoints(MoveWPsAvgTo(Number(newLat), Number(newLng), waypoints, selectedWPs, activeMission))
   }
 

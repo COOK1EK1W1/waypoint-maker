@@ -5,10 +5,10 @@ import 'leaflet/dist/leaflet.css';
 import DraggableMarker from "../marker/DraggableMarker";
 import { useWaypointContext } from "../../util/context/WaypointContext";
 import { toPolyline } from "@/util/waypointToLeaflet";
-import { AvgLatLng, MoveWPsAvgTo, add_waypoint, changeParam, findnthwaypoint, get_waypoints } from "@/util/WPCollection";
+import { MoveWPsAvgTo, add_waypoint, changeParam, findnthwaypoint, get_waypoints } from "@/util/WPCollection";
 import { Tool } from "@/types/tools";
 import { LeafletMouseEvent } from "leaflet";
-import { Node, Waypoint } from "@/types/waypoints";
+import { useEffect } from "react";
 
 
 const fenceOptions = { color: 'red', fillOpacity: 0.1 }
@@ -16,6 +16,48 @@ const limeOptions = { color: 'lime' }
 
 export default function MapStuff() {
   const {waypoints, setWaypoints, activeMission, tool, setTool, selectedWPs} = useWaypointContext()
+
+  useEffect(()=>{
+    function handleKeyPress(e: KeyboardEvent){
+      switch(e.key){
+        case 'n':{
+          console.log("doing something")
+
+          const newLat = prompt("Enter latitude");
+          const newLng = prompt("Enter Longitude");
+          if (newLat == null || newLng == null) return
+
+          const mission = waypoints.get(activeMission)
+          if (mission == null) return
+
+          const newMarker = {
+            frame: 0,
+            type: 16,
+            param1: 0,
+            param2: 0,
+            param3: 0,
+            param4: 0,
+            param5: Number(newLat),
+            param6: Number(newLng),
+            param7: 100,
+            autocontinue: 1
+          };
+          setWaypoints(add_waypoint(activeMission, {type:"Waypoint", wps:newMarker}, waypoints));
+          break;
+
+        }
+        default: return
+      }
+
+    }
+    window.addEventListener('keypress', handleKeyPress)
+
+    return ()=>{
+      window.removeEventListener('keypress', handleKeyPress)
+
+    }
+
+  },[activeMission])
 
   function handleClick(tool: Tool, e: LeafletMouseEvent){
     switch (tool){

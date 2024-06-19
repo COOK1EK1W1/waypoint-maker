@@ -13,7 +13,7 @@ export default function MissionList(){
   if (mainMission == null) return null
 
   function handleClick(id: number, e: React.MouseEvent<HTMLDivElement>){
-    if (e.metaKey){
+    if (e.ctrlKey){
       e.stopPropagation()
       if (selectedWPs.includes(id)){
         setSelectedWPs(selectedWPs.filter((wp)=>wp != id))

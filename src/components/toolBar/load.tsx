@@ -1,5 +1,7 @@
 import { useWaypointContext } from '@/util/context/WaypointContext';
 import React from 'react';
+import Button from './button';
+import { FaFileUpload } from 'react-icons/fa';
 
 export default function LoadJson(){
   const { setWaypoints, waypoints } = useWaypointContext();
@@ -33,12 +35,10 @@ export default function LoadJson(){
 
   };
 
-  return (
-    <div>
+  return <>
       <input type="file" accept=".json" id="fileInput" className="hidden" onChange={handleFileChange} />
-      <button onClick={() => document.getElementById('fileInput')?.click()}>
-        Load JSON
-      </button>
-    </div>
-  )
+      <Button onClick={() => document.getElementById('fileInput')?.click()}>
+        <FaFileUpload className="inline"/>Load JSON
+      </Button>
+  </>
 }
