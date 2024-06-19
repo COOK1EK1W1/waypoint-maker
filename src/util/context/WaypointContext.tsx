@@ -8,7 +8,9 @@ type provided = {
   selectedWPs: number[] 
   setSelectedWPs: Dispatch<SetStateAction<number[]>>,
   activeMission: string,
-  setActiveMission: Dispatch<SetStateAction<string>>
+  setActiveMission: Dispatch<SetStateAction<string>>,
+  tool: Tool,
+  setTool :Dispatch<SetStateAction<Tool>>
 }
 
 export const waypointContext = createContext<provided>(undefined as any);

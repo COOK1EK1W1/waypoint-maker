@@ -3,7 +3,7 @@ import { useWaypointContext } from "../../util/context/WaypointContext";
 import { Node, Waypoint } from "@/types/waypoints";
 
 export function LatLngEditor(){
-  const { selectedWPs, waypoints, setWaypoints, activeMission } = useWaypointContext();
+  const { selectedWPs, waypoints, setWaypoints, activeMission, setTool} = useWaypointContext();
 
   const mission: Node[] | undefined = waypoints.get(activeMission);
   if (!mission) return null;
@@ -80,6 +80,11 @@ export function LatLngEditor(){
     });
   }
 
+  function place(){
+    setTool(Tool.Place)
+
+  }
+
   return (
     <div className="flex flex-row border-2 p-2 rounded-3xl">
       <div className="flex flex-col place-content-around">
@@ -105,6 +110,7 @@ export function LatLngEditor(){
       <div>
         <button onMouseDown={move}> move</button>
         <button onMouseDown={rotate}> rotate</button>
+        <button onMouseDown={place}> place</button>
       </div>
     </div>
   );

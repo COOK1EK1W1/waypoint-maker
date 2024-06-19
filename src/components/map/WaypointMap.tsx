@@ -13,27 +13,29 @@ const fenceOptions = { color: 'red', fillOpacity: 0.1 }
 const limeOptions = { color: 'lime' }
 
 export default function MapStuff() {
-  const {waypoints, setWaypoints, activeMission} = useWaypointContext()
+  const {waypoints, setWaypoints, activeMission, tool} = useWaypointContext()
 
   // Handler function to add marker
   function CreateHandler(){
     useMapEvent("click", (e)=>{
-      const mission = waypoints.get(activeMission)
-      if (mission == null) return
+      if (tool == Tool.Waypoint){
+        const mission = waypoints.get(activeMission)
+        if (mission == null) return
 
-      const newMarker = {
-        frame: 0,
-        type: 16,
-        param1: 0,
-        param2: 0,
-        param3: 0,
-        param4: 0,
-        param5: e.latlng.lat,
-        param6: e.latlng.lng,
-        param7: 100,
-        autocontinue: 1
-      };
-      setWaypoints(add_waypoint(activeMission, {type:"Waypoint", wps:newMarker}, waypoints));
+        const newMarker = {
+          frame: 0,
+          type: 16,
+          param1: 0,
+          param2: 0,
+          param3: 0,
+          param4: 0,
+          param5: e.latlng.lat,
+          param6: e.latlng.lng,
+          param7: 100,
+          autocontinue: 1
+        };
+        setWaypoints(add_waypoint(activeMission, {type:"Waypoint", wps:newMarker}, waypoints));
+      }
 
     })
     return null

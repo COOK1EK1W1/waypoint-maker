@@ -1,0 +1,5 @@
+enum Tool {
+  Waypoint,
+  Place,
+
+}
