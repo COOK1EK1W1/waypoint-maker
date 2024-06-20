@@ -21,6 +21,12 @@ export function wpCheck(wps: Waypoint[]): [string, Severity][]{
     ret.push(["Multiple landing Waypoints", Severity.Bad])
   }
 
+  landing_wps.map((x)=> {
+    if (x.param7 >1) ret.push(["Landing above ground", Severity.Bad])
+    else if (x.param7 <0) ret.push(["Landing below ground", Severity.Bad])
+
+  })
+
   // check for do_land_start waypoint
 
   const do_landing_wps = wps.filter((x)=>x.type == 189)
