@@ -1,10 +1,13 @@
 import { useWaypointContext } from "@/util/context/WaypointContext";
-import ListItem from "./ListItem";
 import { deleteNode } from "@/util/WPCollection";
 import CreateCollection from "./createCollection";
 import CollectionItem from "./collectionItem";
-import ListItem2 from "./ListItem2";
+import ListItem from "./ListItem";
 import { CollectionType, Node } from "@/types/waypoints";
+import { TfiTarget } from "react-icons/tfi";
+import { commandName } from "@/util/translationTable";
+import { commands } from "@/util/commands";
+import { FaTrashAlt } from "react-icons/fa";
 
 export default function MissionList(){
   const {setActiveMission, waypoints, setSelectedWPs, selectedWPs, setWaypoints, activeMission } = useWaypointContext()
@@ -62,9 +65,9 @@ export default function MissionList(){
       <h2 className="px-2">{activeMission}</h2>
 
       {!hasTakeoff && activeMission == "Main" ? 
-        <ListItem2 onMouseDown={createTakeoff} className="text-center">
+        <ListItem onMouseDown={createTakeoff} className="text-center">
           Add Takeoff
-        </ListItem2> : null
+        </ListItem> : null
       }
 
 
@@ -74,15 +77,20 @@ export default function MissionList(){
           return <CollectionItem node={waypoint} selected={selectedWPs.includes(i)} onMouseDown={(e)=>handleClick(i, e)} key={i} onDelete={()=>onDelete(i)}/>
 
         }else{
-          return <ListItem waypoint={waypoint.wps} selected={selectedWPs.includes(i)} onMouseDown={(e)=>handleClick(i, e)} key={i} onDelete={()=>onDelete(i)}/>
+            return <ListItem selected={selectedWPs.includes(i)} onMouseDown={(e)=>handleClick(i, e)}>
+              <div className="flex justify-between">
+                <span><TfiTarget className="inline m-1"/>{commandName(commands[commands.findIndex(a => a.value==waypoint.wps.type)].name)}</span>
+                <button className="pl-4" onMouseDown={()=>onDelete(i)}><FaTrashAlt/></button>
+              </div>
+            </ListItem>
         }
       })}
       {selectedWPs.length > 1 && <CreateCollection/>}
 
       {!hasLanding && activeMission == "Main" ?
-        <ListItem2 onMouseDown={createLanding} className="text-center">
+        <ListItem onMouseDown={createLanding} className="text-center">
            Add Landing
-        </ListItem2>: null
+        </ListItem>: null
       }
     </div>
   )

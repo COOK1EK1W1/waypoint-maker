@@ -1,7 +1,12 @@
 import { AvgLatLng, MoveWPsAvgTo, changeParam } from "@/util/WPCollection";
-import { Tool} from '@/types/tools'
 import { useWaypointContext } from "../../util/context/WaypointContext";
 import { Node, Waypoint } from "@/types/waypoints";
+import { FaArrowDown, FaArrowLeft, FaArrowRight, FaArrowUp } from "react-icons/fa";
+import { FaArrowRotateLeft, FaArrowRotateRight } from "react-icons/fa6";
+
+function Spacer(){
+  return (<span className="w-4 inline-block"></span>)
+}
 
 export function LatLngEditor(){
   const { selectedWPs, waypoints, setWaypoints, activeMission, setTool} = useWaypointContext();
@@ -41,12 +46,9 @@ export function LatLngEditor(){
     setWaypoints(MoveWPsAvgTo(Number(newLat), Number(newLng), waypoints, selectedWPs, activeMission))
   }
 
+  function rotateDeg(deg: number){
 
-  function rotate() {
-    const angleDegrees = prompt("Enter rotation angle in degrees");
-    if (!angleDegrees) return;
-
-    const angleRadians = (Number(angleDegrees) * Math.PI) / 180;
+    const angleRadians = (deg * Math.PI) / 180;
 
     setWaypoints((prevWaypoints: Map<string, Node[]>) => {
       let waypointsUpdated = new Map(prevWaypoints);
@@ -68,38 +70,42 @@ export function LatLngEditor(){
     });
   }
 
+  function rotate() {
+    const angleDegrees = prompt("Enter rotation angle in degrees");
+    if (!angleDegrees) return;
+    rotateDeg(Number(angleDegrees))
+  }
+
   function place(){
     setTool("Place")
 
   }
 
   return (
-    <div className="flex flex-row border-2 p-2 rounded-3xl">
-      <div className="flex flex-col place-content-around">
-        <p>Latitude: {lat.toFixed(6)} Longitude: {lng.toFixed(6)}</p>
-      </div>
+    <div className="flex flex-row m-2">
+        <div>
+          <p>Latitude: </p>
+          <button onMouseDown={()=>nudge(0, -1)}><FaArrowDown className="inline m-1 cursor"/></button> 
+            {lat.toFixed(6)} 
+          <button onMouseDown={()=>nudge(0, 1)}><FaArrowUp className="inline m-1"/></button>
+        </div>
+      <Spacer/>
+        <div>
+          <p>Longitude: </p>
+          <button onMouseDown={()=>nudge(-1, 0)}><FaArrowLeft className="inline m-1" /></button>
+            {lng.toFixed(6)}
+          <button onMouseDown={()=>nudge(1, 0)}><FaArrowRight className="inline m-1"/></button>
+        </div>
+      <Spacer/>
+      <button onMouseDown={move} className="m-1"> move</button>
+      <Spacer/>
       <div>
-        <div className="flex flex-row">
-          <div className="w-8 h-8"></div>
-          <button className="w-8 h-8" onMouseDown={()=>{nudge(0, 1)}}>up</button>
-          <div className="w-8 h-8"></div>
-        </div>
-        <div className="flex flex-row">
-          <button className="w-8 h-8" onMouseDown={()=>{nudge(-1, 0)}}>left</button>
-          <div className="w-8 h-8"></div>
-          <button className="w-8 h-8" onMouseDown={()=>{nudge(1, 0)}}>rigt</button>
-        </div>
-        <div className="flex flex-row">
-          <div className="w-8 h-8"></div>
-          <button className="w-8 h-8" onMouseDown={()=>{nudge(0,-1)}}>dwn</button>
-          <div className="w-8 h-8"></div>
-        </div>
+        <button onMouseDown={()=>rotateDeg(5)} className="m-1"> <FaArrowRotateLeft/></button>
+        <button onMouseDown={rotate} className="m-1"> rotate</button>
+        <button onMouseDown={()=>rotateDeg(-5)} className="m-1"> <FaArrowRotateRight/></button>
       </div>
-      <div>
-        <button onMouseDown={move}> move</button>
-        <button onMouseDown={rotate}> rotate</button>
-        <button onMouseDown={place}> place</button>
-      </div>
+      <Spacer/>
+      <button onMouseDown={place} className="m-1"> place</button>
     </div>
   );
 };

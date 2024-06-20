@@ -82,6 +82,13 @@ export function changeParam(id: number, mission: string, waypoints: WaypointColl
   let updatedWaypoint = { ...curMission[id]};
   if (updatedWaypoint.type == "Waypoint"){
     updatedWaypoint.wps = mod(updatedWaypoint.wps)
+  }else{
+    const col = waypoints.get(updatedWaypoint.collectionID)
+    if (col != null){
+    for (let i = 0; i < col.length; i++){
+        changeParam(i, updatedWaypoint.collectionID, waypoints, mod)
+      }
+    }
   }
   curMission[id] = updatedWaypoint
   waypoints.set(mission, curMission)
@@ -159,3 +166,4 @@ export function MoveWPsAvgTo(newLat: number, newLng: number, waypoints: Waypoint
   }
   return waypointsUpdated;
 }
+

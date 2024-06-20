@@ -1,11 +1,8 @@
-import { formatDistance, haversineDistance, gradient } from "@/util/distance";
 import { useWaypointContext } from "../../util/context/WaypointContext"
 import WaypointTypeSelector from "./WaypointTypeSelector";
 import { commands } from "@/util/commands";
-import Parameter from "./Parameter";
 import { Node, Waypoint } from "@/types/waypoints";
 import { changeParam } from "@/util/WPCollection";
-import HeightMap from "./heightMap";
 import ParameterEditor from "./ParameterEditor";
 
 export default function WaypointEditor(){

@@ -1,23 +1,12 @@
-import { commands } from "@/util/commands";
-import {commandName} from "@/util/translationTable"
-import { Waypoint } from "@/types/waypoints";
-import { TfiTarget } from "react-icons/tfi";
-import { FaTrashAlt } from "react-icons/fa";
+import { cn } from "@/util/tw";
+import { ReactNode } from "react";
 
-export default function ListItem({waypoint, selected, onMouseDown, onDelete}: {waypoint: Waypoint, selected: boolean, onMouseDown: (e: React.MouseEvent<HTMLDivElement>)=>void, onDelete: ()=>void}){
-
-  function remove(e: React.MouseEvent<HTMLButtonElement>){
-    e.stopPropagation()
-    onDelete()
-  }
-
+export default function ListItem({children, onMouseDown, className, selected}: {children: ReactNode| ReactNode[], onMouseDown?: (e: React.MouseEvent<HTMLDivElement>)=>void, className?: string, selected?: boolean}){
   return (
-      <div className={`rounded p-2 m-2 border-grey border-2 cursor-pointer flex justify-between ${selected ? "bg-slate-200" : ""}`} onMouseDown={onMouseDown}>
-        <span><TfiTarget className="inline m-1"/>{commandName(commands[commands.findIndex(a => a.value==waypoint.type)].name)}</span>
-        <button className="pl-4" onMouseDown={remove}><FaTrashAlt/></button>
+    <div className={cn("rounded p-2 m-2 border-grey border-2 cursor-pointer", className || "", selected ? "bg-slate-200" : "")} onMouseDown={onMouseDown}> 
+      {children}
+    </div>
 
-      </div>
-      
   )
 
 }
