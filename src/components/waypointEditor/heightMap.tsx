@@ -16,11 +16,11 @@ export default function HeightMap(){
     }
     
   }
-  */
   return (
     <div>
       {distanceFromPrev && formatDistance(distanceFromPrev)}
       {distanceFromPrev && gradientV}
     </div>
   )
+  */
 }

@@ -79,7 +79,7 @@ export default function MissionList(){
           return <CollectionItem node={waypoint} selected={selectedWPs.includes(i)} onMouseDown={(e)=>handleClick(i, e)} key={i} onDelete={()=>onDelete(i)}/>
 
         }else{
-            return <ListItem selected={selectedWPs.includes(i)} onMouseDown={(e)=>handleClick(i, e)}>
+            return <ListItem key={i} selected={selectedWPs.includes(i)} onMouseDown={(e)=>handleClick(i, e)}>
               <div className="flex justify-between">
                 <span><TfiTarget className="inline m-1"/>{commandName(commands[commands.findIndex(a => a.value==waypoint.wps.type)].name)}</span>
                 <button className="pl-4" onMouseDown={()=>onDelete(i)}><FaTrashAlt/></button>
