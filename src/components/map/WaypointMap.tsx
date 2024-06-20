@@ -1,18 +1,17 @@
 "use client"
 
-import { MapContainer, Polygon, Polyline, TileLayer, useMapEvent } from "react-leaflet"
+import { MapContainer, TileLayer, useMapEvent } from "react-leaflet"
 import 'leaflet/dist/leaflet.css';
-import DraggableMarker from "../marker/DraggableMarker";
 import { useWaypointContext } from "../../util/context/WaypointContext";
-import { toPolyline } from "@/util/waypointToLeaflet";
-import { MoveWPsAvgTo, add_waypoint, changeParam, findnthwaypoint, get_waypoints } from "@/util/WPCollection";
+import { MoveWPsAvgTo, add_waypoint, changeParam, findnthwaypoint } from "@/util/WPCollection";
 import { Tool } from "@/types/tools";
 import { LeafletMouseEvent } from "leaflet";
 import { useEffect } from "react";
+import ActiveLayer from "./activeLayer";
+import GeofenceLayer from "./geofenceLayer";
+import MarkerLayer from "./markerLayer";
 
 
-const fenceOptions = { color: 'red', fillOpacity: 0.1 }
-const limeOptions = { color: 'lime' }
 
 export default function MapStuff() {
   const {waypoints, setWaypoints, activeMission, tool, setTool, selectedWPs} = useWaypointContext()
@@ -21,7 +20,6 @@ export default function MapStuff() {
     function handleKeyPress(e: KeyboardEvent){
       switch(e.key){
         case 'n':{
-          console.log("doing something")
 
           const newLat = prompt("Enter latitude");
           const newLng = prompt("Enter Longitude");
@@ -81,6 +79,26 @@ export default function MapStuff() {
         setWaypoints(add_waypoint(activeMission, {type:"Waypoint", wps:newMarker}, waypoints));
         break;
       }
+      case "Takeoff": {
+        setTool("Waypoint")
+        const mission = waypoints.get(activeMission)
+        if (mission == null) return
+
+        const newMarker = {
+          frame: 0,
+          type: 22,
+          param1: 15,
+          param2: 0,
+          param3: 0,
+          param4: 0,
+          param5: e.latlng.lat,
+          param6: e.latlng.lng,
+          param7: 15,
+          autocontinue: 1
+        };
+        setWaypoints(add_waypoint(activeMission, {type:"Waypoint", wps:newMarker}, waypoints));
+        break;
+      }
       case "Place":{
         setTool("Waypoint")
         setWaypoints(MoveWPsAvgTo(e.latlng.lat, e.latlng.lng, waypoints, selectedWPs, activeMission))
@@ -115,8 +133,7 @@ export default function MapStuff() {
     if (mission == undefined) return
 
     return (
-      <div className="">
-
+      <div>
 
         <MapContainer 
           center={{ lat: 55.91289, lng: -3.32560 }}
@@ -126,17 +143,13 @@ export default function MapStuff() {
           <TileLayer
             url='https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}'
             maxZoom= {20}
-            subdomains={['mt1','mt2','mt3']}
-          />
+            subdomains={['mt1','mt2','mt3']}/>
 
-          {get_waypoints(activeMission, waypoints).map((waypoint, idx) => 
-            <DraggableMarker key={idx} waypoint={waypoint} onMove={(lat, lng)=>onMove(lat, lng, idx)} active={false}/>
-          )}
-          <Polyline pathOptions={limeOptions} positions={toPolyline(get_waypoints(activeMission, waypoints))} />
           <CreateHandler/>
-
-          <Polygon pathOptions={fenceOptions} positions={toPolyline(get_waypoints("Geofence", waypoints))} />
-
+          
+          <ActiveLayer onMove={onMove}/>
+          <GeofenceLayer onMove={onMove} />
+          <MarkerLayer onMove={onMove}/>
         </MapContainer>
       </div>
     );

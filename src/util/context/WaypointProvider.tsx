@@ -11,6 +11,7 @@ type Props = {
 const default_missions: [string, Node[]][] = [
   ["Main", []],
   ["Geofence", []],
+  ["Markers", []]
 ]
 
 export default function WaypointProvider({ children }: Props) {

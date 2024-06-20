@@ -10,7 +10,7 @@ import { commands } from "@/util/commands";
 import { FaTrashAlt } from "react-icons/fa";
 
 export default function MissionList(){
-  const {setActiveMission, waypoints, setSelectedWPs, selectedWPs, setWaypoints, activeMission } = useWaypointContext()
+  const {setActiveMission, waypoints, setSelectedWPs, selectedWPs, setWaypoints, activeMission, setTool } = useWaypointContext()
 
   const mainMission = waypoints.get(activeMission)
   if (mainMission == null) return null
@@ -47,6 +47,7 @@ export default function MissionList(){
     setWaypoints(new Map(wps))
     setActiveMission("Takeoff")
     setSelectedWPs([])
+    setTool("Takeoff")
   }
 
   function createLanding(){
@@ -62,7 +63,8 @@ export default function MissionList(){
 
   return (
     <div className="flex-grow overflow-auto">
-      <h2 className="px-2">{activeMission}</h2>
+      <h2 className="px-2 text-lg">{activeMission}</h2>
+      <div className="m-2 h-[1px] bg-slate-200"></div>
 
       {!hasTakeoff && activeMission == "Main" ? 
         <ListItem onMouseDown={createTakeoff} className="text-center">
