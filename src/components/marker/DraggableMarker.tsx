@@ -10,6 +10,10 @@ export default function DraggableMarker({waypoint, active, onMove} : {waypoint :
 
   const eventHandlers = useMemo(
     () => ({
+      click(){
+        console.log("shhshs")
+
+      },
       dragend() {
         const marker = markerRef.current
         if (marker != null) {

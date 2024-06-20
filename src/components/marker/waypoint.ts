@@ -22,3 +22,12 @@ export var activeIcon = L.icon({
   tooltipAnchor: [16, -28],
   shadowSize: [41 * scaleSize, 41]
 });
+
+
+export var insertIcon = L.icon({
+  iconUrl: 'insert.png',
+  iconSize: [30, 30],
+  iconAnchor: [15, 15],
+  popupAnchor: [1, -34],
+  tooltipAnchor: [16, -28],
+});

@@ -1,20 +1,46 @@
 
-import { WaypointCollection, Waypoint, Node, ColNode } from "@/types/waypoints";
+import { WaypointCollection, Waypoint, Node, WPNode } from "@/types/waypoints";
 import { commands } from "./commands";
 
 export function add_waypoint(missionName: string, waypoint: Node, waypoints: WaypointCollection): WaypointCollection{
   const mission = waypoints.get(missionName)
-  if (mission == undefined) return waypoints
-  mission.push(waypoint)
+  if (mission === undefined) return waypoints
+  const newMission = [...mission, waypoint]
   let newMap = new Map(waypoints)
-  newMap.set(missionName, mission)
+  newMap.set(missionName, newMission)
   return newMap
 }
+export function insert_waypoint(id: number, missionName: string, waypoint: WPNode, waypoints: WaypointCollection): WaypointCollection {
+  console.log(id)
+
+  function rec(count:number, mission: string): number{
+    const curMission = waypoints.get(mission)
+    if (!curMission){return count}
+    for (let i = 0; i < curMission.length; i++){
+      let cur = curMission[i]
+      if (cur.type === "Collection"){
+        count = rec(count, cur.collectionID)
+
+      }else{
+        if (count === id){
+          let newMission = curMission
+          newMission.splice(i+1, 0, waypoint)
+        }
+        count++;
+      }
+    }
+    return count
+  }
+
+  rec(0, missionName)
+  return new Map(waypoints)
+}
+
 
 export function get_waypoints(missionstr: string, store: WaypointCollection): Waypoint[]{
   let retlist: Waypoint[] = []
   const waypoints = store.get(missionstr)
-  if (waypoints == undefined) return []
+  if (waypoints === undefined) return []
   for (let i = 0; i < waypoints.length; i++){
     const node = waypoints[i]
     switch (node.type){
@@ -61,9 +87,9 @@ export function AvgLatLng(nodes: Node[], store: WaypointCollection): [number, nu
         const subCol = store.get(curNode.collectionID)
         if (subCol != undefined){
           const [subLat, subLng] = AvgLatLng(subCol, store)
-          count += 1
-          latTotal += subLat
-          lngTotal += subLng
+          count += subCol.length
+          latTotal += subLat * subCol.length
+          lngTotal += subLng * subCol.length
         }
         break
       }
@@ -76,23 +102,34 @@ export function AvgLatLng(nodes: Node[], store: WaypointCollection): [number, nu
   return [latTotal / count, lngTotal / count]
 }
 
-export function changeParam(id: number, mission: string, waypoints: WaypointCollection, mod: (wp: Waypoint)=>Waypoint){
+export function changeParam(id: number, mission: string, waypoints: WaypointCollection, mod: (wp: Waypoint)=>Waypoint): WaypointCollection{
   const curMission = waypoints.get(mission)
   if (curMission == undefined){return waypoints}
+
+  let newMap = new Map(waypoints)
+  let updatedMission = [...curMission]
   let updatedWaypoint = { ...curMission[id]};
-  if (updatedWaypoint.type == "Waypoint"){
-    updatedWaypoint.wps = mod(updatedWaypoint.wps)
-  }else{
+
+  if (updatedWaypoint.type === "Waypoint"){
+    updatedWaypoint = {
+      ...updatedWaypoint,
+      wps: mod(updatedWaypoint.wps)
+    }
+    updatedMission[id] = updatedWaypoint
+    newMap.set(mission, updatedMission)
+  }else if (updatedWaypoint.type == "Collection"){
     const col = waypoints.get(updatedWaypoint.collectionID)
     if (col != null){
-    for (let i = 0; i < col.length; i++){
-        changeParam(i, updatedWaypoint.collectionID, waypoints, mod)
+      let newColMap = new Map(waypoints)
+      for (let i = 0; i < col.length; i++){
+        newColMap = changeParam(i, updatedWaypoint.collectionID, waypoints, mod)
       }
+      newMap = newColMap
     }
   }
-  curMission[id] = updatedWaypoint
-  waypoints.set(mission, curMission)
-  return waypoints;
+  //curMission[id] = updatedWaypoint
+//newMap.set(mission, updatedMission)
+  return newMap;
 
 }
 
