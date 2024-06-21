@@ -52,7 +52,7 @@ export default function HeightMap(){
   const interpolatedist = totalDistance / 100
   let distances = [0]
   let heights: (number|null)[] = []
-  let gradients: (number|null)[] = []
+  let gradients: (number|null)[] = [0]
   let prevDistance = 0
   let location = ""
   for (let i = 1; i < wps.length; i++){
@@ -63,7 +63,9 @@ export default function HeightMap(){
       location += `${a.lat},${a.lng}|`
       if (j == 0){
         heights.push(wps[i-1].param7)
-        gradients.push(gradient(distance, wps[i-1].param7, wps[i].param7))
+        if (i != 1){
+          gradients.push(gradient(distance, wps[i-2].param7, wps[i-1].param7))
+        }
       }else{
         heights.push(null)
         gradients.push(null)
