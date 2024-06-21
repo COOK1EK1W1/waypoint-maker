@@ -25,11 +25,8 @@ export default function LoadJson(){
       try {
         if (reader.result == null) return
         const parsedData = JSON.parse(""+reader.result);
-        console.log(parsedData)
-        console.log(waypoints)
         setWaypoints(new Map(parsedData))
       } catch (err) {
-        console.error(err)
       }
     };
 

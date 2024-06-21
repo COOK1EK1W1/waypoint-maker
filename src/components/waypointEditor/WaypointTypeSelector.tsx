@@ -1,39 +1,31 @@
 import { commandName } from "@/util/translationTable";
 import { useWaypointContext } from "../../util/context/WaypointContext";
 import { commands } from "@/util/commands";
-import { changeParam } from "@/util/WPCollection";
+import { Node } from "@/types/waypoints";
 
 
 
-export default function WaypointTypeSelector(){
-  const {activeMission, waypoints, setWaypoints, selectedWPs} = useWaypointContext()
+export default function WaypointTypeSelector({wps, change}: {wps: Node[], change: (e: React.ChangeEvent<HTMLSelectElement>) => void}){
+  const {activeMission, waypoints} = useWaypointContext()
 
   const mission = waypoints.get(activeMission)
   if (mission == null) return null
 
-  if (selectedWPs.length != 1) return null
-  const active = selectedWPs[0]
-  const activeNode = mission[active]
-  if (activeNode.type != "Waypoint")return null
+
+
+  const active = wps[0]
+  if (active.type != "Waypoint")return null
   
-  function bruh(e :React.ChangeEvent<HTMLSelectElement>){
-    const newType = parseInt(e.target.selectedOptions[0].getAttribute('data-cmd') || '0', 10);
-
-    // Update the waypoints with the new type for the active waypoint
-    setWaypoints((prevWaypoints) => {
-      const a = changeParam(active, activeMission, prevWaypoints, (wp)=>{wp.type=newType;return wp})
-      return new Map(a)
-    })
-  }
-  commands[commands.findIndex(a => a.value==activeNode.wps.type)].name
-
   return (
-    <div>
-      <select onChange={bruh} value={  commandName(commands[commands.findIndex(a => a.value==activeNode.wps.type)].name)}>
-        {commands.map((cmd, index) => (
-          <option key={index} data-cmd={cmd.value}>{commandName(cmd.name)}</option>
-        ))}
-      </select>
+    <div className="p-2 flex flex-col">
+      <label>
+        <span className="block">Type</span>
+        <select className="w-40" onChange={change} value={  commandName(commands[commands.findIndex(a => a.value==active.wps.type)].name)} disabled={wps.length!=1}>
+          {commands.map((cmd, index) => (
+            <option key={index} data-cmd={cmd.value}>{commandName(cmd.name)}</option>
+          ))}
+        </select>
+      </label>
     </div>
   );
 }

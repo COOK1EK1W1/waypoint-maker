@@ -77,7 +77,6 @@ export default function HeightMap(){
   heights.push(wps[wps.length-1].param7)
   let distance = haversineDistance(wps[wps.length-2].param5, wps[wps.length-2].param6, wps[wps.length - 1].param5, wps[wps.length -1].param6)
   gradients.push(gradient(distance, wps[wps.length-2].param7, wps[wps.length-1].param7))
-  console.log(gradients)
 
   return (
     <div>

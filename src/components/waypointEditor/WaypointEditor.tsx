@@ -4,10 +4,12 @@ import { commands } from "@/util/commands";
 import { Node, Waypoint } from "@/types/waypoints";
 import { changeParam } from "@/util/WPCollection";
 import ParameterEditor from "./ParameterEditor";
-import HeightMap from "./heightMap";
 
 export default function WaypointEditor(){
   const {activeMission, selectedWPs, waypoints, setWaypoints} = useWaypointContext()
+
+
+
 
   const mission = waypoints.get(activeMission)
   if (mission == undefined) return null
@@ -23,11 +25,11 @@ export default function WaypointEditor(){
   }
 
   if (wps.length == 0){
-    return (<div> editor</div>)
+    return <div className="h-[80px]"> place a waypoint to begin</div>
   }
 
   //on change function
-  function change(e: React.ChangeEvent<HTMLInputElement>){
+  function changeInput(e: React.ChangeEvent<HTMLInputElement>){
     setWaypoints((prevWaypoints: Map<string, Node[]>)=>{
       let waypointsUpdated = new Map(prevWaypoints);
       for (let i = 0; i < wpsIds.length; i++) {
@@ -42,6 +44,24 @@ export default function WaypointEditor(){
     })
   }
 
+  //on change function
+  function changeSelect(e: React.ChangeEvent<HTMLSelectElement>){
+    setWaypoints((prevWaypoints: Map<string, Node[]>)=>{
+      let waypointsUpdated = new Map(prevWaypoints);
+      for (let i = 0; i < wpsIds.length; i++) {
+        waypointsUpdated = changeParam(wpsIds[i], activeMission, waypointsUpdated, (wp: Waypoint) => {
+
+          const newType = parseInt(e.target.selectedOptions[0].getAttribute('data-cmd') || '0', 10);
+
+          let a = {...wp}
+          a.type = newType
+
+          return a
+        });
+      }
+      return waypointsUpdated;
+    })
+  }
 
   let allSame = true;
   if (wps[0].type == "Collection") return
@@ -53,20 +73,29 @@ export default function WaypointEditor(){
       allSame = false;
     }
   }
-  console.log(allSame, wps)
   
   const commanddesc = commands[commands.findIndex(a => wps[0].type=="Waypoint" && a.value==wps[0].wps.type)]
 
 
-  return <div className="p-2">
-    <WaypointTypeSelector/>
+  if (allSame && wps.length > 0){
+    return <div className="p-2 flex h-[80px]">
+      <WaypointTypeSelector change={changeSelect} wps={wps}/>
+      {/*
     {allSame ? 
     <div>
       <span>{commanddesc.description}</span>
     </div>: null
     }
-    {allSame ? <ParameterEditor commanddesc={commanddesc} change={change} wps={wps}/> : null}
+    */}
+      <ParameterEditor commanddesc={commanddesc} change={changeInput} wps={wps}/>
 
-    
-  </div>
+
+    </div>
+  }else{
+    return (
+    <div className="h-80px"> nodes are different types</div>
+
+    )
+
+  }
 }

@@ -133,12 +133,11 @@ export default function MapStuff() {
     if (mission == undefined) return
 
     return (
-      <div>
 
         <MapContainer 
           center={{ lat: 55.91289, lng: -3.32560 }}
           zoom={13} 
-          style={{ width: '100%', height: '800px' }}
+          style={{ width: '100%', height: '100%' }}
         >
           <TileLayer
             url='https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}'
@@ -151,7 +150,6 @@ export default function MapStuff() {
           <GeofenceLayer onMove={onMove} />
           <MarkerLayer onMove={onMove}/>
         </MapContainer>
-      </div>
     );
   }
 }

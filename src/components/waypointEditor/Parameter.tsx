@@ -19,8 +19,10 @@ export default function Parameter({param, name, value, change, wps}: {param: Par
   if (allSame){
     return (
       <div className="p-2">
-        <p>{param.label} ({param.units})</p>
-        <input type="number" name={name} onChange={change} value={val}/>
+        <label>
+          <span className="block">{param.label} ({param.units})</span>
+          <input type="number" name={name} onChange={change} value={val}/>
+        </label>
       </div>
     );
 
@@ -28,8 +30,10 @@ export default function Parameter({param, name, value, change, wps}: {param: Par
 
     return (
       <div className="p-2">
-        <p>{param.label} ({param.units})</p>
-        <input type="number" name={name} onChange={change} value='-'/>
+        <label>
+          <span className="blocl">{param.label} ({param.units})</span>
+          <input type="number" name={name} onChange={change} value='-'/>
+        </label>
       </div>
     );
   }
