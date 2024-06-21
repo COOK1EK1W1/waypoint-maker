@@ -82,6 +82,7 @@ export default function HeightMap(){
   return (
     <div>
       <LineChart
+        slotProps={{legend: {hidden: true}}}
         xAxis={[
           {data: distances}
         ]}
