@@ -33,12 +33,12 @@ export default function WPCheck(){
   }
 
   return (
-    <div className="flex">
+    <div className="flex items-center">
       <div className={cn("p-1 m-1 rounded aspect-square flex justify-center items-center", color)} onMouseDown={onMouseDown}>
         {text}
       </div>
       {bad.length > 0 ?
-        <p>{bad[0][0]}</p>: null
+        <p className="w-80 h-6">{bad[0][0]}</p>: null
       }
     </div>
   )

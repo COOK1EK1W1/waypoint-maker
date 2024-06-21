@@ -22,7 +22,7 @@ export default function Home() {
         </div>
         <div className="row-start-2 col-start-1">
           <div className="flex">
-            <CurEdit/>
+            {/*<CurEdit/>*/}
             <div>
               <WaypointEditor></WaypointEditor>
               <LatLngEditor/>

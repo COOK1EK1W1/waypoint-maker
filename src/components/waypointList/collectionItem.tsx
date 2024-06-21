@@ -1,7 +1,7 @@
 import { ColNode } from "@/types/waypoints";
 import { useWaypointContext } from "@/util/context/WaypointContext";
 import { useState } from "react";
-import { FaTrashAlt } from "react-icons/fa";
+import { FaPlus, FaTrashAlt } from "react-icons/fa";
 import { TbTopologyRing } from "react-icons/tb";
 import ListItem from "./ListItem";
 
@@ -17,11 +17,12 @@ export default function CollectionItem({node, selected, onMouseDown, onDelete}: 
   if (wps == undefined) return null
 
   return (
-    <ListItem onMouseDown={onMouseDown} selected={selected}>
+    <ListItem onMouseDown={onMouseDown} selected={selected} actions={[
+        (<button onMouseDown={()=>{setExpand(!expand)}} key={2}><FaPlus/></button>),
+        (<button onMouseDown={remove} key={1}><FaTrashAlt/></button>)
+    ]}>
       <div className="flex justify-between">
         <span><TbTopologyRing className="inline m-1"/>Group &apos;{node.name}&apos;</span>
-        <button onMouseDown={()=>{setExpand(!expand)}}>expand</button>
-        <button className="pl-4" onMouseDown={remove}><FaTrashAlt/></button>
       </div>
       <div className={`overflow-hidden duration-200 ${expand?`h-20`:`h-0`}`}>
         {wps.map((wp, id)=>(
