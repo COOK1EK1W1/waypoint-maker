@@ -67,7 +67,7 @@ export default function MissionList(){
       <div className="m-2 h-[1px] bg-slate-200"></div>
 
       {!hasTakeoff && activeMission == "Main" ? 
-        <ListItem onMouseDown={createTakeoff} className="text-center">
+        <ListItem onMouseDown={createTakeoff} className="text-center mb-4">
           Add Takeoff
         </ListItem> : null
       }
@@ -90,7 +90,7 @@ export default function MissionList(){
       {selectedWPs.length > 1 && <CreateCollection/>}
 
       {!hasLanding && activeMission == "Main" ?
-        <ListItem onMouseDown={createLanding} className="text-center">
+        <ListItem onMouseDown={createLanding} className="text-center mt-4">
            Add Landing
         </ListItem>: null
       }
