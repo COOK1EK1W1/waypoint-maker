@@ -62,9 +62,17 @@ export default function HeightMap(){
       const a = interpolate(wps[i-1].param5, wps[i].param5, wps[i-1].param6, wps[i].param6, j / (distance/interpolatedist))
       location += `${a.lat},${a.lng}|`
       if (j == 0){
-        heights.push(wps[i-1].param7)
+        let curHeight = wps[i-1].param7
+        if (wps[i-1].type==22){
+          curHeight = 0
+        }
+        heights.push(curHeight)
         if (i != 1){
-          gradients.push(gradient(distance, wps[i-2].param7, wps[i-1].param7))
+          let prevHeight = wps[i-2].param7
+          if (wps[i-2].type==22){
+            prevHeight = 0
+          }
+          gradients.push(gradient(distance, prevHeight, curHeight))
         }
       }else{
         heights.push(null)
@@ -108,7 +116,8 @@ export default function HeightMap(){
             },
           }
         ]}
-        height={200}
+        height={150}
+        margin={{left:40, right: 0, top: 20, bottom: 20}}
 
       />
     </div>

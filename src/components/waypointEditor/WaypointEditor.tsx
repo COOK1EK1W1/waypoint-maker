@@ -3,7 +3,7 @@ import WaypointTypeSelector from "./WaypointTypeSelector";
 import { commands } from "@/util/commands";
 import { Node, Waypoint } from "@/types/waypoints";
 import { changeParam } from "@/util/WPCollection";
-import ParameterEditor from "./ParameterEditor";
+import Parameter from "./Parameter";
 
 export default function WaypointEditor(){
   const {activeMission, selectedWPs, waypoints, setWaypoints} = useWaypointContext()
@@ -76,24 +76,27 @@ export default function WaypointEditor(){
   
   const commanddesc = commands[commands.findIndex(a => wps[0].type=="Waypoint" && a.value==wps[0].wps.type)]
 
+  const hasLocationParams = commanddesc.parameters[4] && 
+  commanddesc.parameters[5] &&
+  commanddesc.parameters[4].label == "Latitude" &&
+  commanddesc.parameters[5].label == "Longitude"
 
   if (allSame && wps.length > 0){
-    return <div className="p-2 flex h-[80px]">
+    return <div className="p-2 flex h-[80px] flex-wrap">
       <WaypointTypeSelector change={changeSelect} wps={wps}/>
-      {/*
-    {allSame ? 
-    <div>
-      <span>{commanddesc.description}</span>
-    </div>: null
-    }
-    */}
-      <ParameterEditor commanddesc={commanddesc} change={changeInput} wps={wps}/>
 
+      <Parameter param={commanddesc.parameters[0]} name="param1" change={changeInput} value={(x)=>x.wps.param1} wps={wps}/>
+      <Parameter param={commanddesc.parameters[1]} name="param2" change={changeInput} value={(x)=>x.wps.param2} wps={wps}/>
+      <Parameter param={commanddesc.parameters[2]} name="param3" change={changeInput} value={(x)=>x.wps.param3} wps={wps}/>
+      <Parameter param={commanddesc.parameters[3]} name="param4" change={changeInput} value={(x)=>x.wps.param4} wps={wps}/>
+      {!hasLocationParams && <Parameter param={commanddesc.parameters[4]} name="param5" change={changeInput} value={(x)=>x.wps.param5} wps={wps}/>}
+      {!hasLocationParams && <Parameter param={commanddesc.parameters[5]} name="param6" change={changeInput} value={(x)=>x.wps.param6} wps={wps}/>}
+      <Parameter param={commanddesc.parameters[6]} name="param7" change={changeInput} value={(x)=>x.wps.param7} wps={wps}/>
 
     </div>
   }else{
     return (
-    <div className="h-80px"> nodes are different types</div>
+    <div className="h-[80px]"> nodes are different types</div>
 
     )
 

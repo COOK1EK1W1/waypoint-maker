@@ -5,16 +5,16 @@ import { activeIcon, normalIcon } from "./waypoint"
 import { toLatLng } from "@/util/waypointToLeaflet"
 import {Waypoint} from "@/types/waypoints"
 
-export default function DraggableMarker({waypoint, active, onMove} : {waypoint :Waypoint, active: boolean, onMove: (lat:number, lng:number)=>void}) {
+export default function DraggableMarker({waypoint, active, onMove, onClick} : {waypoint :Waypoint, active: boolean, onMove: (lat:number, lng:number)=>void, onClick?: ()=>void}) {
+
   const markerRef = useRef<Leaflet.Marker>(null)
 
   const eventHandlers = useMemo(
     () => ({
       click(){
-        console.log("shhshs")
-
+        if (onClick) onClick()
       },
-      dragend() {
+      drag() {
         const marker = markerRef.current
         if (marker != null) {
           const newLocation = marker.getLatLng()

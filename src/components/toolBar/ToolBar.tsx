@@ -20,7 +20,7 @@ export default function ToolBar(){
   }
 
   return <div className="flex">
-    <h1 className="mx-4">Waypoint Maker</h1>
+    <h1 className="mx-4 py-0">Waypoint Maker</h1>
     <Button onClick={downloadQGC}><FaFileDownload className="inline mx-2"/>.waypoints (QGC, MP) download</Button>
     <Button onClick={downloadWM}><FaFileDownload className="inline mx-2"/>.json (WM) download</Button>
     <LoadJson/>

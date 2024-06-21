@@ -1,4 +1,4 @@
-import { add_waypoint, get_waypoints, insert_waypoint } from "@/util/WPCollection";
+import { add_waypoint, findnthwaypoint, get_waypoints, insert_waypoint } from "@/util/WPCollection";
 import { LayerGroup, Polyline } from "react-leaflet";
 import DraggableMarker from "../marker/DraggableMarker";
 import { useWaypointContext } from "@/util/context/WaypointContext";
@@ -9,7 +9,7 @@ const limeOptions = { color: 'lime' }
 const noshow = ["Markers", "Geofence"]
 
 export default function ActiveLayer({onMove}: {onMove: (lat: number, lng: number, id: number)=>void}){
-  const {waypoints, activeMission, setWaypoints} = useWaypointContext()
+  const {setSelectedWPs, setActiveMission, waypoints, activeMission, setWaypoints} = useWaypointContext()
   if (noshow.includes(activeMission)) return null
 
   const activeWPs = get_waypoints(activeMission, waypoints)
@@ -45,10 +45,19 @@ export default function ActiveLayer({onMove}: {onMove: (lat: number, lng: number
 
   }
 
+
+  function handleMarkerClick(id: number){
+    const a = findnthwaypoint(activeMission, id, waypoints)
+    if (!a) return
+    setActiveMission(a[0])
+    setSelectedWPs([a[1]])
+
+  }
+
   return (
     <LayerGroup>
       {activeWPs.map((waypoint, idx) => 
-        <DraggableMarker key={idx} waypoint={waypoint} onMove={(lat, lng)=>onMove(lat, lng, idx)} active={false}/>
+        <DraggableMarker key={idx} waypoint={waypoint} onMove={(lat, lng)=>onMove(lat, lng, idx)} active={false} onClick={()=>handleMarkerClick(idx)}/>
       )}
       <Polyline pathOptions={limeOptions} positions={toPolyline(activeWPs)} />
       {insertBtns}

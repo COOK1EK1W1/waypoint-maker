@@ -2,6 +2,7 @@
 import ToolBar from "@/components/toolBar/ToolBar";
 import { LatLngEditor } from "@/components/waypointEditor/LatLngEditor";
 import WaypointEditor from "@/components/waypointEditor/WaypointEditor";
+import CurEdit from "@/components/waypointEditor/curEdit";
 import HeightMap from "@/components/waypointEditor/heightMap";
 import ListView from "@/components/waypointList/ListView";
 import dynamic from "next/dynamic";
@@ -20,8 +21,13 @@ export default function Home() {
           <NonSSRMap></NonSSRMap>
         </div>
         <div className="row-start-2 col-start-1">
-          <WaypointEditor></WaypointEditor>
-          <LatLngEditor/>
+          <div className="flex">
+            <CurEdit/>
+            <div>
+              <WaypointEditor></WaypointEditor>
+              <LatLngEditor/>
+            </div>
+          </div>
           <HeightMap/>
         </div>
         <div className="row-span-2 col-start-2">
