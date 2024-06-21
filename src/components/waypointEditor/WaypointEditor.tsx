@@ -4,6 +4,7 @@ import { commands } from "@/util/commands";
 import { Node, Waypoint } from "@/types/waypoints";
 import { changeParam } from "@/util/WPCollection";
 import ParameterEditor from "./ParameterEditor";
+import HeightMap from "./heightMap";
 
 export default function WaypointEditor(){
   const {activeMission, selectedWPs, waypoints, setWaypoints} = useWaypointContext()
@@ -67,6 +68,5 @@ export default function WaypointEditor(){
     {allSame ? <ParameterEditor commanddesc={commanddesc} change={change} wps={wps}/> : null}
 
     
-    {/*<HeightMap/>*/}
   </div>
 }

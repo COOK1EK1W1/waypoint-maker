@@ -2,6 +2,7 @@
 import ToolBar from "@/components/toolBar/ToolBar";
 import { LatLngEditor } from "@/components/waypointEditor/LatLngEditor";
 import WaypointEditor from "@/components/waypointEditor/WaypointEditor";
+import HeightMap from "@/components/waypointEditor/heightMap";
 import ListView from "@/components/waypointList/ListView";
 import dynamic from "next/dynamic";
 
@@ -19,6 +20,7 @@ export default function Home() {
           <NonSSRMap></NonSSRMap>
           <WaypointEditor></WaypointEditor>
           <LatLngEditor/>
+          <HeightMap/>
         
         </div>
 

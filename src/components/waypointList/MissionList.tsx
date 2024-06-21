@@ -30,8 +30,8 @@ export default function MissionList(){
   }
 
   function onDelete(id: number){
-    setSelectedWPs([])
     setWaypoints(deleteNode(id, activeMission, waypoints))
+    setSelectedWPs([])
   }
 
   const hasLanding = Array.from(waypoints.keys()).includes("Landing")
