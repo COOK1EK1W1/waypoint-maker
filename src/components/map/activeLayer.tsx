@@ -30,7 +30,7 @@ export default function ActiveLayer({onMove}: {onMove: (lat: number, lng: number
     if (mission == null) return
 
     const newMarker = {
-      frame: 0,
+      frame: 3,
       type: 16,
       param1: 0,
       param2: 0,

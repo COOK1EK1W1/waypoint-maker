@@ -29,7 +29,7 @@ export default function MapStuff() {
           if (mission == null) return
 
           const newMarker = {
-            frame: 0,
+            frame: 3,
             type: 16,
             param1: 0,
             param2: 0,
@@ -65,7 +65,7 @@ export default function MapStuff() {
         if (mission == null) return
 
         const newMarker = {
-          frame: 0,
+          frame: 3,
           type: 16,
           param1: 0,
           param2: 0,
@@ -85,7 +85,7 @@ export default function MapStuff() {
         if (mission == null) return
 
         const newMarker = {
-          frame: 0,
+          frame: 3,
           type: 22,
           param1: 15,
           param2: 0,
