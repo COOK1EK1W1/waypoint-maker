@@ -31,7 +31,8 @@ export default function DraggableMarker({waypoint, active, onMove, onClick} : {w
       eventHandlers={eventHandlers}
       position={toLatLng(waypoint)}
       ref={markerRef}
-      icon={active ? activeIcon: normalIcon}>
+      icon={active ? activeIcon: normalIcon}
+    >
     </Marker>
   )
 }

@@ -1,6 +1,7 @@
 import { get_waypoints } from "@/util/WPCollection";
 import { useWaypointContext } from "@/util/context/WaypointContext";
 import { gradient, haversineDistance } from "@/util/distance";
+import { getTerrain } from "@/util/terrain";
 import { LineChart } from "@mui/x-charts";
 import { useThrottle } from "@uidotdev/usehooks";
 import { useEffect, useState } from "react";
@@ -15,18 +16,16 @@ export default function HeightMap(){
   const [terrainData, setTerrainData] = useState<{latitude: number, longitude: number, elevation: number}[]>([])
   const wps = get_waypoints(activeMission, waypoints)
   const throttledValue = useThrottle(waypoints, 2000)
-  useEffect(()=>{
-    try{
-      fetch(`https://api.open-elevation.com/api/v1/lookup?locations=${location}`)
-        .then((x)=>x.json())
-        .then((x)=>{
-          if (x.results) setTerrainData(x.results)
-        })
-    }catch (e){
-      console.error("whoopsies")
 
-    }
-    }, [throttledValue])
+  let locations: [number, number][] = []
+
+  useEffect(()=>{
+    if (wps.length < 2) return
+    getTerrain(locations)
+      .then((data)=>{
+        if (data) setTerrainData(data)
+      })
+  }, [throttledValue])
   if (wps.length < 2)return
 
   /*
@@ -54,13 +53,12 @@ export default function HeightMap(){
   let heights: (number|null)[] = []
   let gradients: (number|null)[] = [0]
   let prevDistance = 0
-  let location = ""
   for (let i = 1; i < wps.length; i++){
     let distance = haversineDistance(wps[i-1].param5, wps[i-1].param6, wps[i].param5, wps[i].param6)
     for (let j = 0; j < distance / interpolatedist; j++){
       distances.push(prevDistance + (j / (distance/interpolatedist))*distance)
       const a = interpolate(wps[i-1].param5, wps[i].param5, wps[i-1].param6, wps[i].param6, j / (distance/interpolatedist))
-      location += `${a.lat},${a.lng}|`
+      locations.push([a.lat, a.lng])
       if (j == 0){
         let curHeight = wps[i-1].param7
         if (wps[i-1].type==22){

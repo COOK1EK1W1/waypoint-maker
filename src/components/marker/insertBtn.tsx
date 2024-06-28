@@ -8,7 +8,6 @@ export default function InsertBtn({lat, lng, onClick}: {lat:number, lng: number,
   const eventHandlers = useMemo(
     () => ({
       click(e: LeafletMouseEvent){
-        console.log(e)
         e.originalEvent.preventDefault()
         onClick()
       }

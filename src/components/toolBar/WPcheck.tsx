@@ -8,7 +8,7 @@ import { MdErrorOutline } from "react-icons/md"
 
 export default function WPCheck(){
   const {waypoints} = useWaypointContext()
-  const msg = wpCheck(get_waypoints("Main", waypoints))
+  const msg = wpCheck(get_waypoints("Main", waypoints), waypoints)
   const bad = msg.filter((x) => x[1] == Severity.Bad)
 
   function onMouseDown(){

@@ -1,4 +1,4 @@
-import { add_waypoint, findnthwaypoint, get_waypoints, insert_waypoint } from "@/util/WPCollection";
+import { findnthwaypoint, get_waypoints, insert_waypoint } from "@/util/WPCollection";
 import { LayerGroup, Polyline } from "react-leaflet";
 import DraggableMarker from "../marker/DraggableMarker";
 import { useWaypointContext } from "@/util/context/WaypointContext";
@@ -19,7 +19,7 @@ export default function ActiveLayer({onMove}: {onMove: (lat: number, lng: number
     const midLat = (activeWPs[i].param5 + activeWPs[i+1].param5) / 2
     const midLng = (activeWPs[i].param6 + activeWPs[i+1].param6) / 2
     insertBtns.push(
-      <InsertBtn lat={midLat} lng={midLng} onClick={()=>insert(i, midLat, midLng)}/>
+      <InsertBtn key={i} lat={midLat} lng={midLng} onClick={()=>insert(i, midLat, midLng)}/>
     )
 
   }

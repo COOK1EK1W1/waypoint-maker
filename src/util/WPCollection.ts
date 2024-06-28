@@ -11,7 +11,6 @@ export function add_waypoint(missionName: string, waypoint: Node, waypoints: Way
   return newMap
 }
 export function insert_waypoint(id: number, missionName: string, waypoint: WPNode, waypoints: WaypointCollection): WaypointCollection {
-  console.log(id)
 
   function rec(count:number, mission: string): number{
     const curMission = waypoints.get(mission)

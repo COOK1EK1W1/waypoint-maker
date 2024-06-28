@@ -1,4 +1,5 @@
-import { Waypoint } from "@/types/waypoints";
+import { Waypoint, WaypointCollection } from "@/types/waypoints";
+import { angleBetweenPoints, gradient, haversineDistance } from "./distance";
 
 
 export enum Severity {
@@ -6,9 +7,13 @@ export enum Severity {
   Bad
 }
 
-export function wpCheck(wps: Waypoint[]): [string, Severity][]{
+export function wpCheck(wps: Waypoint[], waypoints: WaypointCollection): [string, Severity][]{
   let ret: [string, Severity][] = []
 
+  if (wps.length == 0){
+    ret.push(["place a waypoint to get started", Severity.Bad])
+
+  }
 
   // check for landing waypoint
 
@@ -63,6 +68,53 @@ export function wpCheck(wps: Waypoint[]): [string, Severity][]{
       ret.push(["Very high pitch up on Takeoff", Severity.Med])
     }
   })
+
+
+  let gradients: number[] = []
+  for (let i = 0; i < wps.length - 1; i++){
+    gradients.push(gradient(haversineDistance(wps[i].param5, wps[i].param6, wps[i+1].param5, wps[i+1].param6), wps[i].param7, wps[i+1].param7))
+  }
+
+  gradients.map((grad) => {
+    if (grad >= 30){
+      ret.push(["very steep gradient", Severity.Med])
+    }else if(grad <= -30){
+      ret.push(["very steep gradient", Severity.Med])
+    }
+  })
+
+
+  let angles: number[] = []
+
+  for (let i = 0; i < wps.length - 2; i++){
+    angles.push(angleBetweenPoints(wps[i].param5, wps[i].param6, wps[i+1].param5, wps[i+1].param6, wps[i+2].param5, wps[i+2].param6))
+  }
+  angles.map((angle) => {
+    if (angle <= 40){
+      ret.push(["angle between points is sharp", Severity.Med])
+    }
+  })
+  
+  /*
+  getTerrain(wps.map((x)=>[x.param5, x.param6]))
+    .then((terrainHeights)=>{
+      if (!terrainHeights) return
+      console.log(terrainHeights)
+      let terrainoffset = terrainHeights[0].elevation
+      for (let i = 0; i < wps.length; i++){
+        let wpheight = wps[i].param7 - (terrainHeights[i].elevation - terrainoffset)
+        if (wpheight < 0){
+          ret.push(["waypoint is below surface", Severity.Bad])
+        }else if(wpheight > 120){
+          ret.push(["waypoint is above legal height for flying", Severity.Bad])
+
+        }
+
+      }
+
+    })
+  */
+
 
 
   return ret
