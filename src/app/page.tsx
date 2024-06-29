@@ -17,7 +17,7 @@ export default function Home() {
     <main style={{height: "100vh"}} className="flex flex-col absolute w-full">
       <StartModal/>
       <ToolBar/>
-      <div className="grid grid-cols-[1fr_300px] grid-rows-[1fr_300px] h-full">
+      <div className="grid grid-cols-[1fr_250px] grid-rows-[1fr_300px] h-full">
         <div className="row-start-1 col-start-1">
           <NonSSRMap></NonSSRMap>
         </div>

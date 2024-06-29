@@ -199,6 +199,9 @@ export function wpCheck(wps: Waypoint[], waypoints: WaypointCollection): Fault[]
           offenderMission: offender[0],
           offenderIndex: offender[1]
         })
+      }else{
+        // pass
+
       }
     }
   })

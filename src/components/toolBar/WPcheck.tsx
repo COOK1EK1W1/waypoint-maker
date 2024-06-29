@@ -42,9 +42,6 @@ export default function WPCheck(){
       <button className={cn("p-1 m-1 rounded flex justify-center items-center", color)} onMouseDown={()=>{setShowModal(true)}}>
         {text}<span>WPCheck</span>
       </button>
-      {bad.length > 0 ?
-        <p className="w-80 h-6">{bad[0].message}</p>: null
-      }
     </div>
   )
 
