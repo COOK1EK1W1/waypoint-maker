@@ -203,3 +203,33 @@ export function MoveWPsAvgTo(newLat: number, newLng: number, waypoints: Waypoint
   return waypointsUpdated;
 }
 
+
+export function isPointInPolygon(polygon: Waypoint[], point: Waypoint) {
+    const num_vertices = polygon.length;
+    const x = point.param5;
+    const y = point.param6;
+    let inside = false;
+ 
+    let p1 = polygon[0];
+    let p2;
+ 
+    for (let i = 1; i <= num_vertices; i++) {
+        p2 = polygon[i % num_vertices];
+ 
+        if (y > Math.min(p1.param6, p2.param6)) {
+            if (y <= Math.max(p1.param6, p2.param6)) {
+                if (x <= Math.max(p1.param5, p2.param5)) {
+                    const x_intersection = ((y - p1.param6) * (p2.param5 - p1.param5)) / (p2.param6 - p1.param6) + p1.param5;
+ 
+                    if (p1.param5 === p2.param5 || x <= x_intersection) {
+                        inside = !inside;
+                    }
+                }
+            }
+        }
+ 
+        p1 = p2;
+    }
+ 
+    return inside;
+}

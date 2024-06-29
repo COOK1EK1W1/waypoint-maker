@@ -1,20 +1,20 @@
 import { get_waypoints } from "@/util/WPCollection"
 import { useWaypointContext } from "@/util/context/WaypointContext"
 import { cn } from "@/util/tw"
-import { Severity, wpCheck } from "@/util/wpcheck"
+import { Modal } from "@mui/material"
 import { FaCheck } from "react-icons/fa"
 import { FaX } from "react-icons/fa6"
 import { MdErrorOutline } from "react-icons/md"
+import WPCheckModal from "./WPCheckModal"
+import { useState } from "react"
+import { Severity } from "@/types/waypoints"
+import { wpCheck } from "@/util/wpcheck"
 
 export default function WPCheck(){
   const {waypoints} = useWaypointContext()
+  const [showModal, setShowModal] = useState(false)
   const msg = wpCheck(get_waypoints("Main", waypoints), waypoints)
-  const bad = msg.filter((x) => x[1] == Severity.Bad)
-
-  function onMouseDown(){
-    alert(msg.map((x)=>x[0]))
-  }
-
+  const bad = msg.filter((x) => x.severity == Severity.Bad)
 
   let text: any = ""
   let color = ""
@@ -25,7 +25,6 @@ export default function WPCheck(){
     }else{
       color = "bg-amber-200" 
       text = <MdErrorOutline/>
-      text = "med"
     }
   }else{
     color = "bg-red-200" 
@@ -34,11 +33,17 @@ export default function WPCheck(){
 
   return (
     <div className="flex items-center">
-      <div className={cn("p-1 m-1 rounded aspect-square flex justify-center items-center", color)} onMouseDown={onMouseDown}>
-        {text}
-      </div>
+      <Modal
+        open={showModal}
+        onClose={()=>setShowModal(false)}
+      >
+        <WPCheckModal close={()=>setShowModal(false)}/>
+      </Modal>
+      <button className={cn("p-1 m-1 rounded flex justify-center items-center", color)} onMouseDown={()=>{setShowModal(true)}}>
+        {text}<span>WPCheck</span>
+      </button>
       {bad.length > 0 ?
-        <p className="w-80 h-6">{bad[0][0]}</p>: null
+        <p className="w-80 h-6">{bad[0].message}</p>: null
       }
     </div>
   )
