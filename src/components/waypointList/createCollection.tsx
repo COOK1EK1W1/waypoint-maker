@@ -5,9 +5,7 @@ export default function CreateCollection(){
   const {selectedWPs, waypoints, setWaypoints, activeMission, setSelectedWPs} = useWaypointContext()
   function handleGroup(){
     let name: string| null = null
-    while (name == null || name == ""){
-      name = prompt("enter name")
-    }
+    name = prompt("enter name")
     if (name == null) return
 
     const curMission = waypoints.get(activeMission)

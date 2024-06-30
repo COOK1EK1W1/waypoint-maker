@@ -269,9 +269,34 @@ export function wpCheck(wps: Waypoint[], waypoints: WaypointCollection): Fault[]
       message: "some waypoints outside the geofence",
       severity: Severity.Bad,
     })
+  }
+
+  const geofence = waypoints.get("Geofence")
+  if (geofence){
+    if (geofence.length == 0){
+      ret.push({
+        message: "No geofence setup",
+        severity: Severity.Med,
+      })
+
+    }else if (geofence.length < 3){
+      ret.push({
+        message: "Not enough geofence waypoints",
+        severity: Severity.Bad,
+      })
+    }else{
+
+    }
 
 
   }
+
+
+
+
+
+
+
   return ret
 
 }

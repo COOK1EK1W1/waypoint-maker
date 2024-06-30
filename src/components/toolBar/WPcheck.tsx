@@ -39,7 +39,7 @@ export default function WPCheck(){
       >
         <WPCheckModal close={()=>setShowModal(false)}/>
       </Modal>
-      <button className={cn("p-1 m-1 rounded flex justify-center items-center", color)} onMouseDown={()=>{setShowModal(true)}}>
+      <button className={cn("p-1 m-1 rounded-lg flex justify-center items-center", color)} onMouseDown={()=>{setShowModal(true)}}>
         {text}<span>WPCheck</span>
       </button>
     </div>

@@ -22,7 +22,7 @@ export default function DraggableMarker({waypoint, active, onMove, onClick} : {w
         }
       },
     }),
-    [onMove],
+    [onMove, onClick],
   )
 
   return (

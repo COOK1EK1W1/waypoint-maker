@@ -8,24 +8,25 @@ import { TfiTarget } from "react-icons/tfi";
 import { commandName } from "@/util/translationTable";
 import { commands } from "@/util/commands";
 import { FaTrashAlt } from "react-icons/fa";
+import { useState } from "react";
 
 export default function MissionList(){
   const {setActiveMission, waypoints, setSelectedWPs, selectedWPs, setWaypoints, activeMission, setTool } = useWaypointContext()
+  const [lastSelectedIndex, setLastSelectedIndex] = useState<number | null>(null);
 
   const mainMission = waypoints.get(activeMission)
   if (mainMission == null) return null
 
   function handleClick(id: number, e: React.MouseEvent<HTMLDivElement>){
-    if (e.ctrlKey){
+    if (e.shiftKey && lastSelectedIndex !== null){
       e.stopPropagation()
-      if (selectedWPs.includes(id)){
-        setSelectedWPs(selectedWPs.filter((wp)=>wp != id))
-      }else{
-        setSelectedWPs(selectedWPs.concat([id]))
-      }
+      const range = [lastSelectedIndex, id].sort((a, b) => a - b)
+      const newSelection = []
+      for (let i = range[0]; i <= range[1]; i++) newSelection.push(i)
+      setSelectedWPs(newSelection)
     }else{
       setSelectedWPs([id])
-
+      setLastSelectedIndex(id)
     }
   }
 
@@ -62,7 +63,7 @@ export default function MissionList(){
   }
 
   return (
-    <div className="flex-grow overflow-auto">
+    <div className="flex-grow overflow-auto select-none">
       <h2 className="px-2 text-lg">{activeMission}</h2>
       <div className="m-2 h-[1px] bg-slate-200"></div>
 

@@ -4,7 +4,7 @@ import Button from './button';
 import { FaFileUpload } from 'react-icons/fa';
 
 export default function LoadJson(){
-  const { setWaypoints, waypoints } = useWaypointContext();
+  const { setWaypoints } = useWaypointContext();
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (!event.target.files){

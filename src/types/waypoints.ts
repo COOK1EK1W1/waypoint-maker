@@ -40,8 +40,9 @@ export type WaypointCollection = Map<string, Node[]>
 
 
 export enum Severity {
+  Good,
   Med,
-  Bad
+  Bad,
 }
 
 export type Fault = {

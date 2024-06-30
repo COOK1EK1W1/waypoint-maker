@@ -55,7 +55,7 @@ export default function MapStuff() {
 
     }
 
-  },[activeMission])
+  },[activeMission, setWaypoints, waypoints])
 
   function handleClick(tool: Tool, e: LeafletMouseEvent){
     switch (tool){
@@ -137,7 +137,8 @@ export default function MapStuff() {
         <MapContainer 
           center={{ lat: 55.91289, lng: -3.32560 }}
           zoom={13} 
-          style={{ width: '100%', height: '100%' }}
+          style={{ width: '100%', height: '100%'}}
+          className="rounded-lg"
         >
           <TileLayer
             url='https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}'
