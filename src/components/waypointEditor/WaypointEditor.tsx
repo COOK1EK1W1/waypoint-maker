@@ -26,7 +26,7 @@ export default function WaypointEditor(){
   }
 
   if (wps.length == 0){
-    return <div className="h-[80px]"> place a waypoint to begin</div>
+    return <div className="h-[60px]"> place a waypoint to begin</div>
   }
 
   //on change function
@@ -83,7 +83,7 @@ export default function WaypointEditor(){
   commanddesc.parameters[5].label == "Longitude"
 
   if (allSame && wps.length > 0){
-    return <div className="flex h-[80px] flex-wrap">
+    return <div className="flex h-[60px] flex-wrap">
       <WaypointTypeSelector change={changeSelect} wps={wps}/>
 
       <Parameter param={commanddesc.parameters[0]} name="param1" change={changeInput} value={(x)=>x.wps.param1} wps={wps}/>
@@ -97,7 +97,7 @@ export default function WaypointEditor(){
     </div>
   }else{
     return (
-    <div className="h-[80px]"> nodes are different types</div>
+    <div className="h-[60px]"> nodes are different types</div>
 
     )
 

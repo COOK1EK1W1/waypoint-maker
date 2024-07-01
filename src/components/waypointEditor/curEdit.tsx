@@ -25,7 +25,7 @@ export default function CurEdit(){
 
     <div className="pl-2 pt-2 flex">
       <label className="mr-2"><span className="ml-[4px]">Editing</span>
-        <div className="border-2 border-grey rounded-lg w-40 flex overflow-hidden h-[25px]">
+        <div className="border-2 border-slate-200 rounded-lg w-40 flex overflow-hidden h-[25px]">
           {item}
         </div>
       </label>

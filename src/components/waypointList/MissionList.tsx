@@ -63,12 +63,12 @@ export default function MissionList(){
   }
 
   return (
-    <div className="flex-grow overflow-auto select-none">
-      <h2 className="px-2 text-lg">{activeMission}</h2>
+    <div className="flex-grow overflow-auto select-noney">
+      <h2 className="px-2 text-lg pb-0">{activeMission}</h2>
       <div className="m-2 h-[1px] bg-slate-200"></div>
 
       {!hasTakeoff && activeMission == "Main" ? 
-        <ListItem onMouseDown={createTakeoff} className="text-center mb-4">
+        <ListItem onMouseDown={createTakeoff} className="text-center my-4">
           Add Takeoff
         </ListItem> : null
       }
@@ -92,7 +92,7 @@ export default function MissionList(){
       {selectedWPs.length > 1 && <CreateCollection/>}
 
       {!hasLanding && activeMission == "Main" ?
-        <ListItem onMouseDown={createLanding} className="text-center mt-4">
+        <ListItem onMouseDown={createLanding} className="text-center my-4">
            Add Landing
         </ListItem>: null
       }

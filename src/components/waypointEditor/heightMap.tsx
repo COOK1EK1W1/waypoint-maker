@@ -28,15 +28,6 @@ export default function HeightMap(){
   }, [throttledValue])
   if (wps.length < 2)return
 
-  /*
-  let gradients = [0]
-  for (let i = 1; i < wps.length; i++){
-    let distance = haversineDistance(wps[i-1].param5, wps[i-1].param6, wps[i].param5, wps[i].param6)
-    distances.push(distances[i - 1] + distance)
-    gradients.push(gradient(distance, wps[i-1].param7, wps[i].param7))
-  }
-  */
-
   let totalDistance = 0
   for (let i = 1; i < wps.length; i++){
     totalDistance += haversineDistance(wps[i-1].param5, wps[i-1].param6, wps[i].param5, wps[i].param6)
@@ -115,7 +106,7 @@ export default function HeightMap(){
           }
         ]}
         height={150}
-        margin={{left:40, right: 0, top: 20, bottom: 20}}
+        margin={{left:44, right: 10, top: 20, bottom: 26}}
 
       />
     </div>

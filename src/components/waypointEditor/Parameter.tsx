@@ -21,7 +21,7 @@ export default function Parameter({param, name, value, change, wps}: {param: Par
       <div className="p-2">
         <label>
           <span className="block">{param.label} ({param.units})</span>
-          <input className="w-40" type="number" name={name} onChange={change} value={val}/>
+          <input className="w-40 border-slate-200" type="number" name={name} onChange={change} value={val}/>
         </label>
       </div>
     );
@@ -32,7 +32,7 @@ export default function Parameter({param, name, value, change, wps}: {param: Par
       <div className="p-2">
         <label>
           <span className="block">{param.label} ({param.units})</span>
-          <input className="w-40" type="number" name={name} onChange={change} value='-'/>
+          <input className="w-40 border-slate-200" type="number" name={name} onChange={change} value='-'/>
         </label>
       </div>
     );
