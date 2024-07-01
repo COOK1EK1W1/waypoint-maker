@@ -3,6 +3,7 @@ import StartModal from "@/components/modal/modal";
 import ToolBar from "@/components/toolBar/ToolBar";
 import { LatLngEditor } from "@/components/waypointEditor/LatLngEditor";
 import WaypointEditor from "@/components/waypointEditor/WaypointEditor";
+import CurEdit from "@/components/waypointEditor/curEdit";
 import HeightMap from "@/components/waypointEditor/heightMap";
 import ListView from "@/components/waypointList/ListView";
 import dynamic from "next/dynamic";
@@ -23,7 +24,7 @@ export default function Home() {
         </div>
         <div className="row-start-2 col-start-1">
           <div className="flex">
-            {/*<CurEdit/>*/}
+            <CurEdit/>
             <div>
               <WaypointEditor></WaypointEditor>
               <LatLngEditor/>

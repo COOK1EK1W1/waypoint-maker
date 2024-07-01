@@ -4,6 +4,7 @@ import { commands } from "@/util/commands";
 import { Node, Waypoint } from "@/types/waypoints";
 import { changeParam } from "@/util/WPCollection";
 import Parameter from "./Parameter";
+import CurEdit from "./curEdit";
 
 export default function WaypointEditor(){
   const {activeMission, selectedWPs, waypoints, setWaypoints} = useWaypointContext()
@@ -82,7 +83,7 @@ export default function WaypointEditor(){
   commanddesc.parameters[5].label == "Longitude"
 
   if (allSame && wps.length > 0){
-    return <div className="p-2 flex h-[80px] flex-wrap">
+    return <div className="flex h-[80px] flex-wrap">
       <WaypointTypeSelector change={changeSelect} wps={wps}/>
 
       <Parameter param={commanddesc.parameters[0]} name="param1" change={changeInput} value={(x)=>x.wps.param1} wps={wps}/>
