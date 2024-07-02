@@ -63,7 +63,7 @@ export default function MissionList(){
   }
 
   return (
-    <div className="flex-grow overflow-auto select-noney">
+    <div className="flex-grow overflow-auto select-none">
       <h2 className="px-2 text-lg pb-0">{activeMission}</h2>
       <div className="m-2 h-[1px] bg-slate-200"></div>
 

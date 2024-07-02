@@ -51,7 +51,6 @@ export default function SubMissionList(){
                   :<span><TbTopologyRing className="inline m-1"/></span>
               }
               {mission} ({wp.length})
-              {canAdd ? <button onMouseDown={(e)=>addSub(e, mission)}>add</button> : null}
             </div>
           </ListItem>
         }

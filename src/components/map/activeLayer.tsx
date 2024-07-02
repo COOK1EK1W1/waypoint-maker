@@ -9,7 +9,7 @@ const limeOptions = { color: 'lime' }
 const noshow = ["Markers", "Geofence"]
 
 export default function ActiveLayer({onMove}: {onMove: (lat: number, lng: number, id: number)=>void}){
-  const {setSelectedWPs, setActiveMission, waypoints, activeMission, setWaypoints} = useWaypointContext()
+  const {setSelectedWPs, setActiveMission, waypoints, activeMission, setWaypoints, selectedWPs} = useWaypointContext()
   if (noshow.includes(activeMission)) return null
 
   const activeWPs = get_waypoints(activeMission, waypoints)
@@ -56,9 +56,15 @@ export default function ActiveLayer({onMove}: {onMove: (lat: number, lng: number
 
   return (
     <LayerGroup>
-      {activeWPs.map((waypoint, idx) => 
-        <DraggableMarker key={idx} waypoint={waypoint} onMove={(lat, lng)=>onMove(lat, lng, idx)} active={false} onClick={()=>handleMarkerClick(idx)}/>
-      )}
+      {activeWPs.map((waypoint, idx) => {
+        let active = false
+        let x = findnthwaypoint("Main", idx, waypoints)
+        if (x){
+          if (x[0] == activeMission && selectedWPs.includes(x[1])) active = true
+        }
+        return <DraggableMarker key={idx} waypoint={waypoint} onMove={(lat, lng)=>onMove(lat, lng, idx)} active={active} onClick={()=>handleMarkerClick(idx)}/>
+      })
+      }
       <Polyline pathOptions={limeOptions} positions={toPolyline(activeWPs)} />
       {insertBtns}
     </LayerGroup>

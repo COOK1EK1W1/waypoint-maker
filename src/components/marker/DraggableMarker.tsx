@@ -6,6 +6,7 @@ import { toLatLng } from "@/util/waypointToLeaflet"
 import {Waypoint} from "@/types/waypoints"
 
 export default function DraggableMarker({waypoint, active, onMove, onClick} : {waypoint :Waypoint, active: boolean, onMove: (lat:number, lng:number)=>void, onClick?: ()=>void}) {
+  console.log(waypoint)
 
   const markerRef = useRef<Leaflet.Marker>(null)
 

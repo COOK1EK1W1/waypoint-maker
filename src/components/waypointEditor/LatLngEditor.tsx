@@ -5,11 +5,6 @@ import { FaArrowDown, FaArrowLeft, FaArrowRight, FaArrowUp } from "react-icons/f
 import { FaArrowRotateLeft, FaArrowRotateRight, FaRegHandPointer } from "react-icons/fa6";
 import { LuMousePointerClick } from "react-icons/lu";
 import { TfiTarget } from "react-icons/tfi";
-import CurEdit from "./curEdit";
-
-function Spacer(){
-  return (<span className="w-4 inline-block"></span>)
-}
 
 export function LatLngEditor(){
   const { selectedWPs, waypoints, setWaypoints, activeMission, setTool} = useWaypointContext();

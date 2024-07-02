@@ -26,7 +26,13 @@ export default function HeightMap(){
         if (data) setTerrainData(data)
       })
   }, [throttledValue])
-  if (wps.length < 2)return
+
+  if (wps.length < 2){
+    return (
+      <div className="h-[150px] flex w-full items-center justify-center">Place two or more waypoints for height map</div>
+    )
+  }
+
 
   let totalDistance = 0
   for (let i = 1; i < wps.length; i++){
