@@ -16,7 +16,7 @@
     "@mui/x-charts": "^7.7.0",
     "@types/react-leaflet": "^3.0.0",
     "@uidotdev/usehooks": "^2.4.1",
-    "babel-plugin-react-compiler": "^0.0.0-experimental-696af53-20240625",
+    "babel-plugin-react-compiler": "0.0.0-experimental-b4db8c3-20241001",
     "clsx": "^2.1.1",
     "jsdom": "^22.1.0",
     "leaflet": "^1.9.4",

@@ -1,6 +1,6 @@
 import { Fault, Severity, Waypoint, WaypointCollection } from "@/types/waypoints";
 import { angleBetweenPoints, gradient, haversineDistance } from "./distance";
-import { findnthwaypoint, get_waypoints, isPointInPolygon } from "./WPCollection";
+import { findnthwaypoint, get_waypoints, hasLocation, isPointInPolygon } from "./WPCollection";
 
 
 
@@ -177,14 +177,18 @@ export function wpCheck(wps: Waypoint[], waypoints: WaypointCollection): Fault[]
 /*                       Gradient & Angle                        */
 /* -=x=-=x=-=x=-=x=-=x=-=x=-=x=-=x=-=x=-=x=-=x=-=x=-=x=-=x=-=x=- */
 
-  let gradients: number[] = []
+  let gradients: (number|null)[] = []
   for (let i = 0; i < wps.length - 1; i++){
-    gradients.push(gradient(haversineDistance(wps[i].param5, wps[i].param6, wps[i+1].param5, wps[i+1].param6), wps[i].param7, wps[i+1].param7))
+    if (hasLocation(wps[i])){
+      gradients.push(gradient(haversineDistance(wps[i].param5, wps[i].param6, wps[i+1].param5, wps[i+1].param6), wps[i].param7, wps[i+1].param7))
+    }else{
+      gradients.push(null)
+    }
   }
 
   gradients.map((grad, idx) => {
     const offender = findnthwaypoint("Main", idx + 1, waypoints)
-    if (offender){
+    if (offender && grad){
       if (grad >= 30){
         ret.push({
           message: "Very steep gradient between previous and this waypoint",

@@ -200,7 +200,7 @@ export function MoveWPsAvgTo(newLat: number, newLng: number, waypoints: Waypoint
       return wp;
     });
   }
-  return waypointsUpdated;
+  return new Map(waypointsUpdated);
 }
 
 
@@ -232,4 +232,14 @@ export function isPointInPolygon(polygon: Waypoint[], point: Waypoint) {
     }
  
     return inside;
+}
+
+export function hasLocation(waypoint: Waypoint): boolean{
+    const commanddesc = commands[commands.findIndex(a => a.value==waypoint.type)]
+    const hasLocationParams = commanddesc.parameters[4] && 
+    commanddesc.parameters[5] &&
+    commanddesc.parameters[4].label == "Latitude" &&
+    commanddesc.parameters[5].label == "Longitude"
+    return hasLocationParams || false
+
 }

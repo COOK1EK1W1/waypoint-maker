@@ -58,7 +58,7 @@ export default function ActiveLayer({onMove}: {onMove: (lat: number, lng: number
     <LayerGroup>
       {activeWPs.map((waypoint, idx) => {
         let active = false
-        let x = findnthwaypoint("Main", idx, waypoints)
+        let x = findnthwaypoint(activeMission, idx, waypoints)
         if (x){
           if (x[0] == activeMission && selectedWPs.includes(x[1])) active = true
         }
