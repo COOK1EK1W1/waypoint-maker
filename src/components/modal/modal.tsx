@@ -30,7 +30,7 @@ export default function StartModal(){
 			onClose={()=>setDisplayPopUp(false)}
 			>        
 			
-			<div className="bg-white w-80 absolute top-1/2 left-1/2 translate-x-[-50%] translate-y-[-50%] rounded-lg p-4 flex flex-col justify-between">
+			<div className="absolute z-30 bg-white w-80 absolute top-1/2 left-1/2 translate-x-[-50%] translate-y-[-50%] rounded-lg p-4 flex flex-col justify-between">
 				<div>
 					<h1>Waypoint maker</h1>
 					<p className="py-2">Welcome to waypoint maker, the software developed to make it easier to write complex waypoint missions, yet keep them error free</p>

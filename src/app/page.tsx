@@ -15,19 +15,17 @@ export default function Home() {
   return (
     <main style={{height: "100vh"}} className="flex flex-col absolute w-full">
       <StartModal/>
+
+      <NonSSRMap></NonSSRMap>
       <ToolBar/>
-      <div className="grid grid-cols-[1fr_250px] grid-rows-[1fr_256px] h-full">
-        <div className="row-start-1 col-start-1">
-          <NonSSRMap></NonSSRMap>
-        </div>
-        <div className="row-start-2 col-start-1">
-          <Editor/>
-          <HeightMap/>
-        </div>
-        <div className="row-span-2 col-start-2">
-        <ListView></ListView>
+      <div className="z-20 absolute bottom-0 m-2 w-[1080px]">
+
+        <div className="bg-white rounded-lg">
+        <Editor/>
+        <HeightMap/>
         </div>
       </div>
+      <ListView></ListView>
       
     </main>
     

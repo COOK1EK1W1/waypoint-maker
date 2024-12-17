@@ -19,11 +19,13 @@ export default function ToolBar(){
     downloadTextAsFile("mission.json", output)
   }
 
-  return <div className="h-9 flex">
-    <h1 className="mx-4 py-0">Waypoint Maker</h1>
-    <Button onClick={downloadQGC}><FaFileDownload className="inline mx-2"/>.waypoints (QGC, MP) download</Button>
-    <Button onClick={downloadWM}><FaFileDownload className="inline mx-2"/>.json (WM) download</Button>
-    <LoadJson/>
-    <WPCheck/>
+  return <div className="z-20 absolute top-2 left-2 rounded-lg overflow-hidden">
+    <div className="h-9 flex bg-white">
+      <h1 className="mx-4 py-0">Waypoint Maker</h1>
+      <Button onClick={downloadQGC}><FaFileDownload className="inline mx-2"/>.waypoints (QGC, MP) download</Button>
+      <Button onClick={downloadWM}><FaFileDownload className="inline mx-2"/>.json (WM) download</Button>
+      <LoadJson/>
+      <WPCheck/>
+    </div>
   </div>
 }
