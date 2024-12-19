@@ -19,9 +19,12 @@ export function pathLength(path: Path){
 }
 
 export function offset(a: XY, dist: number, angle: number): XY{ 
+  const latRad = a.y * Math.PI / 180
+  const mpld = 111320.0;
+  const mplo = 111320.0 * Math.cos(latRad);
   return {
-    x: a.x + Math.sin(angle) * dist,
-    y: a.y + Math.cos(angle) * dist
+    x: a.x + dist*Math.sin(angle) / mplo,
+    y: a.y + dist*Math.cos(angle) / mpld
   }
 }
 

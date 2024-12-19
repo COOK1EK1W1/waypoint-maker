@@ -10,6 +10,7 @@ import { useEffect } from "react";
 import ActiveLayer from "./activeLayer";
 import GeofenceLayer from "./geofenceLayer";
 import MarkerLayer from "./markerLayer";
+import DubinsLayer from "./dunbinsLayer";
 
 
 
@@ -150,6 +151,7 @@ export default function MapStuff() {
           <ActiveLayer onMove={onMove}/>
           <GeofenceLayer onMove={onMove} />
           <MarkerLayer onMove={onMove}/>
+          <DubinsLayer onMove={onMove}/>
         </MapContainer>
     );
   }

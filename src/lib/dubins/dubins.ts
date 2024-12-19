@@ -16,5 +16,5 @@ export function DubinsBetween(a: XY, b: XY, theta_a: number, theta_b: number, tu
   let ST: Straight = {type: "Straight", start: offset(a_R_CP, turn_radius, ar2br - Math.PI/2), end: offset(b_R_CP, turn_radius, ar2br - Math.PI/2)}
   let BR: Curve = {type: "Curve", center: b_R_CP, radius: turn_radius, start: ar2br - theta_a, theta:theta_b - Math.PI/2}
 
-  return []
+  return [AR, ST, BR]
 }
