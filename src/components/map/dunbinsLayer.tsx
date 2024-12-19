@@ -1,16 +1,16 @@
-import { findnthwaypoint, get_waypoints, insert_waypoint } from "@/util/WPCollection";
-import { LayerGroup, Polygon, Polyline } from "react-leaflet";
+import { get_waypoints } from "@/util/WPCollection";
+import { LayerGroup, Polyline } from "react-leaflet";
 import DraggableMarker from "../marker/DraggableMarker";
 import { useWaypointContext } from "@/util/context/WaypointContext";
-import { toPolyline } from "@/util/waypointToLeaflet";
-import InsertBtn from "../marker/insertBtn";
 import { DubinsBetween } from "@/lib/dubins/dubins";
 import {Waypoint} from "@/types/waypoints"
+import Arc from "../marker/arc";
+import { ReactNode } from "react";
 
 const limeOptions = { color: 'lime' }
 const noshow = ["Markers", "Geofence"]
 
-export default function DubinsLayer({onMove}: {onMove: (lat: number, lng: number, id: number)=>void}){
+export default function DubinsLayer(){
   const { waypoints, activeMission} = useWaypointContext()
   if (noshow.includes(activeMission)) return null
 
@@ -19,19 +19,34 @@ export default function DubinsLayer({onMove}: {onMove: (lat: number, lng: number
   if (activeWPs.length <2){
     return
   }
+  let markers: ReactNode[] = []
+  let lines: ReactNode[] = []
 
-  let a = activeWPs[0]
-  let b = activeWPs[1]
-  let [R, S, R2]= DubinsBetween({x: a.param6, y: a.param5}, {x: b.param6, y: b.param5}, 0, Math.PI, 400)
-  if (R.type != "Curve" || R2.type != "Curve" || S.type != "Straight"){return }
-  let rWaypoint: Waypoint = {frame: 0, type: 189, param1: 0, param2: 0, param3: 0, param4: 0, param6: R.center.x, param5: R.center.y, param7: 0, autocontinue: 0}
-  let r2Waypoint: Waypoint = {frame: 0, type: 189, param1: 0, param2: 0, param3: 0, param4: 0, param6: R2.center.x, param5: R2.center.y, param7: 0, autocontinue: 0}
 
+  for (let i = 0; i < activeWPs.length - 1; i ++){
+  let a = activeWPs[i]
+  let b = activeWPs[i+1]
+  let curves = DubinsBetween({x: a.param6, y: a.param5}, {x: b.param6, y: b.param5}, a.param2 / 180 * Math.PI, b.param2 / 180 * Math.PI, 400)
+  curves.map((c) =>{
+    switch (c.type){
+      case "Curve":
+        let rWaypoint: Waypoint = {frame: 0, type: 189, param1: 0, param2: 0, param3: 0, param4: 0, param6: c.center.x, param5: c.center.y, param7: 0, autocontinue: 0}
+        markers.push(<DraggableMarker waypoint={rWaypoint} active={false}/>)
+        lines.push(<Arc curve={c}/>)
+        break;
+      case "Straight":
+        lines.push(<Polyline pathOptions={limeOptions} positions={[{lat: c.start.y, lng: c.start.x}, {lat: c.end.y, lng: c.end.x}]} />)
+        break
+    }
+
+  })
+
+
+  }
   return (
     <LayerGroup>
-        <DraggableMarker waypoint={rWaypoint} active={false}/>
-        <DraggableMarker waypoint={r2Waypoint} active={false}/>
-        <Polygon pathOptions={limeOptions} positions={[{lat: S.start.y, lng: S.start.x}, {lat: S.end.y, lng: S.end.x}]} />
+      {markers}
+      {lines}
     </LayerGroup>
   )
 

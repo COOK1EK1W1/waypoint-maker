@@ -151,7 +151,7 @@ export default function MapStuff() {
           <ActiveLayer onMove={onMove}/>
           <GeofenceLayer onMove={onMove} />
           <MarkerLayer onMove={onMove}/>
-          <DubinsLayer onMove={onMove}/>
+          <DubinsLayer/>
         </MapContainer>
     );
   }
