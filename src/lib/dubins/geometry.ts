@@ -17,3 +17,14 @@ export function dist(a: XY, b: XY){
 export function pathLength(path: Path){
   return path.map((x: Segment) => segmentLength(x)).reduce((acc, a) => acc + a, 0)
 }
+
+export function offset(a: XY, dist: number, angle: number): XY{ 
+  return {
+    x: a.x + Math.sin(angle) * dist,
+    y: a.y + Math.cos(angle) * dist
+  }
+}
+
+export function bearing(a: XY, b: XY): number{
+  return (Math.atan2((b.x - a.x), (b.y - a.y)) + Math.PI * 2) % (Math.PI * 2)
+}
