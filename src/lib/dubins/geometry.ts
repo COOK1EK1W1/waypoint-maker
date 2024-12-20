@@ -5,8 +5,26 @@ export function segmentLength(seg: Segment): number{
     case "Curve": 
       return Math.abs(seg.theta * seg.radius)
     case "Straight":
-      return dist(seg.start, seg.end)
+      return world_dist(seg.start, seg.end)
   }
+}
+
+export function world_dist(a: XY, b: XY){
+  const R = 6371000; // Earth's radius in meters
+  const lat1 = a.y * Math.PI / 180;
+  const lat2 = b.y * Math.PI / 180;
+  const deltaLat = (b.y - a.y) * Math.PI / 180;
+  const deltaLon = (b.x - a.x) * Math.PI / 180;
+
+  const aHav = Math.sin(deltaLat / 2) * Math.sin(deltaLat / 2) +
+              Math.cos(lat1) * Math.cos(lat2) *
+              Math.sin(deltaLon / 2) * Math.sin(deltaLon / 2);
+  
+  const c = 2 * Math.atan2(Math.sqrt(aHav), Math.sqrt(1 - aHav));
+  
+  // Return the distance in meters
+  return R * c;
+
 }
 
 export function dist(a: XY, b: XY){
