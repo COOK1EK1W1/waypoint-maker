@@ -8,7 +8,6 @@ type Parameter = {
   increment: number | null
   default: number | null
   options: []
-
 }
 
 type Command = {

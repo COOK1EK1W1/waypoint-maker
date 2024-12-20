@@ -1,15 +1,15 @@
-
 import { WaypointCollection, Waypoint, Node, WPNode } from "@/types/waypoints";
 import { commands } from "./commands";
 
 export function add_waypoint(missionName: string, waypoint: Node, waypoints: WaypointCollection): WaypointCollection{
+  // add a waypoint to a mission
+
   const mission = waypoints.get(missionName)
   if (mission === undefined) return waypoints
-  const newMission = [...mission, waypoint]
-  let newMap = new Map(waypoints)
-  newMap.set(missionName, newMission)
-  return newMap
+
+  return new Map(waypoints).set(missionName, [...mission, waypoint])
 }
+
 export function insert_waypoint(id: number, missionName: string, waypoint: WPNode, waypoints: WaypointCollection): WaypointCollection {
 
   function rec(count:number, mission: string): number{
@@ -70,12 +70,7 @@ export function AvgLatLng(nodes: Node[], store: WaypointCollection): [number, nu
     const curNode = nodes[i]
     switch (curNode.type){
       case "Waypoint":{
-        const commanddesc = commands[commands.findIndex(a => a.value==curNode.wps.type)]
-        const hasLocationParams = commanddesc.parameters[4] && 
-        commanddesc.parameters[5] &&
-        commanddesc.parameters[4].label == "Latitude" &&
-        commanddesc.parameters[5].label == "Longitude"
-        if (hasLocationParams){
+        if (hasLocation(curNode.wps)){
           count += 1
           latTotal += curNode.wps.param5
           lngTotal += curNode.wps.param6
@@ -175,7 +170,7 @@ export function findnthwaypoint(mission: string, n: number, waypoints: WaypointC
 
 
 export function MoveWPsAvgTo(newLat: number, newLng: number, waypoints: WaypointCollection, selectedWPs: number[], active: string): WaypointCollection{
-  const mission: Node[] | undefined = waypoints.get(active);
+  const mission = waypoints.get(active);
   if (!mission) return waypoints;
 
   let wps: Node[] = [];
@@ -205,33 +200,33 @@ export function MoveWPsAvgTo(newLat: number, newLng: number, waypoints: Waypoint
 
 
 export function isPointInPolygon(polygon: Waypoint[], point: Waypoint) {
-    const num_vertices = polygon.length;
-    const x = point.param5;
-    const y = point.param6;
-    let inside = false;
- 
-    let p1 = polygon[0];
-    let p2;
- 
-    for (let i = 1; i <= num_vertices; i++) {
-        p2 = polygon[i % num_vertices];
- 
-        if (y > Math.min(p1.param6, p2.param6)) {
-            if (y <= Math.max(p1.param6, p2.param6)) {
-                if (x <= Math.max(p1.param5, p2.param5)) {
-                    const x_intersection = ((y - p1.param6) * (p2.param5 - p1.param5)) / (p2.param6 - p1.param6) + p1.param5;
- 
-                    if (p1.param5 === p2.param5 || x <= x_intersection) {
-                        inside = !inside;
-                    }
-                }
-            }
+  const num_vertices = polygon.length;
+  const x = point.param5;
+  const y = point.param6;
+  let inside = false;
+
+  let p1 = polygon[0];
+  let p2;
+
+  for (let i = 1; i <= num_vertices; i++) {
+    p2 = polygon[i % num_vertices];
+
+    if (y > Math.min(p1.param6, p2.param6)) {
+      if (y <= Math.max(p1.param6, p2.param6)) {
+        if (x <= Math.max(p1.param5, p2.param5)) {
+          const x_intersection = ((y - p1.param6) * (p2.param5 - p1.param5)) / (p2.param6 - p1.param6) + p1.param5;
+
+          if (p1.param5 === p2.param5 || x <= x_intersection) {
+            inside = !inside;
+          }
         }
- 
-        p1 = p2;
+      }
     }
- 
-    return inside;
+
+    p1 = p2;
+  }
+
+  return inside;
 }
 
 export function hasLocation(waypoint: Waypoint): boolean{
@@ -241,5 +236,4 @@ export function hasLocation(waypoint: Waypoint): boolean{
     commanddesc.parameters[4].label == "Latitude" &&
     commanddesc.parameters[5].label == "Longitude"
     return hasLocationParams || false
-
 }
