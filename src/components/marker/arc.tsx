@@ -1,10 +1,9 @@
 import { Polyline } from "react-leaflet"
 import { Curve } from "@/types/dubins"
-import { latLng, LatLngExpression } from "leaflet"
+import { latLng, LatLngExpression, PathOptions } from "leaflet"
 import { offset } from "@/lib/dubins/geometry"
 
-const limeOptions = { color: 'lime' }
-export default function Arc({curve} : {curve: Curve}){
+export default function Arc({curve, pathOptions} : {curve: Curve, pathOptions?: PathOptions}){
 
   let points: LatLngExpression[] = []
 
@@ -25,7 +24,7 @@ export default function Arc({curve} : {curve: Curve}){
   }
 
   return (
-      <Polyline pathOptions={limeOptions} positions={points} />
+      <Polyline pathOptions={pathOptions} positions={points} />
   )
 
 }

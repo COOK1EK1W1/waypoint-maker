@@ -50,7 +50,7 @@ export function DubinsBetween(a: XY, b: XY, theta_a: number, theta_b: number, tu
     let a = Math.asin((turn_radius * 2) / world_dist(a_centers.l, b_R_CP))
     let AR2: Curve = {type: "Curve", center: a_centers.l, radius: turn_radius, start: theta_a + Math.PI/2, theta:((al2br-a) - theta_a + Math.PI * 2) % (Math.PI * 2) - Math.PI * 2 }
     let ST3: Straight = {type: "Straight", start: offset(a_centers.l, turn_radius, (al2br-a) + Math.PI / 2), end: offset(b_R_CP, turn_radius, (al2br - a) - Math.PI/2)}
-    let BL2: Curve = {type: "Curve", center: b_R_CP, radius: turn_radius, start: (al2br - a) - Math.PI/2, theta:theta_b - (al2br - a) + Math.PI * 2}
+    let BL2: Curve = {type: "Curve", center: b_R_CP, radius: turn_radius, start: (al2br - a) - Math.PI/2, theta:mod2pi(theta_b - (al2br - a))}
     let LSR: Path = [AR2, ST3, BL2]
     sections.push(LSR)
   }
