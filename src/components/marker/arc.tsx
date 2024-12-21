@@ -8,14 +8,14 @@ export default function Arc({curve, pathOptions} : {curve: Curve, pathOptions?: 
   let points: LatLngExpression[] = []
 
   if (curve.theta < 0){
-    for (let i = 0; i > curve.theta; i -= 0.1){
+    for (let i = 0; i > curve.theta; i -= 0.04){
       let a = offset(curve.center, curve.radius, curve.start + i)
       points.push(latLng(a.y, a.x))
     }
     let a = offset(curve.center, curve.radius, curve.start+curve.theta)
     points.push(latLng(a.y, a.x))
   }else{
-    for (let i = 0; i < curve.theta; i += 0.1){
+    for (let i = 0; i < curve.theta; i += 0.04){
       let a = offset(curve.center, curve.radius, curve.start + i)
       points.push(latLng(a.y, a.x))
     }
