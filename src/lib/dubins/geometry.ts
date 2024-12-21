@@ -49,3 +49,12 @@ export function offset(a: XY, dist: number, angle: number): XY{
 export function bearing(a: XY, b: XY): number{
   return (Math.atan2((b.x - a.x), (b.y - a.y)) + Math.PI * 2) % (Math.PI * 2)
 }
+
+export function modf(angle: number, divisor: number): number{
+  return (divisor + (angle % divisor)) % divisor
+}
+
+export function mod2pi(angle: number): number{
+  return modf(angle, Math.PI*2)
+
+}

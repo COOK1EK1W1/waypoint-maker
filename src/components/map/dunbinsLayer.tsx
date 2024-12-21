@@ -26,7 +26,7 @@ export default function DubinsLayer(){
   for (let i = 0; i < activeWPs.length - 1; i ++){
   let a = activeWPs[i]
   let b = activeWPs[i+1]
-  let curves = DubinsBetween({x: a.param6, y: a.param5}, {x: b.param6, y: b.param5}, a.param2 / 180 * Math.PI, b.param2 / 180 * Math.PI, 400)
+  let curves = DubinsBetween({x: a.param6, y: a.param5}, {x: b.param6, y: b.param5}, a.param2 / 180 * Math.PI, b.param2 / 180 * Math.PI, 50)
   curves.map((c, a) =>{
     switch (c.type){
       case "Curve":
