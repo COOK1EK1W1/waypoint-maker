@@ -1,5 +1,5 @@
 "use client"
-import StartModal from "@/components/modal/modal";
+import StartModal from "@/components/modal/startModal";
 import ToolBar from "@/components/toolBar/ToolBar";
 import Editor from "@/components/waypointEditor/editor";
 import HeightMap from "@/components/waypointEditor/heightMap";

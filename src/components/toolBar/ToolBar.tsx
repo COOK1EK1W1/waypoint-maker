@@ -4,6 +4,7 @@ import WPCheck from "./WPcheck"
 import LoadJson from "./load"
 import Button from "./button"
 import { FaFileDownload } from "react-icons/fa"
+import VehicleTypeButton from "../vehicleType/vehicleTypeButton"
 
 export default function ToolBar(){
   const {waypoints} = useWaypointContext()
@@ -26,6 +27,7 @@ export default function ToolBar(){
       <Button onClick={downloadWM}><FaFileDownload className="inline mx-2"/>.json (WM) download</Button>
       <LoadJson/>
       <WPCheck/>
+      <VehicleTypeButton/>
     </div>
   </div>
 }
