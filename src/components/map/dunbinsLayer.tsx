@@ -54,7 +54,6 @@ export default function DubinsLayer(){
   start_dirs.push(0)
   let optimised_dirs = particleSwarmOptimise(start_dirs, [], testing, 100)
   //let optimised_dirs = start_dirs
-  console.log(optimised_dirs)
 
   for (let i = 0; i < activeWPs.length - 1; i ++){
     let a = activeWPs[i]
