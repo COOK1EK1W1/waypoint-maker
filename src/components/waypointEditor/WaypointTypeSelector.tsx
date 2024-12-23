@@ -1,6 +1,6 @@
 import { commandName } from "@/util/translationTable";
 import { useWaypointContext } from "../../util/context/WaypointContext";
-import { commands } from "@/util/commands";
+import { commands, planeSupported } from "@/util/commands";
 import { Node } from "@/types/waypoints";
 
 
@@ -21,7 +21,7 @@ export default function WaypointTypeSelector({wps, change}: {wps: Node[], change
       <label>
         <span className="block pl-[3.5px]">Type</span>
         <select className="w-40 h-[25px] border-slate-200 bg-slate-100" onChange={change} value={  commandName(commands[commands.findIndex(a => a.value==active.wps.type)].name)} disabled={wps.length!=1}>
-          {commands.map((cmd, index) => (
+          {commands.filter((x) => planeSupported.includes(x.name)).map((cmd, index) => (
             <option key={index} data-cmd={cmd.value}>{commandName(cmd.name)}</option>
           ))}
         </select>

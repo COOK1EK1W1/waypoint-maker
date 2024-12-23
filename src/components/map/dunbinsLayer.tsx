@@ -6,7 +6,7 @@ import { DubinsBetween } from "@/lib/dubins/dubins";
 import {Waypoint} from "@/types/waypoints"
 import Arc from "../marker/arc";
 import { ReactNode } from "react";
-import { pathLength, worldBearing, worldPathLength } from "@/lib/dubins/geometry";
+import { pathLength, worldBearing, worldOffset, worldPathLength } from "@/lib/dubins/geometry";
 import { particleSwarmOptimise } from "@/lib/optimisation/particleSwarm";
 import { angleBetweenPoints } from "@/util/distance";
 
@@ -33,7 +33,9 @@ export default function DubinsLayer(){
       let b = activeWPs[i+1]
       let h1 = dirs[i]
       let h2 = dirs[i+1]
-      let curves = DubinsBetween({x: a.param6, y: a.param5}, {x: b.param6, y: b.param5}, h1, h2, b.param3)
+      let offset_a = worldOffset({x: a.param6, y: a.param5}, a.param1, h1 - Math.PI/2)
+      let offset_b = worldOffset({x: b.param6, y: b.param5}, b.param1, h2 - Math.PI/2)
+      let curves = DubinsBetween(offset_a, offset_b, h1, h2, b.param2)
       totalLength += worldPathLength(curves)
     }
     return totalLength
@@ -60,12 +62,14 @@ export default function DubinsLayer(){
     let b = activeWPs[i+1]
     let h1 = optimised_dirs[i]
     let h2 = optimised_dirs[i+1]
-    let curves = DubinsBetween({x: a.param6, y: a.param5}, {x: b.param6, y: b.param5}, h1, h2, b.param3)
+    let offset_a = worldOffset({x: a.param6, y: a.param5}, a.param1, h1 - Math.PI/2)
+    let offset_b = worldOffset({x: b.param6, y: b.param5}, b.param1, h2 - Math.PI/2)
+    let curves = DubinsBetween(offset_a, offset_b, h1, h2, b.param2)
     curves.map((c, a) =>{
       switch (c.type){
         case "Curve":
           let rWaypoint: Waypoint = {frame: 0, type: 189, param1: 0, param2: 0, param3: 0, param4: 0, param6: c.center.x, param5: c.center.y, param7: 0, autocontinue: 0}
-          markers.push(<DraggableMarker key={""+i+a} waypoint={rWaypoint} active={false}/>)
+          //markers.push(<DraggableMarker key={""+i+a} waypoint={rWaypoint} active={false}/>)
           lines.push(<Arc key={""+i+a} curve={c} pathOptions={limeOptions}/>)
           break;
         case "Straight":

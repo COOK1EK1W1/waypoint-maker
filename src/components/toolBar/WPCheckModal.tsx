@@ -45,7 +45,7 @@ export default function WPCheckModal({open, close}:{open: boolean, close: ()=>vo
         }
         setTerrain(ret)
       })
-  }, [waypoints, wps])
+  }, [open, waypoints, wps])
 
   return (
     <Modal open={open} onClose={close} className="w-2/4">

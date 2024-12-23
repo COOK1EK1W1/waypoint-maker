@@ -4,7 +4,6 @@ import { commands } from "@/util/commands";
 import { Node, Waypoint } from "@/types/waypoints";
 import { changeParam } from "@/util/WPCollection";
 import Parameter from "./Parameter";
-import CurEdit from "./curEdit";
 
 export default function WaypointEditor(){
   const {activeMission, selectedWPs, waypoints, setWaypoints} = useWaypointContext()
