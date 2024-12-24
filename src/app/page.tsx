@@ -18,13 +18,8 @@ export default function Home() {
 
       <NonSSRMap></NonSSRMap>
       <ToolBar/>
-      <div className="z-20 absolute bottom-0 m-2 w-[1080px]">
 
-        <div className="bg-white rounded-lg">
-        <Editor/>
-        <HeightMap/>
-        </div>
-      </div>
+      <Editor/>
       <ListView></ListView>
       
     </main>

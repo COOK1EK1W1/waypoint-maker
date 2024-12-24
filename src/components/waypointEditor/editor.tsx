@@ -4,10 +4,15 @@ import { LatLngEditor } from "./LatLngEditor";
 import WaypointEditor from "./WaypointEditor";
 import CurEdit from "./curEdit";
 import { Node } from "@/types/waypoints";
+import { useState } from "react";
+import { cn } from "@/util/tw";
+import HeightMap from "./heightMap";
+import Button from "../toolBar/button";
 
 export default function Editor(){
 
   const {activeMission, selectedWPs, waypoints} = useWaypointContext()
+  const [hidden, setHidden] = useState(false)
 
 
 
@@ -26,25 +31,26 @@ export default function Editor(){
   }
 
   if (wps.length == 0){
-    return (
-      <div className="flex">
-        <CurEdit/>
-        <div className="h-[106px] flex w-full items-center justify-center">
-          Place a waypoint to begin editing
-        </div>
-      </div>
-    )
+    return
 
   }
 
   return (
-    <div className="flex">
-      <CurEdit/>
-      <div>
-        <WaypointEditor/>
-        <LatLngEditor/>
+    <>
+    {hidden?<Button className="absolute z-20 rounded-lg left-2 bottom-2" onClick={()=>setHidden(false)}>WP list</Button>:null}
+    <div className={cn("z-20 absolute bottom-0 m-2 w-[930px] ease-in-out duration-200", hidden ? "bottom-[-100vh]": "")}>
+      <div className={cn("bg-white rounded-lg")}>
+        <div className="flex">
+          <CurEdit onHide={() => setHidden(true)}/>
+          <div className="flex flex-wrap">
+            <WaypointEditor/>
+            <LatLngEditor/>
+          </div>
+        </div>
+        <HeightMap/>
       </div>
     </div>
+    </>
 
   )
 }

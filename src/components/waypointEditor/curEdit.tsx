@@ -1,8 +1,9 @@
 import { useWaypointContext } from "@/util/context/WaypointContext";
 import { TbTopologyRing } from "react-icons/tb";
 import { TfiTarget } from "react-icons/tfi";
+import Button from "../toolBar/button";
 
-export default function CurEdit(){
+export default function CurEdit({onHide}: {onHide: ()=>void}){
   const {activeMission, selectedWPs, waypoints} = useWaypointContext()
 
   let item = <span>
@@ -24,11 +25,15 @@ export default function CurEdit(){
   return (
 
     <div className="pl-2 pt-2 flex">
-      <label className="mr-2"><span className="ml-[4px]">Editing</span>
-        <div className="border-2 border-slate-200 rounded-lg w-40 flex overflow-hidden h-[25px]">
-          {item}
-        </div>
-      </label>
+      <div className="flex flex-col">
+        <Button onClick={onHide}>Hide</Button>
+        <label className="mr-2"><span className="ml-[4px]">Editing</span>
+          <div className="border-2 border-slate-200 rounded-lg w-40 flex overflow-hidden h-[25px]">
+            {item}
+          </div>
+        </label>
+
+      </div>
       <div className="bg-slate-200 h-full w-[2px]"/>
     </div>
   )
