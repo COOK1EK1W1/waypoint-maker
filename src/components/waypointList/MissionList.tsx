@@ -7,10 +7,10 @@ import { CollectionType, Node } from "@/types/waypoints";
 import { TfiTarget } from "react-icons/tfi";
 import { commandName } from "@/util/translationTable";
 import { commands } from "@/util/commands";
-import { FaTrashAlt } from "react-icons/fa";
+import { FaArrowRight, FaTrashAlt } from "react-icons/fa";
 import { useState } from "react";
 
-export default function MissionList(){
+export default function MissionList({onHide}: {onHide: ()=>void}){
   const {setActiveMission, waypoints, setSelectedWPs, selectedWPs, setWaypoints, activeMission, setTool } = useWaypointContext()
   const [lastSelectedIndex, setLastSelectedIndex] = useState<number | null>(null);
 
@@ -64,7 +64,7 @@ export default function MissionList(){
 
   return (
     <div className="flex-grow overflow-auto select-none">
-      <h2 className="px-2 text-lg pb-0">{activeMission}</h2>
+      <h2 className="px-2 text-lg pb-0 justify-between flex">{activeMission}<button onMouseDown={onHide}><FaArrowRight className="w-6 h-6"/></button></h2>
       <div className="m-2 h-[1px] bg-slate-200"></div>
 
       {!hasTakeoff && activeMission == "Main" ? 
