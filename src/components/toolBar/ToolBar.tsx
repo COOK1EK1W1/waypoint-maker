@@ -5,9 +5,10 @@ import LoadJson from "./load"
 import Button from "@/components/toolBar/button"
 import { FaFileDownload } from "react-icons/fa"
 import VehicleTypeButton from "../vehicleType/vehicleTypeButton"
+import { bakeDubins } from "./bakeDubins"
 
 export default function ToolBar(){
-  const {waypoints} = useWaypointContext()
+  const {waypoints, activeMission, setWaypoints} = useWaypointContext()
 
   function downloadQGC(){
     const output = waypointTo_waypoints_file(waypoints)
@@ -28,6 +29,7 @@ export default function ToolBar(){
       <LoadJson/>
       <WPCheck/>
       <VehicleTypeButton/>
+      <Button onClick={()=>bakeDubins(waypoints, activeMission, setWaypoints)}>Bake Dubins</Button>
     </div>
   </div>
 }
