@@ -39,7 +39,7 @@ export default function Editor(){
     <>
     {hidden?<Button className="absolute z-20 rounded-lg left-2 bottom-2" onClick={()=>setHidden(false)}>WP list</Button>:null}
     <div className={cn("z-20 absolute bottom-0 m-2 w-[930px] ease-in-out duration-200", hidden ? "bottom-[-100vh]": "")}>
-      <div className={cn("bg-white rounded-lg")}>
+      <div className={cn("bg-white rounded-lg shadow-lg shadow-black")}>
         <div className="flex">
           <CurEdit onHide={() => setHidden(true)}/>
           <div className="flex flex-wrap">
