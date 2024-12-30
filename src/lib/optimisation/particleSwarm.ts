@@ -1,10 +1,9 @@
-type bound = {
-  min?: number,
-  max?: number,
-  circular?: boolean
-}
+import { bound } from "@/types/dubins"
+
 
 export function particleSwarmOptimise(initialGuess: number[], bounds: bound[], fn: (a: number[])=>number, popsize: number): number[]{
+  console.assert(initialGuess.length == bounds.length)
+
   let population = []
   let velocities = []
   let local_best_position = []
@@ -54,12 +53,22 @@ export function particleSwarmOptimise(initialGuess: number[], bounds: bound[], f
                      d * (global_best_position[a] - population[p][a])
         velocities[p][a] = newVel
         population[p][a] += 1 * newVel
+        let curBound = bounds[a]
+        if (curBound.max && population[p][a] > curBound.max){
+          population[p][a] = curBound.max
+          velocities[p][a] = 0
+        }
+        if (curBound.min && population[p][a] < curBound.min){
+          population[p][a] = curBound.min
+          velocities[p][a] = 0
+        }
       }
     }
 
   }
   console.log("ending fitness: ", global_best_value)
   return global_best_position
+        bounds.push({min: 0, max: 6.28})
 
 }
 

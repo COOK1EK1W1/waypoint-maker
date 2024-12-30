@@ -20,3 +20,9 @@ export type Straight = {
 export type Segment = Curve | Straight
 
 export type Path = Segment[]
+
+export type bound = {
+  min?: number,
+  max?: number,
+  circular?: boolean
+}
