@@ -2,7 +2,6 @@
 import StartModal from "@/components/modal/startModal";
 import ToolBar from "@/components/toolBar/ToolBar";
 import Editor from "@/components/waypointEditor/editor";
-import HeightMap from "@/components/waypointEditor/heightMap";
 import ListView from "@/components/waypointList/ListView";
 import dynamic from "next/dynamic";
 
