@@ -1,11 +1,12 @@
 import { dubinsBetweenWaypoint, getTunableParameters, setTunableParameter, splitDubinsRuns } from "@/lib/dubins/dubinWaypoints";
 import { worldPathLength } from "@/lib/dubins/geometry";
 import { particleSwarmOptimise } from "@/lib/optimisation/particleSwarm";
+import { Path } from "@/types/dubins";
 import { Waypoint, WaypointCollection } from "@/types/waypoints";
 import { changeParam, findnthwaypoint, get_waypoints } from "@/util/WPCollection";
 import { Dispatch, SetStateAction } from "react";
 
-export function bakeDubins(waypoints: WaypointCollection, activeMission: string, setWaypoints: Dispatch<SetStateAction<WaypointCollection>>){
+export function bakeDubins(waypoints: WaypointCollection, activeMission: string, setWaypoints: Dispatch<SetStateAction<WaypointCollection>>, optimisationFunction: (path: Path)=>number){
   let activeWaypoints: Waypoint[] = get_waypoints(activeMission, waypoints)
 
   let dubinSections = splitDubinsRuns(activeWaypoints)
@@ -17,7 +18,7 @@ export function bakeDubins(waypoints: WaypointCollection, activeMission: string,
       let totalLength = 0
       for (let i = 0; i < wps.length - 1; i++){
         let curves = dubinsBetweenWaypoint(localWPS[i], localWPS[i+1])
-        totalLength += worldPathLength(curves)
+        totalLength += optimisationFunction(curves)
       }
       return totalLength
 
