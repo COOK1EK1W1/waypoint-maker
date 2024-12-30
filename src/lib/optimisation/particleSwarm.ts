@@ -9,8 +9,8 @@ export function particleSwarmOptimise(initialGuess: number[], bounds: bound[], f
   let velocities = []
   let local_best_position = []
   let local_best_value = []
-  let global_best_position = initialGuess
-  let global_best_value = fn(initialGuess)
+  let global_best_position = [...initialGuess]
+  let global_best_value = fn(global_best_position)
   console.log("Starting fitness: ", global_best_value)
   for (let i = 0; i < popsize; i++){
     let particle_pos = []

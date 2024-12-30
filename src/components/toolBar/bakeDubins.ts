@@ -41,6 +41,10 @@ export function bakeDubins(waypoints: WaypointCollection, activeMission: string,
         if (cur){
           x.param2 = cur
         }
+        cur = optimised_dirs.shift()
+        if (cur){
+          x.param3 = cur
+        }
         return x
 
       })

@@ -64,6 +64,7 @@ export function getTunableParameters(wps: Waypoint[]): number[]{
   for (const waypoint of wps){
     if (waypoint.type == 69){
       ret.push(waypoint.param2)
+      ret.push(waypoint.param3)
     }
   }
   return ret
@@ -78,6 +79,10 @@ export function setTunableParameter(wps: Waypoint[], params: number[]): Waypoint
       let next = localparams.shift()
       if (next){
         cur.param2 = next
+      }
+      next = localparams.shift()
+      if (next){
+        cur.param3 = next
       }
     }
     newWaypoints.push(cur)
