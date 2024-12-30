@@ -111,4 +111,4 @@ async function getData() {
   writeFile("src/util/commands.ts", serializeToTypeScript(completedCommands), (a) => { console.log(a) })
 }
 
-getData()
+//getData()

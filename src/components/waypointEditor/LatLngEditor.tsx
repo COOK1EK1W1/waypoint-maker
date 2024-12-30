@@ -79,8 +79,8 @@ export function LatLngEditor(){
   }
 
   return (
-    <div className="flex flex-row">
-      <div className="px-2">
+    <>
+      <div className="p-2">
         <label><span className="ml-[4px]">Latitude</span>
           <div className="border-2 border-slate-200 rounded-lg w-40 flex overflow-hidden">
             <button onMouseDown={()=>nudge(0, -1)} className="h-[21px] w-[21px] flex items-center justify-center bg-slate-100"><FaArrowDown className="inline"/></button> 
@@ -91,7 +91,7 @@ export function LatLngEditor(){
           </div>
         </label>
       </div>
-      <div className="px-2">
+      <div className="p-2">
         <label><span className="ml-[4px]">Longitude</span>
           <div className="border-2 border-slate-200 rounded-lg w-40 flex overflow-hidden">
             <button onMouseDown={()=>nudge(-1, 0)} className="h-[21px] w-[21px] flex items-center justify-center bg-slate-100"><FaArrowLeft className="inline" /></button>
@@ -102,7 +102,7 @@ export function LatLngEditor(){
           </div>
         </label>
       </div>
-      <div className="px-2">
+      <div className="p-2">
         <label><span className="ml-[4px]"></span>
           <div className="border-2 border-slate-200 rounded-lg w-40 overflow-hidden flex">
             <button onMouseDown={move} className="h-[21px] flex-grow bg-slate-100 flex items-center justify-evenly"><TfiTarget className="inline"/>Move</button>
@@ -111,7 +111,7 @@ export function LatLngEditor(){
           </div>
         </label>
       </div>
-      {selectedWPs.length == 0 || selectedWPs.length > 1 ? <div className="px-2">
+      {selectedWPs.length == 0 || selectedWPs.length > 1 ? <div className="p-2">
         <label><span className="ml-[4px]"></span>
           <div className="border-2 border-slate-200 rounded-lg w-40 flex overflow-hidden">
             <button onMouseDown={()=>rotateDeg(5)} className="h-[21px] w-[21px] flex items-center justify-center bg-slate-100"><FaArrowRotateLeft className="inline"/></button> 
@@ -122,6 +122,6 @@ export function LatLngEditor(){
           </div>
         </label>
       </div>: null}
-    </div>
+  </>
   );
 };

@@ -10,6 +10,7 @@ import { useEffect } from "react";
 import ActiveLayer from "./activeLayer";
 import GeofenceLayer from "./geofenceLayer";
 import MarkerLayer from "./markerLayer";
+import DubinsLayer from "./dunbinsLayer";
 
 
 
@@ -138,7 +139,7 @@ export default function MapStuff() {
           center={{ lat: 55.91289, lng: -3.32560 }}
           zoom={13} 
           style={{ width: '100%', height: '100%'}}
-          className="rounded-lg"
+        className="z-10"
         >
           <TileLayer
             url='https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}'
@@ -150,6 +151,7 @@ export default function MapStuff() {
           <ActiveLayer onMove={onMove}/>
           <GeofenceLayer onMove={onMove} />
           <MarkerLayer onMove={onMove}/>
+          <DubinsLayer/>
         </MapContainer>
     );
   }

@@ -1,7 +1,6 @@
 import { get_waypoints } from "@/util/WPCollection"
 import { useWaypointContext } from "@/util/context/WaypointContext"
 import { cn } from "@/util/tw"
-import { Modal } from "@mui/material"
 import { FaCheck } from "react-icons/fa"
 import { FaX } from "react-icons/fa6"
 import { MdErrorOutline } from "react-icons/md"
@@ -33,12 +32,7 @@ export default function WPCheck(){
 
   return (
     <div className="flex items-center">
-      <Modal
-        open={showModal}
-        onClose={()=>setShowModal(false)}
-      >
-        <WPCheckModal close={()=>setShowModal(false)}/>
-      </Modal>
+      <WPCheckModal open={showModal} close={()=>setShowModal(false)}/>
       <button className={cn("p-1 m-1 rounded-lg flex justify-center items-center", color)} onMouseDown={()=>{setShowModal(true)}}>
         {text}<span>WPCheck</span>
       </button>

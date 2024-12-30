@@ -1,4 +1,5 @@
 type openElevation = {elevation: number, latitude: number, longitude: number}[]
+
 export function getTerrain(locs: [number, number][]): Promise<openElevation|null>{
   if (locs.length == 0) return Promise.resolve(null)
   let locstring = locs.map((loc) => `${loc[0].toFixed(7)},${loc[1].toFixed(7)}`).join("|")

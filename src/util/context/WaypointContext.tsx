@@ -20,7 +20,7 @@ export function useWaypointContext() {
   const context = useContext(waypointContext);
 
   if (context === undefined) {
-    throw new Error('No deadlines context provided');
+    throw new Error('No waypoint context provided');
   }
 
   return context;
