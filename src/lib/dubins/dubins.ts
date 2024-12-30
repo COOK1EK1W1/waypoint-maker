@@ -66,3 +66,52 @@ export function DubinsBetween(a: XY, b: XY, theta_a: number, theta_b: number, tu
   sections.sort((a, b)=> worldPathLength(a) - worldPathLength(b))
   return sections[0]
 }
+
+
+
+export function DubinsBetweenDiffRad(a: XY, b: XY, theta_a: number, theta_b: number, radA: number, radB: number): Path{
+
+  theta_a = mod2pi(theta_a)
+  theta_b = mod2pi(theta_b)
+
+  const a_centers = find_centers(a, theta_a, radA)
+  const b_centers = find_centers(b, theta_b, radB)
+
+  const a2b = worldBearing(a, b)
+
+  const ar2br = worldBearing(a_centers.r, b_centers.r)
+  const al2bl = worldBearing(a_centers.l, b_centers.l)
+  const ar2bl = worldBearing(a_centers.r, b_centers.l)
+  const al2br = worldBearing(a_centers.l, b_centers.r)
+
+  let sections: Path[] = []
+
+  let left_start = theta_a + Math.PI/2
+  let right_start = theta_a - Math.PI/2
+
+  {
+    //RSR
+    let c1: Curve = {type: "Curve", center: a_centers.r, radius: radA, start: right_start, theta: mod2pi(ar2br)}
+    return [c1]
+  }
+
+  {
+    //LSL
+    let c1: Curve = {type: "Curve", center: a_centers.l, radius: radA, start: right_start, theta: mod2pi(ar2br - theta_a)}
+  
+  }
+
+  {
+    //RSL
+    let c1: Curve = {type: "Curve", center: a_centers.r, radius: radA, start: right_start, theta: mod2pi(ar2br - theta_a)}
+
+  }
+
+  {
+    //LSR
+    let c1: Curve = {type: "Curve", center: a_centers.l, radius: radA, start: right_start, theta: mod2pi(ar2br - theta_a)}
+  }
+
+  sections.sort((a, b)=> worldPathLength(a) - worldPathLength(b))
+  return sections[0]
+}
