@@ -19,7 +19,6 @@ export default function WPCheckModal({open, close}:{open: boolean, close: ()=>vo
       .then((terrainHeights)=>{
         if (!terrainHeights) return
         let ret: Fault[] = []
-        console.log(terrainHeights)
         let terrainoffset = terrainHeights[0].elevation
         for (let i = 0; i < wps.length; i++){
           let wp = findnthwaypoint("Main", i, waypoints)

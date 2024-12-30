@@ -239,7 +239,6 @@ export function wpCheck(wps: Waypoint[], waypoints: WaypointCollection): Fault[]
     let found = false
     Array.from(waypoints.keys()).map((mission)=>{
       if (mission == "Geofence" || mission == "Markers") return
-      console.log("finding", key, "in mission", mission)
       let nodes = waypoints.get(mission)
       if (!nodes)return
       nodes.map((node)=>{

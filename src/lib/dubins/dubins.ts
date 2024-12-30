@@ -89,29 +89,46 @@ export function DubinsBetweenDiffRad(a: XY, b: XY, theta_a: number, theta_b: num
   let left_start = theta_a + Math.PI/2
   let right_start = theta_a - Math.PI/2
 
-  {
+  if (world_dist(a_centers.r, b_centers.r) > Math.abs(radA - radB)){
     //RSR
-    let c1: Curve = {type: "Curve", center: a_centers.r, radius: radA, start: right_start, theta: mod2pi(ar2br)}
-    return [c1]
+    let a = Math.asin((radA - radB) / world_dist(a_centers.r, b_centers.r)) + ar2br
+    let c1: Curve = {type: "Curve", center: a_centers.r, radius: radA, start: right_start, theta: mod2pi(a - theta_a)}
+    let s: Straight = {type: "Straight", start: worldOffset(a_centers.r, radA, a - Math.PI/2), end: worldOffset(b_centers.r, radB, a - Math.PI/2)}
+    let c2: Curve = {type: "Curve", center: b_centers.r, radius: radB, start: a - Math.PI/2, theta: mod2pi(theta_b - a)}
+    let RSL: Path = [c1, s, c2]
+    sections.push(RSL)
   }
 
-  {
+  if (world_dist(a_centers.l, b_centers.l) > Math.abs(radA - radB)){
     //LSL
-    let c1: Curve = {type: "Curve", center: a_centers.l, radius: radA, start: right_start, theta: mod2pi(ar2br - theta_a)}
-  
+    let a = al2bl - Math.asin((radA - radB) / world_dist(a_centers.l, b_centers.l))
+    let c1: Curve = {type: "Curve", center: a_centers.l, radius: radA, start: left_start, theta: mod2pi(a - theta_a) - Math.PI*2}
+    let s: Straight = {type: "Straight", start: worldOffset(a_centers.l, radA, a + Math.PI/2), end: worldOffset(b_centers.l, radB, a + Math.PI/2)}
+    let c2: Curve = {type: "Curve", center: b_centers.l, radius: radB, start: a - 3 * (Math.PI/2), theta: mod2pi(theta_b - a) - Math.PI*2}
+    let RSL: Path = [c1, s, c2]
+    sections.push(RSL)
   }
 
-  {
+  if (world_dist(a_centers.r, b_centers.l) > Math.abs(radA + radB)){
     //RSL
-    let c1: Curve = {type: "Curve", center: a_centers.r, radius: radA, start: right_start, theta: mod2pi(ar2br - theta_a)}
+    let a = Math.asin((radA + radB) / world_dist(a_centers.r, b_centers.l)) + ar2bl
+    let c1: Curve = {type: "Curve", center: a_centers.r, radius: radA, start: right_start, theta: mod2pi(a - theta_a)}
+    let s: Straight = {type: "Straight", start: worldOffset(a_centers.r, radA, a - Math.PI/2), end: worldOffset(b_centers.l, -radB, a - Math.PI/2)}
+    let c2: Curve = {type: "Curve", center: b_centers.l, radius: radB, start: a - 3 * (Math.PI/2), theta: mod2pi(theta_b - a) - Math.PI*2}
+    let RSL: Path = [c1, s, c2]
+    sections.push(RSL)
 
   }
 
-  {
+  if (world_dist(a_centers.l, b_centers.r) > Math.abs(radA + radB)){
     //LSR
-    let c1: Curve = {type: "Curve", center: a_centers.l, radius: radA, start: right_start, theta: mod2pi(ar2br - theta_a)}
+    let a = al2br - Math.asin((radA + radB) / world_dist(a_centers.l, b_centers.r))
+    let c1: Curve = {type: "Curve", center: a_centers.l, radius: radA, start: left_start, theta: mod2pi(a - theta_a) - Math.PI*2}
+    let s: Straight = {type: "Straight", start: worldOffset(a_centers.l, radA, a + Math.PI/2), end: worldOffset(b_centers.r, -radB, a + Math.PI/2)}
+    let c2: Curve = {type: "Curve", center: b_centers.r, radius: radB, start: a - Math.PI/2, theta: mod2pi(theta_b - a)}
+    let LSR: Path = [c1, s, c2]
+    sections.push(LSR)
   }
-
   sections.sort((a, b)=> worldPathLength(a) - worldPathLength(b))
   return sections[0]
 }
