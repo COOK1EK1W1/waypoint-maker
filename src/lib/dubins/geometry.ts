@@ -18,6 +18,27 @@ export function worldSegmentLength(seg: Segment): number{
   }
 }
 
+export function energyRequirement(radius: number, velocity: number){
+  return (Math.sqrt(radius * radius * 9.81 * 9.81 + Math.pow(velocity, 4))) / (radius * 9.81)
+}
+
+export function pathEnergyRequirements(path: Path){
+  let velocity = 23
+  let energyConstant = 1
+  let totalEnergy = 0
+  for (const seg of path){
+    switch( seg.type){
+      case "Curve": 
+        totalEnergy +=  Math.abs(seg.theta * seg.radius) * energyRequirement(seg.radius, velocity) * energyConstant
+        continue;
+      case "Straight":
+        totalEnergy += world_dist(seg.start, seg.end) * energyConstant
+        continue;
+    }
+  }
+  return totalEnergy
+}
+
 export function world_dist(a: XY, b: XY){
   const R = 6371000; // Earth's radius in meters
   const lat1 = a.y * Math.PI / 180;

@@ -6,6 +6,7 @@ import Button from "@/components/toolBar/button"
 import { FaFileDownload } from "react-icons/fa"
 import VehicleTypeButton from "../vehicleType/vehicleTypeButton"
 import { bakeDubins } from "./bakeDubins"
+import { energyRequirement, pathEnergyRequirements, worldPathLength } from "@/lib/dubins/geometry"
 
 export default function ToolBar(){
   const {waypoints, activeMission, setWaypoints} = useWaypointContext()
@@ -29,7 +30,8 @@ export default function ToolBar(){
       <LoadJson/>
       <WPCheck/>
       <VehicleTypeButton/>
-      <Button onClick={()=>bakeDubins(waypoints, activeMission, setWaypoints)}>Bake Dubins</Button>
+      <Button onClick={()=>bakeDubins(waypoints, activeMission, setWaypoints, worldPathLength)}>opimise length</Button>
+      <Button onClick={()=>bakeDubins(waypoints, activeMission, setWaypoints, pathEnergyRequirements)}>optimise energy</Button>
     </div>
   </div>
 }
