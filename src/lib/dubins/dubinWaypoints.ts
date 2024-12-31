@@ -1,6 +1,6 @@
 import { Waypoint } from "@/types/waypoints";
 import { worldOffset } from "./geometry";
-import { DubinsBetween, DubinsBetweenDiffRad } from "./dubins";
+import { DubinsBetweenDiffRad } from "./dubins";
 import { Path } from "@/types/dubins";
 
 export function splitDubinsRuns(wps: Waypoint[]): {start: number, wps: Waypoint[]}[]{

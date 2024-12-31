@@ -1,6 +1,6 @@
 import { expect, test } from "bun:test";
 import { Segment, XY } from "@/types/dubins";
-import { bearing, modf, offset, pathLength, segmentLength, worldBearing } from "@/lib/dubins/geometry";
+import { bearing, mod2pi, modf, offset, pathLength, segmentLength, worldBearing } from "@/lib/dubins/geometry";
 
 test("straight line len", () => {
   const a: Segment = {type: "Straight", start: {x: 0, y: 0}, end: {x: 3, y: 4}}
@@ -71,6 +71,15 @@ test("modf", ()=>{
   expect(modf(12, 5)).toBe(2)
   expect(modf(-5, 5)).toBe(0)
   expect(modf(-12, 5)).toBe(3)
+})
+
+test("mod2pi", ()=>{
+  expect(mod2pi(0)).toBeCloseTo(0)
+  expect(mod2pi(3.14)).toBeCloseTo(3.14)
+  expect(mod2pi(Math.PI * 2)).toBeCloseTo(0)
+  expect(mod2pi(-1)).toBeCloseTo(Math.PI * 2 - 1)
+  expect(mod2pi(Math.PI * 12)).toBeCloseTo(0)
+  expect(mod2pi(-2*Math.PI)).toBeCloseTo(0)
 })
 
 test("world Bearing", ()=>{
