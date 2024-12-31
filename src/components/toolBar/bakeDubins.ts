@@ -1,9 +1,8 @@
 import { dubinsBetweenWaypoint, getTunableParameters, setTunableParameter, splitDubinsRuns } from "@/lib/dubins/dubinWaypoints";
-import { worldPathLength } from "@/lib/dubins/geometry";
 import { particleSwarmOptimise } from "@/lib/optimisation/particleSwarm";
 import { bound, Path } from "@/types/dubins";
 import { Waypoint, WaypointCollection } from "@/types/waypoints";
-import { changeParam, findnthwaypoint, get_waypoints } from "@/util/WPCollection";
+import { findnthwaypoint, get_waypoints } from "@/util/WPCollection";
 import { Dispatch, SetStateAction } from "react";
 
 export function bakeDubins(waypoints: WaypointCollection, activeMission: string, setWaypoints: Dispatch<SetStateAction<WaypointCollection>>, optimisationFunction: (path: Path)=>number){
@@ -11,6 +10,7 @@ export function bakeDubins(waypoints: WaypointCollection, activeMission: string,
 
   let dubinSections = splitDubinsRuns(activeWaypoints)
 
+  // This function is a closure that takes in the waypoints and returns a function that takes in the tunable parameters and returns the total length of the path
   function create_evaluate(wps: Waypoint[]){
     let localWPS = [...wps]
     function evaluate(x: number[]): number{
@@ -25,6 +25,7 @@ export function bakeDubins(waypoints: WaypointCollection, activeMission: string,
     }
     return evaluate
   }
+
   let curWaypoints = new Map(waypoints)
   for (const section of dubinSections){
     let starting_params = [...getTunableParameters(section.wps)]
@@ -40,23 +41,19 @@ export function bakeDubins(waypoints: WaypointCollection, activeMission: string,
 
     let optimised_dirs = particleSwarmOptimise(starting_params, bounds, b, 200)
 
-    for (let i = section.start; i < section.start + section.wps.length; i++){
-      let a = findnthwaypoint(activeMission, i, curWaypoints)
-      if (!a) continue;
-      curWaypoints = changeParam(a[1], a[0], curWaypoints, (x)=>{
-        if (x.type != 69) return x
-        let cur = optimised_dirs.shift()
-        if (cur){
-          x.param2 = cur
-        }
-        cur = optimised_dirs.shift()
-        if (cur){
-          x.param3 = cur
-        }
-        return x
+    let wps = setTunableParameter(section.wps, optimised_dirs)
 
-      })
+    for (let i = 0; i < section.wps.length; i++){
+      let a = findnthwaypoint(activeMission, i + section.start, curWaypoints)
+      if (!a) continue;
+      let mission = waypoints.get(a[0])
+      if (!mission) continue;
+      let curWP = mission[a[1]]
+      if (!curWP) continue;
+      if (curWP.type == "Waypoint"){
+        curWP.wps = wps[i]
+      }
     }
   }
-  setWaypoints(curWaypoints)
+  setWaypoints(new Map(curWaypoints))
 }

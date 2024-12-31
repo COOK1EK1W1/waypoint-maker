@@ -30,8 +30,8 @@ export default function ToolBar(){
       <LoadJson/>
       <WPCheck/>
       <VehicleTypeButton/>
-      <Button onClick={()=>bakeDubins(waypoints, activeMission, setWaypoints, worldPathLength)}>opimise length</Button>
-      <Button onClick={()=>bakeDubins(waypoints, activeMission, setWaypoints, pathEnergyRequirements)}>optimise energy</Button>
+      <Button onClick={()=>bakeDubins(waypoints, activeMission, setWaypoints, worldPathLength)}>Opimise Length</Button>
+      <Button onClick={()=>bakeDubins(waypoints, activeMission, setWaypoints, pathEnergyRequirements)}>Optimise Energy</Button>
     </div>
   </div>
 }

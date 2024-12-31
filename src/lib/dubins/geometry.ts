@@ -9,6 +9,14 @@ export function segmentLength(seg: Segment): number{
   }
 }
 
+export function deg2rad(deg: number): number{
+  return deg * Math.PI / 180
+}
+
+export function rad2deg(rad: number): number{
+  return rad * 180 / Math.PI
+}
+
 export function worldSegmentLength(seg: Segment): number{
   switch( seg.type){
     case "Curve": 
@@ -19,6 +27,9 @@ export function worldSegmentLength(seg: Segment): number{
 }
 
 export function energyRequirement(radius: number, velocity: number){
+  if (radius == 0){
+    return 0
+  }
   return (Math.sqrt(radius * radius * 9.81 * 9.81 + Math.pow(velocity, 4))) / (radius * 9.81)
 }
 
