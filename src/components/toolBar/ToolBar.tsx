@@ -22,9 +22,10 @@ export default function ToolBar(){
     downloadTextAsFile("mission.json", output)
   }
 
-  return <div className="z-20 absolute top-2 left-2 rounded-lg overflow-hidden">
+  return <div className="z-20 absolute top-2 left-14 rounded-lg overflow-hidden">
     <div className="h-9 flex bg-white">
-      <h1 className="mx-4 py-0 hidden lg:block">Waypoint Maker</h1>
+      <img className="h-9 px-2" src="/logo-192x192.png"/>
+      <h1 className="mx-4 py-0 hidden lg:flex items-center">Waypoint Maker</h1>
       <Button onClick={downloadQGC}><FaFileDownload className="inline mx-2"/>.waypoints (QGC, MP) download</Button>
       <Button onClick={downloadWM}><FaFileDownload className="inline mx-2"/>.json (WM) download</Button>
       <LoadJson/>
