@@ -1,7 +1,8 @@
 import { Waypoint } from "@/types/waypoints";
-import { deg2rad, rad2deg, worldOffset } from "./geometry";
+import { deg2rad, modf, rad2deg, worldOffset } from "./geometry";
 import { DubinsBetweenDiffRad } from "./dubins";
-import { Path } from "@/types/dubins";
+import { bound, Path } from "@/types/dubins";
+import { warn } from "console";
 
 export function splitDubinsRuns(wps: Waypoint[]): {start: number, wps: Waypoint[]}[]{
   let dubinSections: {start: number, wps: Waypoint[]}[] = []
@@ -71,6 +72,40 @@ export function getTunableParameters(wps: Waypoint[]): number[]{
     }
   }
   return ret
+}
+
+export function getBounds(wps: Waypoint[]): bound[]{
+  let bounds = []
+  for (const waypoint of wps){
+    if (waypoint.type == 69){
+      bounds.push({min: 0, max: 6.28, circular: true})
+      bounds.push({min: 50})
+    }
+  }
+  return bounds
+}
+
+export function applyBounds(params: number[], bounds: bound[]): number[]{
+  let newParams = [...params]
+  for (let i = 0; i < bounds.length; i++){
+    let bound = bounds[i]
+    if (bound.min){
+      if (newParams[i] < bound.min){
+        newParams[i] = bound.min
+      }
+    }
+    if (bound.max){
+      if (newParams[i] > bound.max){
+        newParams[i] = bound.max
+      }
+    }
+    if (bound.min && bound.max && bound.circular){
+      let range = bound.max - bound.min
+      let diff = newParams[i] - bound.min
+      newParams[i] = bound.min + modf(diff, range)
+    }
+  }
+  return newParams
 }
 
 export function setTunableParameter(wps: Waypoint[], params: number[]): Waypoint[]{

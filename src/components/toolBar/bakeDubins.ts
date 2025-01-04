@@ -1,4 +1,4 @@
-import { dubinsBetweenWaypoint, getTunableParameters, setTunableParameter, splitDubinsRuns } from "@/lib/dubins/dubinWaypoints";
+import { applyBounds, dubinsBetweenWaypoint, getBounds, getTunableParameters, setTunableParameter, splitDubinsRuns } from "@/lib/dubins/dubinWaypoints";
 import { particleSwarmOptimise } from "@/lib/optimisation/particleSwarm";
 import { bound, Path } from "@/types/dubins";
 import { Waypoint, WaypointCollection } from "@/types/waypoints";
@@ -27,19 +27,17 @@ export function bakeDubins(waypoints: WaypointCollection, activeMission: string,
   }
 
   let curWaypoints = new Map(waypoints)
+
+  // optimise each section of the path
   for (const section of dubinSections){
     let starting_params = [...getTunableParameters(section.wps)]
-    let bounds: bound[] = []
-    for (let i = 0; i < starting_params.length; i++){
-      if (i % 2 == 0){
-        bounds.push({min: 0, max: 6.28})
-      }else{
-        bounds.push({min: 50})
-      }
-    }
+    let bounds: bound[] = [...getBounds(section.wps)]
+    starting_params = applyBounds(starting_params, bounds)
+
     let b = create_evaluate(section.wps)
 
     let optimised_dirs = particleSwarmOptimise(starting_params, bounds, b, 200)
+    optimised_dirs = applyBounds(optimised_dirs, bounds)
 
     let wps = setTunableParameter(section.wps, optimised_dirs)
 
@@ -55,5 +53,5 @@ export function bakeDubins(waypoints: WaypointCollection, activeMission: string,
       }
     }
   }
-  setWaypoints(new Map(curWaypoints))
+  setWaypoints(curWaypoints)
 }
