@@ -83,7 +83,7 @@ export default function WaypointEditor(){
 
   if (allSame && wps.length > 0){
     return <>
-      <WaypointTypeSelector change={changeSelect} wps={wps}/>
+      <WaypointTypeSelector change={changeSelect} wps={wps} allSame={allSame}/>
 
       <Parameter param={commanddesc.parameters[0]} name="param1" change={changeInput} value={(x)=>x.wps.param1} wps={wps}/>
       <Parameter param={commanddesc.parameters[1]} name="param2" change={changeInput} value={(x)=>x.wps.param2} wps={wps}/>

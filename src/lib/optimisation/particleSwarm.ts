@@ -68,8 +68,6 @@ export function particleSwarmOptimise(initialGuess: number[], bounds: bound[], f
   }
   console.log("ending fitness: ", global_best_value)
   return global_best_position
-        bounds.push({min: 0, max: 6.28})
-
 }
 
 

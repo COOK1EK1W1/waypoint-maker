@@ -13,7 +13,7 @@ export function splitDubinsRuns(wps: Waypoint[]): {start: number, wps: Waypoint[
     const curWaypoint = wps[i]
     if (curWaypoint.type == 69){
       if (curSection.length == 0){
-        start = i-1
+        start = i
         if (i > 0){
           curSection.push(wps[i-1])
         }
@@ -89,6 +89,11 @@ export function applyBounds(params: number[], bounds: bound[]): number[]{
   let newParams = [...params]
   for (let i = 0; i < bounds.length; i++){
     let bound = bounds[i]
+    if (bound.min && bound.max && bound.circular){
+      let range = bound.max - bound.min
+      let diff = newParams[i] - bound.min
+      newParams[i] = bound.min + modf(diff, range)
+    }
     if (bound.min){
       if (newParams[i] < bound.min){
         newParams[i] = bound.min
@@ -98,11 +103,6 @@ export function applyBounds(params: number[], bounds: bound[]): number[]{
       if (newParams[i] > bound.max){
         newParams[i] = bound.max
       }
-    }
-    if (bound.min && bound.max && bound.circular){
-      let range = bound.max - bound.min
-      let diff = newParams[i] - bound.min
-      newParams[i] = bound.min + modf(diff, range)
     }
   }
   return newParams

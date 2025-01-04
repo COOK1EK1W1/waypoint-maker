@@ -3,6 +3,7 @@ import { particleSwarmOptimise } from "@/lib/optimisation/particleSwarm";
 import { bound, Path } from "@/types/dubins";
 import { Waypoint, WaypointCollection } from "@/types/waypoints";
 import { findnthwaypoint, get_waypoints } from "@/util/WPCollection";
+import { circularProgressClasses } from "@mui/material";
 import { Dispatch, SetStateAction } from "react";
 
 export function bakeDubins(waypoints: WaypointCollection, activeMission: string, setWaypoints: Dispatch<SetStateAction<WaypointCollection>>, optimisationFunction: (path: Path)=>number){
@@ -41,14 +42,21 @@ export function bakeDubins(waypoints: WaypointCollection, activeMission: string,
 
     let wps = setTunableParameter(section.wps, optimised_dirs)
 
+    if (wps[0].type != 69){
+      wps.shift()
+    }
+
     for (let i = 0; i < section.wps.length; i++){
       let a = findnthwaypoint(activeMission, i + section.start, curWaypoints)
+      console.log(i, section.start, a)
       if (!a) continue;
       let mission = waypoints.get(a[0])
       if (!mission) continue;
       let curWP = mission[a[1]]
       if (!curWP) continue;
       if (curWP.type == "Waypoint"){
+        console.assert(wps[i].type == curWP.wps.type, "Waypoint type mismatch")
+        console.log(wps[i].type, curWP.wps.type)
         curWP.wps = wps[i]
       }
     }
