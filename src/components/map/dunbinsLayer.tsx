@@ -6,7 +6,8 @@ import Arc from "../marker/arc";
 import { ReactNode } from "react";
 import { dubinsBetweenWaypoint, splitDubinsRuns } from "@/lib/dubins/dubinWaypoints";
 
-const limeOptions = { color: 'red' }
+const curveOptions = { color: '#ff0000' }
+const straightOptions = { color: '#bb0000' }
 const noshow = ["Markers", "Geofence"]
 
 export default function DubinsLayer() {
@@ -32,10 +33,10 @@ export default function DubinsLayer() {
           case "Curve":
             let rWaypoint: Waypoint = { frame: 0, type: 189, param1: 0, param2: 0, param3: 0, param4: 0, param6: c.center.x, param5: c.center.y, param7: 0, autocontinue: 0 }
             //markers.push(<DraggableMarker key={""+i+a} waypoint={rWaypoint} active={false}/>)
-            lines.push(<Arc key={key++} curve={c} pathOptions={limeOptions} />)
+            lines.push(<Arc key={key++} curve={c} pathOptions={curveOptions} />)
             break;
           case "Straight":
-            lines.push(<Polyline key={key++} pathOptions={limeOptions} positions={[{ lat: c.start.y, lng: c.start.x }, { lat: c.end.y, lng: c.end.x }]} />)
+            lines.push(<Polyline key={key++} pathOptions={straightOptions} positions={[{ lat: c.start.y, lng: c.start.x }, { lat: c.end.y, lng: c.end.x }]} />)
             break
         }
       })
