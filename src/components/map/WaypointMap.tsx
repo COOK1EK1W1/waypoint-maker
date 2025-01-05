@@ -11,8 +11,6 @@ import ActiveLayer from "./activeLayer";
 import GeofenceLayer from "./geofenceLayer";
 import MarkerLayer from "./markerLayer";
 import DubinsLayer from "./dunbinsLayer";
-import { WaypointCollection } from "@/types/waypoints";
-
 
 
 export default function MapStuff() {
@@ -64,7 +62,7 @@ export default function MapStuff() {
 
     }
 
-  }, [activeMission, setWaypoints, waypoints])
+  }, [activeMission, setWaypoints, waypoints, moveMap])
 
   function handleClick(tool: Tool, e: LeafletMouseEvent) {
     switch (tool) {
