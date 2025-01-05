@@ -24,8 +24,8 @@ export default function WaypointProvider({ children }: Props) {
 
   const [tool, setTool] = useState<Tool>("Waypoint")
   return (
-    <waypointContext.Provider value={{ waypoints, setWaypoints, activeMission, setActiveMission, selectedWPs, setSelectedWPs, tool, setTool }}>
+    <waypointContext.Provider value={{ waypoints, setWaypoints, activeMission, setActiveMission, selectedWPs, setSelectedWPs, tool, setTool, moveMap: {} }} >
       {children}
-    </waypointContext.Provider>
+    </ waypointContext.Provider>
   );
 }

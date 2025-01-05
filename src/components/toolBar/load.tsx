@@ -2,9 +2,11 @@ import { useWaypointContext } from '@/util/context/WaypointContext';
 import React from 'react';
 import Button from './button';
 import { FaFileUpload } from 'react-icons/fa';
+import { AvgLatLng } from '@/util/WPCollection';
+import { WaypointCollection } from '@/types/waypoints';
 
 export default function LoadJson() {
-  const { setWaypoints } = useWaypointContext();
+  const { setWaypoints, moveMap } = useWaypointContext();
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (!event.target.files) {
@@ -25,7 +27,15 @@ export default function LoadJson() {
       try {
         if (reader.result == null) return
         const parsedData = JSON.parse("" + reader.result);
-        setWaypoints(new Map(parsedData))
+        let wps: WaypointCollection = new Map(parsedData)
+        let main = wps.get("Main")
+        if (main) {
+          if (moveMap.move) {
+            const [lat, lng] = AvgLatLng(main, wps)
+            moveMap.move(lat, lng)
+          }
+          setWaypoints(new Map(parsedData))
+        }
       } catch (err) {
       }
     };

@@ -5,8 +5,8 @@ import 'leaflet/dist/leaflet.css';
 import { useWaypointContext } from "../../util/context/WaypointContext";
 import { MoveWPsAvgTo, add_waypoint, changeParam, findnthwaypoint } from "@/util/WPCollection";
 import { Tool } from "@/types/tools";
-import { LeafletMouseEvent } from "leaflet";
-import { useEffect } from "react";
+import { LeafletMouseEvent, Map } from "leaflet";
+import { useEffect, useRef } from "react";
 import ActiveLayer from "./activeLayer";
 import GeofenceLayer from "./geofenceLayer";
 import MarkerLayer from "./markerLayer";
@@ -15,9 +15,16 @@ import DubinsLayer from "./dunbinsLayer";
 
 
 export default function MapStuff() {
-  const { waypoints, setWaypoints, activeMission, tool, setTool, selectedWPs } = useWaypointContext()
+  const { waypoints, setWaypoints, activeMission, tool, setTool, selectedWPs, moveMap } = useWaypointContext()
+
+  const mapRef = useRef<Map | null>(null)
 
   useEffect(() => {
+    moveMap.move = (lat, lng) => {
+      if (mapRef.current != null) {
+        console.log(mapRef.current.setView({ lat: lat, lng: lng }))
+      }
+    }
     function handleKeyPress(e: KeyboardEvent) {
       switch (e.key) {
         case 'n': {
@@ -43,6 +50,12 @@ export default function MapStuff() {
           };
           setWaypoints(add_waypoint(activeMission, { type: "Waypoint", wps: newMarker }, waypoints));
           break;
+
+        }
+        case 'b': {
+          if (mapRef.current != null) {
+            console.log(mapRef.current.setView({ lat: 0, lng: 0 }))
+          }
 
         }
         default: return
@@ -140,6 +153,7 @@ export default function MapStuff() {
         zoom={13}
         style={{ width: '100%', height: '100%' }}
         className="z-10"
+        ref={mapRef}
       >
         <TileLayer
           url='https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}'
