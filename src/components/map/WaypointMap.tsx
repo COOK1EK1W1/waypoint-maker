@@ -11,6 +11,7 @@ import ActiveLayer from "./activeLayer";
 import GeofenceLayer from "./geofenceLayer";
 import MarkerLayer from "./markerLayer";
 import DubinsLayer from "./dunbinsLayer";
+import { WaypointCollection } from "@/types/waypoints";
 
 
 
@@ -22,7 +23,7 @@ export default function MapStuff() {
   useEffect(() => {
     moveMap.move = (lat, lng) => {
       if (mapRef.current != null) {
-        console.log(mapRef.current.setView({ lat: lat, lng: lng }))
+        mapRef.current.setView({ lat: lat, lng: lng })
       }
     }
     function handleKeyPress(e: KeyboardEvent) {
@@ -50,12 +51,6 @@ export default function MapStuff() {
           };
           setWaypoints(add_waypoint(activeMission, { type: "Waypoint", wps: newMarker }, waypoints));
           break;
-
-        }
-        case 'b': {
-          if (mapRef.current != null) {
-            console.log(mapRef.current.setView({ lat: 0, lng: 0 }))
-          }
 
         }
         default: return
@@ -137,7 +132,8 @@ export default function MapStuff() {
     const a = findnthwaypoint(activeMission, id, waypoints)
     if (a == null) return
     const [mission, pos] = a
-    setWaypoints(new Map(changeParam(pos, mission, waypoints, (wp) => ({ ...wp, param5: lat, param6: lng }))))
+    let newWps = changeParam(pos, mission, waypoints, (wp) => ({ ...wp, param5: lat, param6: lng }))
+    setWaypoints(newWps)
 
   }
 
