@@ -3,11 +3,11 @@ import React from 'react';
 import Button from './button';
 import { FaFileUpload } from 'react-icons/fa';
 
-export default function LoadJson(){
+export default function LoadJson() {
   const { setWaypoints } = useWaypointContext();
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (!event.target.files){
+    if (!event.target.files) {
       return
     }
 
@@ -21,10 +21,10 @@ export default function LoadJson(){
     const reader = new FileReader();
     reader.readAsText(file)
 
-    reader.onload = ()=>{
+    reader.onload = () => {
       try {
         if (reader.result == null) return
-        const parsedData = JSON.parse(""+reader.result);
+        const parsedData = JSON.parse("" + reader.result);
         setWaypoints(new Map(parsedData))
       } catch (err) {
       }
@@ -33,9 +33,9 @@ export default function LoadJson(){
   };
 
   return <>
-      <input type="file" accept=".json" id="fileInput" className="hidden" onChange={handleFileChange} />
-      <Button onClick={() => document.getElementById('fileInput')?.click()}>
-        <FaFileUpload className="inline"/>Load JSON
-      </Button>
+    <input type="file" accept=".json" id="fileInput" className="hidden" onChange={handleFileChange} />
+    <Button onClick={() => document.getElementById('fileInput')?.click()}>
+      <FaFileUpload className="inline" />Load JSON
+    </Button>
   </>
 }

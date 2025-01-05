@@ -1,7 +1,7 @@
 import { WaypointCollection, Waypoint, Node, WPNode } from "@/types/waypoints";
 import { commands } from "./commands";
 
-export function add_waypoint(missionName: string, waypoint: Node, waypoints: WaypointCollection): WaypointCollection{
+export function add_waypoint(missionName: string, waypoint: Node, waypoints: WaypointCollection): WaypointCollection {
   // add a waypoint to a mission
 
   const mission = waypoints.get(missionName)
@@ -12,18 +12,18 @@ export function add_waypoint(missionName: string, waypoint: Node, waypoints: Way
 
 export function insert_waypoint(id: number, missionName: string, waypoint: WPNode, waypoints: WaypointCollection): WaypointCollection {
 
-  function rec(count:number, mission: string): number{
+  function rec(count: number, mission: string): number {
     const curMission = waypoints.get(mission)
-    if (!curMission){return count}
-    for (let i = 0; i < curMission.length; i++){
+    if (!curMission) { return count }
+    for (let i = 0; i < curMission.length; i++) {
       let cur = curMission[i]
-      if (cur.type === "Collection"){
+      if (cur.type === "Collection") {
         count = rec(count, cur.collectionID)
 
-      }else{
-        if (count === id){
+      } else {
+        if (count === id) {
           let newMission = curMission
-          newMission.splice(i+1, 0, waypoint)
+          newMission.splice(i + 1, 0, waypoint)
         }
         count++;
       }
@@ -36,18 +36,18 @@ export function insert_waypoint(id: number, missionName: string, waypoint: WPNod
 }
 
 
-export function get_waypoints(missionstr: string, store: WaypointCollection): Waypoint[]{
+export function get_waypoints(missionstr: string, store: WaypointCollection): Waypoint[] {
   let retlist: Waypoint[] = []
   const waypoints = store.get(missionstr)
   if (waypoints === undefined) return []
-  for (let i = 0; i < waypoints.length; i++){
+  for (let i = 0; i < waypoints.length; i++) {
     const node = waypoints[i]
-    switch (node.type){
-      case "Collection":{
+    switch (node.type) {
+      case "Collection": {
         retlist = retlist.concat(get_waypoints(node.collectionID, store))
         break
       }
-      case "Waypoint":{
+      case "Waypoint": {
         retlist.push(node.wps)
         break;
       }
@@ -62,24 +62,24 @@ export function get_waypoints(missionstr: string, store: WaypointCollection): Wa
 
 }
 
-export function AvgLatLng(nodes: Node[], store: WaypointCollection): [number, number]{
+export function AvgLatLng(nodes: Node[], store: WaypointCollection): [number, number] {
   let latTotal = 0
   let lngTotal = 0
   let count = 0
-  for (let i = 0; i < nodes.length; i++){
+  for (let i = 0; i < nodes.length; i++) {
     const curNode = nodes[i]
-    switch (curNode.type){
-      case "Waypoint":{
-        if (hasLocation(curNode.wps)){
+    switch (curNode.type) {
+      case "Waypoint": {
+        if (hasLocation(curNode.wps)) {
           count += 1
           latTotal += curNode.wps.param5
           lngTotal += curNode.wps.param6
         }
         break;
       }
-      case "Collection":{
+      case "Collection": {
         const subCol = store.get(curNode.collectionID)
-        if (subCol != undefined){
+        if (subCol != undefined) {
           const [subLat, subLng] = AvgLatLng(subCol, store)
           count += subCol.length
           latTotal += subLat * subCol.length
@@ -96,40 +96,40 @@ export function AvgLatLng(nodes: Node[], store: WaypointCollection): [number, nu
   return [latTotal / count, lngTotal / count]
 }
 
-export function changeParam(id: number, mission: string, waypoints: WaypointCollection, mod: (wp: Waypoint)=>Waypoint): WaypointCollection{
+export function changeParam(id: number, mission: string, waypoints: WaypointCollection, mod: (wp: Waypoint) => Waypoint): WaypointCollection {
   const curMission = waypoints.get(mission)
-  if (curMission == undefined){return waypoints}
+  if (curMission == undefined) { return waypoints }
 
   let newMap = new Map(waypoints)
   let updatedMission = [...curMission]
-  let updatedWaypoint = { ...curMission[id]};
+  let updatedWaypoint = { ...curMission[id] };
 
-  if (updatedWaypoint.type === "Waypoint"){
+  if (updatedWaypoint.type === "Waypoint") {
     updatedWaypoint = {
       ...updatedWaypoint,
       wps: mod(updatedWaypoint.wps)
     }
     updatedMission[id] = updatedWaypoint
     newMap.set(mission, updatedMission)
-  }else if (updatedWaypoint.type == "Collection"){
+  } else if (updatedWaypoint.type == "Collection") {
     const col = waypoints.get(updatedWaypoint.collectionID)
-    if (col != null){
+    if (col != null) {
       let newColMap = new Map(waypoints)
-      for (let i = 0; i < col.length; i++){
+      for (let i = 0; i < col.length; i++) {
         newColMap = changeParam(i, updatedWaypoint.collectionID, waypoints, mod)
       }
       newMap = newColMap
     }
   }
   //curMission[id] = updatedWaypoint
-//newMap.set(mission, updatedMission)
+  //newMap.set(mission, updatedMission)
   return newMap;
 
 }
 
-export function deleteNode(id: number, mission: string, waypoints: WaypointCollection){
+export function deleteNode(id: number, mission: string, waypoints: WaypointCollection) {
   const curMission = waypoints.get(mission)
-  if (curMission == undefined){return waypoints}
+  if (curMission == undefined) { return waypoints }
   curMission.splice(id, 1)
   waypoints.set(mission, curMission)
   return waypoints;
@@ -137,7 +137,7 @@ export function deleteNode(id: number, mission: string, waypoints: WaypointColle
 
 export function findnthwaypoint(mission: string, n: number, waypoints: WaypointCollection): [string, number] | null {
   const missionNodes = waypoints.get(mission);
-  
+
   if (missionNodes === undefined) {
     return null; // Mission not found
   }
@@ -169,7 +169,7 @@ export function findnthwaypoint(mission: string, n: number, waypoints: WaypointC
 }
 
 
-export function MoveWPsAvgTo(newLat: number, newLng: number, waypoints: WaypointCollection, selectedWPs: number[], active: string): WaypointCollection{
+export function MoveWPsAvgTo(newLat: number, newLng: number, waypoints: WaypointCollection, selectedWPs: number[], active: string): WaypointCollection {
   const mission = waypoints.get(active);
   if (!mission) return waypoints;
 
@@ -229,11 +229,11 @@ export function isPointInPolygon(polygon: Waypoint[], point: Waypoint) {
   return inside;
 }
 
-export function hasLocation(waypoint: Waypoint): boolean{
-    const commanddesc = commands[commands.findIndex(a => a.value==waypoint.type)]
-    const hasLocationParams = commanddesc.parameters[4] && 
+export function hasLocation(waypoint: Waypoint): boolean {
+  const commanddesc = commands[commands.findIndex(a => a.value == waypoint.type)]
+  const hasLocationParams = commanddesc.parameters[4] &&
     commanddesc.parameters[5] &&
     commanddesc.parameters[4].label == "Latitude" &&
     commanddesc.parameters[5].label == "Longitude"
-    return hasLocationParams || false
+  return hasLocationParams || false
 }

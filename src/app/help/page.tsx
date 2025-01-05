@@ -1,7 +1,7 @@
-export default function Help(){
-  return(
-  <main>
+export default function Help() {
+  return (
+    <main>
       todo help page
-  </main>
+    </main>
   )
 }

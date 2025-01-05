@@ -3,31 +3,31 @@ import Modal from "../modal/modal";
 import { defaultCopter, defaultPlane } from "@/util/defaultVehicles";
 import Button from "../toolBar/button";
 
-export default function VehicleTypeModal({open, onClose}: {open: boolean, onClose: ()=>void}){
-  let {vehicle, setVehicle} = useVehicleTypeContext()
+export default function VehicleTypeModal({ open, onClose }: { open: boolean, onClose: () => void }) {
+  let { vehicle, setVehicle } = useVehicleTypeContext()
   let content = <></>
-  switch (vehicle.type){
-    case "Copter":{
+  switch (vehicle.type) {
+    case "Copter": {
       content = <div>bruh</div>
       break;
     }
-    case "Plane":{
+    case "Plane": {
       content = <div>
         <div>
           <label>Cruise Airspeed
-            <input type="number" value={vehicle.cruiseAirspeed} onChange={(x)=>setVehicle((v) => {
+            <input type="number" value={vehicle.cruiseAirspeed} onChange={(x) => setVehicle((v) => {
               if (v.type != "Plane") return v
               v.cruiseAirspeed = Number(x.target.value)
-              return {...v}
+              return { ...v }
             })}></input>
           </label>
         </div>
         <div>
           <label>Max Bank Angle
-            <input type="number" value={vehicle.maxBank} onChange={(x)=>setVehicle((v) => {
+            <input type="number" value={vehicle.maxBank} onChange={(x) => setVehicle((v) => {
               if (v.type != "Plane") return v
               v.maxBank = Number(x.target.value)
-              return {...v}
+              return { ...v }
             })}></input>
           </label>
         </div>
@@ -47,8 +47,8 @@ export default function VehicleTypeModal({open, onClose}: {open: boolean, onClos
   return (
     <Modal open={open} onClose={onClose}>
       <div className="flex flex-row">
-        <Button onClick={()=>setVehicle(defaultPlane)} className={vehicle.type == "Plane" ? "bg-white" : ""}>Plane</Button>
-        <Button onClick={()=>setVehicle(defaultCopter)} className={vehicle.type == "Copter" ? "bg-white" : ""}>Copter</Button>
+        <Button onClick={() => setVehicle(defaultPlane)} className={vehicle.type == "Plane" ? "bg-white" : ""}>Plane</Button>
+        <Button onClick={() => setVehicle(defaultCopter)} className={vehicle.type == "Copter" ? "bg-white" : ""}>Copter</Button>
       </div>
       {content}
 

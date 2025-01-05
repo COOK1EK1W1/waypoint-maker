@@ -15,12 +15,12 @@ import DubinsLayer from "./dunbinsLayer";
 
 
 export default function MapStuff() {
-  const {waypoints, setWaypoints, activeMission, tool, setTool, selectedWPs} = useWaypointContext()
+  const { waypoints, setWaypoints, activeMission, tool, setTool, selectedWPs } = useWaypointContext()
 
-  useEffect(()=>{
-    function handleKeyPress(e: KeyboardEvent){
-      switch(e.key){
-        case 'n':{
+  useEffect(() => {
+    function handleKeyPress(e: KeyboardEvent) {
+      switch (e.key) {
+        case 'n': {
 
           const newLat = prompt("Enter latitude");
           const newLng = prompt("Enter Longitude");
@@ -41,7 +41,7 @@ export default function MapStuff() {
             param7: 100,
             autocontinue: 1
           };
-          setWaypoints(add_waypoint(activeMission, {type:"Waypoint", wps:newMarker}, waypoints));
+          setWaypoints(add_waypoint(activeMission, { type: "Waypoint", wps: newMarker }, waypoints));
           break;
 
         }
@@ -51,15 +51,15 @@ export default function MapStuff() {
     }
     window.addEventListener('keypress', handleKeyPress)
 
-    return ()=>{
+    return () => {
       window.removeEventListener('keypress', handleKeyPress)
 
     }
 
-  },[activeMission, setWaypoints, waypoints])
+  }, [activeMission, setWaypoints, waypoints])
 
-  function handleClick(tool: Tool, e: LeafletMouseEvent){
-    switch (tool){
+  function handleClick(tool: Tool, e: LeafletMouseEvent) {
+    switch (tool) {
       case "Waypoint": {
 
         const mission = waypoints.get(activeMission)
@@ -77,7 +77,7 @@ export default function MapStuff() {
           param7: 100,
           autocontinue: 1
         };
-        setWaypoints(add_waypoint(activeMission, {type:"Waypoint", wps:newMarker}, waypoints));
+        setWaypoints(add_waypoint(activeMission, { type: "Waypoint", wps: newMarker }, waypoints));
         break;
       }
       case "Takeoff": {
@@ -97,15 +97,15 @@ export default function MapStuff() {
           param7: 15,
           autocontinue: 1
         };
-        setWaypoints(add_waypoint(activeMission, {type:"Waypoint", wps:newMarker}, waypoints));
+        setWaypoints(add_waypoint(activeMission, { type: "Waypoint", wps: newMarker }, waypoints));
         break;
       }
-      case "Place":{
+      case "Place": {
         setTool("Waypoint")
         setWaypoints(MoveWPsAvgTo(e.latlng.lat, e.latlng.lng, waypoints, selectedWPs, activeMission))
         break;
       }
-      default: 
+      default:
         const _exhaustiveCheck: never = tool
         return _exhaustiveCheck
     }
@@ -113,46 +113,46 @@ export default function MapStuff() {
 
 
   // Handler function to add marker
-  function CreateHandler(){
-    useMapEvent("click", (e)=>{
+  function CreateHandler() {
+    useMapEvent("click", (e) => {
       handleClick(tool, e)
     })
     return null
   }
 
-  function onMove(lat: number, lng: number, id: number){
-    const a = findnthwaypoint(activeMission, id, waypoints) 
+  function onMove(lat: number, lng: number, id: number) {
+    const a = findnthwaypoint(activeMission, id, waypoints)
     if (a == null) return
     const [mission, pos] = a
-    setWaypoints(new Map(changeParam(pos, mission, waypoints, (wp)=>({...wp, param5: lat, param6:lng}))))
+    setWaypoints(new Map(changeParam(pos, mission, waypoints, (wp) => ({ ...wp, param5: lat, param6: lng }))))
 
   }
 
-  if (typeof window != undefined){
+  if (typeof window != undefined) {
 
     const mission = waypoints.get(activeMission)
     if (mission == undefined) return
 
     return (
 
-        <MapContainer 
-          center={{ lat: 55.91289, lng: -3.32560 }}
-          zoom={13} 
-          style={{ width: '100%', height: '100%'}}
+      <MapContainer
+        center={{ lat: 55.91289, lng: -3.32560 }}
+        zoom={13}
+        style={{ width: '100%', height: '100%' }}
         className="z-10"
-        >
-          <TileLayer
-            url='https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}'
-            maxZoom= {20}
-            subdomains={['mt1','mt2','mt3']}/>
+      >
+        <TileLayer
+          url='https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}'
+          maxZoom={20}
+          subdomains={['mt1', 'mt2', 'mt3']} />
 
-          <CreateHandler/>
-          
-          <ActiveLayer onMove={onMove}/>
-          <GeofenceLayer onMove={onMove} />
-          <MarkerLayer onMove={onMove}/>
-          <DubinsLayer/>
-        </MapContainer>
+        <CreateHandler />
+
+        <ActiveLayer onMove={onMove} />
+        <GeofenceLayer onMove={onMove} />
+        <MarkerLayer onMove={onMove} />
+        <DubinsLayer />
+      </MapContainer>
     );
   }
 }

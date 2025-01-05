@@ -1,11 +1,11 @@
-type openElevation = {elevation: number, latitude: number, longitude: number}[]
+type openElevation = { elevation: number, latitude: number, longitude: number }[]
 
-export function getTerrain(locs: [number, number][]): Promise<openElevation|null>{
+export function getTerrain(locs: [number, number][]): Promise<openElevation | null> {
   if (locs.length == 0) return Promise.resolve(null)
   let locstring = locs.map((loc) => `${loc[0].toFixed(7)},${loc[1].toFixed(7)}`).join("|")
 
   return fetch(`https://api.open-elevation.com/api/v1/lookup?locations=${locstring}`)
-    .then((response)=>{
+    .then((response) => {
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }

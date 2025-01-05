@@ -9,23 +9,23 @@ import { FaArrowTurnUp } from "react-icons/fa6";
 
 const noAddNames = ["Main", "Geofence", "Takoeff", "Landing", "Markers"]
 
-export default function SubMissionList(){
-  const {waypoints, activeMission, setActiveMission, setWaypoints, setSelectedWPs} = useWaypointContext()
+export default function SubMissionList() {
+  const { waypoints, activeMission, setActiveMission, setWaypoints, setSelectedWPs } = useWaypointContext()
 
-  function addSub(e: React.MouseEvent<HTMLButtonElement>, name: string){
+  function addSub(e: React.MouseEvent<HTMLButtonElement>, name: string) {
     e.stopPropagation()
     if (activeMission != name)
-    setWaypoints(add_waypoint(activeMission, {type: "Collection", collectionID: name, name: name, ColType: CollectionType.Mission, offsetLat: 0, offsetLng: 0}, waypoints))
+      setWaypoints(add_waypoint(activeMission, { type: "Collection", collectionID: name, name: name, ColType: CollectionType.Mission, offsetLat: 0, offsetLng: 0 }, waypoints))
   }
 
-  function click(wp:string){
+  function click(wp: string) {
     setActiveMission(wp)
     setSelectedWPs([])
   }
 
-  function deleteMission(mission: string){
+  function deleteMission(mission: string) {
     const a = confirm("Are you sure you want to delete")
-    if (!a)return
+    if (!a) return
     setWaypoints((prevWaypoints) => {
       prevWaypoints.set(mission, [])
       return new Map(prevWaypoints)
@@ -36,19 +36,19 @@ export default function SubMissionList(){
 
   return (
     <div className="">
-      {Array.from(waypoints.keys()).map((mission, id)=>{
+      {Array.from(waypoints.keys()).map((mission, id) => {
         const wp = waypoints.get(mission)
-        if (wp != undefined){
+        if (wp != undefined) {
           const canAdd = !noAddNames.includes(mission)
 
-          return <ListItem key={id} onMouseDown={()=>click(mission)} selected={activeMission == mission} actions={[
-              (<>{canAdd? <button onMouseDown={(e)=>addSub(e, mission)} key={0}><FaArrowTurnUp/></button> : null}</>),
-              (<button onMouseDown={()=>deleteMission(mission)} key={1}><FaTrashAlt/></button>)
+          return <ListItem key={id} onMouseDown={() => click(mission)} selected={activeMission == mission} actions={[
+            (<>{canAdd ? <button onMouseDown={(e) => addSub(e, mission)} key={0}><FaArrowTurnUp /></button> : null}</>),
+            (<button onMouseDown={() => deleteMission(mission)} key={1}><FaTrashAlt /></button>)
           ]}>
             <div>
-              {mission == "Geofence" ? <span><TbFence className="inline m-1"/></span>
-                : mission == "Markers" ? <span><FaMapMarkedAlt className="inline m-1"/></span>
-                  :<span><TbTopologyRing className="inline m-1"/></span>
+              {mission == "Geofence" ? <span><TbFence className="inline m-1" /></span>
+                : mission == "Markers" ? <span><FaMapMarkedAlt className="inline m-1" /></span>
+                  : <span><TbTopologyRing className="inline m-1" /></span>
               }
               {mission} ({wp.length})
             </div>

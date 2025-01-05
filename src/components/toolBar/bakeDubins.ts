@@ -6,19 +6,19 @@ import { findnthwaypoint, get_waypoints } from "@/util/WPCollection";
 import { circularProgressClasses } from "@mui/material";
 import { Dispatch, SetStateAction } from "react";
 
-export function bakeDubins(waypoints: WaypointCollection, activeMission: string, setWaypoints: Dispatch<SetStateAction<WaypointCollection>>, optimisationFunction: (path: Path)=>number){
+export function bakeDubins(waypoints: WaypointCollection, activeMission: string, setWaypoints: Dispatch<SetStateAction<WaypointCollection>>, optimisationFunction: (path: Path) => number) {
   let activeWaypoints: Waypoint[] = get_waypoints(activeMission, waypoints)
 
   let dubinSections = splitDubinsRuns(activeWaypoints)
 
   // This function is a closure that takes in the waypoints and returns a function that takes in the tunable parameters and returns the total length of the path
-  function create_evaluate(wps: Waypoint[]){
+  function create_evaluate(wps: Waypoint[]) {
     let localWPS = [...wps]
-    function evaluate(x: number[]): number{
+    function evaluate(x: number[]): number {
       localWPS = setTunableParameter(localWPS, x)
       let totalLength = 0
-      for (let i = 0; i < wps.length - 1; i++){
-        let curves = dubinsBetweenWaypoint(localWPS[i], localWPS[i+1])
+      for (let i = 0; i < wps.length - 1; i++) {
+        let curves = dubinsBetweenWaypoint(localWPS[i], localWPS[i + 1])
         totalLength += optimisationFunction(curves)
       }
       return totalLength
@@ -30,7 +30,7 @@ export function bakeDubins(waypoints: WaypointCollection, activeMission: string,
   let curWaypoints = new Map(waypoints)
 
   // optimise each section of the path
-  for (const section of dubinSections){
+  for (const section of dubinSections) {
     let starting_params = [...getTunableParameters(section.wps)]
     let bounds: bound[] = [...getBounds(section.wps)]
     starting_params = applyBounds(starting_params, bounds)
@@ -42,21 +42,19 @@ export function bakeDubins(waypoints: WaypointCollection, activeMission: string,
 
     let wps = setTunableParameter(section.wps, optimised_dirs)
 
-    if (wps[0].type != 69){
+    if (wps[0].type != 69) {
       wps.shift()
     }
 
-    for (let i = 0; i < section.wps.length; i++){
+    for (let i = 0; i < section.wps.length; i++) {
       let a = findnthwaypoint(activeMission, i + section.start, curWaypoints)
-      console.log(i, section.start, a)
       if (!a) continue;
       let mission = waypoints.get(a[0])
       if (!mission) continue;
       let curWP = mission[a[1]]
       if (!curWP) continue;
-      if (curWP.type == "Waypoint"){
+      if (curWP.type == "Waypoint") {
         console.assert(wps[i].type == curWP.wps.type, "Waypoint type mismatch")
-        console.log(wps[i].type, curWP.wps.type)
         curWP.wps = wps[i]
       }
     }

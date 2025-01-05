@@ -2,13 +2,13 @@ import { Fault, Severity } from "@/types/waypoints";
 import { useWaypointContext } from "@/util/context/WaypointContext";
 import { cn } from "@/util/tw";
 
-export default function FaultItem({fault, key, onMouseDown}: {fault: Fault, key: number, onMouseDown:()=>void}){
-  const {setSelectedWPs, setActiveMission} = useWaypointContext()
+export default function FaultItem({ fault, key, onMouseDown }: { fault: Fault, key: number, onMouseDown: () => void }) {
+  const { setSelectedWPs, setActiveMission } = useWaypointContext()
 
-  function dostuff(mission: string| undefined, id: number| undefined){
-    if (id){
+  function dostuff(mission: string | undefined, id: number | undefined) {
+    if (id) {
       setSelectedWPs([id])
-    }else{
+    } else {
       setSelectedWPs([])
     }
     setActiveMission(mission || "Main")
@@ -16,17 +16,17 @@ export default function FaultItem({fault, key, onMouseDown}: {fault: Fault, key:
   }
 
   let bg = ""
-  switch (fault.severity){
+  switch (fault.severity) {
 
-    case Severity.Med:{
+    case Severity.Med: {
       bg = "bg-amber-200"
       break;
     }
-    case Severity.Bad:{
+    case Severity.Bad: {
       bg = "bg-red-200"
       break;
     }
-    case Severity.Good:{
+    case Severity.Good: {
       bg = "bg-green-200"
       break;
     }

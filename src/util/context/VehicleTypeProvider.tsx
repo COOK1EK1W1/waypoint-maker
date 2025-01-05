@@ -16,7 +16,7 @@ const defaultVehicle: Plane = {
 export default function VehicleProvider({ children }: Props) {
   const [vehicle, setVehicle] = useState(defaultVehicle as Vehicle)
   return (
-    <vehicleTypeContext.Provider value={{vehicle: vehicle, setVehicle: setVehicle}}>
+    <vehicleTypeContext.Provider value={{ vehicle: vehicle, setVehicle: setVehicle }}>
       {children}
     </vehicleTypeContext.Provider>
   );
