@@ -3,7 +3,6 @@ import { particleSwarmOptimise } from "@/lib/optimisation/particleSwarm";
 import { bound, Path } from "@/types/dubins";
 import { Waypoint, WaypointCollection } from "@/types/waypoints";
 import { findnthwaypoint, get_waypoints } from "@/util/WPCollection";
-import { circularProgressClasses } from "@mui/material";
 import { Dispatch, SetStateAction } from "react";
 
 export function bakeDubins(waypoints: WaypointCollection, activeMission: string, setWaypoints: Dispatch<SetStateAction<WaypointCollection>>, optimisationFunction: (path: Path) => number) {

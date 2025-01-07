@@ -54,7 +54,7 @@ export default function HeightMap() {
   for (let i = 1; i < wps.length; i++) {
     let distance = haversineDistance(wps[i - 1].param5, wps[i - 1].param6, wps[i].param5, wps[i].param6)
     for (let j = 0; j < distance / interpolatedist; j++) {
-      distances.push(prevDistance + (j / (distance / interpolatedist)) * distance)
+      distances.push(Math.round(prevDistance + (j / (distance / interpolatedist)) * distance))
       const a = interpolate(wps[i - 1].param5, wps[i].param5, wps[i - 1].param6, wps[i].param6, j / (distance / interpolatedist))
       locations.push([a.lat, a.lng])
       if (j == 0) {
@@ -89,80 +89,64 @@ export default function HeightMap() {
     },
   } satisfies ChartConfig
 
+  let minTerrainHeight = terrainData[0].elevation
+  for (let i = 1; i < terrainData.length; i++) {
+    minTerrainHeight = Math.min(terrainData[i].elevation, minTerrainHeight)
+  }
+
+  let data: { terrainHeight: number[] | null, waypointHeight: number | null, distance: number }[] = []
+  console.log(distances.length, heights.length, terrainData.length)
+  for (let i = 0; i < distances.length; i++) {
+    if (i < terrainData.length) {
+      let terrainHeight = terrainData[i].elevation
+      data.push({ terrainHeight: [terrainHeight - terrainData[0].elevation, minTerrainHeight - terrainData[0].elevation - 2], waypointHeight: heights[i], distance: distances[i] })
+    } else {
+      data.push({ terrainHeight: null, waypointHeight: heights[i], distance: distances[i] })
+    }
+  }
+
   return (
     <div>
       <ChartContainer config={chartConfig} className="h-[150px] w-full" >
         <ComposedChart
           accessibilityLayer
-          data={terrainData.map((x, i) => ({ d: i, e: x.elevation, f: x.elevation + 10 }))}
+          data={data}
         >
           <CartesianGrid vertical={false} />
           <XAxis
-            dataKey="d"
+            dataKey="distance"
             tickLine={false}
             axisLine={false}
             tickMargin={8}
           />
           <YAxis
-            dataKey="e"
+            dataKey="waypointHeight"
             tickLine={false}
             axisLine={false}
             tickMargin={8}
+            domain={[minTerrainHeight - terrainData[0].elevation - 2, "dataMax"]}
           />
           <ChartTooltip
             cursor={false}
             content={<ChartTooltipContent indicator="line" />}
           />
           <Area
-            dataKey="e"
+            dataKey="terrainHeight"
             type="natural"
             fill="var(--color-desktop)"
             fillOpacity={0.4}
             stroke="var(--color-desktop)"
           />
           <Line
-            dataKey="f"
+            dataKey="waypointHeight"
             type="linear"
             stroke="var(--color-desktop)"
             strokeWidth={2}
-            dot={false}
+            dot={true}
+            connectNulls={true}
           />
         </ComposedChart>
       </ChartContainer>
-      {/*
-      <LineChart
-        slotProps={{ legend: { hidden: true } }}
-        xAxis={[
-          { data: distances }
-        ]}
-        series={[
-          {
-            label: "Waypoint",
-            curve: "linear",
-            data: heights.slice(0, distances.length),
-            valueFormatter: (v, { dataIndex }) => {
-              const grad = gradients[dataIndex]
-              if (grad !== null && v !== null) {
-                return `${v}m ${grad < 0 ? "↘ " : grad > 0 ? "↗ " : "→ "}${grad}°`
-              }
-              return ``
-            },
-            connectNulls: true,
-          },
-          {
-            label: "Terrain",
-            data: terrainData.map((x) => (x.elevation - terrainData[0].elevation || 0)).slice(0, distances.length),
-            showMark: false,
-            valueFormatter: (v, { dataIndex }) => {
-              return `${v}m`
-            },
-          }
-        ]}
-        height={150}
-        margin={{ left: 44, right: 10, top: 20, bottom: 26 }}
-
-      />
-      */}
     </div >
   )
 }
