@@ -5,6 +5,7 @@ import Image from "next/image"
 import MissionIO from "./missionIO"
 import OptimiseButton from "./optimise"
 import { get_waypoints } from "@/util/WPCollection"
+import { cn } from "@/util/tw"
 
 export default function ToolBar() {
   const { waypoints } = useWaypointContext()
@@ -26,7 +27,7 @@ export default function ToolBar() {
       <MissionIO />
       <WPCheck />
       <VehicleTypeButton />
-      {hasDubins ? <OptimiseButton /> : <></>}
+      <OptimiseButton className={cn(hasDubins ? "w-28" : "w-0 p-0 m-0 border-0", "overflow-hidden")} />
     </div>
   </div>
 }

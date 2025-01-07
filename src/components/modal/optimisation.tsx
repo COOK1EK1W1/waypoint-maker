@@ -5,20 +5,9 @@ import Modal from "./modal";
 import { useWaypointContext } from "@/util/context/WaypointContext";
 import { bakeDubins } from "../toolBar/bakeDubins";
 import { pathEnergyRequirements, worldPathLength } from "@/lib/dubins/geometry";
-import { get_waypoints } from "@/util/WPCollection";
 
 export default function OptimiseModal({ open, handleClose }: { open: boolean, handleClose: () => void }) {
 	const { waypoints, setWaypoints, activeMission } = useWaypointContext()
-	let wps = get_waypoints("Main", waypoints)
-
-	//find if the current waypoints contain a dubinds type
-	let hasDubins = false
-	for (let i = 0; i < wps.length - 1; i++) {
-		if (wps[i].type == 69) {
-			hasDubins = true
-			break
-		}
-	}
 
 	if (open) {
 		return (
