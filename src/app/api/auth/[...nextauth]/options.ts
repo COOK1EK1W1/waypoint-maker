@@ -11,15 +11,15 @@ export const options: NextAuthOptions = {
     CredentialsProvider({
       name: 'Credentials',
       credentials: {
-        username: { label: 'Username', type: 'text', placeholder: 'john.doe@example.com' },
+        email: { label: 'Email', type: 'text', placeholder: 'john.doe@example.com' },
         password: { label: 'Password', type: 'password' }
       },
       async authorize(credentials) {
         // Add logic here to look up the user from the credentials supplied
-        const user = { id: "42", name: "ciaran", password: "password" }
+        const user = { id: "42", email: "ciarancook1@gmail.com", password: "password" }
         await new Promise(r => setTimeout(r, 2000));
 
-        if (credentials?.username === user.name && credentials?.password === user.password) {
+        if (credentials?.email === user.email && credentials?.password === user.password) {
           return user
         } else {
           return null
