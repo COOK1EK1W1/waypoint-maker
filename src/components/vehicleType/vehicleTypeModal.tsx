@@ -46,6 +46,7 @@ export default function VehicleTypeModal({ open, onClose }: { open: boolean, onC
   }
   return (
     <Modal open={open} onClose={onClose}>
+      <h1>Vehicle Type</h1>
       <div className="flex flex-row">
         <Button onClick={() => setVehicle(defaultPlane)} className={vehicle.type == "Plane" ? "bg-white" : ""}>Plane</Button>
         <Button onClick={() => setVehicle(defaultCopter)} className={vehicle.type == "Copter" ? "bg-white" : ""}>Copter</Button>
