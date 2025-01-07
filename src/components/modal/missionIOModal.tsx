@@ -31,7 +31,7 @@ export default function MissionIOModal({ open, handleClose }: { open: boolean, h
 					<Button onClick={downloadWM}><FaFileDownload className="inline mx-2" />.json (WM) download</Button>
 					<h1>Import</h1>
 					<LoadJson />
-					<h1>cloud Sync</h1>
+					<h1>Cloud Sync</h1>
 					<div> (coming soon)</div>
 				</div>
 			</Modal>

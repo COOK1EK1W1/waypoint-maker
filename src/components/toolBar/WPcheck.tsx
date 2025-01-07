@@ -20,21 +20,21 @@ export default function WPCheck() {
   let color = ""
   if (bad.length == 0) {
     if (msg.length == 0) {
-      color = "bg-green-200 border-green-200"
+      color = "bg-green-200 border-green-300"
       text = <FaCheck />
     } else {
-      color = "bg-amber-200 border-amber-200"
+      color = "bg-amber-200 border-amber-300"
       text = <MdErrorOutline />
     }
   } else {
-    color = "bg-red-200 border-red-200"
+    color = "bg-red-200 border-red-300"
     text = <FaX />
   }
 
   return (
     <div className="flex items-center">
       <WPCheckModal open={showModal} close={() => setShowModal(false)} />
-      <Button className={cn(color)} onClick={() => { setShowModal(true) }}>
+      <Button className={cn(color, "w-28")} onClick={() => { setShowModal(true) }}>
         {text} < span > WPCheck</span>
       </Button >
     </div >

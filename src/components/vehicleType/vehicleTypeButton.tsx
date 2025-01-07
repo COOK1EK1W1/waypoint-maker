@@ -2,6 +2,7 @@ import { useState } from "react"
 import VehicleTypeModal from "./vehicleTypeModal"
 import { FaHelicopter, FaPlane } from "react-icons/fa"
 import { useVehicleTypeContext } from "@/util/context/VehicleTypeContext"
+import Button from "../toolBar/button"
 
 export default function VehicleTypeButton() {
   const [open, setOpen] = useState(false)
@@ -25,9 +26,9 @@ export default function VehicleTypeButton() {
   return (
     <div className="flex items-center">
       <VehicleTypeModal open={open} onClose={() => setOpen(false)} />
-      <button className={"p-1 m-1 rounded-lg flex justify-center items-center"} onMouseDown={() => { setOpen(true) }}>
+      <Button onClick={() => { setOpen(true) }} className="w-28">
         {button}
-      </button>
+      </Button>
     </div>
   )
 
