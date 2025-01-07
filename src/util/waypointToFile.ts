@@ -55,7 +55,7 @@ function renderWaypoints(curWP: number, missionName: string, store: WaypointColl
 
 }
 
-function waypointString(i: number, wp: Waypoint) {
+function waypointString(i: number, wp: Waypoint): string {
   return `${i}\t${i == 0 ? "1" : "0"}\t${wp.frame}\t${wp.type}\t${wp.param1}\t${wp.param2}\t${wp.param3}\t${wp.param4}\t${wp.param5}\t${wp.param6}\t${wp.param7}\t${wp.autocontinue}\n`
 }
 
