@@ -13,13 +13,8 @@ export default function ToolBar() {
   let wps = get_waypoints("Main", waypoints)
 
   //find if the current waypoints contain a dubinds type
-  let hasDubins = false
-  for (let i = 0; i < wps.length - 1; i++) {
-    if (wps[i].type == 69) {
-      hasDubins = true
-      break
-    }
-  }
+  const hasDubins = wps.map((wp) => wp.type).includes(69)
+
   return <div className="z-20 absolute top-2 left-2 rounded-lg overflow-hidden">
     <div className="flex bg-white items-center">
       <Image width={46} height={32} className="h-9 px-2" src="/logo-192x192.png" alt="Waypoint Maker Logo" />
