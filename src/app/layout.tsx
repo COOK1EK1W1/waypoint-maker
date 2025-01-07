@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 import WaypointProvider from '@/util/context/WaypointProvider'
 import VehicleProvider from '@/util/context/VehicleTypeProvider'
+import { Analytics } from "@vercel/analytics/react"
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -22,6 +23,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
+        <Analytics />
         <WaypointProvider>
           <VehicleProvider>
             {children}
