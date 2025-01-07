@@ -2,9 +2,10 @@ import { get_waypoints } from "@/util/WPCollection";
 import { useWaypointContext } from "@/util/context/WaypointContext";
 import { gradient, haversineDistance } from "@/util/distance";
 import { getTerrain } from "@/util/terrain";
-import { LineChart } from "@mui/x-charts";
 import { useThrottle } from "@uidotdev/usehooks";
 import { useEffect, useState } from "react";
+import { Area, CartesianGrid, ComposedChart, Line, XAxis, YAxis } from "recharts";
+import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "../ui/chart";
 
 function interpolate(lat1: number, lat2: number, lng1: number, lng2: number, c: number) {
   return { lat: lat1 * (1 - c) + lat2 * c, lng: lng1 * (1 - c) + lng2 * c }
@@ -81,8 +82,54 @@ export default function HeightMap() {
   let distance = haversineDistance(wps[wps.length - 2].param5, wps[wps.length - 2].param6, wps[wps.length - 1].param5, wps[wps.length - 1].param6)
   gradients.push(gradient(distance, wps[wps.length - 2].param7, wps[wps.length - 1].param7))
 
+  const chartConfig = {
+    desktop: {
+      label: "Elevation",
+      color: "hsl(var(--chart-1))",
+    },
+  } satisfies ChartConfig
+
   return (
     <div>
+      <ChartContainer config={chartConfig} className="h-[150px] w-full" >
+        <ComposedChart
+          accessibilityLayer
+          data={terrainData.map((x, i) => ({ d: i, e: x.elevation, f: x.elevation + 10 }))}
+        >
+          <CartesianGrid vertical={false} />
+          <XAxis
+            dataKey="d"
+            tickLine={false}
+            axisLine={false}
+            tickMargin={8}
+          />
+          <YAxis
+            dataKey="e"
+            tickLine={false}
+            axisLine={false}
+            tickMargin={8}
+          />
+          <ChartTooltip
+            cursor={false}
+            content={<ChartTooltipContent indicator="line" />}
+          />
+          <Area
+            dataKey="e"
+            type="natural"
+            fill="var(--color-desktop)"
+            fillOpacity={0.4}
+            stroke="var(--color-desktop)"
+          />
+          <Line
+            dataKey="f"
+            type="linear"
+            stroke="var(--color-desktop)"
+            strokeWidth={2}
+            dot={false}
+          />
+        </ComposedChart>
+      </ChartContainer>
+      {/*
       <LineChart
         slotProps={{ legend: { hidden: true } }}
         xAxis={[
@@ -115,6 +162,7 @@ export default function HeightMap() {
         margin={{ left: 44, right: 10, top: 20, bottom: 26 }}
 
       />
-    </div>
+      */}
+    </div >
   )
 }
