@@ -89,7 +89,7 @@ export default function HeightMap() {
     },
   } satisfies ChartConfig
 
-  let minTerrainHeight = terrainData[0].elevation
+  let minTerrainHeight = terrainData[0]?.elevation || 0
   for (let i = 1; i < terrainData.length; i++) {
     minTerrainHeight = Math.min(terrainData[i].elevation, minTerrainHeight)
   }
@@ -124,7 +124,7 @@ export default function HeightMap() {
             tickLine={false}
             axisLine={false}
             tickMargin={8}
-            domain={[minTerrainHeight - terrainData[0].elevation - 2, "dataMax"]}
+            domain={[minTerrainHeight - terrainData[0]?.elevation || 0 - 2, "dataMax"]}
           />
           <ChartTooltip
             cursor={false}
