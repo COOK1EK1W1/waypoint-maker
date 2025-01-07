@@ -1,3 +1,4 @@
+"use client"
 import VehicleTypeModal from "./vehicleTypeModal"
 import { FaHelicopter, FaPlane } from "react-icons/fa"
 import { useVehicleTypeContext } from "@/util/context/VehicleTypeContext"

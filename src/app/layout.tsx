@@ -1,9 +1,8 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
-import WaypointProvider from '@/util/context/WaypointProvider'
-import VehicleProvider from '@/util/context/VehicleTypeProvider'
 import { Analytics } from "@vercel/analytics/react"
+import AuthProvider from '@/util/context/AuthProvider'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -24,11 +23,9 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <Analytics />
-        <WaypointProvider>
-          <VehicleProvider>
-            {children}
-          </VehicleProvider>
-        </WaypointProvider>
+        <AuthProvider>
+          {children}
+        </AuthProvider>
       </body>
     </html>
   )

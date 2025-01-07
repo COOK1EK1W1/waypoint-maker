@@ -1,27 +1,17 @@
-"use client"
-import StartModal from "@/components/modal/startModal";
+import { WMEditor } from "@/components/editor";
+import WaypointProvider from '@/util/context/WaypointProvider'
+import VehicleProvider from '@/util/context/VehicleTypeProvider'
 import ToolBar from "@/components/toolBar/ToolBar";
-import Editor from "@/components/waypointEditor/editor";
-import ListView from "@/components/waypointList/ListView";
-import dynamic from "next/dynamic";
 
-const NonSSRMap = dynamic(
-  () => import("@/components/map/WaypointMap"),
-  { ssr: false }
-);
-
-export default function Home() {
+export default async function Home() {
   return (
-    <main style={{ height: "100vh" }} className="flex flex-col absolute w-full">
-      <StartModal />
+    <WaypointProvider>
+      <VehicleProvider>
+        <ToolBar />
+        <WMEditor />
+      </VehicleProvider>
+    </WaypointProvider>
 
-      <NonSSRMap></NonSSRMap>
-      <ToolBar />
-
-      <Editor />
-      <ListView></ListView>
-
-    </main>
 
   );
 }

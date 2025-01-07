@@ -1,3 +1,4 @@
+"use client"
 import { get_waypoints } from "@/util/WPCollection"
 import { useWaypointContext } from "@/util/context/WaypointContext"
 import { cn } from "@/lib/utils"
