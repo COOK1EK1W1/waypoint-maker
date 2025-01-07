@@ -1,4 +1,4 @@
-import { cn } from "@/util/tw";
+import { cn } from "@/lib/utils";
 import { ReactNode } from "react";
 
 export default function Button({ children, onClick, className }: { children: ReactNode, onClick?: () => void, className?: string }) {

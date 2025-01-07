@@ -1,17 +1,21 @@
-import { useState } from "react"
 import Button from "./button"
 import MissionIOModal from "../modal/missionIOModal"
+import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "../ui/dialog"
 
 export default function MissionIO() {
-  const [showModal, setShowModal] = useState(false)
 
   return (
-    <div className="flex items-center">
-      <MissionIOModal open={showModal} handleClose={() => setShowModal(false)} />
-      <Button onClick={() => { setShowModal(true) }} className="w-28">
-        <span>Mission</span>
-      </Button>
-    </div>
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button className="w-28">
+          <span>Mission</span>
+        </Button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogTitle>Import / Export Mission</DialogTitle>
+        <MissionIOModal />
+      </DialogContent>
+    </Dialog>
   )
 
 }

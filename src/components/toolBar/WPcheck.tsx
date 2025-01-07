@@ -1,18 +1,17 @@
 import { get_waypoints } from "@/util/WPCollection"
 import { useWaypointContext } from "@/util/context/WaypointContext"
-import { cn } from "@/util/tw"
+import { cn } from "@/lib/utils"
 import { FaCheck } from "react-icons/fa"
 import { FaX } from "react-icons/fa6"
 import { MdErrorOutline } from "react-icons/md"
-import WPCheckModal from "./WPCheckModal"
-import { useState } from "react"
 import { Severity } from "@/types/waypoints"
 import { wpCheck } from "@/util/wpcheck"
 import Button from "./button"
+import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import WPCheckModal from "../modal/WPCheckModal"
 
 export default function WPCheck() {
   const { waypoints } = useWaypointContext()
-  const [showModal, setShowModal] = useState(false)
   const msg = wpCheck(get_waypoints("Main", waypoints), waypoints)
   const bad = msg.filter((x) => x.severity == Severity.Bad)
 
@@ -32,12 +31,17 @@ export default function WPCheck() {
   }
 
   return (
-    <div className="flex items-center">
-      <WPCheckModal open={showModal} close={() => setShowModal(false)} />
-      <Button className={cn(color, "w-28")} onClick={() => { setShowModal(true) }}>
-        {text} < span > WPCheck</span>
-      </Button >
-    </div >
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button className={cn(color, "w-28")}>
+          {text} < span > WPCheck</span>
+        </Button >
+      </DialogTrigger>
+      <DialogContent>
+        <DialogTitle>Waypoint Check</DialogTitle>
+        <WPCheckModal />
+      </DialogContent>
+    </Dialog>
   )
 
 }

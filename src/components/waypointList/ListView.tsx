@@ -1,7 +1,7 @@
 import { useState } from "react"
 import SubMissionList from "../subMissionList/subMissionList"
 import MissionList from "./MissionList"
-import { cn } from "@/util/tw"
+import { cn } from "@/lib/utils"
 import Button from "@/components/toolBar/button"
 
 export default function ListView() {

@@ -1,9 +1,8 @@
 import { useVehicleTypeContext } from "@/util/context/VehicleTypeContext";
-import Modal from "../modal/modal";
 import { defaultCopter, defaultPlane } from "@/util/defaultVehicles";
 import Button from "../toolBar/button";
 
-export default function VehicleTypeModal({ open, onClose }: { open: boolean, onClose: () => void }) {
+export default function VehicleTypeModal() {
   let { vehicle, setVehicle } = useVehicleTypeContext()
   let content = <></>
   switch (vehicle.type) {
@@ -45,15 +44,14 @@ export default function VehicleTypeModal({ open, onClose }: { open: boolean, onC
     }
   }
   return (
-    <Modal open={open} onClose={onClose}>
-      <h1>Vehicle Type</h1>
+    <div>
       <div className="flex flex-row">
         <Button onClick={() => setVehicle(defaultPlane)} className={vehicle.type == "Plane" ? "bg-white" : ""}>Plane</Button>
         <Button onClick={() => setVehicle(defaultCopter)} className={vehicle.type == "Copter" ? "bg-white" : ""}>Copter</Button>
       </div>
       {content}
 
-    </Modal>
+    </div>
 
   )
 }

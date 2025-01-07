@@ -4,17 +4,15 @@ import { useWaypointContext } from "@/util/context/WaypointContext"
 import { getTerrain } from "@/util/terrain"
 import { wpCheck } from "@/util/wpcheck"
 import { useEffect, useState } from "react"
-import FaultItem from "./faultItem"
-import Modal from "../modal/modal"
+import FaultItem from "@/components/toolBar/faultItem"
 
-export default function WPCheckModal({ open, close }: { open: boolean, close: () => void }) {
+export default function WPCheckModal() {
   const { waypoints } = useWaypointContext()
   const wps = get_waypoints("Main", waypoints)
   const results = wpCheck(wps, waypoints)
   const [terrain, setTerrain] = useState<Fault[] | null>(null)
 
   useEffect(() => {
-    if (!open) { return }
     getTerrain(wps.map((x) => [x.param5, x.param6]))
       .then((terrainHeights) => {
         if (!terrainHeights) return
@@ -44,11 +42,10 @@ export default function WPCheckModal({ open, close }: { open: boolean, close: ()
         }
         setTerrain(ret)
       })
-  }, [open, waypoints, wps])
+  }, [waypoints, wps])
 
   return (
-    <Modal open={open} onClose={close} className="w-2/4">
-      <h1>Waypoint Check</h1>
+    <div>
       <h2>General Checks</h2>
       {results.map((x, idx) => (
         <FaultItem fault={x} key={idx} onMouseDown={close} />
@@ -60,6 +57,6 @@ export default function WPCheckModal({ open, close }: { open: boolean, close: ()
         <FaultItem fault={x} key={idx} onMouseDown={close} />
       )) : <FaultItem fault={{ message: "There is no terrain data available", severity: Severity.Bad }} key={0} onMouseDown={close} />}
       {terrain !== null && terrain.length == 0 ? <FaultItem fault={{ message: "Terrain check is complete", severity: Severity.Good }} key={0} onMouseDown={close} /> : null}
-    </Modal>
+    </div>
   )
 }

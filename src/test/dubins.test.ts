@@ -1,5 +1,4 @@
 import { expect, test } from "bun:test";
-import { Segment, XY } from "@/types/dubins";
 import { findCenters } from "@/lib/dubins/dubins";
 
 test("find dubins centers", () => {

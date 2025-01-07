@@ -5,7 +5,7 @@ import WaypointEditor from "./WaypointEditor";
 import CurEdit from "./curEdit";
 import { Node } from "@/types/waypoints";
 import { useState } from "react";
-import { cn } from "@/util/tw";
+import { cn } from "@/lib/utils";
 import HeightMap from "./heightMap";
 import Button from "../toolBar/button";
 

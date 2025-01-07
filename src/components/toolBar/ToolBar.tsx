@@ -5,7 +5,7 @@ import Image from "next/image"
 import MissionIO from "./missionIO"
 import OptimiseButton from "./optimise"
 import { get_waypoints } from "@/util/WPCollection"
-import { cn } from "@/util/tw"
+import { cn } from "@/lib/utils"
 
 export default function ToolBar() {
   const { waypoints } = useWaypointContext()
