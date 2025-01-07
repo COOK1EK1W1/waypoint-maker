@@ -25,7 +25,7 @@ export type WPNode = {
 }
 
 export type ColNode = {
-  type:"Collection"
+  type: "Collection"
   name: string
   ColType: CollectionType
   collectionID: string

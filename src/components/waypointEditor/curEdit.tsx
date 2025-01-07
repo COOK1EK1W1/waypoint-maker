@@ -3,19 +3,19 @@ import { TbTopologyRing } from "react-icons/tb";
 import { TfiTarget } from "react-icons/tfi";
 import Button from "../toolBar/button";
 
-export default function CurEdit({onHide}: {onHide: ()=>void}){
-  const {activeMission, selectedWPs, waypoints} = useWaypointContext()
+export default function CurEdit({ onHide }: { onHide: () => void }) {
+  const { activeMission, selectedWPs, waypoints } = useWaypointContext()
 
   let item = <span>
-    <TfiTarget className="inline m-1"/> 1 waypoint
+    <TfiTarget className="inline m-1" /> 1 waypoint
   </span>
-  if (selectedWPs.length == 0){
+  if (selectedWPs.length == 0) {
     item = <span>
-      <TbTopologyRing className="inline m-1"/> {activeMission} ({waypoints.get(activeMission)?.length})
+      <TbTopologyRing className="inline m-1" /> {activeMission} ({waypoints.get(activeMission)?.length})
     </span>
-  }else if(selectedWPs.length > 1){
-    item =<span>
-      <TbTopologyRing className="inline m-1"/> {selectedWPs.length} waypoints
+  } else if (selectedWPs.length > 1) {
+    item = <span>
+      <TbTopologyRing className="inline m-1" /> {selectedWPs.length} waypoints
     </span>
 
 
@@ -34,7 +34,7 @@ export default function CurEdit({onHide}: {onHide: ()=>void}){
         </label>
 
       </div>
-      <div className="bg-slate-200 h-full w-[2px]"/>
+      <div className="bg-slate-200 h-full w-[2px]" />
     </div>
   )
 

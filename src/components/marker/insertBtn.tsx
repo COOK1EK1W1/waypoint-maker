@@ -3,11 +3,11 @@ import { Marker } from "react-leaflet";
 import { LeafletMouseEvent } from "leaflet";
 import { insertIcon } from "./waypoint";
 
-export default function InsertBtn({lat, lng, onClick}: {lat:number, lng: number, onClick: ()=>void}){
+export default function InsertBtn({ lat, lng, onClick }: { lat: number, lng: number, onClick: () => void }) {
 
   const eventHandlers = useMemo(
     () => ({
-      click(e: LeafletMouseEvent){
+      click(e: LeafletMouseEvent) {
         e.originalEvent.preventDefault()
         onClick()
       }

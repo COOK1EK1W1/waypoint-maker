@@ -5,11 +5,11 @@ import { FaPlus, FaTrashAlt } from "react-icons/fa";
 import { TbTopologyRing } from "react-icons/tb";
 import ListItem from "./ListItem";
 
-export default function CollectionItem({node, selected, onMouseDown, onDelete}: {node: ColNode, selected: boolean, onMouseDown: (e: React.MouseEvent<HTMLDivElement>)=>void, onDelete: ()=>void}){
+export default function CollectionItem({ node, selected, onMouseDown, onDelete }: { node: ColNode, selected: boolean, onMouseDown: (e: React.MouseEvent<HTMLDivElement>) => void, onDelete: () => void }) {
   const [expand, setExpand] = useState(false)
-  const {waypoints} = useWaypointContext()
+  const { waypoints } = useWaypointContext()
 
-  function remove(e: React.MouseEvent<HTMLButtonElement>){
+  function remove(e: React.MouseEvent<HTMLButtonElement>) {
     e.stopPropagation()
     onDelete()
   }
@@ -18,14 +18,14 @@ export default function CollectionItem({node, selected, onMouseDown, onDelete}: 
 
   return (
     <ListItem onMouseDown={onMouseDown} selected={selected} actions={[
-        (<button onMouseDown={()=>{setExpand(!expand)}} key={2}><FaPlus/></button>),
-        (<button onMouseDown={remove} key={1}><FaTrashAlt/></button>)
+      (<button onMouseDown={() => { setExpand(!expand) }} key={2}><FaPlus /></button>),
+      (<button onMouseDown={remove} key={1}><FaTrashAlt /></button>)
     ]}>
       <div className="flex justify-between">
-        <span><TbTopologyRing className="inline m-1"/>Group &apos;{node.name}&apos;</span>
+        <span><TbTopologyRing className="inline m-1" />Group &apos;{node.name}&apos;</span>
       </div>
-      <div className={`overflow-hidden duration-200 ${expand?`h-20`:`h-0`}`}>
-        {wps.map((wp, id)=>(
+      <div className={`overflow-hidden duration-200 ${expand ? `h-20` : `h-0`}`}>
+        {wps.map((wp, id) => (
           <div key={id}>
             {wp.type}
           </div>

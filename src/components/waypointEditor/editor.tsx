@@ -9,9 +9,9 @@ import { cn } from "@/util/tw";
 import HeightMap from "./heightMap";
 import Button from "../toolBar/button";
 
-export default function Editor(){
+export default function Editor() {
 
-  const {activeMission, selectedWPs, waypoints} = useWaypointContext()
+  const { activeMission, selectedWPs, waypoints } = useWaypointContext()
   const [hidden, setHidden] = useState(false)
 
 
@@ -30,26 +30,26 @@ export default function Editor(){
     wpsIds = selectedWPs;
   }
 
-  if (wps.length == 0){
+  if (wps.length == 0) {
     return
 
   }
 
   return (
     <>
-    {hidden?<Button className="absolute z-20 rounded-lg left-2 bottom-2" onClick={()=>setHidden(false)}>WP list</Button>:null}
-    <div className={cn("z-20 absolute bottom-0 m-2 w-[930px] ease-in-out duration-200", hidden ? "bottom-[-100vh]": "")}>
-      <div className={cn("bg-white rounded-lg shadow-lg shadow-black")}>
-        <div className="flex">
-          <CurEdit onHide={() => setHidden(true)}/>
-          <div className="flex flex-wrap">
-            <WaypointEditor/>
-            <LatLngEditor/>
+      {hidden ? <Button className="absolute z-20 rounded-lg left-2 bottom-2" onClick={() => setHidden(false)}>WP list</Button> : null}
+      <div className={cn("z-20 absolute bottom-0 m-2 w-[930px] ease-in-out duration-200", hidden ? "bottom-[-100vh]" : "")}>
+        <div className={cn("bg-white rounded-lg shadow-lg shadow-black")}>
+          <div className="flex">
+            <CurEdit onHide={() => setHidden(true)} />
+            <div className="flex flex-wrap">
+              <WaypointEditor />
+              <LatLngEditor />
+            </div>
           </div>
+          <HeightMap />
         </div>
-        <HeightMap/>
       </div>
-    </div>
     </>
 
   )
