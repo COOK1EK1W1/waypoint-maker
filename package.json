@@ -10,6 +10,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@prisma/client": "6.2.0",
     "@radix-ui/react-dialog": "^1.1.4",
     "@uidotdev/usehooks": "^2.4.1",
     "@vercel/analytics": "^1.4.1",
@@ -21,6 +22,7 @@
     "lucide-react": "^0.469.0",
     "next": "^15.1.2",
     "next-auth": "^4.24.11",
+    "prisma": "^6.2.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-icons": "^5.2.0",

@@ -1,6 +1,5 @@
 "use client"
 import StartModal from "@/components/modal/startModal";
-import ToolBar from "@/components/toolBar/ToolBar";
 
 import ListView from "@/components/waypointList/ListView";
 import dynamic from "next/dynamic";

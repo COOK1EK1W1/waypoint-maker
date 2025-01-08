@@ -1,23 +1,30 @@
-export default async function DashboardModal({ userData }: { userData: any }) {
+import prisma from "@/util/prisma";
+import { Session } from "next-auth";
+
+export default async function DashboardModal({ userData }: { userData: Session }) {
   //get projects from db
 
-  await new Promise(r => setTimeout(r, 2000));
 
-  let projects = [
-    { name: "project1", length: 10 },
-    { name: "project2", length: 20 },
-    { name: "project3", length: 30 },
-    { name: "project4", length: 40 },
-    { name: "project5", length: 50 },
-  ]
+  await new Promise(r => setTimeout(r, 2000));
+  if (!userData.user || !userData.user.email) {
+    return <p>loading</p>
+  }
+  const user = await prisma.user.findFirst({
+    where: {
+      email: userData.user.email
+    },
+    include: {
+      missions: true
+    }
+  })
 
   return (<div>
     Signed in as {userData.user?.name}
     <div className="flex flex-wrap">
-      {projects.map((project) => (
+      <div> Create Project</div>
+      {user?.missions.map((mission) => (
         <div className="border-2 border-slate-200 shadow-lg p-4 rounded-lg m-4">
-          <p>{project.name}</p>
-          <p>{project.length}</p>
+          <p>{mission.title}</p>
         </div>
 
       ))}
