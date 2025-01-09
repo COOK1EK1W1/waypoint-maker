@@ -22,8 +22,8 @@ export default async function DashboardModal({ userData }: { userData: Session }
     Signed in as {userData.user?.name}
     <div className="flex flex-wrap">
       <div> Create Project</div>
-      {user?.missions.map((mission) => (
-        <div className="border-2 border-slate-200 shadow-lg p-4 rounded-lg m-4">
+      {user?.missions.map((mission, i) => (
+        <div key={i} className="border-2 border-slate-200 shadow-lg p-4 rounded-lg m-4">
           <p>{mission.title}</p>
         </div>
 
