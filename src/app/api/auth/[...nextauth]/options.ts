@@ -16,12 +16,15 @@ export const options: NextAuthOptions = {
       },
       async authorize(credentials) {
         // Add logic here to look up the user from the credentials supplied
+        console.log(credentials)
         const user = { id: "42", email: "ciarancook1@gmail.com", password: "password" }
-        await new Promise(r => setTimeout(r, 2000));
+        console.log(user)
 
         if (credentials?.email === user.email && credentials?.password === user.password) {
+          console.log("found user")
           return user
         } else {
+          console.log("no user")
           return null
         }
       }
