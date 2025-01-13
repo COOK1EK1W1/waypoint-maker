@@ -9,10 +9,17 @@ generator client {
 }
 
 model User {
-  id       Int     @id @default(autoincrement())
-  email    String  @unique
-  password String?
-  missions Mission[]
+  id       String     @id @default(uuid())
+    name    String
+    provider Provider
+    email    String  @unique
+    password String?
+    missions Mission[]
+}
+
+enum Provider {
+  CRED
+  GITHUB
 }
 
 model Mission {
@@ -20,6 +27,6 @@ model Mission {
   title       String
   data       String
   modifiedAt DateTime @default(now())
-  userId    Int
+  userId    String
   user      User    @relation(fields: [userId], references: [id])
 }

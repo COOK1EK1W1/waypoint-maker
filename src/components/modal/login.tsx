@@ -1,41 +1,15 @@
 "use client"
-import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
-import { useRef } from "react"
+
+import { signIn } from "next-auth/react"
+import Button from "../toolBar/button"
+import { useRouter } from "next/navigation"
 
 export default function LoginModal() {
-  
   const router = useRouter()
-  const username = useRef<null|HTMLInputElement>(null);
-  const password = useRef<null|HTMLInputElement>(null);
-
-  async function onSubmit(){
-    if (username.current == null || password.current == null){
-      return
-    }
-
-    const result = await signIn("credentials", {
-      email: username.current.value,
-      password: password.current.value,
-      redirect: false,
-      callbackUrl: "/"
-    })
-    if (result?.ok){
-      router.refresh()
-    }else{
-      alert("login Failed")
-
-    }
-
-
-  }
   return (    
     <div>
-      <input ref={username} placeholder="Username" type="text" />
-      <input  ref={password} placeholder="Password" type="password"/>
-
-      <button type="submit" onMouseDown={onSubmit}>Sign in</button>
+      <Button onClick={() => signIn()}>Sign In</Button>
+      <Button onClick={() => router.push("signup")}>Sign Up</Button>
     </div>
   )
-
 }
