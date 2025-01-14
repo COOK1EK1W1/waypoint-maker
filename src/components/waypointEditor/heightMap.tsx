@@ -95,7 +95,7 @@ export default function HeightMap() {
   }
 
   let data: { terrainHeight: number[] | null, waypointHeight: number | null, distance: number }[] = []
-  console.log(distances.length, heights.length, terrainData.length)
+  //console.log(distances.length, heights.length, terrainData.length)
   for (let i = 0; i < distances.length; i++) {
     if (i < terrainData.length) {
       let terrainHeight = terrainData[i].elevation

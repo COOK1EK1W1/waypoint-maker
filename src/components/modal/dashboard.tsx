@@ -1,11 +1,11 @@
 import prisma from "@/util/prisma";
 import { Session } from "next-auth";
+import MissionTile from "../dashboard/mission";
 
 export default async function DashboardModal({ userData }: { userData: Session }) {
   //get projects from db
 
 
-  await new Promise(r => setTimeout(r, 2000));
   if (!userData.user || !userData.user.email) {
     return <p>loading</p>
   }
@@ -23,10 +23,7 @@ export default async function DashboardModal({ userData }: { userData: Session }
     <div className="flex flex-wrap">
       <div> Create Project</div>
       {user?.missions.map((mission, i) => (
-        <div key={i} className="border-2 border-slate-200 shadow-lg p-4 rounded-lg m-4">
-          <p>{mission.title}</p>
-        </div>
-
+        <MissionTile mission={mission} key={i} />
       ))}
     </div>
   </div>)

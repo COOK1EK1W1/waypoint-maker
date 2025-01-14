@@ -1,8 +1,8 @@
 import * as L from "leaflet"
 
 export var normalIcon = L.icon({
-  iconUrl: 'marker-icon.png',
-  shadowUrl: 'marker-shadow.png',
+  iconUrl: '/marker-icon.png',
+  shadowUrl: '/marker-shadow.png',
 
   iconSize: [25, 41],
   iconAnchor: [12, 41],
@@ -13,8 +13,8 @@ export var normalIcon = L.icon({
 
 const scaleSize = 1.2
 export var activeIcon = L.icon({
-  iconUrl: 'marker-icon.png',
-  shadowUrl: 'marker-shadow.png',
+  iconUrl: '/marker-icon.png',
+  shadowUrl: '/marker-shadow.png',
 
   iconSize: [25 * scaleSize, 41 * scaleSize],
   iconAnchor: [15, 50],
@@ -25,7 +25,7 @@ export var activeIcon = L.icon({
 
 
 export var insertIcon = L.icon({
-  iconUrl: 'insert.png',
+  iconUrl: '/insert.png',
   iconSize: [30, 30],
   iconAnchor: [15, 15],
   popupAnchor: [1, -34],
