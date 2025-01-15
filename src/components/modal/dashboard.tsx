@@ -4,9 +4,7 @@ import MissionTile from "../dashboard/mission";
 import CreateMission from "../dashboard/createMission";
 
 export default async function DashboardModal({ userData }: { userData: Session }) {
-  //get projects from db
-
-
+  //get mission from db
 
   if (!userData.user || !userData.user.email) {
     return <p>loading</p>
@@ -31,11 +29,10 @@ export default async function DashboardModal({ userData }: { userData: Session }
 
 
   return (<div>
-    Signed in as {userData.user?.name}
-    <div className="flex flex-wrap">
+    <div className="flex flex-col">
       <CreateMission userId={user.id} />
       {user?.missions.map((mission, i) => (
-        <MissionTile mission={mission} key={i} />
+        <MissionTile mission={mission} key={i} userId={user.id} />
       ))}
     </div>
 

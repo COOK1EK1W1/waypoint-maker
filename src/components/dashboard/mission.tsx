@@ -1,13 +1,26 @@
-import { Mission } from "@prisma/client";
-import Link from "next/link";
+"use client"
+import { useRouter } from "next/navigation";
+import { FaTrash } from "react-icons/fa";
+import Button from "../toolBar/button";
+import { deleteMission } from "./actions";
+import { useSession } from "next-auth/react";
 
-export default function MissionTile({ mission }: { mission: { title: string, modifiedAt: Date, id: string } }) {
+export default function MissionTile({ mission, userId }: { mission: { title: string, modifiedAt: Date, id: string }, userId: string }) {
+  const session = useSession()
+  console.log(session)
+  const router = useRouter()
+  function handleDelete() {
+    deleteMission(mission.id, userId).then(() => router.refresh())
+  }
 
   return (
-    <Link href={`/m/${mission.id}`} className="block no-underline text-inherit border-2 border-slate-200 w-full rounded-lg p-1 m-1 bg-slate-100">
+    <Button onClick={() => { router.push(`/m/${mission.id}`) }} className="w-full justify-between px-2">
       <p>{mission.title}</p>
+      <div onMouseDown={(e) => { e.stopPropagation(); e.preventDefault(); handleDelete() }}>
+        <FaTrash />
+      </div>
 
-    </Link>
+    </Button>
   )
 
 }

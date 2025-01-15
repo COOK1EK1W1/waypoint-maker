@@ -2,7 +2,7 @@ import { Fault, Severity } from "@/types/waypoints";
 import { useWaypointContext } from "@/util/context/WaypointContext";
 import { cn } from "@/lib/utils";
 
-export default function FaultItem({ fault, key, onMouseDown }: { fault: Fault, key: number, onMouseDown: () => void }) {
+export default function FaultItem({ fault, onMouseDown }: { fault: Fault, onMouseDown: () => void }) {
   const { setSelectedWPs, setActiveMission } = useWaypointContext()
 
   function dostuff(mission: string | undefined, id: number | undefined) {
@@ -37,7 +37,7 @@ export default function FaultItem({ fault, key, onMouseDown }: { fault: Fault, k
   }
 
   return (
-    <div key={key} className={cn("p-2 flex flex-row justify-between border-2 rounded-lg my-2", bg)}>
+    <div className={cn("p-2 flex flex-row justify-between border-2 rounded-lg my-2", bg)}>
       {fault.message}
       {(fault.offenderMission !== undefined) && (
         <button onMouseDown={() => dostuff(fault.offenderMission, fault.offenderIndex)} className="bg-slate-200 p-2 m-1 rounded-lg">go to</button>
