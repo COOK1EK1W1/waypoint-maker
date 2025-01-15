@@ -13,6 +13,7 @@ type provided = {
   tool: Tool,
   setTool: Dispatch<SetStateAction<Tool>>,
   moveMap: { move?: (lat: number, lng: number) => void }
+  missionId?: string
 }
 
 export const waypointContext = createContext<provided>(undefined as any);

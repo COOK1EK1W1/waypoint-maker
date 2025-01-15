@@ -1,10 +1,10 @@
 "use server"
 import prisma from "@/util/prisma";
 
-export async function newProj(userId: string) {
+export async function newProj(userId: string, title: string) {
   const res = await prisma.mission.create({
     data: {
-      title: "New Mission",
+      title: title,
       data: `[["Main",[]],["Geofence",[]],["Markers",[]]]`,
       userId: userId
     }

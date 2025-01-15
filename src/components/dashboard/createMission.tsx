@@ -6,8 +6,17 @@ import { newProj } from "./actions"
 
 export default function CreateMission({ userId }: { userId: string }) {
   const router = useRouter()
+  function handleCreate() {
+    const title = prompt("Enter Mission Name")
+    if (title && title != "") {
+      newProj(userId, title).then((e) => {
+        router.push(e.id)
+      })
+    }
+
+  }
   return (
-    <Button onClick={() => { newProj(userId).then(() => router.refresh()) }}>Create Mission</Button>
+    <Button onClick={handleCreate}>Create Mission</Button>
   )
 
 }

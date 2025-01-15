@@ -7,7 +7,6 @@ import { redirect } from "next/navigation"
 export default function SignUp() {
   async function onSubmit(formdata: FormData) {
     "use server"
-    console.log(formdata)
     try {
       const res = await prisma.user.create({
         data: {
@@ -17,7 +16,6 @@ export default function SignUp() {
           provider: $Enums.Provider.CRED
         }
       })
-      console.log(res)
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
 
@@ -30,7 +28,6 @@ export default function SignUp() {
     }
     redirect("/")
   }
-  console.log("helo world")
 
   return (
     <div className="h-[100dvh] flex justify-center items-center">
