@@ -11,7 +11,5 @@ export default async function Home() {
         <WMEditor />
       </VehicleProvider>
     </WaypointProvider>
-
-
   );
 }
