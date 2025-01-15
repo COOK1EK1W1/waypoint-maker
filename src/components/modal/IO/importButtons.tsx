@@ -1,6 +1,7 @@
+"use client"
 import { useWaypointContext } from '@/util/context/WaypointContext';
 import React from 'react';
-import Button from './button';
+import Button from '@/components/toolBar/button';
 import { FaFileUpload } from 'react-icons/fa';
 import { AvgLatLng } from '@/util/WPCollection';
 import { WaypointCollection } from '@/types/waypoints';

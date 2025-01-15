@@ -1,6 +1,6 @@
 import Button from "./button"
-import MissionIOModal from "../modal/missionIOModal"
-import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "../ui/dialog"
+import MissionIOModal from "@/components/modal/IO/missionIOModal"
+import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 
 export default function MissionIO() {
 

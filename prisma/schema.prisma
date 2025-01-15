@@ -9,12 +9,12 @@ generator client {
 }
 
 model User {
-  id       String     @id @default(uuid())
-    name    String
-    provider Provider
-    email    String  @unique
-    password String?
-    missions Mission[]
+  id       String    @id @default(uuid())
+  name     String
+  provider Provider
+  email    String    @unique
+  password String?
+  missions Mission[]
 }
 
 enum Provider {
@@ -23,10 +23,10 @@ enum Provider {
 }
 
 model Mission {
-  id         Int     @id @default(autoincrement())
-  title       String
+  id         String   @id @default(uuid())
+  title      String
   data       String
   modifiedAt DateTime @default(now())
-  userId    String
-  user      User    @relation(fields: [userId], references: [id])
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
 }

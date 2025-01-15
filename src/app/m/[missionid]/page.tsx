@@ -5,8 +5,7 @@ import VehicleProvider from "@/util/context/VehicleTypeProvider";
 import prisma from "@/util/prisma";
 
 export default async function Mission({ params }: { params: Promise<{ missionid: string }> }) {
-  let id = Number((await params).missionid)
-  const a = await prisma.mission.findUnique({ where: { id: id } })
+  const a = await prisma.mission.findUnique({ where: { id: (await params).missionid } })
   if (a == null) {
     return null
   }
