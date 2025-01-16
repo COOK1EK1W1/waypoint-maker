@@ -148,6 +148,10 @@ export default function MapStuff() {
         style={{ width: '100%', height: '100%' }}
         className="z-10"
         ref={mapRef}
+        attributionControl={false}
+        zoomControl={false}
+        keyboard={false}
+        fadeAnimation={false}
       >
         <TileLayer
           url='https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}'

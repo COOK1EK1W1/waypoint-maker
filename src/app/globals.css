@@ -2,10 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-.leaflet-control-zoom{
-  display: none;
-}
-
 *{
   font-size: 14px;
 
