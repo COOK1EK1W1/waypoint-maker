@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "postinstall":"bunx prisma generate",
     "dev": "next dev",
     "bruh": "node src/util/commandTypes.js",
     "build": "next build",
