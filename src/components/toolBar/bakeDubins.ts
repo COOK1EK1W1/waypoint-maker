@@ -45,7 +45,7 @@ export function bakeDubins(waypoints: WaypointCollection, activeMission: string,
       wps.shift()
     }
 
-    for (let i = 0; i < section.wps.length; i++) {
+    for (let i = 0; i < wps.length; i++) {
       let a = findnthwaypoint(activeMission, i + section.start, curWaypoints)
       if (!a) continue;
       let mission = waypoints.get(a[0])

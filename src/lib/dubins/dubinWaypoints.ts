@@ -1,6 +1,6 @@
 import { Waypoint } from "@/types/waypoints";
 import { deg2rad, modf, rad2deg, worldOffset } from "./geometry";
-import { DubinsBetweenDiffRad } from "./dubins";
+import { Dir, DubinsBetweenDiffRad } from "./dubins";
 import { bound, Path } from "@/types/dubins";
 import { warn } from "console";
 
@@ -36,6 +36,17 @@ export function splitDubinsRuns(wps: Waypoint[]): { start: number, wps: Waypoint
 
 }
 
+function num2dir(num: number) {
+  if (num >= 1) {
+    return Dir.Right
+  }
+  if (num <= -1) {
+    return Dir.Left
+  }
+  return undefined
+
+}
+
 export function dubinsBetweenWaypoint(a: Waypoint, b: Waypoint): Path {
   if (a.type == 69) {
     let angleA = deg2rad(a.param2)
@@ -43,18 +54,18 @@ export function dubinsBetweenWaypoint(a: Waypoint, b: Waypoint): Path {
       let angleB = deg2rad(b.param2)
       let offset_a = worldOffset({ x: a.param6, y: a.param5 }, a.param1, angleA - Math.PI / 2)
       let offset_b = worldOffset({ x: b.param6, y: b.param5 }, b.param1, angleB - Math.PI / 2)
-      return DubinsBetweenDiffRad(offset_a, offset_b, angleA, angleB, a.param3, b.param3)
+      return DubinsBetweenDiffRad(offset_a, offset_b, angleA, angleB, a.param3, b.param3, num2dir(a.param4), num2dir(b.param4))
     } else {
       let offset_a = worldOffset({ x: a.param6, y: a.param5 }, a.param1, angleA - Math.PI / 2)
       let offset_b = { x: b.param6, y: b.param5 }
-      return DubinsBetweenDiffRad(offset_a, offset_b, angleA, 0, a.param3, 0)
+      return DubinsBetweenDiffRad(offset_a, offset_b, angleA, 0, a.param3, 0, num2dir(a.param4), 0)
     }
   } else {
     if (b.type == 69) {
       let angleB = deg2rad(b.param2)
       let offset_a = { x: a.param6, y: a.param5 }
       let offset_b = worldOffset({ x: b.param6, y: b.param5 }, b.param1, angleB - Math.PI / 2)
-      return DubinsBetweenDiffRad(offset_a, offset_b, 0, angleB, 0, b.param3)
+      return DubinsBetweenDiffRad(offset_a, offset_b, 0, angleB, 0, b.param3, 0, num2dir(b.param4))
 
     } else {
       return []

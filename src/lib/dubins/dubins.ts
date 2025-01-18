@@ -1,6 +1,11 @@
 import { XY, Path, Curve, Straight } from "@/types/dubins";
 import { mod2pi, world_dist, worldBearing, worldOffset, worldPathLength } from "./geometry";
 
+export enum Dir {
+  Left,
+  Right,
+}
+
 /**
  * Find the turn centers of a waypoint
  * @param {XY} a - The waypoint
@@ -35,7 +40,7 @@ export function DubinsBetween(a: XY, b: XY, thetaA: number, thetaB: number, turn
  * @param {number} radA - The radius coming out of waypoint A
  * @param {number} radB - The radius coming into waypoint B
  */
-export function DubinsBetweenDiffRad(a: XY, b: XY, thetaA: number, thetaB: number, radA: number, radB: number): Path {
+export function DubinsBetweenDiffRad(a: XY, b: XY, thetaA: number, thetaB: number, radA: number, radB: number, Adir?: Dir, Bdir?: Dir): Path {
 
   // nomalise angles
   thetaA = mod2pi(thetaA)
@@ -58,7 +63,7 @@ export function DubinsBetweenDiffRad(a: XY, b: XY, thetaA: number, thetaB: numbe
   let right_start = thetaA - Math.PI / 2
 
   //RSR
-  if (world_dist(a_centers.r, b_centers.r) > Math.abs(radA - radB)) {
+  if ((Adir != Dir.Left) && (Bdir != Dir.Left) && world_dist(a_centers.r, b_centers.r) > Math.abs(radA - radB)) {
     let a = Math.asin((radA - radB) / world_dist(a_centers.r, b_centers.r)) + ar2br
     let c1: Curve = {
       type: "Curve",
@@ -84,7 +89,7 @@ export function DubinsBetweenDiffRad(a: XY, b: XY, thetaA: number, thetaB: numbe
   }
 
   //LSL
-  if (world_dist(a_centers.l, b_centers.l) > Math.abs(radA - radB)) {
+  if ((Adir != Dir.Right) && (Bdir != Dir.Left) && world_dist(a_centers.l, b_centers.l) > Math.abs(radA - radB)) {
     let a = al2bl - Math.asin((radA - radB) / world_dist(a_centers.l, b_centers.l))
     let c1: Curve = {
       type: "Curve",
@@ -109,7 +114,7 @@ export function DubinsBetweenDiffRad(a: XY, b: XY, thetaA: number, thetaB: numbe
   }
 
   //RSL
-  if (world_dist(a_centers.r, b_centers.l) > Math.abs(radA + radB)) {
+  if ((Adir != Dir.Left) && (Bdir != Dir.Right) && world_dist(a_centers.r, b_centers.l) > Math.abs(radA + radB)) {
     let a = Math.asin((radA + radB) / world_dist(a_centers.r, b_centers.l)) + ar2bl
     let c1: Curve = {
       type: "Curve",
@@ -136,7 +141,7 @@ export function DubinsBetweenDiffRad(a: XY, b: XY, thetaA: number, thetaB: numbe
   }
 
   //LSR
-  if (world_dist(a_centers.l, b_centers.r) > Math.abs(radA + radB)) {
+  if ((Adir != Dir.Right) && (Bdir != Dir.Left) && world_dist(a_centers.l, b_centers.r) > Math.abs(radA + radB)) {
     let a = al2br - Math.asin((radA + radB) / world_dist(a_centers.l, b_centers.r))
     let c1: Curve = {
       type: "Curve",
@@ -161,7 +166,6 @@ export function DubinsBetweenDiffRad(a: XY, b: XY, thetaA: number, thetaB: numbe
     sections.push(LSR)
   }
 
-  // return the shortest path
   sections.sort((a, b) => worldPathLength(a) - worldPathLength(b))
   return sections[0]
 }

@@ -5,6 +5,7 @@ import OptimiseModal from "../modal/optimisation"
 import { cn } from "@/lib/utils"
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "../ui/dialog"
 import { get_waypoints } from "@/util/WPCollection"
+import { DialogDescription } from "@radix-ui/react-dialog"
 
 export default function OptimiseButton() {
   const { waypoints } = useWaypointContext()
@@ -22,6 +23,7 @@ export default function OptimiseButton() {
       </DialogTrigger>
       <DialogContent>
         <DialogTitle>Optimise</DialogTitle>
+        <DialogDescription>Optimise the Dubins waypoints</DialogDescription>
         <OptimiseModal />
       </DialogContent>
     </Dialog>

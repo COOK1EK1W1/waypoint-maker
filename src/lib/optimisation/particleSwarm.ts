@@ -2,6 +2,7 @@ import { bound } from "@/types/dubins"
 
 
 export function particleSwarmOptimise(initialGuess: number[], bounds: bound[], fn: (a: number[]) => number, popsize: number): number[] {
+  console.time("Swarm optimisation")
   console.assert(initialGuess.length == bounds.length, "Params are different length to bounds")
 
   let population = []
@@ -28,6 +29,7 @@ export function particleSwarmOptimise(initialGuess: number[], bounds: bound[], f
   }
 
   for (let i = 0; i < 200; i++) {
+    console.log(global_best_value)
     // update global and local best positions and values
     for (let p = 0; p < popsize; p++) {
       let current_fitness = fn(population[p])
@@ -48,7 +50,7 @@ export function particleSwarmOptimise(initialGuess: number[], bounds: bound[], f
         let b = Math.random() * 0.5 //beta cognitive
         let d = Math.random() * 0.5 //delta global
 
-        let newVel = 0.8 * velocities[p][a] +
+        let newVel = 0.9 * velocities[p][a] +
           b * (local_best_position[p][a] - population[p][a]) +
           d * (global_best_position[a] - population[p][a])
         velocities[p][a] = newVel
@@ -67,6 +69,7 @@ export function particleSwarmOptimise(initialGuess: number[], bounds: bound[], f
 
   }
   console.log("ending fitness: ", global_best_value)
+  console.timeEnd("Swarm optimisation")
   return global_best_position
 }
 

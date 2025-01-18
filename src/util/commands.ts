@@ -7334,7 +7334,17 @@ export const commands: Command[] = [{
     increment: null,
     default: null,
     options: [],
-  }, null, {
+  }, {
+    index: 4,
+    label: "Direction",
+    description: "The direction to fly by",
+    units: "",
+    minValue: -1,
+    maxValue: 1,
+    increment: 1,
+    default: 0,
+    options: [],
+  }, {
     index: 5,
     label: "Latitude",
     description: "Latitude",
