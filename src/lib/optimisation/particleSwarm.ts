@@ -11,6 +11,7 @@ export function particleSwarmOptimise(initialGuess: number[], bounds: bound[], f
   let local_best_value = []
   let global_best_position = [...initialGuess]
   let global_best_value = fn(global_best_position)
+  let previous_global_best = []
   console.log("Starting fitness: ", global_best_value)
   for (let i = 0; i < popsize; i++) {
     let particle_pos = []
@@ -29,7 +30,16 @@ export function particleSwarmOptimise(initialGuess: number[], bounds: bound[], f
   }
 
   for (let i = 0; i < 200; i++) {
-    console.log(global_best_value)
+    if (previous_global_best.length == 5) {
+      previous_global_best.shift()
+    }
+    previous_global_best.push(global_best_value)
+    console.log(previous_global_best)
+    if (previous_global_best.length == 5 && Math.round(previous_global_best[0]) == Math.round(previous_global_best[4])) {
+      break;
+    }
+
+
     // update global and local best positions and values
     for (let p = 0; p < popsize; p++) {
       let current_fitness = fn(population[p])
