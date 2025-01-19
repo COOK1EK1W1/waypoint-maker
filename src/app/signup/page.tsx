@@ -3,20 +3,43 @@ import prisma from "@/util/prisma"
 import { $Enums, Prisma } from "@prisma/client"
 import Image from "next/image"
 import { redirect } from "next/navigation"
+import bcrypt from "bcrypt"
+import { signIn } from "@/util/auth"
 
 export default function SignUp() {
   async function onSubmit(formdata: FormData) {
     "use server"
     try {
-      const res = await prisma.user.create({
+      const name = formdata.get("name") as string
+      const email = formdata.get("email") as string
+      const password = formdata.get("password") as string
+
+      const hashedPassword = await bcrypt.hash(password, 10)
+
+      await prisma.user.create({
         data: {
-          name: formdata.get("name") as string,
-          email: formdata.get("email") as string,
-          password: formdata.get("password") as string,
+          name,
+          email,
+          password: hashedPassword,
           provider: $Enums.Provider.CRED
         }
       })
+
+      const result = await signIn("credentials", {
+        redirect: false,
+        email,
+        password
+      })
+      console.log(result, "h")
+
+      if (result?.ok) {
+        redirect("/")
+      } else {
+        console.log("error", result?.error)
+      }
+
     } catch (error) {
+      console.error(error)
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
 
         if (error.code == "P2002") {

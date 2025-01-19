@@ -1,4 +1,3 @@
-import { getServerSession } from "next-auth";
 import Button from "./button";
 import { FaUser } from "react-icons/fa";
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -7,9 +6,10 @@ import { Suspense } from "react";
 import SignOut from "./signOut";
 import LoginModal from "../modal/login";
 import { DialogDescription } from "@radix-ui/react-dialog";
+import { auth } from "@/util/auth";
 
 export default async function User() {
-  const data = await getServerSession()
+  const data = await auth()
 
   return (< Dialog >
     <DialogTrigger asChild>
@@ -30,6 +30,7 @@ export default async function User() {
       ) : (
         <>
           <DialogTitle>Sign in</DialogTitle>
+          <DialogDescription>Sign in to enable cloud syncing</DialogDescription>
           <LoginModal />
         </>
       )}

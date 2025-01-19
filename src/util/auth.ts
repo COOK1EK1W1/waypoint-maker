@@ -1,8 +1,9 @@
-import NextAuth, { NextAuthOptions } from "next-auth";
+import NextAuth from "next-auth";
 import GitHubProvider from 'next-auth/providers/github'
-import CredentialsProvider from 'next-auth/providers/credentials'
 import { Provider } from "next-auth/providers/index";
 import prisma from "./prisma";
+import bcrypt from "bcrypt"
+import Credentials from "next-auth/providers/credentials";
 
 
 export const providers: Provider[] = [
@@ -11,35 +12,36 @@ export const providers: Provider[] = [
     clientId: process.env.GITHUB_ID as string,
     clientSecret: process.env.GITHUB_SECRET as string
   }),
-  CredentialsProvider({
-    name: 'Credentials',
+  Credentials({
     credentials: {
-      email: { label: 'Email', type: 'text', placeholder: 'john.doe@example.com' },
+      email: { label: 'Email' },
       password: { label: 'Password', type: 'password' }
     },
     async authorize(credentials) {
-      // Add logic here to look up the user from the credentials supplied
-      console.log(credentials)
-      const user = await prisma.user.findUnique({where: {
-        email: credentials?.email,
-        password: credentials?.password
-      },
-        select: {
-          name: true, email: true, id: true
-        }
+
+      if (!credentials?.email || !credentials?.password) {
+        throw new Error("Missing Email or password")
+      }
+
+      const user = await prisma.user.findUnique({
+        where: { email: credentials.email }
       })
-      return user
+      if (!user) {
+        throw new Error("No user with email")
+      }
+
+      if (!user.password) {
+        throw new Error("Email taken by other provider")
+      }
+
+      const isValidPassword = bcrypt.compare(credentials.password, user.password)
+      if (!isValidPassword) {
+        throw new Error("Invalid Password")
+      }
+      return { id: user.id, name: user.name, email: user.email }
     }
   })
 ]
-
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  providers,
-  pages: {
-    signIn: "/",
-  },
+  providers: providers,
 })
-
-export const options: NextAuthOptions = {
-  providers: providers
-}
