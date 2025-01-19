@@ -3,6 +3,11 @@ export type XY = {
   y: number
 }
 
+export type LatLng = {
+  lat: number,
+  lng: number
+}
+
 export type Curve = {
   type: "Curve"
   center: XY,

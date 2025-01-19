@@ -1,6 +1,6 @@
 import { expect, test } from "bun:test";
 import { Segment, XY } from "@/types/dubins";
-import { bearing, mod2pi, modf, offset, pathLength, segmentLength, worldBearing } from "@/lib/dubins/geometry";
+import { bearing, mod2pi, modf, offset, pathLength, segmentLength, world_dist, worldBearing, worldDist } from "@/lib/dubins/geometry";
 
 test("straight line len", () => {
   const a: Segment = { type: "Straight", start: { x: 0, y: 0 }, end: { x: 3, y: 4 } }
@@ -85,4 +85,22 @@ test("mod2pi", () => {
 test("world Bearing", () => {
   expect(worldBearing({ x: 0, y: 0 }, { x: 0, y: 10 })).toBe(0)
   expect(worldBearing({ x: 0, y: 0 }, { x: 0, y: -10 })).toBeCloseTo(Math.PI)
+})
+
+test("world distance", () => {
+  expect(world_dist({ x: 0, y: 0 }, { x: 0, y: 0 })).toBeCloseTo(0)
+  expect(world_dist({ x: 0, y: 0 }, { x: 20, y: 20 })).toBeCloseTo(3112445.04)
+  expect(world_dist({ x: 20, y: 20 }, { x: 0, y: 0 })).toBeCloseTo(3112445.04)
+  expect(world_dist({ x: 0, y: 0 }, { x: 90, y: 0 })).toBeCloseTo(10007543.4)
+  expect(world_dist({ x: 0, y: 0 }, { x: 90, y: 40 })).toBeCloseTo(10007543.4)
+  expect(world_dist({ y: 40.7128, x: 74.006 }, { y: 51.5072, x: 0.1276 })).toBeCloseTo(5570242.31)
+})
+
+test("world distance better func", () => {
+  expect(worldDist({ lng: 0, lat: 0 }, { lng: 0, lat: 0 })).toBeCloseTo(0)
+  expect(worldDist({ lng: 0, lat: 0 }, { lng: 20, lat: 20 })).toBeCloseTo(3112445.04)
+  expect(worldDist({ lng: 20, lat: 20 }, { lng: 0, lat: 0 })).toBeCloseTo(3112445.04)
+  expect(worldDist({ lng: 0, lat: 0 }, { lng: 90, lat: 0 })).toBeCloseTo(10007543.4)
+  expect(worldDist({ lng: 0, lat: 0 }, { lng: 90, lat: 40 })).toBeCloseTo(10007543.4)
+  expect(worldDist({ lat: 40.7128, lng: 74.006 }, { lat: 51.5072, lng: 0.1276 })).toBeCloseTo(5570242.31)
 })
