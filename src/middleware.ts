@@ -1,3 +1,3 @@
-export { default } from "next-auth/middleware"
+export { auth as middleware } from "@/util/auth"
 
 export const config = { matcher: ["/mission/:path*"] }

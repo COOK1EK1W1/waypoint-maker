@@ -2,7 +2,6 @@ import NextAuth from "next-auth";
 import GitHubProvider from 'next-auth/providers/github'
 import { Provider } from "next-auth/providers/index";
 import prisma from "./prisma";
-import bcrypt from "bcrypt"
 import Credentials from "next-auth/providers/credentials";
 
 
@@ -14,7 +13,7 @@ export const providers: Provider[] = [
   }),
   Credentials({
     credentials: {
-      email: { label: 'Email' },
+      email: { label: 'Email', type: "text" },
       password: { label: 'Password', type: 'password' }
     },
     async authorize(credentials) {
@@ -23,8 +22,11 @@ export const providers: Provider[] = [
         throw new Error("Missing Email or password")
       }
 
+      const email = credentials.email as string
+      const password = credentials.password as string
+
       const user = await prisma.user.findUnique({
-        where: { email: credentials.email }
+        where: { email: email }
       })
       if (!user) {
         throw new Error("No user with email")
@@ -34,7 +36,7 @@ export const providers: Provider[] = [
         throw new Error("Email taken by other provider")
       }
 
-      const isValidPassword = bcrypt.compare(credentials.password, user.password)
+      const isValidPassword = password === user.password
       if (!isValidPassword) {
         throw new Error("Invalid Password")
       }
