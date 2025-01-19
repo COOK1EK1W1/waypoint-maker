@@ -1,9 +1,9 @@
 Dashboard page
-Login
 local caching
-send mission to DB
 edit name
 
+-- Login --
+-- send mission to DB --
 -- load mission from DB --
 -- create new mission --
 -- delete mission from DB --
