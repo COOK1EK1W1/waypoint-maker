@@ -69,10 +69,6 @@ Contributions are welcome! If you'd like to contribute to Waypoint Maker, please
 
 Please ensure your code adheres to the existing style and passes all tests before submitting.
 
-## License
-
-This project is licensed under the [MIT License](LICENSE).
-
 ---
 
 Thank you for using Waypoint Maker! If you encounter any issues or have feature requests, feel free to open an issue in the [GitHub repository](https://github.com/yourusername/waypoint-maker).

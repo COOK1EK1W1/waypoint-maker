@@ -21,6 +21,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <link rel="preload" href="/marker-icon.png" as="image" />
+      <link rel="preload" href="/marker-shadow.png" as="image" />
+      <link rel="preload" href="/insert.png" as="image" />
       <body className={inter.className}>
         <Analytics />
         <AuthProvider>
