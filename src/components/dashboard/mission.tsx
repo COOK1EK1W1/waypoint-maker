@@ -18,11 +18,11 @@ export default function MissionTile({ mission, userId }: { mission: { title: str
   }
 
   return (
-    <Button onClick={() => { router.push(`/m/${mission.id}`) }} className={cn("w-full px-2 bg-white p-2 m-2 flex-row", missionId == mission.id ? "bg-slate-200" : "")}>
+    <Button onClick={() => { router.push(`/m/${mission.id}`) }} className={cn("w-full px-2 bg-white p-2 m-2 flex-row", missionId == mission.id ? "bg-slate-100" : "")}>
       <div className="flex w-full flex-col items-start">
         <p>{mission.title}</p>
 
-        <p className="text-slate-600">Last Modified: {timeAgo(mission.modifiedAt)}</p>
+        <p className="text-muted-foreground">Last Modified: {timeAgo(mission.modifiedAt)}</p>
       </div>
       <div onMouseDown={(e) => { e.stopPropagation(); e.preventDefault(); handleDelete() }}>
         <FaTrash />

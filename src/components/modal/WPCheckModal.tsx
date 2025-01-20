@@ -44,19 +44,33 @@ export default function WPCheckModal() {
       })
   }, [waypoints, wps])
 
+  //current fault count, used as key for lists
+  let faultId = 0;
+
   return (
     <div>
       <h2>General Checks</h2>
-      {results.map((x, idx) => (
-        <FaultItem fault={x} key={idx} onMouseDown={close} />
-      ))}
-      {results.length == 0 ? <FaultItem fault={{ message: "There are no errors in your waypoint mission", severity: Severity.Good }} key={0} onMouseDown={close} /> : null}
+      {
+        results.map((x) => (
+          <FaultItem fault={x} key={faultId++} onMouseDown={close} />
+        ))
+      }
+      {
+        results.length == 0 ? <FaultItem fault={{ message: "There are no errors in your waypoint mission", severity: Severity.Good }} key={faultId++} onMouseDown={close} /> : null
+      }
       <h2>Terrain Check</h2>
-      <p>beware waypoint sub-stepping is not implemented yet</p>
-      {terrain !== null ? terrain.map((x, idx) => (
-        <FaultItem fault={x} key={idx} onMouseDown={close} />
-      )) : <FaultItem fault={{ message: "There is no terrain data available", severity: Severity.Bad }} key={0} onMouseDown={close} />}
-      {terrain !== null && terrain.length == 0 ? <FaultItem fault={{ message: "Terrain check is complete", severity: Severity.Good }} key={0} onMouseDown={close} /> : null}
+
+      {
+        terrain !== null ? terrain.map((x) => (
+          <FaultItem fault={x} key={faultId++} onMouseDown={close} />
+        )) : <FaultItem fault={{ message: "There is no terrain data available", severity: Severity.Bad }} key={faultId++} onMouseDown={close} />
+      }
+      {
+        terrain !== null && terrain.length == 0 ?
+          <FaultItem fault={{ message: "Terrain check is complete", severity: Severity.Good }} key={faultId++} onMouseDown={close} />
+          : null
+      }
+      <p className="text-slate-800">(Beware waypoint sub-stepping is not implemented yet)</p>
     </div>
   )
 }
