@@ -8,7 +8,7 @@ import { timeAgo } from "@/util/time";
 import { cn } from "@/lib/utils";
 import { useWaypointContext } from "@/util/context/WaypointContext";
 
-export default function MissionTile({ mission, userId }: { mission: { title: string, modifiedAt: Date, id: string }, userId: string, active: boolean }) {
+export default function MissionTile({ mission, userId }: { mission: { title: string, modifiedAt: Date, id: string }, userId: string }) {
   const { missionId } = useWaypointContext()
   const session = useSession()
   console.log(session)

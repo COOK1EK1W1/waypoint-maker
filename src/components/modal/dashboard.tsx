@@ -19,9 +19,12 @@ export default async function DashboardModal({ userData }: { userData: Session }
           title: true,
           modifiedAt: true,
           id: true
+        },
+        orderBy: {
+          modifiedAt: "desc"
         }
       }
-    }
+    },
   })
   if (!user) {
     return <></>
@@ -29,11 +32,12 @@ export default async function DashboardModal({ userData }: { userData: Session }
 
 
   return (<div>
-    <div className="flex flex-col">
+    <div className="flex flex-col max-h-[80dvh] overflow-auto">
       <CreateMission userId={user.id} />
       {user?.missions.map((mission, i) => (
         <MissionTile mission={mission} key={i} userId={user.id} />
       ))}
+      {user?.missions.length == 0 ? <div className="w-full text-center py-10">No Saved Missions</div> : null}
     </div>
 
   </div>)
