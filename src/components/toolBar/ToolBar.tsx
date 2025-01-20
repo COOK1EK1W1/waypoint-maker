@@ -9,7 +9,7 @@ export default function ToolBar() {
 
   return <div className="z-20 absolute top-0 left-0 overflow-hidden w-full md:w-fit">
     <div className="p-2">
-      <div className="flex bg-white items-center shadow-lg rounded-lg">
+      <div className="flex bg-white items-center shadow-lg rounded-lg overflow-auto">
         <Image width={46} height={32} className="h-9 px-2" src="/logo-192x192.png" alt="Waypoint Maker Logo" />
         <h1 className="mx-4 py-0 hidden lg:flex items-center">Waypoint Maker</h1>
         <MissionIO />
