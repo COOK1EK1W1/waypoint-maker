@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 import { Analytics } from "@vercel/analytics/react"
 import AuthProvider from '@/util/context/AuthProvider'
+import { cn } from '@/lib/utils'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -24,7 +25,7 @@ export default function RootLayout({
       <link rel="preload" href="/marker-icon.png" as="image" />
       <link rel="preload" href="/marker-shadow.png" as="image" />
       <link rel="preload" href="/insert.png" as="image" />
-      <body className={inter.className}>
+      <body className={cn(inter.className, "fixed overflow-hidden h-[100dvh] w-full")}>
         <Analytics />
         <AuthProvider>
           {children}

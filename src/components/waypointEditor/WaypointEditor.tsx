@@ -8,9 +8,6 @@ import Parameter from "./Parameter";
 export default function WaypointEditor() {
   const { activeMission, selectedWPs, waypoints, setWaypoints } = useWaypointContext()
 
-
-
-
   const mission = waypoints.get(activeMission)
   if (mission == undefined) return null
 
