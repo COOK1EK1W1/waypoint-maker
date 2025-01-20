@@ -16,7 +16,7 @@ export default function CreateMission({ userId }: { userId: string }) {
 
   }
   return (
-    <Button onClick={handleCreate}>Create Mission</Button>
+    <Button onClick={handleCreate} className="bg-white w-full justify-center p-2 my-3">Create Mission</Button>
   )
 
 }
