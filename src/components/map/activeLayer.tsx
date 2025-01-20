@@ -62,7 +62,7 @@ export default function ActiveLayer({ onMove }: { onMove: (lat: number, lng: num
         if (x) {
           if (x[0] == activeMission && selectedWPs.includes(x[1])) active = true
         }
-        return <DraggableMarker key={idx} waypoint={waypoint} onMove={(lat, lng) => onMove(lat, lng, idx)} active={active} onClick={() => handleMarkerClick(idx)} />
+        return <DraggableMarker key={idx} waypoint={{ ...waypoint }} onMove={(lat, lng) => onMove(lat, lng, idx)} active={active} onClick={() => handleMarkerClick(idx)} />
       })
       }
       <Polyline pathOptions={limeOptions} positions={toPolyline(activeWPs)} />
