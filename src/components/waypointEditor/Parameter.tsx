@@ -1,6 +1,7 @@
 import { Node, WPNode } from "@/types/waypoints";
+import DraggableNumberInput from "./draggableNumericInput";
 
-export default function Parameter({ param, name, value, change, wps }: { param: Parameter | null, name: string, value: (n: WPNode) => number, change: (e: React.ChangeEvent<HTMLInputElement>) => void, wps: Node[] }) {
+export default function Parameter({ param, name, value, change, wps }: { param: Parameter | null, name: string, value: (n: WPNode) => number, change: (event: { target: { name?: string; value: number } }) => void, wps: Node[] }) {
   if (param == null) {
     return
   }
@@ -21,7 +22,7 @@ export default function Parameter({ param, name, value, change, wps }: { param: 
       <div className="p-2">
         <label>
           <span className="block">{param.label} ({param.units})</span>
-          <input className="w-40 border-slate-200" type="number" name={name} onChange={change} value={val} />
+          <DraggableNumberInput className="w-40 border-slate-200" name={name} onChange={change} value={val} min={param.minValue} max={param.maxValue} />
         </label>
       </div>
     );
@@ -32,7 +33,7 @@ export default function Parameter({ param, name, value, change, wps }: { param: 
       <div className="p-2">
         <label>
           <span className="block">{param.label} ({param.units})</span>
-          <input className="w-40 border-slate-200" type="number" name={name} onChange={change} value='-' />
+          <DraggableNumberInput className="w-40 border-slate-200" name={name} onChange={change} value={0} />
         </label>
       </div>
     );
