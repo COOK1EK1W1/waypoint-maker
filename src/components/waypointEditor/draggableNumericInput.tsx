@@ -68,7 +68,7 @@ const DraggableNumberInput: React.FC<DraggableNumberInputProps> = ({
       onChange?.({
         target: {
           name,
-          value: Math.max(min, newValue)
+          value: Math.max(0, newValue)
         }
       });
     }
@@ -76,7 +76,7 @@ const DraggableNumberInput: React.FC<DraggableNumberInputProps> = ({
 
   const handleBlur = () => {
     if (internalValue === null) {
-      const defaultValue = min;
+      const defaultValue = 0;
       setInternalValue(defaultValue);
       onChange?.({
         target: {
@@ -108,7 +108,8 @@ const DraggableNumberInput: React.FC<DraggableNumberInputProps> = ({
         onChange={handleInputChange}
         onMouseDown={handleMouseDown}
         onBlur={handleBlur}
-        min={min}
+        min={min || -Infinity}
+        max={max || Infinity}
         className={`cursor-move ${className}`}
       />
       {isDragging && (

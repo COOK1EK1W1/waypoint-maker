@@ -26,7 +26,7 @@ export default function WaypointEditor() {
   }
 
   //on change function
-  function changeInput(e: React.ChangeEvent<HTMLInputElement>) {
+  function changeInput(e: { target: { name?: string; value: number } }) {
     setWaypoints((prevWaypoints: Map<string, Node[]>) => {
       let waypointsUpdated = new Map(prevWaypoints);
       for (let i = 0; i < wpsIds.length; i++) {
