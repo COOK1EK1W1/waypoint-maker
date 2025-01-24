@@ -95,48 +95,37 @@ export function getBounds(wps: Waypoint[]): bound[] {
   return bounds
 }
 
-export function applyBounds(params: number[], bounds: bound[]): number[] {
-  let newParams = [...params]
+export function applyBounds(params: number[], bounds: bound[]): void {
   for (let i = 0; i < bounds.length; i++) {
     let bound = bounds[i]
     if (bound.min && bound.max && bound.circular) {
       let range = bound.max - bound.min
-      let diff = newParams[i] - bound.min
-      newParams[i] = bound.min + modf(diff, range)
+      let diff = params[i] - bound.min
+      params[i] = bound.min + modf(diff, range)
     }
     if (bound.min) {
-      if (newParams[i] < bound.min) {
-        newParams[i] = bound.min
+      if (params[i] < bound.min) {
+        params[i] = bound.min
       }
     }
     if (bound.max) {
-      if (newParams[i] > bound.max) {
-        newParams[i] = bound.max
+      if (params[i] > bound.max) {
+        params[i] = bound.max
       }
     }
   }
-  return newParams
 }
 
-export function setTunableParameter(wps: Waypoint[], params: number[]): Waypoint[] {
-  let localparams = [...params]
-  let newWaypoints = []
+export function setTunableParameter(wps: Waypoint[], params: number[]): void {
+  let paramI = 0
   for (let i = 0; i < wps.length; i++) {
-    let cur = { ...wps[i] }
+    let cur = wps[i]
     if (cur.type == 69) {
       // radians
-      let next = localparams.shift()
-      if (next) {
-        cur.param2 = rad2deg(next)
-      }
-      next = localparams.shift()
-      if (next) {
-        cur.param3 = next
-      }
+      cur.param2 = rad2deg(params[paramI++])
+      cur.param3 = params[paramI++]
     }
-    newWaypoints.push(cur)
 
   }
-  return newWaypoints
 
 }

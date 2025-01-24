@@ -2,6 +2,8 @@ import { bound } from "@/types/dubins"
 
 
 export function particleSwarmOptimisation(initialGuess: number[], bounds: bound[], fn: (a: number[]) => number, popsize: number): number[] {
+  //451 453 445 496 448
+
   console.time("Swarm optimisation")
   console.assert(initialGuess.length == bounds.length, "Params are different length to bounds")
 
@@ -13,30 +15,28 @@ export function particleSwarmOptimisation(initialGuess: number[], bounds: bound[
   let global_best_value = fn(global_best_position)
   let previous_global_best = []
   console.log("Starting fitness: ", global_best_value)
+
   for (let i = 0; i < popsize; i++) {
     let particle_pos = []
     let particle_vel = []
-    let particle_best = []
     for (let j = 0; j < initialGuess.length; j++) {
-      let r = Math.random() * 0.1 - 0.05
+      let r = (Math.random() - 0.5) * 0.1
       particle_pos.push(initialGuess[j] + r)
       particle_vel.push(Math.random() - 0.5)
-      particle_best.push(initialGuess[j] + r)
     }
     population.push(particle_pos)
     velocities.push(particle_vel)
-    local_best_position.push(particle_best)
-    local_best_value.push(fn(particle_best))
+    local_best_position.push([...particle_pos])
+    local_best_value.push(fn(particle_pos))
   }
 
-  for (let i = 0; i < 200; i++) {
+  for (let i = 0; i < 100; i++) {
     if (previous_global_best.length == 5) {
       previous_global_best.shift()
     }
     previous_global_best.push(global_best_value)
-    console.log(previous_global_best)
     if (previous_global_best.length == 5 && Math.round(previous_global_best[0]) == Math.round(previous_global_best[4])) {
-      break;
+      //break;
     }
 
 
@@ -49,7 +49,7 @@ export function particleSwarmOptimisation(initialGuess: number[], bounds: bound[
       }
       if (current_fitness < global_best_value) {
         global_best_value = current_fitness
-        global_best_position = [...population[p]]
+        global_best_position = local_best_position[p]
       }
     }
 

@@ -83,6 +83,7 @@ function mutate(a: number[], bounds: bound[]): number[] {
   for (let i = 0; i < a.length; i++) {
     a[i] += (Math.random() - 0.5) * 0.3
   }
-  return applyBounds(newVal, bounds)
+  applyBounds(newVal, bounds)
+  return newVal
 
 }

@@ -13,9 +13,12 @@ export function bakeDubins(waypoints: WaypointCollection, activeMission: string,
 
   // This function is a closure that takes in the waypoints and returns a function that takes in the tunable parameters and returns the total length of the path
   function create_evaluate(wps: Waypoint[]) {
-    let localWPS = [...wps]
+    let localWPS: Waypoint[] = []
+    for (let x = 0; x < wps.length; x++) {
+      localWPS.push({ ...wps[x] })
+    }
     function evaluate(x: number[]): number {
-      localWPS = setTunableParameter(localWPS, x)
+      setTunableParameter(localWPS, x)
       let totalLength = 0
       for (let i = 0; i < wps.length - 1; i++) {
         let curves = dubinsBetweenWaypoint(localWPS[i], localWPS[i + 1])
@@ -33,15 +36,16 @@ export function bakeDubins(waypoints: WaypointCollection, activeMission: string,
   for (const section of dubinSections) {
     let starting_params = [...getTunableParameters(section.wps)]
     let bounds: bound[] = [...getBounds(section.wps)]
-    starting_params = applyBounds(starting_params, bounds)
+    applyBounds(starting_params, bounds)
 
     let b = create_evaluate(section.wps)
 
-    //let optimised_dirs = particleSwarmOptimisation(starting_params, bounds, b, 200) // 2041
-    let optimised_dirs = geneticOptimise(starting_params, bounds, b, 200) // 
-    optimised_dirs = applyBounds(optimised_dirs, bounds)
+    let optimised_dirs = particleSwarmOptimisation(starting_params, bounds, b, 200) // 2041
+    //let optimised_dirs = geneticOptimise(starting_params, bounds, b, 200) // 
+    applyBounds(optimised_dirs, bounds)
 
-    let wps = setTunableParameter(section.wps, optimised_dirs)
+    setTunableParameter(section.wps, optimised_dirs)
+    let wps = section.wps
 
     if (wps[0].type != 69) {
       wps.shift()
