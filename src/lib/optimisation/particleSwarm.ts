@@ -1,7 +1,7 @@
 import { bound } from "@/types/dubins"
 
 
-export function particleSwarmOptimise(initialGuess: number[], bounds: bound[], fn: (a: number[]) => number, popsize: number): number[] {
+export function particleSwarmOptimisation(initialGuess: number[], bounds: bound[], fn: (a: number[]) => number, popsize: number): number[] {
   console.time("Swarm optimisation")
   console.assert(initialGuess.length == bounds.length, "Params are different length to bounds")
 
