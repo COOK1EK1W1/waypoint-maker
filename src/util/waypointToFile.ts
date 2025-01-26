@@ -1,58 +1,14 @@
-import { WaypointCollection, CollectionType, Waypoint } from "@/types/waypoints";
+import { WaypointCollection, Waypoint } from "@/types/waypoints";
+import { get_waypoints } from "./WPCollection";
 
 export function waypointTo_waypoints_file(waypoints: WaypointCollection) {
   let returnString = "QGC WPL 110\n"
 
-  const [_, wpstr] = renderWaypoints(0, "Main", waypoints)
-  returnString += wpstr
-  return returnString
-}
-
-function renderWaypoints(curWP: number, missionName: string, store: WaypointCollection): [number, string] {
-  let returnString: string = ""
-  const waypoints = store.get(missionName)
-  if (waypoints == undefined) return [0, ""]
-
-  for (let i = 0; i < waypoints.length; i++) {
-
-    let a = waypoints[i]
-    switch (a.type) {
-      case "Waypoint": {
-        returnString += waypointString(curWP, a.wps)
-        curWP += 1
-        break
-      }
-      case "Collection": {
-        switch (a.ColType) {
-          case CollectionType.Mission: {
-            const [newWPnum, wpstr] = renderWaypoints(curWP, a.collectionID, store)
-            returnString += wpstr
-            curWP = newWPnum
-            break
-          }
-          case CollectionType.Overlay: {
-            break
-          }
-          case CollectionType.Geofence: {
-            break
-          }
-          default: {
-            const _exhaustiveCheck: never = a.ColType;
-            return _exhaustiveCheck
-          }
-
-        }
-        break
-      }
-      default: {
-        const _exhaustiveCheck: never = a;
-        return _exhaustiveCheck
-      }
-    }
-
+  const wps = get_waypoints("Main", waypoints)
+  for (let i = 0; i < wps.length; i++) {
+    returnString += waypointString(i, wps[i])
   }
-  return [curWP, returnString]
-
+  return returnString
 }
 
 function waypointString(i: number, wp: Waypoint): string {
