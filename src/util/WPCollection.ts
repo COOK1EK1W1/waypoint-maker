@@ -5,9 +5,32 @@ export function add_waypoint(missionName: string, waypoint: Node, waypoints: Way
   // add a waypoint to a mission
 
   const mission = waypoints.get(missionName)
-  if (mission === undefined) return waypoints
+  if (mission === undefined) {
+    throw new Error(`Sub-mission ${missionName} does not exist`)
 
-  return new Map(waypoints).set(missionName, [...mission, waypoint])
+  }
+  mission.push(waypoint)
+
+  return new Map(waypoints)
+}
+
+export function isRecursive(missionName: string, waypoints: WaypointCollection) {
+  return contains(missionName, missionName, waypoints)
+
+}
+
+export function contains(missionName: string, A: string, waypoints: WaypointCollection) {
+  const curWaypoints = waypoints.get(missionName)
+  if (!curWaypoints) { return }
+  for (let wp of curWaypoints) {
+    if (wp.type == "Collection") {
+      if (wp.name == A) {
+        return true
+      }
+      if (contains(wp.name, A, waypoints)) return true
+    }
+  }
+  return false
 }
 
 export function insert_waypoint(id: number, missionName: string, waypoint: WPNode, waypoints: WaypointCollection): WaypointCollection {
