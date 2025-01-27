@@ -169,3 +169,72 @@ test("Flatten", () => {
   expect(flattened.length).toBe(6)
 
 })
+
+
+test("insert", () => {
+  let a = new WaypointCollection();
+  // add waypoints to main
+  a.pushToMission("Main", { type: "Waypoint", wps: { frame: 0, type: 69, param1: 0, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0, autocontinue: 0 } })
+  a.pushToMission("Main", { type: "Waypoint", wps: { frame: 1, type: 69, param1: 0, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0, autocontinue: 0 } })
+  a.pushToMission("Main", { type: "Waypoint", wps: { frame: 2, type: 69, param1: 0, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0, autocontinue: 0 } })
+
+  a.addSubMission("a")
+  a.pushToMission("a", { type: "Waypoint", wps: { frame: 3, type: 69, param1: 0, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0, autocontinue: 0 } })
+  a.pushToMission("a", { type: "Waypoint", wps: { frame: 4, type: 69, param1: 0, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0, autocontinue: 0 } })
+  a.pushToMission("a", { type: "Waypoint", wps: { frame: 5, type: 69, param1: 0, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0, autocontinue: 0 } })
+
+  a.pushToMission("Main", { type: "Collection", name: "a", ColType: CollectionType.Mission, collectionID: "a", offsetLat: 0, offsetLng: 0 })
+
+  // insert at start
+  a.insert(0, "Main", { type: "Waypoint", wps: { frame: 6, type: 69, param1: 0, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0, autocontinue: 0 } })
+
+  expect(a.get("Main").length).toBe(5)
+  expect(a.get("Main")[0].wps.frame).toBe(6)
+  expect(a.get("Main")[1].wps.frame).toBe(0)
+
+  // insert in middle
+  a.insert(3, "Main", { type: "Waypoint", wps: { frame: 10, type: 69, param1: 0, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0, autocontinue: 0 } })
+
+  expect(a.get("Main").length).toBe(6)
+  expect(a.get("Main")[0].wps.frame).toBe(6)
+  expect(a.get("Main")[3].wps.frame).toBe(10)
+  expect(a.get("Main")[3].wps.frame).toBe(10)
+
+  // unexpected mission
+  expect(() => a.insert(0, "bruh", { type: "Waypoint", wps: { frame: 10, type: 69, param1: 0, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0, autocontinue: 0 } })).toThrowError(MissingMission)
+
+  // todo do recursion or linear
+})
+
+test("changeParam", () => {
+  let a = new WaypointCollection();
+  // add waypoints to main
+  a.pushToMission("Main", { type: "Waypoint", wps: { frame: 0, type: 69, param1: 0, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0, autocontinue: 0 } })
+  a.pushToMission("Main", { type: "Waypoint", wps: { frame: 1, type: 69, param1: 0, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0, autocontinue: 0 } })
+  a.pushToMission("Main", { type: "Waypoint", wps: { frame: 2, type: 69, param1: 0, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0, autocontinue: 0 } })
+
+  a.addSubMission("a")
+  a.pushToMission("a", { type: "Waypoint", wps: { frame: 3, type: 69, param1: 0, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0, autocontinue: 0 } })
+  a.pushToMission("a", { type: "Waypoint", wps: { frame: 4, type: 69, param1: 0, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0, autocontinue: 0 } })
+  a.pushToMission("a", { type: "Waypoint", wps: { frame: 5, type: 69, param1: 0, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0, autocontinue: 0 } })
+
+  a.pushToMission("Main", { type: "Collection", name: "a", ColType: CollectionType.Mission, collectionID: "a", offsetLat: 0, offsetLng: 0 })
+
+  // insert at start
+  a.changeParam(0, "Main", (x) => { x.frame = 10; return x })
+
+  expect(a.get("Main").length).toBe(4)
+  expect(a.get("Main")[0].wps.frame).toBe(10)
+  expect(a.get("Main")[1].wps.frame).toBe(1)
+
+  // insert in middle
+  a.changeParam(2, "Main", (x) => { x.frame = 11; return x })
+
+  expect(a.get("Main")[0].wps.frame).toBe(10)
+  expect(a.get("Main")[2].wps.frame).toBe(11)
+
+  // unexpected mission
+  expect(() => a.changeParam(0, "bruh", (x) => x)).toThrowError(MissingMission)
+
+  // todo do recursion or linear
+})
