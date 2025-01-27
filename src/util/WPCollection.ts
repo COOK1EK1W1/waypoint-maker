@@ -86,11 +86,8 @@ export function MoveWPsAvgTo(newLat: number, newLng: number, waypoints: Waypoint
   let waypointsUpdated = waypoints.clone();
   for (let i = 0; i < wps.length; i++) {
     waypointsUpdated = changeParam(wpsIds[i], active, waypointsUpdated, (wp: Waypoint) => {
-      if (newLng == null || newLat == null) {
-        return wp;
-      }
-      wp.param5 += (Number(newLat) - lat);
-      wp.param6 += (Number(newLng) - lng);
+      wp.param5 += newLat - lat
+      wp.param6 += newLng - lng
       return wp;
     });
   }

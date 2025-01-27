@@ -10,10 +10,37 @@ import ActiveLayer from "./activeLayer";
 import GeofenceLayer from "./geofenceLayer";
 import MarkerLayer from "./markerLayer";
 import DubinsLayer from "./dunbinsLayer";
+import { MoveWPsAvgTo } from "@/util/WPCollection";
+
+const defaultWaypoint = (lat: number, lng: number,) => ({
+  frame: 3,
+  type: 16,
+  param1: 0,
+  param2: 0,
+  param3: 0,
+  param4: 0,
+  param5: lat,
+  param6: lng,
+  param7: 100,
+  autocontinue: 1
+})
+
+const defaultTakeoff = (lat: number, lng: number,) => ({
+  frame: 3,
+  type: 22,
+  param1: 15,
+  param2: 0,
+  param3: 0,
+  param4: 0,
+  param5: lat,
+  param6: lng,
+  param7: 15,
+  autocontinue: 1
+})
 
 
 export default function MapStuff() {
-  const { waypoints, setWaypoints, activeMission, tool, setTool, moveMap } = useWaypointContext()
+  const { waypoints, setWaypoints, activeMission, tool, setTool, moveMap, selectedWPs } = useWaypointContext()
 
   const mapRef = useRef<Map | null>(null)
 
@@ -23,31 +50,18 @@ export default function MapStuff() {
         mapRef.current.setView({ lat: lat, lng: lng })
       }
     }
+
+    // Keyboard shortcuts
     function handleKeyPress(e: KeyboardEvent) {
       switch (e.key) {
         case 'n': {
-
           const newLat = prompt("Enter latitude");
           const newLng = prompt("Enter Longitude");
           if (newLat == null || newLng == null) return
 
-          const mission = waypoints.get(activeMission)
-          if (mission == null) return
 
-          const newMarker = {
-            frame: 3,
-            type: 16,
-            param1: 0,
-            param2: 0,
-            param3: 0,
-            param4: 0,
-            param5: Number(newLat),
-            param6: Number(newLng),
-            param7: 100,
-            autocontinue: 1
-          };
           setWaypoints((waypoints) => {
-            waypoints.pushToMission(activeMission, { type: "Waypoint", wps: newMarker })
+            waypoints.pushToMission(activeMission, { type: "Waypoint", wps: defaultWaypoint(Number(newLat), Number(newLng)) })
             return waypoints.clone()
           })
           break;
@@ -61,53 +75,25 @@ export default function MapStuff() {
 
     return () => {
       window.removeEventListener('keypress', handleKeyPress)
-
     }
 
   }, [activeMission, setWaypoints, waypoints, moveMap])
 
   function handleClick(tool: Tool, e: LeafletMouseEvent) {
+    const { lat, lng } = e.latlng
     switch (tool) {
       case "Waypoint": {
-        console.log("im running")
-        const newMarker = {
-          frame: 3,
-          type: 16,
-          param1: 0,
-          param2: 0,
-          param3: 0,
-          param4: 0,
-          param5: e.latlng.lat,
-          param6: e.latlng.lng,
-          param7: 100,
-          autocontinue: 1
-        };
         setWaypoints((waypoints) => {
           let waypointsNew = waypoints.clone()
-          waypointsNew.pushToMission(activeMission, { type: "Waypoint", wps: newMarker })
+          waypointsNew.pushToMission(activeMission, { type: "Waypoint", wps: defaultWaypoint(lat, lng) })
           return waypointsNew
         })
         break;
       }
       case "Takeoff": {
         setTool("Waypoint")
-        const mission = waypoints.get(activeMission)
-        if (mission == null) return
-
-        const newMarker = {
-          frame: 3,
-          type: 22,
-          param1: 15,
-          param2: 0,
-          param3: 0,
-          param4: 0,
-          param5: e.latlng.lat,
-          param6: e.latlng.lng,
-          param7: 15,
-          autocontinue: 1
-        };
         setWaypoints((waypoints) => {
-          waypoints.pushToMission(activeMission, { type: "Waypoint", wps: newMarker })
+          waypoints.pushToMission(activeMission, { type: "Waypoint", wps: defaultTakeoff(lat, lng) })
           return waypoints.clone()
         })
         break;
@@ -115,8 +101,7 @@ export default function MapStuff() {
       case "Place": {
         setTool("Waypoint")
         setWaypoints((waypoints) => {
-          //todo
-          //MoveWPsAvgTo(e.latlng.lat, e.latlng.lng, waypoints, selectedWPs, activeMission)
+          MoveWPsAvgTo(e.latlng.lat, e.latlng.lng, waypoints, selectedWPs, activeMission)
           return waypoints
         })
         break;

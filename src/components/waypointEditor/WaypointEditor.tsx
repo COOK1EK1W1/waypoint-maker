@@ -30,9 +30,8 @@ export default function WaypointEditor() {
       for (let i = 0; i < wpsIds.length; i++) {
         waypoints.changeParam(wpsIds[i], activeMission, (wp: Waypoint) => {
           let key = e.target.name as keyof Waypoint;
-          let a = { ...wp }
-          a[key] = Number(e.target.value)
-          return a
+          wp[key] = Number(e.target.value)
+          return wp
         });
       }
       return waypoints.clone();
@@ -44,13 +43,9 @@ export default function WaypointEditor() {
     setWaypoints((waypoints) => {
       for (let i = 0; i < wpsIds.length; i++) {
         waypoints.changeParam(wpsIds[i], activeMission, (wp: Waypoint) => {
-
           const newType = parseInt(e.target.selectedOptions[0].getAttribute('data-cmd') || '0', 10);
-
-          let a = { ...wp }
-          a.type = newType
-
-          return a
+          wp.type = newType
+          return wp
         });
       }
       return waypoints.clone();
