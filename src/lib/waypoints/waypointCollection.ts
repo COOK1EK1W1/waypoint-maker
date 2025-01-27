@@ -6,7 +6,13 @@ export class WaypointCollection {
 
   constructor(collection?: Map<string, Node[]>) {
     if (collection) {
-      this.collection = new Map(collection)
+      let newMap = new Map()
+      for (let key of Array.from(collection.keys())) {
+        let items = collection.get(key)
+        if (!items) continue;
+        newMap.set(key, [...items])
+      }
+      this.collection = new Map(newMap)
       return
     }
     this.collection = new Map();

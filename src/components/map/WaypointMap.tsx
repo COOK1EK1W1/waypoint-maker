@@ -83,10 +83,10 @@ export default function MapStuff() {
           param7: 100,
           autocontinue: 1
         };
-        setWaypoints((waypoints) => {
-          waypoints.pushToMission(activeMission, { type: "Waypoint", wps: newMarker })
-          //console.log(waypoints.get(activeMission), "here")
-          return waypoints.clone()
+        setWaypoints((waypoints2) => {
+          let waypoints3 = waypoints2.clone()
+          waypoints3.pushToMission(activeMission, { type: "Waypoint", wps: newMarker })
+          return waypoints3
         })
         break;
       }
