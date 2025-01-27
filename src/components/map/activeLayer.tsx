@@ -1,4 +1,3 @@
-import { findnthwaypoint, insert_waypoint } from "@/util/WPCollection";
 import { LayerGroup, Polyline } from "react-leaflet";
 import DraggableMarker from "../marker/DraggableMarker";
 import { useWaypointContext } from "@/util/context/WaypointContext";
@@ -42,7 +41,7 @@ export default function ActiveLayer({ onMove }: { onMove: (lat: number, lng: num
       autocontinue: 1
     };
     setWaypoints((prevWPS) => {
-      prevWPS.insert(id, activeMission, { type: "Waypoint", wps: newMarker })
+      prevWPS.insert(id + 1, activeMission, { type: "Waypoint", wps: newMarker })
       return prevWPS.clone()
     });
 

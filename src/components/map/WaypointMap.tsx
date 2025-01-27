@@ -3,7 +3,6 @@
 import { MapContainer, TileLayer, useMapEvent } from "react-leaflet"
 import 'leaflet/dist/leaflet.css';
 import { useWaypointContext } from "../../util/context/WaypointContext";
-import { MoveWPsAvgTo, add_waypoint, changeParam, findnthwaypoint } from "@/util/WPCollection";
 import { Tool } from "@/types/tools";
 import { LeafletMouseEvent, Map } from "leaflet";
 import { useEffect, useRef } from "react";
@@ -14,7 +13,7 @@ import DubinsLayer from "./dunbinsLayer";
 
 
 export default function MapStuff() {
-  const { waypoints, setWaypoints, activeMission, tool, setTool, selectedWPs, moveMap } = useWaypointContext()
+  const { waypoints, setWaypoints, activeMission, tool, setTool, moveMap } = useWaypointContext()
 
   const mapRef = useRef<Map | null>(null)
 
@@ -83,10 +82,10 @@ export default function MapStuff() {
           param7: 100,
           autocontinue: 1
         };
-        setWaypoints((waypoints2) => {
-          let waypoints3 = waypoints2.clone()
-          waypoints3.pushToMission(activeMission, { type: "Waypoint", wps: newMarker })
-          return waypoints3
+        setWaypoints((waypoints) => {
+          let waypointsNew = waypoints.clone()
+          waypointsNew.pushToMission(activeMission, { type: "Waypoint", wps: newMarker })
+          return waypointsNew
         })
         break;
       }
@@ -139,11 +138,14 @@ export default function MapStuff() {
 
   function onMove(lat: number, lng: number, id: number) {
     const a = waypoints.findNthPosition(activeMission, id)
+    console.log(lat, lng)
     if (a == null) return
     const [mission, pos] = a
-    // todo
-    //let newWps = changeParam(pos, mission, waypoints, (wp) => ({ ...wp, param5: lat, param6: lng }))
-    //setWaypoints(newWps)
+    setWaypoints((waypoints2) => {
+      const b = waypoints2.clone()
+      b.changeParam(pos, mission, (wp) => { wp.param5 = lat; wp.param6 = lng; return wp })
+      return b
+    })
     return
 
   }

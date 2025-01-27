@@ -1,4 +1,3 @@
-import { findnthwaypoint, get_waypoints } from "@/util/WPCollection";
 import { LayerGroup } from "react-leaflet";
 import DraggableMarker from "../marker/DraggableMarker";
 import { useWaypointContext } from "@/util/context/WaypointContext";

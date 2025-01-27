@@ -1,8 +1,8 @@
-import { AvgLatLng, MoveWPsAvgTo, changeParam } from "@/util/WPCollection";
+import { AvgLatLng, MoveWPsAvgTo } from "@/util/WPCollection";
 import { useWaypointContext } from "../../util/context/WaypointContext";
 import { Node, Waypoint } from "@/types/waypoints";
 import { FaArrowDown, FaArrowLeft, FaArrowRight, FaArrowUp } from "react-icons/fa";
-import { FaArrowRotateLeft, FaArrowRotateRight, FaRegHandPointer } from "react-icons/fa6";
+import { FaArrowRotateLeft, FaArrowRotateRight } from "react-icons/fa6";
 import { LuMousePointerClick } from "react-icons/lu";
 import { TfiTarget } from "react-icons/tfi";
 

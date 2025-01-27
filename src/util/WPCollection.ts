@@ -1,90 +1,7 @@
-import { Waypoint, Node, WPNode } from "@/types/waypoints";
+import { Waypoint, Node } from "@/types/waypoints";
 import { commands } from "./commands";
 import { WaypointCollection } from "@/lib/waypoints/waypointCollection";
 
-export function add_waypoint(missionName: string, waypoint: Node, waypoints: WaypointCollection): WaypointCollection {
-  // add a waypoint to a mission
-
-  const mission = waypoints.get(missionName)
-  if (mission === undefined) {
-    throw new Error(`Sub-mission ${missionName} does not exist`)
-
-  }
-  mission.push(waypoint)
-
-  return waypoints.clone()
-}
-
-export function isRecursive(missionName: string, waypoints: WaypointCollection) {
-  return contains(missionName, missionName, waypoints)
-
-}
-
-export function contains(missionName: string, A: string, waypoints: WaypointCollection) {
-  const curWaypoints = waypoints.get(missionName)
-  if (!curWaypoints) { return }
-  for (let wp of curWaypoints) {
-    if (wp.type == "Collection") {
-      if (wp.name == A) {
-        return true
-      }
-      if (contains(wp.name, A, waypoints)) return true
-    }
-  }
-  return false
-}
-
-export function insert_waypoint(id: number, missionName: string, waypoint: WPNode, waypoints: WaypointCollection): WaypointCollection {
-
-  function rec(count: number, mission: string): number {
-    const curMission = waypoints.get(mission)
-    if (!curMission) { return count }
-    for (let i = 0; i < curMission.length; i++) {
-      let cur = curMission[i]
-      if (cur.type === "Collection") {
-        count = rec(count, cur.collectionID)
-
-      } else {
-        if (count === id) {
-          let newMission = curMission
-          newMission.splice(i + 1, 0, waypoint)
-        }
-        count++;
-      }
-    }
-    return count
-  }
-
-  rec(0, missionName)
-  return waypoints.clone()
-}
-
-
-export function get_waypoints(missionstr: string, store: WaypointCollection): Waypoint[] {
-  let retlist: Waypoint[] = []
-  const waypoints = store.get(missionstr)
-  if (waypoints === undefined) return []
-  for (let i = 0; i < waypoints.length; i++) {
-    const node = waypoints[i]
-    switch (node.type) {
-      case "Collection": {
-        retlist = retlist.concat(get_waypoints(node.collectionID, store))
-        break
-      }
-      case "Waypoint": {
-        retlist.push(node.wps)
-        break;
-      }
-      default: {
-        const _exhaustiveCheck: never = node;
-        return _exhaustiveCheck
-      }
-    }
-
-  }
-  return retlist
-
-}
 
 export function AvgLatLng(nodes: Node[], store: WaypointCollection): [number, number] {
   let latTotal = 0
@@ -150,48 +67,6 @@ export function changeParam(id: number, mission: string, waypoints: WaypointColl
   return newMap;
 
 }
-
-export function deleteNode(id: number, mission: string, waypoints: WaypointCollection) {
-  const curMission = waypoints.get(mission)
-  if (curMission == undefined) { return waypoints }
-  curMission.splice(id, 1)
-  waypoints.set(mission, curMission)
-  return waypoints;
-}
-
-export function findnthwaypoint(mission: string, n: number, waypoints: WaypointCollection): [string, number] | null {
-  const missionNodes = waypoints.get(mission);
-
-  if (missionNodes === undefined) {
-    return null; // Mission not found
-  }
-
-  let count = 0;
-
-  function findNth(node: Node[], name: string): [string, number] | null {
-    for (let i = 0; i < node.length; i++) {
-      const curNode = node[i];
-      if (curNode.type === "Waypoint") {
-        if (count === n) {
-          return [name, i]; // Found nth waypoint
-        }
-        count++;
-      } else if (curNode.type === "Collection") {
-        const subMission = waypoints.get(curNode.collectionID);
-        if (subMission !== undefined) {
-          const result = findNth(subMission, curNode.collectionID);
-          if (result !== null) {
-            return result;
-          }
-        }
-      }
-    }
-    return null; // Nth waypoint not found in this collection
-  }
-
-  return findNth(missionNodes, mission);
-}
-
 
 export function MoveWPsAvgTo(newLat: number, newLng: number, waypoints: WaypointCollection, selectedWPs: number[], active: string): WaypointCollection {
   const mission = waypoints.get(active);
