@@ -10,9 +10,9 @@ export default function MarkerLayer({ onMove }: { onMove: (lat: number, lng: num
 
   return (
     <LayerGroup>
-      {get_waypoints("Markers", waypoints).map((waypoint, idx) => {
+      {waypoints.flatten("Markers").map((waypoint, idx) => {
         let active = false
-        let x = findnthwaypoint("Geofence", idx, waypoints)
+        let x = waypoints.findNthPosition("Geofence", idx)
         if (x) {
           if (x[0] == activeMission && selectedWPs.includes(x[1])) active = true
         }

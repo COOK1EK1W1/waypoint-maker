@@ -1,5 +1,6 @@
-import { WaypointCollection, Waypoint, Node, WPNode } from "@/types/waypoints";
+import { Waypoint, Node, WPNode } from "@/types/waypoints";
 import { commands } from "./commands";
+import { WaypointCollection } from "@/lib/waypoints/waypointCollection";
 
 export function add_waypoint(missionName: string, waypoint: Node, waypoints: WaypointCollection): WaypointCollection {
   // add a waypoint to a mission
@@ -11,7 +12,7 @@ export function add_waypoint(missionName: string, waypoint: Node, waypoints: Way
   }
   mission.push(waypoint)
 
-  return new Map(waypoints)
+  return waypoints.clone()
 }
 
 export function isRecursive(missionName: string, waypoints: WaypointCollection) {
@@ -55,7 +56,7 @@ export function insert_waypoint(id: number, missionName: string, waypoint: WPNod
   }
 
   rec(0, missionName)
-  return new Map(waypoints)
+  return waypoints.clone()
 }
 
 
@@ -123,7 +124,7 @@ export function changeParam(id: number, mission: string, waypoints: WaypointColl
   const curMission = waypoints.get(mission)
   if (curMission == undefined) { return waypoints }
 
-  let newMap = new Map(waypoints)
+  let newMap = waypoints.clone()
   let updatedMission = [...curMission]
   let updatedWaypoint = { ...curMission[id] };
 
@@ -137,7 +138,7 @@ export function changeParam(id: number, mission: string, waypoints: WaypointColl
   } else if (updatedWaypoint.type == "Collection") {
     const col = waypoints.get(updatedWaypoint.collectionID)
     if (col != null) {
-      let newColMap = new Map(waypoints)
+      let newColMap = waypoints.clone()
       for (let i = 0; i < col.length; i++) {
         newColMap = changeParam(i, updatedWaypoint.collectionID, waypoints, mod)
       }
@@ -207,7 +208,7 @@ export function MoveWPsAvgTo(newLat: number, newLng: number, waypoints: Waypoint
   }
 
   const [lat, lng] = AvgLatLng(wps, waypoints);
-  let waypointsUpdated = new Map(waypoints);
+  let waypointsUpdated = waypoints.clone();
   for (let i = 0; i < wps.length; i++) {
     waypointsUpdated = changeParam(wpsIds[i], active, waypointsUpdated, (wp: Waypoint) => {
       if (newLng == null || newLat == null) {
@@ -218,7 +219,7 @@ export function MoveWPsAvgTo(newLat: number, newLng: number, waypoints: Waypoint
       return wp;
     });
   }
-  return new Map(waypointsUpdated);
+  return waypoints.clone();
 }
 
 
@@ -250,6 +251,23 @@ export function isPointInPolygon(polygon: Waypoint[], point: Waypoint) {
   }
 
   return inside;
+}
+
+export function avgLatLng(wps: Waypoint[]): { lat: number, lng: number } {
+
+  let latTotal = 0
+  let lngTotal = 0
+  let count = 0
+  for (let wp of wps) {
+    if (hasLocation(wp)) {
+      count += 1
+      latTotal += wp.param5
+      lngTotal += wp.param6
+    }
+
+  }
+  return { lat: latTotal / count, lng: lngTotal / count }
+
 }
 
 export function hasLocation(waypoint: Waypoint): boolean {

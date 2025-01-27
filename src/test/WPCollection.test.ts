@@ -1,9 +1,9 @@
-import { CollectionType, WaypointCollection } from "@/types/waypoints";
+import { CollectionType, WaypointCollection3 } from "@/types/waypoints";
 import { add_waypoint, contains, isRecursive } from "@/util/WPCollection";
 import { expect, test } from "bun:test";
 
 test("add_waypoint", () => {
-  let a: WaypointCollection = new Map();
+  let a: WaypointCollection3 = new Map();
   a.set("main", [])
   a = add_waypoint("main", { type: "Waypoint", wps: { frame: 0, type: 0, param1: 0, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0, autocontinue: 0 } }, a)
   a = add_waypoint("main", { type: "Waypoint", wps: { frame: 0, type: 1, param1: 0, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0, autocontinue: 0 } }, a)
@@ -20,7 +20,7 @@ test("add_waypoint", () => {
 
 })
 test("Contains", () => {
-  let a: WaypointCollection = new Map();
+  let a: WaypointCollection3 = new Map();
   // add waypoints to main
   a.set("main", [])
   a = add_waypoint("main", { type: "Waypoint", wps: { frame: 0, type: 69, param1: 0, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0, autocontinue: 0 } }, a)

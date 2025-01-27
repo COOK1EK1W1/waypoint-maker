@@ -1,10 +1,10 @@
-import { WaypointCollection, Waypoint } from "@/types/waypoints";
-import { get_waypoints } from "./WPCollection";
+import { Waypoint } from "@/types/waypoints";
+import { WaypointCollection } from "@/lib/waypoints/waypointCollection";
 
 export function waypointTo_waypoints_file(waypoints: WaypointCollection) {
   let returnString = "QGC WPL 110\n"
 
-  const wps = get_waypoints("Main", waypoints)
+  const wps = waypoints.flatten("Main")
   for (let i = 0; i < wps.length; i++) {
     returnString += waypointString(i, wps[i])
   }

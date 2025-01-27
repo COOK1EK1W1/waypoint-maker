@@ -1,13 +1,14 @@
 import { applyBounds, dubinsBetweenWaypoint, getBounds, getTunableParameters, setTunableParameter, splitDubinsRuns } from "@/lib/dubins/dubinWaypoints";
 import { geneticOptimise } from "@/lib/optimisation/genetic";
 import { particleSwarmOptimisation } from "@/lib/optimisation/particleSwarm";
+import { WaypointCollection } from "@/lib/waypoints/waypointCollection";
 import { bound, Path } from "@/types/dubins";
-import { Waypoint, WaypointCollection } from "@/types/waypoints";
+import { Waypoint } from "@/types/waypoints";
 import { findnthwaypoint, get_waypoints } from "@/util/WPCollection";
 import { Dispatch, SetStateAction } from "react";
 
 export function bakeDubins(waypoints: WaypointCollection, activeMission: string, setWaypoints: Dispatch<SetStateAction<WaypointCollection>>, optimisationFunction: (path: Path) => number) {
-  let activeWaypoints: Waypoint[] = get_waypoints(activeMission, waypoints)
+  let activeWaypoints: Waypoint[] = waypoints.flatten(activeMission)
 
   let dubinSections = splitDubinsRuns(activeWaypoints)
 
@@ -30,7 +31,7 @@ export function bakeDubins(waypoints: WaypointCollection, activeMission: string,
     return evaluate
   }
 
-  let curWaypoints = new Map(waypoints)
+  let curWaypoints = waypoints.clone()
 
   // optimise each section of the path
   for (const section of dubinSections) {
@@ -52,7 +53,7 @@ export function bakeDubins(waypoints: WaypointCollection, activeMission: string,
     }
 
     for (let i = 0; i < wps.length; i++) {
-      let a = findnthwaypoint(activeMission, i + section.start, curWaypoints)
+      let a = curWaypoints.findNthPosition(activeMission, i + section.start)
       if (!a) continue;
       let mission = waypoints.get(a[0])
       if (!mission) continue;

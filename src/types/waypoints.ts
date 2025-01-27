@@ -36,7 +36,7 @@ export type ColNode = {
 
 export type Node = WPNode | ColNode
 
-export type WaypointCollection = Map<string, Node[]>
+export type WaypointCollection3 = Map<string, Node[]>
 
 
 export enum Severity {

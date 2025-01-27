@@ -47,7 +47,10 @@ export default function MapStuff() {
             param7: 100,
             autocontinue: 1
           };
-          setWaypoints(add_waypoint(activeMission, { type: "Waypoint", wps: newMarker }, waypoints));
+          setWaypoints((waypoints) => {
+            waypoints.pushToMission(activeMission, { type: "Waypoint", wps: newMarker })
+            return waypoints.clone()
+          })
           break;
 
         }
@@ -67,10 +70,7 @@ export default function MapStuff() {
   function handleClick(tool: Tool, e: LeafletMouseEvent) {
     switch (tool) {
       case "Waypoint": {
-
-        const mission = waypoints.get(activeMission)
-        if (mission == null) return
-
+        console.log("im running")
         const newMarker = {
           frame: 3,
           type: 16,
@@ -83,7 +83,11 @@ export default function MapStuff() {
           param7: 100,
           autocontinue: 1
         };
-        setWaypoints(add_waypoint(activeMission, { type: "Waypoint", wps: newMarker }, waypoints));
+        setWaypoints((waypoints) => {
+          waypoints.pushToMission(activeMission, { type: "Waypoint", wps: newMarker })
+          //console.log(waypoints.get(activeMission), "here")
+          return waypoints.clone()
+        })
         break;
       }
       case "Takeoff": {
@@ -103,12 +107,19 @@ export default function MapStuff() {
           param7: 15,
           autocontinue: 1
         };
-        setWaypoints(add_waypoint(activeMission, { type: "Waypoint", wps: newMarker }, waypoints));
+        setWaypoints((waypoints) => {
+          waypoints.pushToMission(activeMission, { type: "Waypoint", wps: newMarker })
+          return waypoints.clone()
+        })
         break;
       }
       case "Place": {
         setTool("Waypoint")
-        setWaypoints(MoveWPsAvgTo(e.latlng.lat, e.latlng.lng, waypoints, selectedWPs, activeMission))
+        setWaypoints((waypoints) => {
+          //todo
+          //MoveWPsAvgTo(e.latlng.lat, e.latlng.lng, waypoints, selectedWPs, activeMission)
+          return waypoints
+        })
         break;
       }
       default:
@@ -127,11 +138,13 @@ export default function MapStuff() {
   }
 
   function onMove(lat: number, lng: number, id: number) {
-    const a = findnthwaypoint(activeMission, id, waypoints)
+    const a = waypoints.findNthPosition(activeMission, id)
     if (a == null) return
     const [mission, pos] = a
-    let newWps = changeParam(pos, mission, waypoints, (wp) => ({ ...wp, param5: lat, param6: lng }))
-    setWaypoints(newWps)
+    // todo
+    //let newWps = changeParam(pos, mission, waypoints, (wp) => ({ ...wp, param5: lat, param6: lng }))
+    //setWaypoints(newWps)
+    return
 
   }
 

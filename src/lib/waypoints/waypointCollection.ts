@@ -1,12 +1,12 @@
-import { Node, Waypoint, WaypointCollection } from "@/types/waypoints";
+import { Node, Waypoint } from "@/types/waypoints";
 
-export class WaypointCollection2 {
+export class WaypointCollection {
 
-  private collection: WaypointCollection
+  private collection: Map<string, Node[]>
 
-  constructor(collection?: WaypointCollection) {
+  constructor(collection?: Map<string, Node[]>) {
     if (collection) {
-      this.collection = collection
+      this.collection = new Map(collection)
       return
     }
     this.collection = new Map();
@@ -17,6 +17,10 @@ export class WaypointCollection2 {
 
   get(mission: string) {
     return this.collection.get(mission)
+  }
+
+  set(mission: string, nodes: Node[]) {
+    this.collection.set(mission, nodes)
   }
 
   getMissions() {
@@ -30,7 +34,7 @@ export class WaypointCollection2 {
   }
 
   clone() {
-    return new WaypointCollection2(this.collection)
+    return new WaypointCollection(this.collection)
 
   }
 
@@ -123,6 +127,55 @@ export class WaypointCollection2 {
       return wp
     }
     return mission.pop()
+  }
+
+  jsonify() {
+    return JSON.stringify(Array.from(this.collection), null, 2)
+  }
+
+  insert(id: number, missionName: string, waypoint: Node) {
+
+    const rec = (count: number, mission: string): number => {
+      const curMission = this.collection.get(mission)
+      if (!curMission) { return count }
+      for (let i = 0; i < curMission.length; i++) {
+        let cur = curMission[i]
+        if (cur.type === "Collection") {
+          count = rec(count, cur.collectionID)
+
+        } else {
+          if (count === id) {
+            let newMission = curMission
+            newMission.splice(i + 1, 0, waypoint)
+          }
+          count++;
+        }
+      }
+      return count
+    }
+
+    rec(0, missionName)
+  }
+
+  changeParam(id: number, missionName: string, mod: (wp: Waypoint) => Waypoint) {
+    const curMission = this.collection.get(missionName)
+    if (curMission == undefined) { throw new MissingMission(missionName) }
+
+    let updatedWaypoint = curMission[id]
+
+    if (updatedWaypoint.type === "Waypoint") {
+      updatedWaypoint = {
+        ...updatedWaypoint,
+        wps: mod(updatedWaypoint.wps)
+      }
+    } else if (updatedWaypoint.type == "Collection") {
+      const col = this.collection.get(updatedWaypoint.collectionID)
+      if (col != null) {
+        for (let i = 0; i < col.length; i++) {
+          this.changeParam(i, updatedWaypoint.collectionID, mod)
+        }
+      }
+    }
   }
 }
 

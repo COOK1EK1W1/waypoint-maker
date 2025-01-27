@@ -18,14 +18,13 @@ export default function CreateCollection() {
       setSelectedWPs([Math.min(...selectedWPs)])
     } else {
       setSelectedWPs([])
-
     }
 
-    setWaypoints((prev) => {
-      prev.set(activeMission, oldWPs)
-      if (name == null) return prev
-      prev.set(name, newWPs)
-      return new Map(prev)
+    setWaypoints((waypoints) => {
+      if (name == null) return waypoints.clone()
+      waypoints.set(activeMission, oldWPs)
+      waypoints.set(name, newWPs)
+      return waypoints.clone()
     })
 
   }

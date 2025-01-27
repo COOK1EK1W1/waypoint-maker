@@ -9,7 +9,7 @@ import { TfiTarget } from "react-icons/tfi";
 export function LatLngEditor() {
   const { selectedWPs, waypoints, setWaypoints, activeMission, setTool } = useWaypointContext();
 
-  const mission: Node[] | undefined = waypoints.get(activeMission);
+  const mission = waypoints.get(activeMission);
   if (!mission) return null;
 
   let wps: Node[] = [];
@@ -25,16 +25,15 @@ export function LatLngEditor() {
   const [lat, lng] = AvgLatLng(wps, waypoints);
 
   function nudge(x: number, y: number) {
-    setWaypoints((prevWaypoints: Map<string, Node[]>) => {
-      let waypointsUpdated = new Map(prevWaypoints);
+    setWaypoints((waypoints) => {
       for (let i = 0; i < wpsIds.length; i++) {
-        waypointsUpdated = changeParam(wpsIds[i], activeMission, waypointsUpdated, (wp: Waypoint) => {
+        waypoints.changeParam(wpsIds[i], activeMission, (wp: Waypoint) => {
           wp.param5 += 0.0001 * y;
           wp.param6 += 0.0001 * x;
           return wp;
         });
       }
-      return waypointsUpdated;
+      return waypoints.clone();
     });
   }
 
@@ -48,10 +47,9 @@ export function LatLngEditor() {
 
     const angleRadians = (deg * Math.PI) / 180;
 
-    setWaypoints((prevWaypoints: Map<string, Node[]>) => {
-      let waypointsUpdated = new Map(prevWaypoints);
+    setWaypoints((waypoints) => {
       for (let i = 0; i < wps.length; i++) {
-        waypointsUpdated = changeParam(wpsIds[i], activeMission, waypointsUpdated, (wp: Waypoint) => {
+        waypoints.changeParam(wpsIds[i], activeMission, (wp: Waypoint) => {
           const x = (wp.param6 - lng) * Math.cos(lat * Math.PI / 180);
           const y = wp.param5 - lat;
 
@@ -64,7 +62,7 @@ export function LatLngEditor() {
           return wp;
         });
       }
-      return waypointsUpdated;
+      return waypoints.clone();
     });
   }
 

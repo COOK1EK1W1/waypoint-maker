@@ -13,7 +13,7 @@ export default function CloudSync() {
   if (missionId) {
     return (
       <div className="flex items-center">
-        <Button onClick={() => startTransition(() => syncMission(missionId, JSON.stringify(Array.from(waypoints), null, 2)).then(() => { setb(true) }))}> Sync Now</Button>
+        <Button onClick={() => startTransition(() => syncMission(missionId, waypoints.jsonify()).then(() => { setb(true) }))}> Sync Now</Button>
         <span className="pl-1">
           {isPending ? <FaSpinner className="animate-spin" /> : b ? <FaCheck /> : null}
         </span>

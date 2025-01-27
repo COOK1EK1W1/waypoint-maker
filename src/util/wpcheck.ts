@@ -1,6 +1,7 @@
-import { Fault, Severity, Waypoint, WaypointCollection } from "@/types/waypoints";
+import { Fault, Severity, Waypoint } from "@/types/waypoints";
 import { angleBetweenPoints, gradient, haversineDistance } from "./distance";
-import { findnthwaypoint, get_waypoints, hasLocation, isPointInPolygon } from "./WPCollection";
+import { findnthwaypoint, hasLocation, isPointInPolygon } from "./WPCollection";
+import { WaypointCollection } from "@/lib/waypoints/waypointCollection";
 
 
 
@@ -44,7 +45,7 @@ export function wpCheck(wps: Waypoint[], waypoints: WaypointCollection): Fault[]
   }
 
   if (wps[0].type != 22) {
-    let wp = findnthwaypoint("Main", 0, waypoints)
+    let wp = waypoints.findNthPosition("Main", 0)
     if (wp) {
       ret.push({
         message: "Takeoff Waypoint should be the first waypoint",
@@ -58,7 +59,7 @@ export function wpCheck(wps: Waypoint[], waypoints: WaypointCollection): Fault[]
   // check the takeoff has enough pitch
   wps.map((wp, idx) => {
     if (wp.type != 22) return
-    const offender = findnthwaypoint("Main", idx, waypoints)
+    const offender = waypoints.findNthPosition("Main", idx)
     if (offender) {
       if (wp.param1 < 0) {
         ret.push({
@@ -120,7 +121,7 @@ export function wpCheck(wps: Waypoint[], waypoints: WaypointCollection): Fault[]
 
   wps.map((x, idx) => {
     if (x.type != 21) return
-    const wp = findnthwaypoint("Main", idx, waypoints)
+    const wp = waypoints.findNthPosition("Main", idx)
     if (wp) {
       if (x.param7 > 1) {
         ret.push({
@@ -160,7 +161,7 @@ export function wpCheck(wps: Waypoint[], waypoints: WaypointCollection): Fault[]
 
 
   if (wps[wps.length - 1].type != 21) {
-    let wp = findnthwaypoint("Main", wps.length - 1, waypoints)
+    let wp = waypoints.findNthPosition("Main", wps.length - 1)
     if (wp) {
       ret.push({
         message: "Landing Waypoint should be the last Waypoint",
@@ -187,7 +188,7 @@ export function wpCheck(wps: Waypoint[], waypoints: WaypointCollection): Fault[]
   }
 
   gradients.map((grad, idx) => {
-    const offender = findnthwaypoint("Main", idx + 1, waypoints)
+    const offender = waypoints.findNthPosition("Main", idx + 1)
     if (offender && grad) {
       if (grad >= 30) {
         ret.push({
@@ -217,7 +218,7 @@ export function wpCheck(wps: Waypoint[], waypoints: WaypointCollection): Fault[]
     angles.push(angleBetweenPoints(wps[i].param5, wps[i].param6, wps[i + 1].param5, wps[i + 1].param6, wps[i + 2].param5, wps[i + 2].param6))
   }
   angles.map((angle, idx) => {
-    const offender = findnthwaypoint("Main", idx + 1, waypoints)
+    const offender = waypoints.findNthPosition("Main", idx + 1)
     if (offender) {
       if (angle <= 40) {
         ret.push({
@@ -234,10 +235,10 @@ export function wpCheck(wps: Waypoint[], waypoints: WaypointCollection): Fault[]
   /*                     full subMission use                       */
   /* -=x=-=x=-=x=-=x=-=x=-=x=-=x=-=x=-=x=-=x=-=x=-=x=-=x=-=x=-=x=- */
 
-  Array.from(waypoints.keys()).map((key) => {
+  waypoints.getMissions().map((key) => {
     if (key == "Main" || key == "Geofence" || key == "Markers") return
     let found = false
-    Array.from(waypoints.keys()).map((mission) => {
+    waypoints.getMissions().map((mission) => {
       if (mission == "Geofence" || mission == "Markers") return
       let nodes = waypoints.get(mission)
       if (!nodes) return
@@ -263,7 +264,7 @@ export function wpCheck(wps: Waypoint[], waypoints: WaypointCollection): Fault[]
   /* -=x=-=x=-=x=-=x=-=x=-=x=-=x=-=x=-=x=-=x=-=x=-=x=-=x=-=x=-=x=- */
   let all_inside = true
   wps.map((wp) => {
-    if (!isPointInPolygon(get_waypoints("Geofence", waypoints), wp)) {
+    if (!isPointInPolygon(waypoints.flatten("Geofence"), wp)) {
       all_inside = false
     }
   })

@@ -3,8 +3,8 @@ import { useWaypointContext } from '@/util/context/WaypointContext';
 import React from 'react';
 import Button from '@/components/toolBar/button';
 import { FaFileUpload } from 'react-icons/fa';
-import { AvgLatLng } from '@/util/WPCollection';
-import { WaypointCollection } from '@/types/waypoints';
+import { avgLatLng, AvgLatLng } from '@/util/WPCollection';
+import { WaypointCollection } from '@/lib/waypoints/waypointCollection';
 
 export default function LoadJson() {
   const { setWaypoints, moveMap } = useWaypointContext();
@@ -28,14 +28,14 @@ export default function LoadJson() {
       try {
         if (reader.result == null) return
         const parsedData = JSON.parse("" + reader.result);
-        let wps: WaypointCollection = new Map(parsedData)
+        let wps = new WaypointCollection(new Map(parsedData))
         let main = wps.get("Main")
         if (main) {
           if (moveMap.move) {
-            const [lat, lng] = AvgLatLng(main, wps)
+            const { lat, lng } = avgLatLng(wps.flatten("Main"))
             moveMap.move(lat, lng)
           }
-          setWaypoints(new Map(parsedData))
+          setWaypoints(new WaypointCollection(new Map(parsedData)))
         }
       } catch (err) {
       }

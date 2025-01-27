@@ -2,7 +2,6 @@ import { useWaypointContext } from "../../util/context/WaypointContext"
 import WaypointTypeSelector from "./WaypointTypeSelector";
 import { commands } from "@/util/commands";
 import { Node, Waypoint } from "@/types/waypoints";
-import { changeParam } from "@/util/WPCollection";
 import Parameter from "./Parameter";
 
 export default function WaypointEditor() {
@@ -27,26 +26,24 @@ export default function WaypointEditor() {
 
   //on change function
   function changeInput(e: { target: { name?: string; value: number } }) {
-    setWaypoints((prevWaypoints: Map<string, Node[]>) => {
-      let waypointsUpdated = new Map(prevWaypoints);
+    setWaypoints((waypoints) => {
       for (let i = 0; i < wpsIds.length; i++) {
-        waypointsUpdated = changeParam(wpsIds[i], activeMission, waypointsUpdated, (wp: Waypoint) => {
+        waypoints.changeParam(wpsIds[i], activeMission, (wp: Waypoint) => {
           let key = e.target.name as keyof Waypoint;
           let a = { ...wp }
           a[key] = Number(e.target.value)
           return a
         });
       }
-      return waypointsUpdated;
+      return waypoints.clone();
     })
   }
 
   //on change function
   function changeSelect(e: React.ChangeEvent<HTMLSelectElement>) {
-    setWaypoints((prevWaypoints: Map<string, Node[]>) => {
-      let waypointsUpdated = new Map(prevWaypoints);
+    setWaypoints((waypoints) => {
       for (let i = 0; i < wpsIds.length; i++) {
-        waypointsUpdated = changeParam(wpsIds[i], activeMission, waypointsUpdated, (wp: Waypoint) => {
+        waypoints.changeParam(wpsIds[i], activeMission, (wp: Waypoint) => {
 
           const newType = parseInt(e.target.selectedOptions[0].getAttribute('data-cmd') || '0', 10);
 
@@ -56,7 +53,7 @@ export default function WaypointEditor() {
           return a
         });
       }
-      return waypointsUpdated;
+      return waypoints.clone();
     })
   }
 

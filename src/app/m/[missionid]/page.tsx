@@ -1,5 +1,6 @@
 import { WMEditor } from "@/components/editor";
 import ToolBar from "@/components/toolBar/ToolBar";
+import { WaypointCollection } from "@/lib/waypoints/waypointCollection";
 import CloudWaypointProvider from "@/util/context/cloudWaypointProvider";
 import VehicleProvider from "@/util/context/VehicleTypeProvider";
 import prisma from "@/util/prisma";
@@ -14,7 +15,7 @@ export default async function Mission({ params }: { params: Promise<{ missionid:
   let b = JSON.parse(a.data)
 
   return (
-    <CloudWaypointProvider mission={new Map(b)} missionId={missionId}>
+    <CloudWaypointProvider mission={new WaypointCollection(new Map(b))} missionId={missionId}>
       <VehicleProvider >
         <ToolBar />
         <WMEditor />

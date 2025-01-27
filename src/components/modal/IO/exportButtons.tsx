@@ -14,7 +14,7 @@ export default function DownloadButtons() {
 
 
   function downloadWM() {
-    const output = JSON.stringify(Array.from(waypoints), null, 2)
+    const output = waypoints.jsonify()
     downloadTextAsFile("mission.json", output)
   }
 

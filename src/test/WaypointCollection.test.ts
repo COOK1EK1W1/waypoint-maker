@@ -1,17 +1,17 @@
-import { MissingMission, WaypointCollection2 } from "@/lib/waypoints/waypointCollection";
+import { MissingMission, WaypointCollection } from "@/lib/waypoints/waypointCollection";
 import { CollectionType } from "@/types/waypoints";
 import { expect, test } from "bun:test";
 
 test("WaypointCollection default config", () => {
-  const a = new WaypointCollection2()
-  expect(a.getMissions().toArray().length).toBe(3)
+  const a = new WaypointCollection()
+  expect(Array.from(a.getMissions()).length).toBe(3)
   expect(a.get("Main")).not.toBeUndefined()
   expect(a.get("Geofence")).not.toBeUndefined()
   expect(a.get("Markers")).not.toBeUndefined()
 })
 
 test("add_waypoint", () => {
-  let a = new WaypointCollection2()
+  let a = new WaypointCollection()
   a.pushToMission("Main", { type: "Waypoint", wps: { frame: 0, type: 0, param1: 0, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0, autocontinue: 0 } })
   a.pushToMission("Main", { type: "Waypoint", wps: { frame: 0, type: 1, param1: 0, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0, autocontinue: 0 } })
   a.pushToMission("Main", { type: "Waypoint", wps: { frame: 0, type: 2, param1: 0, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0, autocontinue: 0 } })
@@ -27,7 +27,7 @@ test("add_waypoint", () => {
 
 
 test("Contains, recursive", () => {
-  let a = new WaypointCollection2();
+  let a = new WaypointCollection();
   // add waypoints to main
   a.pushToMission("Main", { type: "Waypoint", wps: { frame: 0, type: 69, param1: 0, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0, autocontinue: 0 } })
   a.pushToMission("Main", { type: "Waypoint", wps: { frame: 0, type: 69, param1: 0, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0, autocontinue: 0 } })
@@ -58,7 +58,7 @@ test("Contains, recursive", () => {
 })
 
 test("find Nth position", () => {
-  let a = new WaypointCollection2();
+  let a = new WaypointCollection();
   // add waypoints to main
   a.pushToMission("Main", { type: "Waypoint", wps: { frame: 0, type: 69, param1: 0, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0, autocontinue: 0 } })
   a.pushToMission("Main", { type: "Waypoint", wps: { frame: 0, type: 69, param1: 0, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0, autocontinue: 0 } })
@@ -92,7 +92,7 @@ test("find Nth position", () => {
 
 
 test("pop", () => {
-  let a = new WaypointCollection2();
+  let a = new WaypointCollection();
   // add waypoints to main
   a.pushToMission("Main", { type: "Waypoint", wps: { frame: 0, type: 69, param1: 0, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0, autocontinue: 0 } })
   a.pushToMission("Main", { type: "Waypoint", wps: { frame: 1, type: 69, param1: 0, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0, autocontinue: 0 } })
@@ -116,7 +116,7 @@ test("pop", () => {
 
 
 test("pop with index", () => {
-  let a = new WaypointCollection2();
+  let a = new WaypointCollection();
   // add waypoints to main
   a.pushToMission("Main", { type: "Waypoint", wps: { frame: 0, type: 69, param1: 0, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0, autocontinue: 0 } })
   a.pushToMission("Main", { type: "Waypoint", wps: { frame: 1, type: 69, param1: 0, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0, autocontinue: 0 } })
@@ -140,7 +140,7 @@ test("pop with index", () => {
 
 
 test("clone", () => {
-  let a = new WaypointCollection2();
+  let a = new WaypointCollection();
   // add waypoints to main
   a.pushToMission("Main", { type: "Waypoint", wps: { frame: 0, type: 69, param1: 0, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0, autocontinue: 0 } })
   a.pushToMission("Main", { type: "Waypoint", wps: { frame: 1, type: 69, param1: 0, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0, autocontinue: 0 } })
@@ -148,13 +148,12 @@ test("clone", () => {
 
   const b = a.clone()
   expect(b).not.toBe(a)
-  console.log(b.get("Main"))
   expect(b.get("Main").length).toBe(3)
 })
 
 
 test("Flatten", () => {
-  let a = new WaypointCollection2();
+  let a = new WaypointCollection();
   // add waypoints to main
   a.pushToMission("Main", { type: "Waypoint", wps: { frame: 0, type: 69, param1: 0, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0, autocontinue: 0 } })
   a.pushToMission("Main", { type: "Waypoint", wps: { frame: 0, type: 69, param1: 0, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0, autocontinue: 0 } })

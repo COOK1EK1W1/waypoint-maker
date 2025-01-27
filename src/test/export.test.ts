@@ -1,11 +1,11 @@
-import { WaypointCollection } from "@/types/waypoints";
+import { WaypointCollection } from "@/lib/waypoints/waypointCollection";
 import { waypointTo_waypoints_file } from "@/util/waypointToFile";
 import { expect, test } from "bun:test";
 
 test("waypoints to file", () => {
 
   //empty map
-  const wps: WaypointCollection = new Map()
+  const wps: WaypointCollection = new WaypointCollection()
   expect(waypointTo_waypoints_file(wps)).toBe("QGC WPL 110\n")
 
   // empty mission

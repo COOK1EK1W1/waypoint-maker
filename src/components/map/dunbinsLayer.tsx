@@ -1,4 +1,3 @@
-import { get_waypoints } from "@/util/WPCollection";
 import { LayerGroup, Polyline } from "react-leaflet";
 import { useWaypointContext } from "@/util/context/WaypointContext";
 import { Waypoint } from "@/types/waypoints"
@@ -14,7 +13,7 @@ export default function DubinsLayer() {
   const { waypoints, activeMission } = useWaypointContext()
   if (noshow.includes(activeMission)) return null
 
-  const activeWPs = get_waypoints(activeMission, waypoints)
+  const activeWPs = waypoints.flatten(activeMission)
 
   if (activeWPs.length < 2) {
     return

@@ -1,8 +1,8 @@
 "use client";
 import { useState } from 'react';
 import { waypointContext } from './WaypointContext';
-import { WaypointCollection } from "@/types/waypoints";
 import { Tool } from '@/types/tools'
+import { WaypointCollection } from '@/lib/waypoints/waypointCollection';
 
 type Props = {
   children: React.ReactNode;

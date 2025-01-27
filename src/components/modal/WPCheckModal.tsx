@@ -1,5 +1,4 @@
 import { Fault, Severity } from "@/types/waypoints"
-import { findnthwaypoint, get_waypoints } from "@/util/WPCollection"
 import { useWaypointContext } from "@/util/context/WaypointContext"
 import { getTerrain } from "@/util/terrain"
 import { wpCheck } from "@/util/wpcheck"
@@ -8,7 +7,7 @@ import FaultItem from "@/components/toolBar/faultItem"
 
 export default function WPCheckModal() {
   const { waypoints } = useWaypointContext()
-  const wps = get_waypoints("Main", waypoints)
+  const wps = waypoints.flatten("Main")
   const results = wpCheck(wps, waypoints)
   const [terrain, setTerrain] = useState<Fault[] | null>(null)
 
@@ -19,7 +18,7 @@ export default function WPCheckModal() {
         let ret: Fault[] = []
         let terrainoffset = terrainHeights[0].elevation
         for (let i = 0; i < wps.length; i++) {
-          let wp = findnthwaypoint("Main", i, waypoints)
+          let wp = waypoints.findNthPosition("Main", i)
           if (!wp) { continue }
           let wpheight = wps[i].param7 - (terrainHeights[i].elevation - terrainoffset)
           if (wpheight < 0) {

@@ -1,5 +1,4 @@
 "use client"
-import { get_waypoints } from "@/util/WPCollection"
 import { useWaypointContext } from "@/util/context/WaypointContext"
 import { cn } from "@/lib/utils"
 import { FaCheck } from "react-icons/fa"
@@ -13,7 +12,7 @@ import WPCheckModal from "../modal/WPCheckModal"
 
 export default function WPCheck() {
   const { waypoints } = useWaypointContext()
-  const msg = wpCheck(get_waypoints("Main", waypoints), waypoints)
+  const msg = wpCheck(waypoints.flatten("Main"), waypoints)
   const bad = msg.filter((x) => x.severity == Severity.Bad)
 
   let text: any = ""

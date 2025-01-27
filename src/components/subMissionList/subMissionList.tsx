@@ -1,10 +1,9 @@
 "use client"
 import { useWaypointContext } from "@/util/context/WaypointContext";
-import { add_waypoint } from "@/util/WPCollection";
-import { CollectionType, Node } from "@/types/waypoints";
+import { CollectionType } from "@/types/waypoints";
 import ListItem from "../waypointList/ListItem";
 import { TbFence, TbTopologyRing } from "react-icons/tb";
-import { FaMapMarkedAlt, FaTrash, FaTrashAlt } from "react-icons/fa";
+import { FaMapMarkedAlt, FaTrashAlt } from "react-icons/fa";
 import { FaArrowTurnUp } from "react-icons/fa6";
 
 const noAddNames = ["Main", "Geofence", "Takoeff", "Landing", "Markers"]
@@ -14,8 +13,13 @@ export default function SubMissionList() {
 
   function addSub(e: React.MouseEvent<HTMLButtonElement>, name: string) {
     e.stopPropagation()
-    if (activeMission != name)
-      setWaypoints(add_waypoint(activeMission, { type: "Collection", collectionID: name, name: name, ColType: CollectionType.Mission, offsetLat: 0, offsetLng: 0 }, waypoints))
+    if (activeMission != name) {
+      setWaypoints((waypoints) => {
+        waypoints.pushToMission(activeMission, { type: "Collection", collectionID: name, name: name, ColType: CollectionType.Mission, offsetLat: 0, offsetLng: 0 })
+        return waypoints.clone()
+      })
+
+    }
   }
 
   function click(wp: string) {
@@ -28,7 +32,7 @@ export default function SubMissionList() {
     if (!a) return
     setWaypoints((prevWaypoints) => {
       prevWaypoints.set(mission, [])
-      return new Map(prevWaypoints)
+      return prevWaypoints.clone()
     })
 
   }
@@ -36,7 +40,7 @@ export default function SubMissionList() {
 
   return (
     <div className="">
-      {Array.from(waypoints.keys()).map((mission, id) => {
+      {Array.from(waypoints.getMissions()).map((mission, id) => {
         const wp = waypoints.get(mission)
         if (wp != undefined) {
           const canAdd = !noAddNames.includes(mission)
