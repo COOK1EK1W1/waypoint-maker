@@ -1,5 +1,3 @@
-import { LazyResult } from "postcss";
-
 function toRadians(degrees: number) {
   return degrees * Math.PI / 180;
 }

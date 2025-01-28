@@ -27,7 +27,7 @@ export default function DubinsLayer() {
   for (let section of dubinsSections) {
     for (let i = 0; i < section.wps.length - 1; i++) {
       let curves = dubinsBetweenWaypoint(section.wps[i], section.wps[i + 1])
-      curves.map((c, a) => {
+      curves.map((c) => {
         switch (c.type) {
           case "Curve":
             let rWaypoint: Waypoint = { frame: 0, type: 189, param1: 0, param2: 0, param3: 0, param4: 0, param6: c.center.x, param5: c.center.y, param7: 0, autocontinue: 0 }

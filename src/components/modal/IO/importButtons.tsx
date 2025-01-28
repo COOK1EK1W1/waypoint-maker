@@ -3,7 +3,7 @@ import { useWaypointContext } from '@/util/context/WaypointContext';
 import React from 'react';
 import Button from '@/components/toolBar/button';
 import { FaFileUpload } from 'react-icons/fa';
-import { avgLatLng, AvgLatLng } from '@/util/WPCollection';
+import { avgLatLng } from '@/util/WPCollection';
 import { WaypointCollection } from '@/lib/waypoints/waypointCollection';
 
 export default function LoadJson() {

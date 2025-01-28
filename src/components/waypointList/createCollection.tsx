@@ -10,8 +10,8 @@ export default function CreateCollection() {
 
     const curMission = waypoints.get(activeMission)
     if (curMission == undefined) return
-    const newWPs = curMission.filter((wp, id) => selectedWPs.includes(id))
-    const oldWPs = curMission.filter((wp, id) => !selectedWPs.includes(id))
+    const newWPs = curMission.filter((_, id) => selectedWPs.includes(id))
+    const oldWPs = curMission.filter((_, id) => !selectedWPs.includes(id))
 
     if (name.charAt(0) != '_') {
       oldWPs.splice(Math.min(...selectedWPs), 0, { type: "Collection", name: name, ColType: CollectionType.Mission, collectionID: name, offsetLng: 0, offsetLat: 0 })
