@@ -1,5 +1,4 @@
 import LatLonEllipsoidal, { Cartesian, Vector3d } from "geodesy/latlon-ellipsoidal";
-import { WGS84 } from "proj4";
 
 export function g2l(reference: number[], point: number[]) {
   // Target and reference coordinates: [latitude, longitude, height]
