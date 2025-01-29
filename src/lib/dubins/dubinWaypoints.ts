@@ -1,8 +1,9 @@
 import { Waypoint } from "@/types/waypoints";
-import { deg2rad, modf, rad2deg, worldOffset } from "./geometry";
+import { deg2rad, modf, offset, rad2deg, worldOffset } from "./geometry";
 import { Dir, DubinsBetweenDiffRad } from "./dubins";
 import { bound, Path } from "@/types/dubins";
 import { warn } from "console";
+import { g2l, l2g } from "../world/conversion";
 
 export function splitDubinsRuns(wps: Waypoint[]): { start: number, wps: Waypoint[] }[] {
   let dubinSections: { start: number, wps: Waypoint[] }[] = []
@@ -46,25 +47,54 @@ function num2dir(num: number) {
   return undefined
 }
 
-export function dubinsBetweenWaypoint(a: Waypoint, b: Waypoint): Path {
+export function localisePath(path: Path, reference: Waypoint): Path {
+  for (let segment of path) {
+    switch (segment.type) {
+      case "Curve": {
+        console.log(segment.center)
+        let [x, y, z] = l2g([reference.param6, reference.param5, reference.param7], [segment.center.x, segment.center.y, reference.param7])
+        segment.center = { x, y }
+        console.log(segment.center)
+        break;
+      }
+      case "Straight": {
+        let [x1, y1, z1] = l2g([reference.param6, reference.param5, reference.param7], [segment.start.x, segment.start.y, reference.param7])
+        segment.start = { x: x1, y: y1 }
+        let [x2, y2, z2] = l2g([reference.param6, reference.param5, reference.param7], [segment.end.x, segment.end.y, reference.param7])
+        segment.end = { x: x2, y: y2 }
+        break
+      }
+    }
+  }
+  console.log(path)
+  return path
+}
+
+export function dubinsBetweenWaypoint(a: Waypoint, b: Waypoint, reference: Waypoint): Path {
+  const [AX, AY, AZ] = g2l([reference.param6, reference.param5, reference.param7], [a.param6, a.param5, a.param7])
+  const [BX, BY, BZ] = g2l([reference.param6, reference.param5, reference.param7], [b.param6, b.param5, b.param7])
+  console.log(AX, AY, AZ, BX, BY, BZ)
   if (a.type == 69) {
     let angleA = deg2rad(a.param2)
     if (b.type == 69) {
       let angleB = deg2rad(b.param2)
-      let offset_a = worldOffset({ x: a.param6, y: a.param5 }, a.param1, angleA - Math.PI / 2)
-      let offset_b = worldOffset({ x: b.param6, y: b.param5 }, b.param1, angleB - Math.PI / 2)
-      return DubinsBetweenDiffRad(offset_a, offset_b, angleA, angleB, a.param3, b.param3, num2dir(a.param4), num2dir(b.param4))
+      let offset_a = offset({ x: AX, y: AY }, a.param1, angleA - Math.PI / 2)
+      let offset_b = offset({ x: BX, y: BY }, b.param1, angleB - Math.PI / 2)
+      let res = DubinsBetweenDiffRad(offset_a, offset_b, angleA, angleB, a.param3, b.param3, num2dir(a.param4), num2dir(b.param4))
+      return localisePath(res, reference)
     } else {
-      let offset_a = worldOffset({ x: a.param6, y: a.param5 }, a.param1, angleA - Math.PI / 2)
-      let offset_b = { x: b.param6, y: b.param5 }
-      return DubinsBetweenDiffRad(offset_a, offset_b, angleA, 0, a.param3, 0, num2dir(a.param4), undefined)
+      let offset_a = offset({ x: AX, y: AY }, a.param1, angleA - Math.PI / 2)
+      let offset_b = { x: BX, y: BY }
+      let res = DubinsBetweenDiffRad(offset_a, offset_b, angleA, 0, a.param3, 0, num2dir(a.param4), undefined)
+      return localisePath(res, reference)
     }
   } else {
     if (b.type == 69) {
       let angleB = deg2rad(b.param2)
-      let offset_a = { x: a.param6, y: a.param5 }
-      let offset_b = worldOffset({ x: b.param6, y: b.param5 }, b.param1, angleB - Math.PI / 2)
-      return DubinsBetweenDiffRad(offset_a, offset_b, 0, angleB, 0, b.param3, undefined, num2dir(b.param4))
+      let offset_a = { x: AX, y: AY }
+      let offset_b = offset({ x: BX, y: BY }, b.param1, angleB - Math.PI / 2)
+      let res = DubinsBetweenDiffRad(offset_a, offset_b, 0, angleB, 0, b.param3, undefined, num2dir(b.param4))
+      return localisePath(res, reference)
 
     } else {
       return []

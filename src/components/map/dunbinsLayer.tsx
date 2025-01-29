@@ -4,6 +4,7 @@ import { Waypoint } from "@/types/waypoints"
 import Arc from "../marker/arc";
 import { ReactNode } from "react";
 import { dubinsBetweenWaypoint, splitDubinsRuns } from "@/lib/dubins/dubinWaypoints";
+import DraggableMarker from "../marker/DraggableMarker";
 
 const curveOptions = { color: '#ff0000' }
 const straightOptions = { color: '#bb0000' }
@@ -12,6 +13,11 @@ const noshow = ["Markers", "Geofence"]
 export default function DubinsLayer() {
   const { waypoints, activeMission } = useWaypointContext()
   if (noshow.includes(activeMission)) return null
+
+  let main = waypoints.get("Main")
+  if (!main || main.length == 0) return
+  let reference = main[0]
+  if (reference.type != "Waypoint") return
 
   const activeWPs = waypoints.flatten(activeMission)
 
@@ -26,12 +32,12 @@ export default function DubinsLayer() {
   let key = 0
   for (let section of dubinsSections) {
     for (let i = 0; i < section.wps.length - 1; i++) {
-      let curves = dubinsBetweenWaypoint(section.wps[i], section.wps[i + 1])
-      curves.map((c) => {
+      let curves = dubinsBetweenWaypoint(section.wps[i], section.wps[i + 1], reference.wps)
+      curves.map((c, a) => {
         switch (c.type) {
           case "Curve":
             let rWaypoint: Waypoint = { frame: 0, type: 189, param1: 0, param2: 0, param3: 0, param4: 0, param6: c.center.x, param5: c.center.y, param7: 0, autocontinue: 0 }
-            //markers.push(<DraggableMarker key={""+i+a} waypoint={rWaypoint} active={false}/>)
+            markers.push(<DraggableMarker key={"" + i + a} waypoint={rWaypoint} active={false} />)
             lines.push(<Arc key={key++} curve={c} pathOptions={curveOptions} />)
             break;
           case "Straight":
