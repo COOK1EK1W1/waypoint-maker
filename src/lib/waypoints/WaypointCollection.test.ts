@@ -1,4 +1,4 @@
-import { MissingMission, WaypointCollection } from "@/lib/waypoints/waypointCollection";
+import { MissingMission, RecursiveMission, WaypointCollection } from "@/lib/waypoints/waypointCollection";
 import { CollectionType } from "@/types/waypoints";
 import { expect, test } from "bun:test";
 
@@ -49,11 +49,7 @@ test("Contains, recursive", () => {
 
   expect(a.contains("Main", "a")).toBeTrue()
 
-  a.pushToMission("a", { type: "Collection", name: "Main", ColType: CollectionType.Mission, collectionID: "Main", offsetLat: 0, offsetLng: 0 })
-
-  expect(a.get("a")?.length).toBe(4)
-  expect(a.contains("Main", "Main")).toBeTrue()
-  expect(a.isRecursive("Main")).toBeTrue()
+  expect(() => a.pushToMission("a", { type: "Collection", name: "Main", ColType: CollectionType.Mission, collectionID: "Main", offsetLat: 0, offsetLng: 0 })).toThrowError(RecursiveMission)
 
 })
 
@@ -70,6 +66,7 @@ test("find Nth position", () => {
   a.pushToMission("a", { type: "Waypoint", wps: { frame: 0, type: 69, param1: 0, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0, autocontinue: 0 } })
 
   a.pushToMission("Main", { type: "Collection", name: "a", ColType: CollectionType.Mission, collectionID: "a", offsetLat: 0, offsetLng: 0 })
+  a.pushToMission("Main", { type: "Collection", name: "a", ColType: CollectionType.Mission, collectionID: "a", offsetLat: 0, offsetLng: 0 })
 
   const b = a.findNthPosition("Main", 0)
   expect(b).not.toBeUndefined()
@@ -84,9 +81,15 @@ test("find Nth position", () => {
     expect(c[0]).toBe("a")
     expect(c[1]).toBe(0)
   }
+  const d = a.findNthPosition("Main", 7)
+  expect(d).not.toBeUndefined()
+  if (d) {
+    expect(d[0]).toBe("a")
+    expect(d[1]).toBe(1)
+  }
 
-  const d = a.findNthPosition("Main", 10)
-  expect(d).toBeUndefined()
+  const e = a.findNthPosition("Main", 11)
+  expect(e).toBeUndefined()
 
 })
 

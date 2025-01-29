@@ -123,7 +123,6 @@ export default function MapStuff() {
 
   function onMove(lat: number, lng: number, id: number) {
     const a = waypoints.findNthPosition(activeMission, id)
-    console.log(lat, lng)
     if (a == null) return
     const [mission, pos] = a
     setWaypoints((waypoints2) => {

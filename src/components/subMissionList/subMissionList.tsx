@@ -15,8 +15,13 @@ export default function SubMissionList() {
     e.stopPropagation()
     if (activeMission != name) {
       setWaypoints((waypoints) => {
-        waypoints.pushToMission(activeMission, { type: "Collection", collectionID: name, name: name, ColType: CollectionType.Mission, offsetLat: 0, offsetLng: 0 })
-        return waypoints.clone()
+        let newWaypoints = waypoints.clone()
+        try {
+          newWaypoints.pushToMission(activeMission, { type: "Collection", collectionID: name, name: name, ColType: CollectionType.Mission, offsetLat: 0, offsetLng: 0 })
+          return newWaypoints
+        } catch (err) {
+          return waypoints
+        }
       })
 
     }

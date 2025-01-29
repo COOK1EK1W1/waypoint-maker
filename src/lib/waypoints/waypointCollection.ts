@@ -36,6 +36,12 @@ export class WaypointCollection {
   pushToMission(missionName: string, waypoint: Node) {
     const mission = this.collection.get(missionName)
     if (!mission) throw new MissingMission(missionName)
+    if (waypoint.type == "Collection") {
+      if (this.contains(waypoint.name, missionName)) {
+        throw new RecursiveMission()
+      }
+
+    }
     mission.push(waypoint)
   }
 
@@ -103,24 +109,28 @@ export class WaypointCollection {
     const findNth = (node: Node[], name: string): [string, number] | undefined => {
       for (let i = 0; i < node.length; i++) {
         const curNode = node[i];
-        if (curNode.type === "Waypoint") {
-          if (count === n) {
-            return [name, i]; // Found nth waypoint
+        switch (curNode.type) {
+          case "Waypoint": {
+            if (count === n) {
+              return [name, i]; // Found nth waypoint
+            }
+            count++;
+            break
           }
-          count++;
-        } else if (curNode.type === "Collection") {
-          const subMission = this.collection.get(curNode.collectionID);
-          if (subMission !== undefined) {
-            const result = findNth(subMission, curNode.collectionID);
-            if (result !== null) {
-              return result;
+          case "Collection": {
+            const subMission = this.collection.get(curNode.collectionID);
+            if (subMission !== undefined) {
+              const result = findNth(subMission, curNode.collectionID);
+              if (result !== undefined) {
+                return result;
+              }
             }
           }
+
         }
       }
       return undefined; // Nth waypoint not found in this collection
     }
-
     return findNth(missionNodes, missionName);
   }
 
@@ -189,6 +199,14 @@ export class WaypointCollection {
 export class MissingMission extends Error {
   constructor(missionName: string) {
     super(`Mission cannot be found: ${missionName}`)
+    this.name = this.constructor.name
+  }
+}
+
+
+export class RecursiveMission extends Error {
+  constructor() {
+    super(`Mission is recursive`)
     this.name = this.constructor.name
   }
 }
