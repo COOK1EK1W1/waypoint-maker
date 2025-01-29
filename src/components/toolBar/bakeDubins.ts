@@ -9,6 +9,13 @@ import { Dispatch, SetStateAction } from "react";
 export function bakeDubins(waypoints: WaypointCollection, activeMission: string, setWaypoints: Dispatch<SetStateAction<WaypointCollection>>, optimisationFunction: (path: Path) => number) {
   let activeWaypoints: Waypoint[] = waypoints.flatten(activeMission)
 
+  // get reference waypoint
+  let main = waypoints.get("Main")
+  if (!main || main.length == 0) return
+  let reference = main[0]
+  if (reference.type != "Waypoint") return
+  const referenceWP = reference.wps
+
   let dubinSections = splitDubinsRuns(activeWaypoints)
 
   // This function is a closure that takes in the waypoints and returns a function that takes in the tunable parameters and returns the total length of the path
@@ -21,7 +28,7 @@ export function bakeDubins(waypoints: WaypointCollection, activeMission: string,
       setTunableParameter(localWPS, x)
       let totalLength = 0
       for (let i = 0; i < wps.length - 1; i++) {
-        let curves = dubinsBetweenWaypoint(localWPS[i], localWPS[i + 1])
+        let curves = dubinsBetweenWaypoint(localWPS[i], localWPS[i + 1], referenceWP)
         totalLength += optimisationFunction(curves)
       }
       return totalLength

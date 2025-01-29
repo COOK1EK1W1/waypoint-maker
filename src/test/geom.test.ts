@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { Segment, XY } from "@/types/dubins";
+import { Segment } from "@/types/dubins";
 import { bearing, mod2pi, modf, offset, pathLength, segmentLength, world_dist, worldBearing, worldDist } from "@/lib/dubins/geometry";
 
 test("straight line len", () => {

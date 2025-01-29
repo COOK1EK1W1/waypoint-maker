@@ -52,16 +52,16 @@ export function localisePath(path: Path, reference: Waypoint): Path {
     switch (segment.type) {
       case "Curve": {
         console.log(segment.center)
-        let [x, y, z] = l2g([reference.param6, reference.param5, reference.param7], [segment.center.x, segment.center.y, reference.param7])
-        segment.center = { x, y }
+        let center = l2g({ lat: reference.param5, lng: reference.param6 }, { x: segment.center.x, y: segment.center.y })
+        segment.center = { x: center.lng, y: center.lat }
         console.log(segment.center)
         break;
       }
       case "Straight": {
-        let [x1, y1, z1] = l2g([reference.param6, reference.param5, reference.param7], [segment.start.x, segment.start.y, reference.param7])
-        segment.start = { x: x1, y: y1 }
-        let [x2, y2, z2] = l2g([reference.param6, reference.param5, reference.param7], [segment.end.x, segment.end.y, reference.param7])
-        segment.end = { x: x2, y: y2 }
+        let start = l2g({ lat: reference.param5, lng: reference.param6 }, { x: segment.start.x, y: segment.start.y })
+        segment.start = { x: start.lng, y: start.lat }
+        let end = l2g({ lat: reference.param5, lng: reference.param6 }, { x: segment.end.x, y: segment.end.y })
+        segment.end = { x: end.lng, y: end.lat }
         break
       }
     }
@@ -71,28 +71,27 @@ export function localisePath(path: Path, reference: Waypoint): Path {
 }
 
 export function dubinsBetweenWaypoint(a: Waypoint, b: Waypoint, reference: Waypoint): Path {
-  const [AX, AY, AZ] = g2l([reference.param6, reference.param5, reference.param7], [a.param6, a.param5, a.param7])
-  const [BX, BY, BZ] = g2l([reference.param6, reference.param5, reference.param7], [b.param6, b.param5, b.param7])
-  console.log(AX, AY, AZ, BX, BY, BZ)
+  const start = g2l({ lat: reference.param5, lng: reference.param6 }, { lat: a.param5, lng: a.param6 })
+  const end = g2l({ lat: reference.param5, lng: reference.param6 }, { lat: b.param5, lng: b.param6 })
   if (a.type == 69) {
     let angleA = deg2rad(a.param2)
     if (b.type == 69) {
       let angleB = deg2rad(b.param2)
-      let offset_a = offset({ x: AX, y: AY }, a.param1, angleA - Math.PI / 2)
-      let offset_b = offset({ x: BX, y: BY }, b.param1, angleB - Math.PI / 2)
+      let offset_a = offset(start, a.param1, angleA - Math.PI / 2)
+      let offset_b = offset(end, b.param1, angleB - Math.PI / 2)
       let res = DubinsBetweenDiffRad(offset_a, offset_b, angleA, angleB, a.param3, b.param3, num2dir(a.param4), num2dir(b.param4))
       return localisePath(res, reference)
     } else {
-      let offset_a = offset({ x: AX, y: AY }, a.param1, angleA - Math.PI / 2)
-      let offset_b = { x: BX, y: BY }
+      let offset_a = offset(start, a.param1, angleA - Math.PI / 2)
+      let offset_b = end
       let res = DubinsBetweenDiffRad(offset_a, offset_b, angleA, 0, a.param3, 0, num2dir(a.param4), undefined)
       return localisePath(res, reference)
     }
   } else {
     if (b.type == 69) {
       let angleB = deg2rad(b.param2)
-      let offset_a = { x: AX, y: AY }
-      let offset_b = offset({ x: BX, y: BY }, b.param1, angleB - Math.PI / 2)
+      let offset_a = start
+      let offset_b = offset(end, b.param1, angleB - Math.PI / 2)
       let res = DubinsBetweenDiffRad(offset_a, offset_b, 0, angleB, 0, b.param3, undefined, num2dir(b.param4))
       return localisePath(res, reference)
 
