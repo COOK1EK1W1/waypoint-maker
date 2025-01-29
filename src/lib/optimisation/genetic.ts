@@ -25,7 +25,7 @@ export function geneticOptimise(initialGuess: number[], bounds: bound[], fn: (a:
   for (let i = 0; i < 200; i++) {
     let newpop: number[][] = []
     population.sort((x, y) => fn(x) - fn(y))
-    console.log(fn(population[0]))
+    //console.log(fn(population[0]))
 
     if (fn(population[0]) < fn(bestValues)) {
       bestValues = [...population[0]]
@@ -37,7 +37,7 @@ export function geneticOptimise(initialGuess: number[], bounds: bound[], fn: (a:
     for (let j = 0; j < ELITES; j++) {
       newpop.push(population[j]);
     }
-    console.assert(newpop.length == ELITES, `${newpop.length}`)
+    //console.assert(newpop.length == ELITES, `${newpop.length}`)
 
     // crossover
     for (let j = 0; j < CHILDREN; j++) {
@@ -46,7 +46,7 @@ export function geneticOptimise(initialGuess: number[], bounds: bound[], fn: (a:
       newpop.push(crossover(parent1, parent2));
 
     }
-    console.assert(newpop.length == ELITES + CHILDREN, `${newpop.length} ${ELITES + CHILDREN}`)
+    //console.assert(newpop.length == ELITES + CHILDREN, `${newpop.length} ${ELITES + CHILDREN}`)
 
     // mutate
     for (let j = 0; j < MUTANTS; j++) {
@@ -55,7 +55,7 @@ export function geneticOptimise(initialGuess: number[], bounds: bound[], fn: (a:
 
     }
 
-    console.assert(newpop.length == popsize)
+    //console.assert(newpop.length == popsize)
     population = newpop
 
   }

@@ -51,10 +51,8 @@ export function localisePath(path: Path, reference: Waypoint): Path {
   for (let segment of path) {
     switch (segment.type) {
       case "Curve": {
-        console.log(segment.center)
         let center = l2g({ lat: reference.param5, lng: reference.param6 }, { x: segment.center.x, y: segment.center.y })
         segment.center = { x: center.lng, y: center.lat }
-        console.log(segment.center)
         break;
       }
       case "Straight": {
@@ -66,7 +64,6 @@ export function localisePath(path: Path, reference: Waypoint): Path {
       }
     }
   }
-  console.log(path)
   return path
 }
 

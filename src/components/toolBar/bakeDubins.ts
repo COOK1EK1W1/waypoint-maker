@@ -1,12 +1,10 @@
 import { applyBounds, dubinsBetweenWaypoint, getBounds, getTunableParameters, setTunableParameter, splitDubinsRuns } from "@/lib/dubins/dubinWaypoints";
-import { geneticOptimise } from "@/lib/optimisation/genetic";
-import { particleSwarmOptimisation } from "@/lib/optimisation/particleSwarm";
 import { WaypointCollection } from "@/lib/waypoints/waypointCollection";
 import { bound, Path } from "@/types/dubins";
 import { Waypoint } from "@/types/waypoints";
 import { Dispatch, SetStateAction } from "react";
 
-export function bakeDubins(waypoints: WaypointCollection, activeMission: string, setWaypoints: Dispatch<SetStateAction<WaypointCollection>>, optimisationFunction: (path: Path) => number) {
+export function bakeDubins(waypoints: WaypointCollection, activeMission: string, optimisationmethod: any, setWaypoints: Dispatch<SetStateAction<WaypointCollection>>, optimisationFunction: (path: Path) => number) {
   let activeWaypoints: Waypoint[] = waypoints.flatten(activeMission)
 
   // get reference waypoint
@@ -47,7 +45,7 @@ export function bakeDubins(waypoints: WaypointCollection, activeMission: string,
 
     let b = create_evaluate(section.wps)
 
-    let optimised_dirs = particleSwarmOptimisation(starting_params, bounds, b, 200) // 2041
+    let optimised_dirs = optimisationmethod(starting_params, bounds, b, 200) // 2041
     //let optimised_dirs = geneticOptimise(starting_params, bounds, b, 200) // 
     applyBounds(optimised_dirs, bounds)
 
