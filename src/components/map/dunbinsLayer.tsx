@@ -14,6 +14,7 @@ export default function DubinsLayer() {
   const { waypoints, activeMission } = useWaypointContext()
   if (noshow.includes(activeMission)) return null
 
+  // get reference waypoint
   let main = waypoints.get("Main")
   if (!main || main.length == 0) return
   let reference = main[0]
@@ -37,7 +38,7 @@ export default function DubinsLayer() {
         switch (c.type) {
           case "Curve":
             let rWaypoint: Waypoint = { frame: 0, type: 189, param1: 0, param2: 0, param3: 0, param4: 0, param6: c.center.x, param5: c.center.y, param7: 0, autocontinue: 0 }
-            markers.push(<DraggableMarker key={"" + i + a} waypoint={rWaypoint} active={false} />)
+            //markers.push(<DraggableMarker key={"" + i + a} waypoint={rWaypoint} active={false} />)
             lines.push(<Arc key={key++} curve={c} pathOptions={curveOptions} />)
             break;
           case "Straight":
