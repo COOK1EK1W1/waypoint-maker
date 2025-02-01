@@ -1,7 +1,8 @@
 "use client"
 import Button from "@/components/toolBar/button";
+import { downloadTextAsFile } from "@/lib/missionIO/common";
 import { useWaypointContext } from "@/util/context/WaypointContext";
-import { downloadTextAsFile, waypointTo_waypoints_file } from "@/util/waypointToFile";
+import { waypointTo_waypoints_file } from "@/util/waypointToFile";
 import { FaFileDownload } from "react-icons/fa";
 
 export default function DownloadButtons() {
