@@ -1,7 +1,7 @@
 import { Waypoint } from "@/types/waypoints";
 import { deg2rad, modf, offset, rad2deg } from "./geometry";
 import { Dir, DubinsBetweenDiffRad } from "./dubins";
-import { bound, Path } from "@/types/dubins";
+import { bound, LatLng, Path } from "@/types/dubins";
 import { g2l, l2g } from "../world/conversion";
 
 /*
@@ -50,18 +50,18 @@ function num2dir(num: number) {
   return undefined
 }
 
-export function localisePath(path: Path, reference: Waypoint): Path {
+export function localisePath(path: Path, reference: LatLng): Path {
   for (let segment of path) {
     switch (segment.type) {
       case "Curve": {
-        let center = l2g({ lat: reference.param5, lng: reference.param6 }, { x: segment.center.x, y: segment.center.y })
+        let center = l2g(reference, { x: segment.center.x, y: segment.center.y })
         segment.center = { x: center.lng, y: center.lat }
         break;
       }
       case "Straight": {
-        let start = l2g({ lat: reference.param5, lng: reference.param6 }, { x: segment.start.x, y: segment.start.y })
+        let start = l2g(reference, { x: segment.start.x, y: segment.start.y })
         segment.start = { x: start.lng, y: start.lat }
-        let end = l2g({ lat: reference.param5, lng: reference.param6 }, { x: segment.end.x, y: segment.end.y })
+        let end = l2g(reference, { x: segment.end.x, y: segment.end.y })
         segment.end = { x: end.lng, y: end.lat }
         break
       }
@@ -70,9 +70,9 @@ export function localisePath(path: Path, reference: Waypoint): Path {
   return path
 }
 
-export function dubinsBetweenWaypoint(a: Waypoint, b: Waypoint, reference: Waypoint): Path {
-  const start = g2l({ lat: reference.param5, lng: reference.param6 }, { lat: a.param5, lng: a.param6 })
-  const end = g2l({ lat: reference.param5, lng: reference.param6 }, { lat: b.param5, lng: b.param6 })
+export function dubinsBetweenWaypoint(a: Waypoint, b: Waypoint, reference: LatLng): Path {
+  const start = g2l(reference, { lat: a.param5, lng: a.param6 })
+  const end = g2l(reference, { lat: b.param5, lng: b.param6 })
   if (a.type == 69) {
     let angleA = deg2rad(a.param2)
     if (b.type == 69) {

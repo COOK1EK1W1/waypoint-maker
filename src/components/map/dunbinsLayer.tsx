@@ -15,10 +15,7 @@ export default function DubinsLayer() {
   if (noshow.includes(activeMission)) return null
 
   // get reference waypoint
-  let main = waypoints.get("Main")
-  if (!main || main.length == 0) return
-  let reference = main[0]
-  if (reference.type != "Waypoint") return
+  const reference = waypoints.getReferencePoint()
 
   const activeWPs = waypoints.flatten(activeMission)
 
@@ -29,11 +26,13 @@ export default function DubinsLayer() {
   let lines: ReactNode[] = []
 
   let dubinsSections = splitDubinsRuns(activeWPs)
+  console.log(activeWPs)
+  console.log(dubinsSections)
 
   let key = 0
   for (let section of dubinsSections) {
     for (let i = 0; i < section.wps.length - 1; i++) {
-      let curves = dubinsBetweenWaypoint(section.wps[i], section.wps[i + 1], reference.wps)
+      let curves = dubinsBetweenWaypoint(section.wps[i], section.wps[i + 1], reference)
       curves.map((c, a) => {
         switch (c.type) {
           case "Curve":

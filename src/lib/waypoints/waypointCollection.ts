@@ -1,4 +1,6 @@
+import { LatLng } from "@/types/dubins";
 import { Node, Waypoint } from "@/types/waypoints";
+import { hasLocation } from "@/util/WPCollection";
 
 export class WaypointCollection {
 
@@ -19,6 +21,16 @@ export class WaypointCollection {
     this.collection.set("Main", [])
     this.collection.set("Geofence", [])
     this.collection.set("Markers", [])
+  }
+
+  getReferencePoint(): LatLng {
+    const wps = this.flatten("Main")
+    for (let wp of wps) {
+      if (hasLocation(wp)) {
+        return { lat: wp.param5, lng: wp.param6 }
+      }
+    }
+    return { lat: 0, lng: 0 }
   }
 
   get(mission: string) {

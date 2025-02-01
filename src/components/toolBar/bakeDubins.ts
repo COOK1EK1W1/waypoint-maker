@@ -8,11 +8,7 @@ export function bakeDubins(waypoints: WaypointCollection, activeMission: string,
   let activeWaypoints: Waypoint[] = waypoints.flatten(activeMission)
 
   // get reference waypoint
-  let main = waypoints.get("Main")
-  if (!main || main.length == 0) return
-  let reference = main[0]
-  if (reference.type != "Waypoint") return
-  const referenceWP = reference.wps
+  const reference = waypoints.getReferencePoint()
 
   let dubinSections = splitDubinsRuns(activeWaypoints)
 
@@ -26,7 +22,7 @@ export function bakeDubins(waypoints: WaypointCollection, activeMission: string,
       setTunableParameter(localWPS, x)
       let totalLength = 0
       for (let i = 0; i < wps.length - 1; i++) {
-        let curves = dubinsBetweenWaypoint(localWPS[i], localWPS[i + 1], referenceWP)
+        let curves = dubinsBetweenWaypoint(localWPS[i], localWPS[i + 1], reference)
         totalLength += optimisationFunction(curves)
       }
       return totalLength
