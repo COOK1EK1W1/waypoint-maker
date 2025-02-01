@@ -1,6 +1,7 @@
 import { Waypoint } from "@/types/waypoints";
 import { dubinsBetweenWaypoint, splitDubinsRuns } from "@/lib/dubins/dubinWaypoints";
-export function convertToMAV(wps: Waypoint[]): Waypoint[] {
+import { LatLng } from "@/types/dubins";
+export function convertToMAV(wps: Waypoint[], reference: LatLng): Waypoint[] {
 
   // render the dubins runs to waypoints
   const runs = splitDubinsRuns(wps)
@@ -8,7 +9,7 @@ export function convertToMAV(wps: Waypoint[]): Waypoint[] {
   for (let section of runs) {
     let newMavWP: Waypoint[] = []
     for (let i = 0; i < section.wps.length - 1; i++) {
-      let path = dubinsBetweenWaypoint(section.wps[i], section.wps[i + 1], wps[0])
+      let path = dubinsBetweenWaypoint(section.wps[i], section.wps[i + 1], reference)
       const c1 = path[0]
       if (c1.type == "Curve") {
         const absTheta = Math.abs(c1.theta / (Math.PI * 2))

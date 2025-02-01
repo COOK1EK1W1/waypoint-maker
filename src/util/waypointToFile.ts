@@ -6,7 +6,7 @@ export function waypointTo_waypoints_file(waypoints: WaypointCollection) {
   let returnString = "QGC WPL 110\n"
 
   let wps = waypoints.flatten("Main")
-  wps = convertToMAV(wps)
+  wps = convertToMAV(wps, waypoints.getReferencePoint())
 
   for (let i = 0; i < wps.length; i++) {
     returnString += waypointString(i, wps[i])
