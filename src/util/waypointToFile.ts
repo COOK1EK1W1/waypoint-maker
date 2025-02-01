@@ -1,10 +1,51 @@
 import { Waypoint } from "@/types/waypoints";
 import { WaypointCollection } from "@/lib/waypoints/waypointCollection";
+import { dubinsBetweenWaypoint, splitDubinsRuns } from "@/lib/dubins/dubinWaypoints";
+
+export function convertToMAV(wps: Waypoint[]): Waypoint[] {
+
+  const runs = splitDubinsRuns(wps)
+  let convertedRuns: { start: number, wps: Waypoint[], length: number }[] = []
+  for (let section of runs) {
+    let newMavWP: Waypoint[] = []
+    for (let i = 0; i < section.wps.length - 1; i++) {
+      let path = dubinsBetweenWaypoint(section.wps[i], section.wps[i + 1], wps[0])
+      const c1 = path[0]
+      if (c1.type == "Curve") {
+        newMavWP.push({ frame: 3, type: 18, param1: c1.theta / (Math.PI * 2), param2: 0, param3: c1.radius, param4: 1, param5: c1.center.y, param6: c1.center.x, param7: section.wps[i].param7, autocontinue: 1 })
+      }
+      const s = path[1]
+      if (s.type == "Straight") {
+        newMavWP.push({ frame: 3, type: 16, param1: 0, param2: 0, param3: 0, param4: 1, param5: s.end.y, param6: s.end.x, param7: section.wps[i + 1].param7, autocontinue: 1 })
+      }
+      const c2 = path[2]
+      if (c2.type == "Curve") {
+        newMavWP.push({ frame: 3, type: 18, param1: c2.theta / (Math.PI * 2), param2: 0, param3: c2.radius, param4: 1, param5: c2.center.y, param6: c2.center.x, param7: section.wps[i].param7, autocontinue: 1 })
+      }
+    }
+    convertedRuns.push({ start: section.start, wps: newMavWP, length: section.wps.length })
+  }
+
+  let ret: Waypoint[] = []
+  for (let i = 0; i < wps.length; i++) {
+    let run = convertedRuns.find((x) => x.start == i)
+    if (run == undefined) {
+      ret.push(wps[i])
+    } else {
+      ret = ret.concat(run.wps)
+      i += run.length
+    }
+  }
+
+  return ret
+}
 
 export function waypointTo_waypoints_file(waypoints: WaypointCollection) {
   let returnString = "QGC WPL 110\n"
 
-  const wps = waypoints.flatten("Main")
+  let wps = waypoints.flatten("Main")
+  wps = convertToMAV(wps)
+
   for (let i = 0; i < wps.length; i++) {
     returnString += waypointString(i, wps[i])
   }
