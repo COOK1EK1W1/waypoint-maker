@@ -1,10 +1,13 @@
 import { Waypoint } from "@/types/waypoints";
-import { deg2rad, modf, offset, rad2deg, worldOffset } from "./geometry";
+import { deg2rad, modf, offset, rad2deg } from "./geometry";
 import { Dir, DubinsBetweenDiffRad } from "./dubins";
 import { bound, Path } from "@/types/dubins";
-import { warn } from "console";
 import { g2l, l2g } from "../world/conversion";
 
+/*
+ * find all the sections of a waypoint list which require a dubins path between
+ * include pre + post waypoints to connect
+ */
 export function splitDubinsRuns(wps: Waypoint[]): { start: number, wps: Waypoint[] }[] {
   let dubinSections: { start: number, wps: Waypoint[] }[] = []
 

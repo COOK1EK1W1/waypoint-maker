@@ -11,32 +11,7 @@ import GeofenceLayer from "./geofenceLayer";
 import MarkerLayer from "./markerLayer";
 import DubinsLayer from "./dunbinsLayer";
 import { MoveWPsAvgTo } from "@/util/WPCollection";
-
-const defaultWaypoint = (lat: number, lng: number,) => ({
-  frame: 3,
-  type: 16,
-  param1: 0,
-  param2: 0,
-  param3: 0,
-  param4: 0,
-  param5: lat,
-  param6: lng,
-  param7: 100,
-  autocontinue: 1
-})
-
-const defaultTakeoff = (lat: number, lng: number,) => ({
-  frame: 3,
-  type: 22,
-  param1: 15,
-  param2: 0,
-  param3: 0,
-  param4: 0,
-  param5: lat,
-  param6: lng,
-  param7: 15,
-  autocontinue: 1
-})
+import { defaultTakeoff, defaultWaypoint } from "@/lib/waypoints/defaults";
 
 
 export default function MapStuff() {
