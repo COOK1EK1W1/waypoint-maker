@@ -4,7 +4,7 @@ import { bound, Path } from "@/types/dubins";
 import { Waypoint } from "@/types/waypoints";
 import { Dispatch, SetStateAction } from "react";
 
-export function bakeDubins(waypoints: WaypointCollection, activeMission: string, optimisationmethod: any, setWaypoints: Dispatch<SetStateAction<WaypointCollection>>, optimisationFunction: (path: Path) => number) {
+export function bakeDubins(waypoints: WaypointCollection, activeMission: string, optimisationmethod: (initialGuess: readonly number[], bounds: bound[], fn: (a: number[]) => number) => res, setWaypoints: Dispatch<SetStateAction<WaypointCollection>>, optimisationFunction: (path: Path) => number) {
   let activeWaypoints: Waypoint[] = waypoints.flatten(activeMission)
 
   // get reference waypoint
@@ -41,11 +41,11 @@ export function bakeDubins(waypoints: WaypointCollection, activeMission: string,
 
     let b = create_evaluate(section.wps)
 
-    let optimised_dirs = optimisationmethod(starting_params, bounds, b, 200) // 2041
-    //let optimised_dirs = geneticOptimise(starting_params, bounds, b, 200) // 
-    applyBounds(optimised_dirs, bounds)
+    let result = optimisationmethod(starting_params, bounds, b) // 2041
+    applyBounds(result.finalVals, bounds)
+    console.log("fitness: ", result.fitness, "  took: ", result.time)
 
-    setTunableParameter(section.wps, optimised_dirs)
+    setTunableParameter(section.wps, result.finalVals)
     let wps = section.wps
 
     if (wps[0].type != 69) {

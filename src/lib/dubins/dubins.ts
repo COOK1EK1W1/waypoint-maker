@@ -156,6 +156,7 @@ export function DubinsBetweenDiffRad(a: XY, b: XY, thetaA: number, thetaB: numbe
 
   sections.sort((a, b) => pathLength(a) - pathLength(b))
   if (sections.length == 0) {
+    console.log(thetaA, thetaB)
     console.log(Adir, Bdir)
   }
   console.assert(sections.length > 0);

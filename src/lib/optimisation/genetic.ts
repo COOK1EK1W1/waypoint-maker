@@ -1,7 +1,8 @@
 import { bound } from "@/types/dubins";
 import { applyBounds } from "../dubins/dubinWaypoints";
 
-export function geneticOptimise(initialGuess: readonly number[], bounds: bound[], fn: (a: number[]) => number): number[] {
+export function geneticOptimise(initialGuess: readonly number[], bounds: bound[], fn: (a: number[]) => number): res {
+  const start = performance.now()
   let population: number[][] = []
   let bestValues = [...initialGuess]
 
@@ -21,9 +22,6 @@ export function geneticOptimise(initialGuess: readonly number[], bounds: bound[]
     console.assert(value.length == initialGuess.length, `${value.length}`)
     population.push(value)
   }
-
-  console.log("Starting fitness: ", fn(bestValues))
-
   for (let i = 0; i < 200; i++) {
     let newpop: number[][] = []
     population.sort((x, y) => fn(x) - fn(y))
@@ -57,8 +55,8 @@ export function geneticOptimise(initialGuess: readonly number[], bounds: bound[]
     population = newpop
 
   }
-  console.log("ending fitness: ", fn(bestValues))
-  return bestValues
+  const end = performance.now()
+  return { finalVals: bestValues, fitness: fn(bestValues), time: end - start }
 }
 
 function crossover(a: number[], b: number[]): number[] {

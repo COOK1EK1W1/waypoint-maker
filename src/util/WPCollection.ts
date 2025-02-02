@@ -37,37 +37,6 @@ export function AvgLatLng(nodes: Node[], store: WaypointCollection): [number, nu
   return [latTotal / count, lngTotal / count]
 }
 
-export function changeParam(id: number, mission: string, waypoints: WaypointCollection, mod: (wp: Waypoint) => Waypoint): WaypointCollection {
-  const curMission = waypoints.get(mission)
-  if (curMission == undefined) { return waypoints }
-
-  let newMap = waypoints.clone()
-  let updatedMission = [...curMission]
-  let updatedWaypoint = { ...curMission[id] };
-
-  if (updatedWaypoint.type === "Waypoint") {
-    updatedWaypoint = {
-      ...updatedWaypoint,
-      wps: mod(updatedWaypoint.wps)
-    }
-    updatedMission[id] = updatedWaypoint
-    newMap.set(mission, updatedMission)
-  } else if (updatedWaypoint.type == "Collection") {
-    const col = waypoints.get(updatedWaypoint.collectionID)
-    if (col != null) {
-      let newColMap = waypoints.clone()
-      for (let i = 0; i < col.length; i++) {
-        newColMap = changeParam(i, updatedWaypoint.collectionID, waypoints, mod)
-      }
-      newMap = newColMap
-    }
-  }
-  //curMission[id] = updatedWaypoint
-  //newMap.set(mission, updatedMission)
-  return newMap;
-
-}
-
 export function MoveWPsAvgTo(newLat: number, newLng: number, waypoints: WaypointCollection, selectedWPs: number[], active: string): WaypointCollection {
   const mission = waypoints.get(active);
   if (!mission) return waypoints;
@@ -85,13 +54,13 @@ export function MoveWPsAvgTo(newLat: number, newLng: number, waypoints: Waypoint
   const [lat, lng] = AvgLatLng(wps, waypoints);
   let waypointsUpdated = waypoints.clone();
   for (let i = 0; i < wps.length; i++) {
-    waypointsUpdated = changeParam(wpsIds[i], active, waypointsUpdated, (wp: Waypoint) => {
+    waypointsUpdated.changeParam(wpsIds[i], active, (wp: Waypoint) => {
       wp.param5 += newLat - lat
       wp.param6 += newLng - lng
       return wp;
     });
   }
-  return waypoints.clone();
+  return waypointsUpdated;
 }
 
 

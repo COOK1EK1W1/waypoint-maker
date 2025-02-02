@@ -1,8 +1,7 @@
 import { bound } from "@/types/dubins"
 
-
-export function particleSwarmOptimisation(initialGuess: readonly number[], bounds: bound[], fn: (a: number[]) => number): number[] {
-  console.time("Swarm optimisation")
+export function particleSwarmOptimisation(initialGuess: readonly number[], bounds: bound[], fn: (a: number[]) => number): res {
+  const start = performance.now()
   console.assert(initialGuess.length == bounds.length, "Params are different length to bounds")
 
   const dims = initialGuess.length
@@ -82,7 +81,10 @@ export function particleSwarmOptimisation(initialGuess: readonly number[], bound
   }
   //console.log("ending fitness: ", global_best_value)
   //console.timeEnd("Swarm optimisation")
-  return global_best_position
+  const end = performance.now()
+  return {
+    finalVals: global_best_position, fitness: global_best_value, time: end - start
+  }
 }
 
 
