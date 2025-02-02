@@ -1,12 +1,14 @@
 import { bound } from "@/types/dubins";
 import { applyBounds } from "../dubins/dubinWaypoints";
 
-export function geneticOptimise(initialGuess: number[], bounds: bound[], fn: (a: number[]) => number, popsize: number): number[] {
+export function geneticOptimise(initialGuess: readonly number[], bounds: bound[], fn: (a: number[]) => number): number[] {
   let population: number[][] = []
   let bestValues = [...initialGuess]
 
-  const ELITES = 5
-  const CHILDREN = Math.round((popsize - ELITES) / 2)
+  const popsize = initialGuess.length * 20
+
+  const ELITES = Math.ceil(popsize * 0.1)
+  const CHILDREN = Math.ceil((popsize - ELITES) * 0.4)
   const MUTANTS = popsize - (ELITES + CHILDREN)
   console.assert(ELITES + CHILDREN + MUTANTS == popsize, `${ELITES} ${CHILDREN} ${MUTANTS} ${popsize}`)
   console.assert(ELITES > 0, CHILDREN > 0, MUTANTS > 0)
@@ -20,12 +22,11 @@ export function geneticOptimise(initialGuess: number[], bounds: bound[], fn: (a:
     population.push(value)
   }
 
-  console.log("Starting fitness: ", fn(initialGuess))
+  console.log("Starting fitness: ", fn(bestValues))
 
   for (let i = 0; i < 200; i++) {
     let newpop: number[][] = []
     population.sort((x, y) => fn(x) - fn(y))
-    //console.log(fn(population[0]))
 
     if (fn(population[0]) < fn(bestValues)) {
       bestValues = [...population[0]]
@@ -37,22 +38,19 @@ export function geneticOptimise(initialGuess: number[], bounds: bound[], fn: (a:
     for (let j = 0; j < ELITES; j++) {
       newpop.push(population[j]);
     }
-    //console.assert(newpop.length == ELITES, `${newpop.length}`)
 
     // crossover
     for (let j = 0; j < CHILDREN; j++) {
-      const parent1 = population[Math.floor(Math.random() * popsize)]
-      const parent2 = population[Math.floor(Math.random() * popsize)]
+      const parent1 = tournamentSelection(population, fn)
+      const parent2 = tournamentSelection(population, fn)
       newpop.push(crossover(parent1, parent2));
 
     }
-    //console.assert(newpop.length == ELITES + CHILDREN, `${newpop.length} ${ELITES + CHILDREN}`)
 
     // mutate
     for (let j = 0; j < MUTANTS; j++) {
-      const parent = population[Math.floor(Math.random() * popsize)]
+      const parent = population[Math.floor(Math.random() * (popsize - ELITES)) + ELITES]
       newpop.push(mutate(parent, bounds));
-
     }
 
     //console.assert(newpop.length == popsize)
@@ -81,9 +79,21 @@ function crossover(a: number[], b: number[]): number[] {
 function mutate(a: number[], bounds: bound[]): number[] {
   let newVal = [...a]
   for (let i = 0; i < a.length; i++) {
-    a[i] += (Math.random() - 0.5) * 0.3
+    a[i] += (Math.random() - 0.5) * 2
   }
   applyBounds(newVal, bounds)
   return newVal
+}
+
+function tournamentSelection(population: number[][], fn: (a: number[]) => number, k = 3) {
+  let best = population[Math.floor(Math.random() * population.length)];
+
+  for (let i = 1; i < k; i++) {
+    let challenger = population[Math.floor(Math.random() * population.length)];
+    if (fn(challenger) < fn(best)) {
+      best = challenger;
+    }
+  }
+  return best;
 
 }

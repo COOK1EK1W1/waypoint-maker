@@ -26,8 +26,6 @@ export default function DubinsLayer() {
   let lines: ReactNode[] = []
 
   let dubinsSections = splitDubinsRuns(activeWPs)
-  console.log(activeWPs)
-  console.log(dubinsSections)
 
   let key = 0
   for (let section of dubinsSections) {
