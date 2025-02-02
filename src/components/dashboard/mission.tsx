@@ -11,7 +11,6 @@ import { useWaypointContext } from "@/util/context/WaypointContext";
 export default function MissionTile({ mission, userId }: { mission: { title: string, modifiedAt: Date, id: string }, userId: string }) {
   const { missionId } = useWaypointContext()
   const session = useSession()
-  console.log(session)
   const router = useRouter()
   function handleDelete() {
     deleteMission(mission.id, userId).then(() => router.refresh())

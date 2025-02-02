@@ -1,6 +1,7 @@
 import Button from "./button"
 import MissionIOModal from "@/components/modal/IO/missionIOModal"
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { DialogDescription } from "@radix-ui/react-dialog"
 
 export default function MissionIO() {
 
@@ -13,6 +14,7 @@ export default function MissionIO() {
       </DialogTrigger>
       <DialogContent>
         <DialogTitle>Import / Export Mission</DialogTitle>
+        <DialogDescription>Import or export a mission</DialogDescription>
         <MissionIOModal />
       </DialogContent>
     </Dialog>

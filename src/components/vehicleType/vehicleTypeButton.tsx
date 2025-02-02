@@ -4,6 +4,7 @@ import { FaHelicopter, FaPlane } from "react-icons/fa"
 import { useVehicleTypeContext } from "@/util/context/VehicleTypeContext"
 import Button from "../toolBar/button"
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "../ui/dialog"
+import { DialogDescription } from "@radix-ui/react-dialog"
 
 export default function VehicleTypeButton() {
   let { vehicle } = useVehicleTypeContext()
@@ -32,6 +33,7 @@ export default function VehicleTypeButton() {
       </DialogTrigger>
       <DialogContent>
         <DialogTitle>Vehicle Type</DialogTitle>
+        <DialogDescription>Select the vehicle type</DialogDescription>
         <VehicleTypeModal />
       </DialogContent>
     </Dialog>
