@@ -6,7 +6,8 @@ export async function newProj(userId: string, title: string) {
     data: {
       title: title,
       data: `[["Main",[]],["Geofence",[]],["Markers",[]]]`,
-      userId: userId
+      userId: userId,
+      public: false,
     }
   })
   return res

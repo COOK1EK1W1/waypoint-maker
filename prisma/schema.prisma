@@ -75,4 +75,5 @@ model Mission {
   modifiedAt DateTime @default(now())
   userId     String
   user       User     @relation(fields: [userId], references: [id])
+  public     Boolean
 }

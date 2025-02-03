@@ -11,8 +11,11 @@ export default async function Mission({ params }: { params: Promise<{ missionid:
   const missionId = (await params).missionid
 
   let data = await auth.api.getSession({ headers: await headers() })
-  const a = await prisma.mission.findUnique({ where: { id: missionId, userId: data?.user.id } })
+  const a = await prisma.mission.findUnique({ where: { id: missionId } })
   if (a == null) {
+    return redirect("/")
+  }
+  if (a.public === false && a.userId !== data?.user.id) {
     return redirect("/")
   }
 
