@@ -7,9 +7,10 @@ import SignOut from "./signOut";
 import LoginModal from "../modal/login";
 import { DialogDescription } from "@radix-ui/react-dialog";
 import { auth } from "@/util/auth";
+import { headers } from "next/headers";
 
 export default async function User() {
-  const data = await auth()
+  let data = await auth.api.getSession({ headers: await headers() })
 
   return (< Dialog >
     <DialogTrigger asChild>
@@ -24,7 +25,7 @@ export default async function User() {
           </DialogDescription>
           <Suspense fallback={<p>loading</p>}>
             <SignOut />
-            <DashboardModal userData={data} />
+            <DashboardModal />
           </Suspense>
         </>
       ) : (

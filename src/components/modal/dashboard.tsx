@@ -1,12 +1,14 @@
 import prisma from "@/util/prisma";
-import { Session } from "next-auth";
 import MissionTile from "../dashboard/mission";
 import CreateMission from "../dashboard/createMission";
+import { auth } from "@/util/auth";
+import { headers } from "next/headers";
 
-export default async function DashboardModal({ userData }: { userData: Session }) {
+export default async function DashboardModal() {
+  let userData = await auth.api.getSession({ headers: await headers() })
+
   //get mission from db
-
-  if (!userData.user || !userData.user.email) {
+  if (!userData?.user || !userData.user.email) {
     return <p>loading</p>
   }
   const user = await prisma.user.findFirst({

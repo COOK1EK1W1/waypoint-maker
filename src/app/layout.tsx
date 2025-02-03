@@ -27,9 +27,7 @@ export default function RootLayout({
       <link rel="preload" href="/insert.png" as="image" />
       <body className={cn(inter.className, "fixed overflow-hidden h-[100dvh] w-full")}>
         <Analytics />
-        <AuthProvider>
-          {children}
-        </AuthProvider>
+        {children}
       </body>
     </html>
   )
