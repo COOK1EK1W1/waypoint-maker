@@ -1,4 +1,4 @@
-export const commands: Command[] = [{
+export const mavCmds: Command[] = [{
   value: 16,
   name: "MAV_CMD_NAV_WAYPOINT",
   description: "Navigate to waypoint.",
@@ -7298,7 +7298,11 @@ export const commands: Command[] = [{
     default: null,
     options: [],
   }, null, null, null, null, null, null],
-}, {
+}]
+
+
+
+const WpmCmds: Command[] = [{
   value: 69,
   name: "WM_CMD_NAV_DUBINS",
   description: "Navigate around waypoint via dubins path",
@@ -7377,6 +7381,15 @@ export const commands: Command[] = [{
   }],
 }]
 
+
+let commandspre = []
+if (process.env.NEXT_PUBLIC_ALLOWDUBINS) {
+  commandspre = mavCmds.concat(WpmCmds)
+} else {
+  commandspre = mavCmds
+}
+export const commands = commandspre
+
 export const planeSupported = [
   "MAV_CMD_NAV_WAYPOINT",
   "MAV_CMD_NAV_RETURN_TO_LAUNCH",
@@ -7418,7 +7431,7 @@ export const planeSupported = [
   "MAV_CMD_DO_AUTOTUNE_ENABLE",
   "MAV_CMD_DO_SET_RESUME_REPEAT_DIST",
   "MAV_CMD_STORAGE_FORMAT",
-  "WM_CMD_NAV_DUBINS"
+  "WM_CMD_NAV_DUBINS",
 ]
 
 export const copterSupported = [

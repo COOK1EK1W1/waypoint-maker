@@ -16,7 +16,7 @@ export default function ToolBar() {
         <WPCheck />
         <VehicleTypeButton />
         <OptimiseButton />
-        <User />
+        {process.env.ALLOWLOGIN ? <User /> : null}
       </div>
     </div>
   </div>
