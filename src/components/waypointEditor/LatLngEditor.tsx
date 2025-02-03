@@ -40,7 +40,7 @@ export function LatLngEditor() {
   function move() {
     const newLat = prompt("Enter latitude");
     const newLng = prompt("Enter Longitude");
-    setWaypoints(MoveWPsAvgTo(Number(newLat), Number(newLng), waypoints, selectedWPs, activeMission))
+    setWaypoints(MoveWPsAvgTo({ lat: Number(newLat), lng: Number(newLng) }, waypoints, selectedWPs, activeMission))
   }
 
   function rotateDeg(deg: number) {

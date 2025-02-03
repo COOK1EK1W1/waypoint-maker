@@ -22,7 +22,7 @@ export default function MapStuff() {
   useEffect(() => {
     moveMap.move = (lat, lng) => {
       if (mapRef.current != null) {
-        mapRef.current.setView({ lat: lat, lng: lng })
+        mapRef.current.setView({ lat, lng })
       }
     }
 
@@ -36,7 +36,7 @@ export default function MapStuff() {
 
 
           setWaypoints((waypoints) => {
-            waypoints.pushToMission(activeMission, { type: "Waypoint", wps: defaultWaypoint(Number(newLat), Number(newLng)) })
+            waypoints.pushToMission(activeMission, { type: "Waypoint", wps: defaultWaypoint({ lat: Number(newLat), lng: Number(newLng) }) })
             return waypoints.clone()
           })
           break;
@@ -55,12 +55,11 @@ export default function MapStuff() {
   }, [activeMission, setWaypoints, waypoints, moveMap])
 
   function handleClick(tool: Tool, e: LeafletMouseEvent) {
-    const { lat, lng } = e.latlng
     switch (tool) {
       case "Waypoint": {
         setWaypoints((waypoints) => {
           let waypointsNew = waypoints.clone()
-          waypointsNew.pushToMission(activeMission, { type: "Waypoint", wps: defaultWaypoint(lat, lng) })
+          waypointsNew.pushToMission(activeMission, { type: "Waypoint", wps: defaultWaypoint(e.latlng) })
           return waypointsNew
         })
         break;
@@ -68,7 +67,7 @@ export default function MapStuff() {
       case "Takeoff": {
         setTool("Waypoint")
         setWaypoints((waypoints) => {
-          waypoints.pushToMission(activeMission, { type: "Waypoint", wps: defaultTakeoff(lat, lng) })
+          waypoints.pushToMission(activeMission, { type: "Waypoint", wps: defaultTakeoff(e.latlng) })
           return waypoints.clone()
         })
         break;
@@ -76,7 +75,7 @@ export default function MapStuff() {
       case "Place": {
         setTool("Waypoint")
         setWaypoints((waypoints) => {
-          MoveWPsAvgTo(e.latlng.lat, e.latlng.lng, waypoints, selectedWPs, activeMission)
+          MoveWPsAvgTo(e.latlng, waypoints, selectedWPs, activeMission)
           return waypoints
         })
         break;

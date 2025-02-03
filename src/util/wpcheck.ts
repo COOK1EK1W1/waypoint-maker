@@ -1,6 +1,6 @@
 import { Fault, Severity, Waypoint } from "@/types/waypoints";
 import { angleBetweenPoints, gradient, haversineDistance } from "./distance";
-import { hasLocation, isPointInPolygon } from "./WPCollection";
+import { getLatLng, hasLocation, isPointInPolygon } from "./WPCollection";
 import { WaypointCollection } from "@/lib/waypoints/waypointCollection";
 
 
@@ -215,7 +215,10 @@ export function wpCheck(wps: Waypoint[], waypoints: WaypointCollection): Fault[]
   let angles: number[] = []
 
   for (let i = 0; i < wps.length - 2; i++) {
-    angles.push(angleBetweenPoints(wps[i].param5, wps[i].param6, wps[i + 1].param5, wps[i + 1].param6, wps[i + 2].param5, wps[i + 2].param6))
+    angles.push(angleBetweenPoints(
+      getLatLng(wps[i]),
+      getLatLng(wps[i + 1]),
+      getLatLng(wps[i + 2])))
   }
   angles.map((angle, idx) => {
     const offender = waypoints.findNthPosition("Main", idx + 1)

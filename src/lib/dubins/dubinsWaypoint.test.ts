@@ -12,18 +12,18 @@ test("Split Dubins runs empty", () => {
 
 test("Split Dubins runs no runs", () => {
   const a: Waypoint[] = []
-  a.push(defaultWaypoint(0, 0))
-  a.push(defaultWaypoint(0, 0))
-  a.push(defaultWaypoint(0, 0))
+  a.push(defaultWaypoint({ lat: 0, lng: 0 }))
+  a.push(defaultWaypoint({ lat: 0, lng: 0 }))
+  a.push(defaultWaypoint({ lat: 0, lng: 0 }))
   let runs = splitDubinsRuns(a)
   expect(runs.length).toBe(0)
 })
 
 test("Split Dubins runs sandwich 1", () => {
   const a: Waypoint[] = []
-  a.push(defaultWaypoint(0, 0))
-  a.push(defaultWaypoint(0, 0))
-  a.push(defaultWaypoint(0, 0))
+  a.push(defaultWaypoint({ lat: 0, lng: 0 }))
+  a.push(defaultWaypoint({ lat: 0, lng: 0 }))
+  a.push(defaultWaypoint({ lat: 0, lng: 0 }))
   a[1].type = 69
   a[1].frame = 33
   let runs = splitDubinsRuns(a)
@@ -37,9 +37,9 @@ test("Split Dubins runs sandwich 1", () => {
 
 test("Split Dubins runs end dubins", () => {
   const a: Waypoint[] = []
-  a.push(defaultWaypoint(0, 0))
-  a.push(defaultWaypoint(0, 0))
-  a.push(defaultWaypoint(0, 0))
+  a.push(defaultWaypoint({ lat: 0, lng: 0 }))
+  a.push(defaultWaypoint({ lat: 0, lng: 0 }))
+  a.push(defaultWaypoint({ lat: 0, lng: 0 }))
   a[2].type = 69
   a[2].frame = 33
   let runs = splitDubinsRuns(a)
@@ -52,9 +52,9 @@ test("Split Dubins runs end dubins", () => {
 
 test("Split Dubins runs start + end", () => {
   const a: Waypoint[] = []
-  a.push(defaultWaypoint(0, 0))
-  a.push(defaultWaypoint(0, 0))
-  a.push(defaultWaypoint(0, 0))
+  a.push(defaultWaypoint({ lat: 0, lng: 0 }))
+  a.push(defaultWaypoint({ lat: 0, lng: 0 }))
+  a.push(defaultWaypoint({ lat: 0, lng: 0 }))
   a[0].type = 69
   a[0].frame = 31
   a[2].type = 69
@@ -76,9 +76,9 @@ test("Split Dubins runs start + end", () => {
 
 test("Split Dubins runs all dubins", () => {
   const a: Waypoint[] = []
-  a.push(defaultWaypoint(0, 0))
-  a.push(defaultWaypoint(0, 0))
-  a.push(defaultWaypoint(0, 0))
+  a.push(defaultWaypoint({ lat: 0, lng: 0 }))
+  a.push(defaultWaypoint({ lat: 0, lng: 0 }))
+  a.push(defaultWaypoint({ lat: 0, lng: 0 }))
   a[0].type = 69
   a[1].type = 69
   a[2].type = 69

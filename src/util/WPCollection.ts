@@ -1,6 +1,7 @@
 import { Waypoint, Node } from "@/types/waypoints";
 import { commands } from "./commands";
 import { WaypointCollection } from "@/lib/waypoints/waypointCollection";
+import { LatLng } from "@/types/dubins";
 
 
 export function AvgLatLng(nodes: Node[], store: WaypointCollection): [number, number] {
@@ -37,7 +38,7 @@ export function AvgLatLng(nodes: Node[], store: WaypointCollection): [number, nu
   return [latTotal / count, lngTotal / count]
 }
 
-export function MoveWPsAvgTo(newLat: number, newLng: number, waypoints: WaypointCollection, selectedWPs: number[], active: string): WaypointCollection {
+export function MoveWPsAvgTo(pos: LatLng, waypoints: WaypointCollection, selectedWPs: number[], active: string): WaypointCollection {
   const mission = waypoints.get(active);
   if (!mission) return waypoints;
 
@@ -55,8 +56,8 @@ export function MoveWPsAvgTo(newLat: number, newLng: number, waypoints: Waypoint
   let waypointsUpdated = waypoints.clone();
   for (let i = 0; i < wps.length; i++) {
     waypointsUpdated.changeParam(wpsIds[i], active, (wp: Waypoint) => {
-      wp.param5 += newLat - lat
-      wp.param6 += newLng - lng
+      wp.param5 += pos.lat - lat
+      wp.param6 += pos.lng - lng
       return wp;
     });
   }
@@ -94,7 +95,7 @@ export function isPointInPolygon(polygon: Waypoint[], point: Waypoint) {
   return inside;
 }
 
-export function avgLatLng(wps: Waypoint[]): { lat: number, lng: number } {
+export function avgLatLng(wps: Waypoint[]): LatLng {
 
   let latTotal = 0
   let lngTotal = 0
@@ -118,4 +119,8 @@ export function hasLocation(waypoint: Waypoint): boolean {
     commanddesc.parameters[4].label == "Latitude" &&
     commanddesc.parameters[5].label == "Longitude"
   return hasLocationParams || false
+}
+
+export function getLatLng(wp: Waypoint): LatLng {
+  return { lat: wp.param5, lng: wp.param6 }
 }

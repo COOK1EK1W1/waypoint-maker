@@ -1,3 +1,5 @@
+import { LatLng } from "@/types/dubins";
+
 function toRadians(degrees: number) {
   return degrees * Math.PI / 180;
 }
@@ -35,9 +37,9 @@ export function formatDistance(distanceInMeters: number) {
 }
 
 
-function latLngToVector(lat: number, lng: number): [number, number, number] {
-  const latRad = toRadians(lat);
-  const lngRad = toRadians(lng);
+function latLngToVector(pos: LatLng): [number, number, number] {
+  const latRad = toRadians(pos.lat);
+  const lngRad = toRadians(pos.lng);
 
   const x = Math.cos(latRad) * Math.cos(lngRad);
   const y = Math.cos(latRad) * Math.sin(lngRad);
@@ -62,10 +64,10 @@ function angleBetweenVectors(v1: [number, number, number], v2: [number, number, 
   return Math.acos(dot / (mag1 * mag2));
 }
 
-export function angleBetweenPoints(lat1: number, lng1: number, lat2: number, lng2: number, lat3: number, lng3: number): number {
-  const v1 = latLngToVector(lat1, lng1);
-  const v2 = latLngToVector(lat2, lng2);
-  const v3 = latLngToVector(lat3, lng3);
+export function angleBetweenPoints(pos1: LatLng, pos2: LatLng, pos3: LatLng): number {
+  const v1 = latLngToVector(pos1);
+  const v2 = latLngToVector(pos2);
+  const v3 = latLngToVector(pos3);
 
   const vectorA: [number, number, number] = [v1[0] - v2[0], v1[1] - v2[1], v1[2] - v2[2]];
   const vectorB: [number, number, number] = [v3[0] - v2[0], v3[1] - v2[1], v3[2] - v2[2]];
