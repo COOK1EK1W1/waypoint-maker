@@ -1,7 +1,9 @@
 import { bound } from "@/types/dubins";
 import { applyBounds } from "../dubins/dubinWaypoints";
+import { optimisationAlgorithm } from "./types";
 
-export function geneticOptimise(initialGuess: readonly number[], bounds: bound[], fn: (a: number[]) => number): res {
+export const geneticOptimise: optimisationAlgorithm = (initialGuess, bounds, fn) => {
+  // an implementation of the genetic algorithm
   const start = performance.now()
   let population: number[][] = []
   let bestValues = [...initialGuess]

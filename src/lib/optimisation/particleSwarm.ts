@@ -1,6 +1,6 @@
-import { bound } from "@/types/dubins"
+import { optimisationAlgorithm } from "./types"
 
-export function particleSwarmOptimisation(initialGuess: readonly number[], bounds: bound[], fn: (a: number[]) => number): res {
+export const particleOptimise: optimisationAlgorithm = (initialGuess, bounds, fn) => {
   const start = performance.now()
   console.assert(initialGuess.length == bounds.length, "Params are different length to bounds")
 
