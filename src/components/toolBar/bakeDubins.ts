@@ -1,4 +1,5 @@
 import { applyBounds, dubinsBetweenWaypoint, getBounds, getTunableParameters, setTunableParameter, splitDubinsRuns } from "@/lib/dubins/dubinWaypoints";
+import { res } from "@/lib/optimisation/types";
 import { WaypointCollection } from "@/lib/waypoints/waypointCollection";
 import { bound, Path } from "@/types/dubins";
 import { Waypoint } from "@/types/waypoints";
@@ -7,10 +8,14 @@ import { Dispatch, SetStateAction } from "react";
 export function bakeDubins(waypoints: WaypointCollection, activeMission: string, optimisationmethod: (initialGuess: readonly number[], bounds: bound[], fn: (a: number[]) => number) => res, setWaypoints: Dispatch<SetStateAction<WaypointCollection>>, optimisationFunction: (path: Path) => number) {
   let activeWaypoints: Waypoint[] = waypoints.flatten(activeMission)
 
+  const startTime = performance.now()
+
   // get reference waypoint
   const reference = waypoints.getReferencePoint()
 
   let dubinSections = splitDubinsRuns(activeWaypoints)
+  let endingFitness = 0
+  let startingFitness = 0
 
   // This function is a closure that takes in the waypoints and returns a function that takes in the tunable parameters and returns the total length of the path
   function create_evaluate(wps: Waypoint[]) {
@@ -40,9 +45,11 @@ export function bakeDubins(waypoints: WaypointCollection, activeMission: string,
     applyBounds(starting_params, bounds)
 
     let b = create_evaluate(section.wps)
+    startingFitness += b(starting_params)
 
     let result = optimisationmethod(starting_params, bounds, b) // 2041
     applyBounds(result.finalVals, bounds)
+    endingFitness += b(result.finalVals)
     console.log("fitness: ", result.fitness, "  took: ", result.time)
 
     setTunableParameter(section.wps, result.finalVals)
@@ -66,4 +73,6 @@ export function bakeDubins(waypoints: WaypointCollection, activeMission: string,
     }
   }
   setWaypoints(curWaypoints)
+  const endTime = performance.now()
+  return { s: startingFitness, e: endingFitness, t: endTime - startTime }
 }
