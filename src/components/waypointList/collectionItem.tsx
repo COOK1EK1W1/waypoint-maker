@@ -22,7 +22,7 @@ export default function CollectionItem({ node, selected, onMouseDown, onDelete }
       (<button onMouseDown={remove} key={1} name="delete"><FaTrashAlt /></button>)
     ]}>
       <div className="flex justify-between">
-        <span><TbTopologyRing className="inline m-1" />Group &apos;{node.name}&apos;</span>
+        <span><TbTopologyRing className="inline m-1" />{node.name}</span>
       </div>
       <div className={`overflow-hidden duration-200 ${expand ? `h-20` : `h-0`}`}>
         {wps.map((wp, id) => (
