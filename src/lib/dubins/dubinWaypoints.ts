@@ -1,9 +1,13 @@
 import { Waypoint } from "@/types/waypoints";
-import { deg2rad, modf, rad2deg, worldOffset } from "./geometry";
-import { DubinsBetweenDiffRad } from "./dubins";
-import { bound, Path } from "@/types/dubins";
-import { warn } from "console";
+import { deg2rad, modf, offset, rad2deg } from "./geometry";
+import { Dir, DubinsBetweenDiffRad } from "./dubins";
+import { bound, LatLng, Path } from "@/types/dubins";
+import { g2l, l2g } from "../world/conversion";
 
+/*
+ * find all the sections of a waypoint list which require a dubins path between
+ * include pre + post waypoints to connect
+ */
 export function splitDubinsRuns(wps: Waypoint[]): { start: number, wps: Waypoint[] }[] {
   let dubinSections: { start: number, wps: Waypoint[] }[] = []
 
@@ -36,25 +40,60 @@ export function splitDubinsRuns(wps: Waypoint[]): { start: number, wps: Waypoint
 
 }
 
-export function dubinsBetweenWaypoint(a: Waypoint, b: Waypoint): Path {
+function num2dir(num: number) {
+  if (num >= 1) {
+    return Dir.Right
+  }
+  if (num <= -1) {
+    return Dir.Left
+  }
+  return undefined
+}
+
+export function localisePath(path: Path, reference: LatLng): Path {
+  for (let segment of path) {
+    switch (segment.type) {
+      case "Curve": {
+        let center = l2g(reference, { x: segment.center.x, y: segment.center.y })
+        segment.center = { x: center.lng, y: center.lat }
+        break;
+      }
+      case "Straight": {
+        let start = l2g(reference, { x: segment.start.x, y: segment.start.y })
+        segment.start = { x: start.lng, y: start.lat }
+        let end = l2g(reference, { x: segment.end.x, y: segment.end.y })
+        segment.end = { x: end.lng, y: end.lat }
+        break
+      }
+    }
+  }
+  return path
+}
+
+export function dubinsBetweenWaypoint(a: Waypoint, b: Waypoint, reference: LatLng): Path {
+  const start = g2l(reference, { lat: a.param5, lng: a.param6 })
+  const end = g2l(reference, { lat: b.param5, lng: b.param6 })
   if (a.type == 69) {
     let angleA = deg2rad(a.param2)
     if (b.type == 69) {
       let angleB = deg2rad(b.param2)
-      let offset_a = worldOffset({ x: a.param6, y: a.param5 }, a.param1, angleA - Math.PI / 2)
-      let offset_b = worldOffset({ x: b.param6, y: b.param5 }, b.param1, angleB - Math.PI / 2)
-      return DubinsBetweenDiffRad(offset_a, offset_b, angleA, angleB, a.param3, b.param3)
+      let offset_a = offset(start, a.param1, angleA - Math.PI / 2)
+      let offset_b = offset(end, b.param1, angleB - Math.PI / 2)
+      let res = DubinsBetweenDiffRad(offset_a, offset_b, angleA, angleB, a.param3, b.param3, num2dir(a.param4), num2dir(b.param4))
+      return localisePath(res, reference)
     } else {
-      let offset_a = worldOffset({ x: a.param6, y: a.param5 }, a.param1, angleA - Math.PI / 2)
-      let offset_b = { x: b.param6, y: b.param5 }
-      return DubinsBetweenDiffRad(offset_a, offset_b, angleA, 0, a.param3, 0)
+      let offset_a = offset(start, a.param1, angleA - Math.PI / 2)
+      let offset_b = end
+      let res = DubinsBetweenDiffRad(offset_a, offset_b, angleA, 0, a.param3, 0, num2dir(a.param4), undefined)
+      return localisePath(res, reference)
     }
   } else {
     if (b.type == 69) {
       let angleB = deg2rad(b.param2)
-      let offset_a = { x: a.param6, y: a.param5 }
-      let offset_b = worldOffset({ x: b.param6, y: b.param5 }, b.param1, angleB - Math.PI / 2)
-      return DubinsBetweenDiffRad(offset_a, offset_b, 0, angleB, 0, b.param3)
+      let offset_a = start
+      let offset_b = offset(end, b.param1, angleB - Math.PI / 2)
+      let res = DubinsBetweenDiffRad(offset_a, offset_b, 0, angleB, 0, b.param3, undefined, num2dir(b.param4))
+      return localisePath(res, reference)
 
     } else {
       return []
@@ -85,48 +124,37 @@ export function getBounds(wps: Waypoint[]): bound[] {
   return bounds
 }
 
-export function applyBounds(params: number[], bounds: bound[]): number[] {
-  let newParams = [...params]
+export function applyBounds(params: number[], bounds: bound[]): void {
   for (let i = 0; i < bounds.length; i++) {
     let bound = bounds[i]
     if (bound.min && bound.max && bound.circular) {
       let range = bound.max - bound.min
-      let diff = newParams[i] - bound.min
-      newParams[i] = bound.min + modf(diff, range)
+      let diff = params[i] - bound.min
+      params[i] = bound.min + modf(diff, range)
     }
     if (bound.min) {
-      if (newParams[i] < bound.min) {
-        newParams[i] = bound.min
+      if (params[i] < bound.min) {
+        params[i] = bound.min
       }
     }
     if (bound.max) {
-      if (newParams[i] > bound.max) {
-        newParams[i] = bound.max
+      if (params[i] > bound.max) {
+        params[i] = bound.max
       }
     }
   }
-  return newParams
 }
 
-export function setTunableParameter(wps: Waypoint[], params: number[]): Waypoint[] {
-  let localparams = [...params]
-  let newWaypoints = []
+export function setTunableParameter(wps: Waypoint[], params: number[]): void {
+  let paramI = 0
   for (let i = 0; i < wps.length; i++) {
-    let cur = { ...wps[i] }
+    let cur = wps[i]
     if (cur.type == 69) {
       // radians
-      let next = localparams.shift()
-      if (next) {
-        cur.param2 = rad2deg(next)
-      }
-      next = localparams.shift()
-      if (next) {
-        cur.param3 = next
-      }
+      cur.param2 = rad2deg(params[paramI++])
+      cur.param3 = params[paramI++]
     }
-    newWaypoints.push(cur)
 
   }
-  return newWaypoints
 
 }

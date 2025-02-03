@@ -1,36 +1,74 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Waypoint Maker
+
+Waypoint Maker is an open-source Next.js project designed to simplify the creation of waypoint missions for autonomous UAVs. With powerful features like waypoint grouping, validation, and a Photoshop-inspired layering system, Waypoint Maker is a tool built for developers and UAV enthusiasts alike.
+
+## Features
+
+- **Grouping and Nesting**: Organize waypoints into subgroups, allowing for reusable and nested mission components.
+- **Waypoint Validation**: Ensure missions are valid and flyable with an integrated waypoint check feature.
+- **Layering System**: Similar to Photoshop, toggle visibility for layers of waypoints to manage complex missions effectively.
 
 ## Getting Started
 
-First, run the development server:
+Follow these steps to set up and run Waypoint Maker locally.
 
+### Prerequisites
+
+- [Bun](https://bun.sh) (A fast JavaScript runtime)
+- Node.js (LTS version recommended)
+
+### Installation
+
+1. **Clone the Repository**:
+   ```bash
+   git clone https://github.com/yourusername/waypoint-maker.git
+   cd waypoint-maker
+   ```
+
+2. **Install Dependencies**:
+   ```bash
+   bun install
+   ```
+
+3. **Set Up Environment Variables**:
+   Create a `.env.local` file in the root of the project and add any required environment variables. Refer to `.env.example` for a template.
+
+### Running the Application
+
+1. **Start the Development Server**:
+   ```bash
+   bun dev
+   ```
+
+2. **Build for Production**:
+   ```bash
+   bun build
+   ```
+
+3. **Run the Production Build**:
+   ```bash
+   bun start
+   ```
+
+### Testing
+
+Waypoint Maker includes tests to ensure reliability and maintainability.
+
+Run the test suite with:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+bun test
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Contributing
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Contributions are welcome! If you'd like to contribute to Waypoint Maker, please:
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+1. Fork the repository.
+2. Create a new branch for your feature or bugfix.
+3. Submit a pull request.
 
-## Learn More
+Please ensure your code adheres to the existing style and passes all tests before submitting.
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+Thank you for using Waypoint Maker! If you encounter any issues or have feature requests, feel free to open an issue in the [GitHub repository](https://github.com/yourusername/waypoint-maker).

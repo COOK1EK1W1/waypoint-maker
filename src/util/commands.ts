@@ -1,4 +1,4 @@
-export const commands: Command[] = [{
+export const mavCmds: Command[] = [{
   value: 16,
   name: "MAV_CMD_NAV_WAYPOINT",
   description: "Navigate to waypoint.",
@@ -7298,76 +7298,97 @@ export const commands: Command[] = [{
     default: null,
     options: [],
   }, null, null, null, null, null, null],
-  /*
-}, {
-value: 69,
-name: "WM_CMD_NAV_DUBINS",
-description: "Navigate around waypoint via dubins path",
-hasLocation: true,
-isDestination: true,
-parameters: [{
-  index: 1,
-  label: "Fly-By distance",
-  description: "The distance so safely fly by the waypoint",
-  units: "m",
-  minValue: 0,
-  maxValue: null,
-  increment: null,
-  default: null,
-  options: [],
-}, {
-  index: 2,
-  label: "heading",
-  description: "The heading to fly through",
-  units: "deg",
-  minValue: 0,
-  maxValue: 360,
-  increment: null,
-  default: null,
-  options: [],
-}, {
-  index: 3,
-  label: "Radius",
-  description: "The turn radius around the waypoint",
-  units: "m",
-  minValue: 0,
-  maxValue: null,
-  increment: null,
-  default: null,
-  options: [],
-}, null, {
-  index: 5,
-  label: "Latitude",
-  description: "Latitude",
-  units: "",
-  minValue: null,
-  maxValue: null,
-  increment: null,
-  default: null,
-  options: [],
-}, {
-  index: 6,
-  label: "Longitude",
-  description: "Longitude",
-  units: "",
-  minValue: null,
-  maxValue: null,
-  increment: null,
-  default: null,
-  options: [],
-}, {
-  index: 7,
-  label: "Altitude",
-  description: "Altitude",
-  units: "m",
-  minValue: null,
-  maxValue: null,
-  increment: null,
-  default: null,
-  options: [],
-  }],
-      */
 }]
+
+
+
+const WpmCmds: Command[] = [{
+  value: 69,
+  name: "WM_CMD_NAV_DUBINS",
+  description: "Navigate around waypoint via dubins path",
+  hasLocation: true,
+  isDestination: true,
+  parameters: [{
+    index: 1,
+    label: "Fly-By distance",
+    description: "The distance so safely fly by the waypoint",
+    units: "m",
+    minValue: 0,
+    maxValue: null,
+    increment: null,
+    default: null,
+    options: [],
+  }, {
+    index: 2,
+    label: "heading",
+    description: "The heading to fly through",
+    units: "deg",
+    minValue: 0,
+    maxValue: 360,
+    increment: null,
+    default: null,
+    options: [],
+  }, {
+    index: 3,
+    label: "Radius",
+    description: "The turn radius around the waypoint",
+    units: "m",
+    minValue: 0,
+    maxValue: null,
+    increment: null,
+    default: null,
+    options: [],
+  }, {
+    index: 4,
+    label: "Direction",
+    description: "The direction to fly by",
+    units: "",
+    minValue: -1,
+    maxValue: 1,
+    increment: 1,
+    default: 0,
+    options: [],
+  }, {
+    index: 5,
+    label: "Latitude",
+    description: "Latitude",
+    units: "",
+    minValue: null,
+    maxValue: null,
+    increment: null,
+    default: null,
+    options: [],
+  }, {
+    index: 6,
+    label: "Longitude",
+    description: "Longitude",
+    units: "",
+    minValue: null,
+    maxValue: null,
+    increment: null,
+    default: null,
+    options: [],
+  }, {
+    index: 7,
+    label: "Altitude",
+    description: "Altitude",
+    units: "m",
+    minValue: null,
+    maxValue: null,
+    increment: null,
+    default: null,
+    options: [],
+  }],
+}]
+
+
+let commandspre = []
+if (process.env.NEXT_PUBLIC_ALLOWDUBINS) {
+  commandspre = mavCmds.concat(WpmCmds)
+} else {
+  commandspre = mavCmds
+}
+export const commands = commandspre
 
 export const planeSupported = [
   "MAV_CMD_NAV_WAYPOINT",
@@ -7410,7 +7431,7 @@ export const planeSupported = [
   "MAV_CMD_DO_AUTOTUNE_ENABLE",
   "MAV_CMD_DO_SET_RESUME_REPEAT_DIST",
   "MAV_CMD_STORAGE_FORMAT",
-  "WM_CMD_NAV_DUBINS"
+  "WM_CMD_NAV_DUBINS",
 ]
 
 export const copterSupported = [

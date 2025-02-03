@@ -1,11 +1,12 @@
-import { useState } from "react"
+"use client"
 import VehicleTypeModal from "./vehicleTypeModal"
 import { FaHelicopter, FaPlane } from "react-icons/fa"
 import { useVehicleTypeContext } from "@/util/context/VehicleTypeContext"
 import Button from "../toolBar/button"
+import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "../ui/dialog"
+import { DialogDescription } from "@radix-ui/react-dialog"
 
 export default function VehicleTypeButton() {
-  const [open, setOpen] = useState(false)
   let { vehicle } = useVehicleTypeContext()
   let button = <></>
   switch (vehicle.type) {
@@ -24,12 +25,18 @@ export default function VehicleTypeButton() {
 
   }
   return (
-    <div className="flex items-center">
-      <VehicleTypeModal open={open} onClose={() => setOpen(false)} />
-      <Button onClick={() => { setOpen(true) }} className="w-28">
-        {button}
-      </Button>
-    </div>
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button className="w-28">
+          {button}
+        </Button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogTitle>Vehicle Type</DialogTitle>
+        <DialogDescription>Select the vehicle type</DialogDescription>
+        <VehicleTypeModal />
+      </DialogContent>
+    </Dialog>
   )
 
 }

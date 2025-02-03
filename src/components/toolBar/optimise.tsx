@@ -1,18 +1,31 @@
-import { useState } from "react"
+"use client"
 import Button from "./button"
+import { useWaypointContext } from "../../util/context/WaypointContext"
 import OptimiseModal from "../modal/optimisation"
-import { cn } from "@/util/tw"
+import { cn } from "@/lib/utils"
+import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "../ui/dialog"
+import { DialogDescription } from "@radix-ui/react-dialog"
 
-export default function OptimiseButton({ className }: { className?: string }) {
-  const [showModal, setShowModal] = useState(false)
+export default function OptimiseButton() {
+  const { waypoints } = useWaypointContext()
 
+  let wps = waypoints.flatten("Main")
+
+  //find if the current waypoints contain a dubinds type
+  const hasDubins = wps.map((wp) => wp.type).includes(69)
   return (
-    <div className="flex items-center">
-      <OptimiseModal open={showModal} handleClose={() => setShowModal(false)} />
-      <Button onClick={() => { setShowModal(true) }} className={cn("w-28", className)}>
-        <span>Opimise</span>
-      </Button>
-    </div>
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button className={cn("w-28", hasDubins ? "w-28" : "w-0 p-0 m-0 border-0", "overflow-hidden")}>
+          <span>Opimise</span>
+        </Button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogTitle>Optimise</DialogTitle>
+        <DialogDescription>Optimise the Dubins waypoints</DialogDescription>
+        <OptimiseModal />
+      </DialogContent>
+    </Dialog>
   )
 
 }

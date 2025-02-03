@@ -18,8 +18,8 @@ export default function CollectionItem({ node, selected, onMouseDown, onDelete }
 
   return (
     <ListItem onMouseDown={onMouseDown} selected={selected} actions={[
-      (<button onMouseDown={() => { setExpand(!expand) }} key={2}><FaPlus /></button>),
-      (<button onMouseDown={remove} key={1}><FaTrashAlt /></button>)
+      (<button onMouseDown={() => { setExpand(!expand) }} key={2} name="expand"><FaPlus /></button>),
+      (<button onMouseDown={remove} key={1} name="delete"><FaTrashAlt /></button>)
     ]}>
       <div className="flex justify-between">
         <span><TbTopologyRing className="inline m-1" />Group &apos;{node.name}&apos;</span>

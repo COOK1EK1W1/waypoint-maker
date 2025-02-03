@@ -1,22 +1,16 @@
 "use client";
 import { useState } from 'react';
 import { waypointContext } from './WaypointContext';
-import { WaypointCollection, Node } from "@/types/waypoints";
 import { Tool } from '@/types/tools'
+import { WaypointCollection } from '@/lib/waypoints/waypointCollection';
 
 type Props = {
   children: React.ReactNode;
 };
 
-const default_missions: [string, Node[]][] = [
-  ["Main", []],
-  ["Geofence", []],
-  ["Markers", []]
-]
-
 export default function WaypointProvider({ children }: Props) {
 
-  const [waypoints, setWaypoints] = useState<WaypointCollection>(new Map(default_missions))
+  const [waypoints, setWaypoints] = useState<WaypointCollection>(new WaypointCollection())
 
   const [selectedWPs, setSelectedWPs] = useState<number[]>([]);
 

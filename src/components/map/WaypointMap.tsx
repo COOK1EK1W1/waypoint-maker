@@ -3,7 +3,6 @@
 import { MapContainer, TileLayer, useMapEvent } from "react-leaflet"
 import 'leaflet/dist/leaflet.css';
 import { useWaypointContext } from "../../util/context/WaypointContext";
-import { MoveWPsAvgTo, add_waypoint, changeParam, findnthwaypoint } from "@/util/WPCollection";
 import { Tool } from "@/types/tools";
 import { LeafletMouseEvent, Map } from "leaflet";
 import { useEffect, useRef } from "react";
@@ -11,43 +10,35 @@ import ActiveLayer from "./activeLayer";
 import GeofenceLayer from "./geofenceLayer";
 import MarkerLayer from "./markerLayer";
 import DubinsLayer from "./dunbinsLayer";
+import { MoveWPsAvgTo } from "@/util/WPCollection";
+import { defaultTakeoff, defaultWaypoint } from "@/lib/waypoints/defaults";
 
 
 export default function MapStuff() {
-  const { waypoints, setWaypoints, activeMission, tool, setTool, selectedWPs, moveMap } = useWaypointContext()
+  const { waypoints, setWaypoints, activeMission, tool, setTool, moveMap, selectedWPs } = useWaypointContext()
 
   const mapRef = useRef<Map | null>(null)
 
   useEffect(() => {
     moveMap.move = (lat, lng) => {
       if (mapRef.current != null) {
-        mapRef.current.setView({ lat: lat, lng: lng })
+        mapRef.current.setView({ lat, lng })
       }
     }
+
+    // Keyboard shortcuts
     function handleKeyPress(e: KeyboardEvent) {
       switch (e.key) {
         case 'n': {
-
           const newLat = prompt("Enter latitude");
           const newLng = prompt("Enter Longitude");
           if (newLat == null || newLng == null) return
 
-          const mission = waypoints.get(activeMission)
-          if (mission == null) return
 
-          const newMarker = {
-            frame: 3,
-            type: 16,
-            param1: 0,
-            param2: 0,
-            param3: 0,
-            param4: 0,
-            param5: Number(newLat),
-            param6: Number(newLng),
-            param7: 100,
-            autocontinue: 1
-          };
-          setWaypoints(add_waypoint(activeMission, { type: "Waypoint", wps: newMarker }, waypoints));
+          setWaypoints((waypoints) => {
+            waypoints.pushToMission(activeMission, { type: "Waypoint", wps: defaultWaypoint({ lat: Number(newLat), lng: Number(newLng) }) })
+            return waypoints.clone()
+          })
           break;
 
         }
@@ -59,7 +50,6 @@ export default function MapStuff() {
 
     return () => {
       window.removeEventListener('keypress', handleKeyPress)
-
     }
 
   }, [activeMission, setWaypoints, waypoints, moveMap])
@@ -67,48 +57,27 @@ export default function MapStuff() {
   function handleClick(tool: Tool, e: LeafletMouseEvent) {
     switch (tool) {
       case "Waypoint": {
-
-        const mission = waypoints.get(activeMission)
-        if (mission == null) return
-
-        const newMarker = {
-          frame: 3,
-          type: 16,
-          param1: 0,
-          param2: 0,
-          param3: 0,
-          param4: 0,
-          param5: e.latlng.lat,
-          param6: e.latlng.lng,
-          param7: 100,
-          autocontinue: 1
-        };
-        setWaypoints(add_waypoint(activeMission, { type: "Waypoint", wps: newMarker }, waypoints));
+        setWaypoints((waypoints) => {
+          let waypointsNew = waypoints.clone()
+          waypointsNew.pushToMission(activeMission, { type: "Waypoint", wps: defaultWaypoint(e.latlng) })
+          return waypointsNew
+        })
         break;
       }
       case "Takeoff": {
         setTool("Waypoint")
-        const mission = waypoints.get(activeMission)
-        if (mission == null) return
-
-        const newMarker = {
-          frame: 3,
-          type: 22,
-          param1: 15,
-          param2: 0,
-          param3: 0,
-          param4: 0,
-          param5: e.latlng.lat,
-          param6: e.latlng.lng,
-          param7: 15,
-          autocontinue: 1
-        };
-        setWaypoints(add_waypoint(activeMission, { type: "Waypoint", wps: newMarker }, waypoints));
+        setWaypoints((waypoints) => {
+          waypoints.pushToMission(activeMission, { type: "Waypoint", wps: defaultTakeoff(e.latlng) })
+          return waypoints.clone()
+        })
         break;
       }
       case "Place": {
         setTool("Waypoint")
-        setWaypoints(MoveWPsAvgTo(e.latlng.lat, e.latlng.lng, waypoints, selectedWPs, activeMission))
+        setWaypoints((waypoints) => {
+          MoveWPsAvgTo(e.latlng, waypoints, selectedWPs, activeMission)
+          return waypoints
+        })
         break;
       }
       default:
@@ -127,11 +96,15 @@ export default function MapStuff() {
   }
 
   function onMove(lat: number, lng: number, id: number) {
-    const a = findnthwaypoint(activeMission, id, waypoints)
+    const a = waypoints.findNthPosition(activeMission, id)
     if (a == null) return
     const [mission, pos] = a
-    let newWps = changeParam(pos, mission, waypoints, (wp) => ({ ...wp, param5: lat, param6: lng }))
-    setWaypoints(newWps)
+    setWaypoints((waypoints2) => {
+      const b = waypoints2.clone()
+      b.changeParam(pos, mission, (wp) => { wp.param5 = lat; wp.param6 = lng; return wp })
+      return b
+    })
+    return
 
   }
 
@@ -148,6 +121,10 @@ export default function MapStuff() {
         style={{ width: '100%', height: '100%' }}
         className="z-10"
         ref={mapRef}
+        attributionControl={false}
+        zoomControl={false}
+        keyboard={false}
+        fadeAnimation={false}
       >
         <TileLayer
           url='https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}'

@@ -1,7 +1,7 @@
 "use client";
 import { Dispatch, SetStateAction, createContext, useContext } from 'react';
-import { WaypointCollection } from "@/types/waypoints"
 import { Tool } from '@/types/tools';
+import { WaypointCollection } from '@/lib/waypoints/waypointCollection';
 
 type provided = {
   waypoints: WaypointCollection,
@@ -13,6 +13,7 @@ type provided = {
   tool: Tool,
   setTool: Dispatch<SetStateAction<Tool>>,
   moveMap: { move?: (lat: number, lng: number) => void }
+  missionId?: string
 }
 
 export const waypointContext = createContext<provided>(undefined as any);

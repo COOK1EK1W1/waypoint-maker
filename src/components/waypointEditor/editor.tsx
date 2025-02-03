@@ -5,7 +5,7 @@ import WaypointEditor from "./WaypointEditor";
 import CurEdit from "./curEdit";
 import { Node } from "@/types/waypoints";
 import { useState } from "react";
-import { cn } from "@/util/tw";
+import { cn } from "@/lib/utils";
 import HeightMap from "./heightMap";
 import Button from "../toolBar/button";
 
@@ -37,17 +37,19 @@ export default function Editor() {
 
   return (
     <>
-      {hidden ? <Button className="absolute z-20 rounded-lg left-2 bottom-2" onClick={() => setHidden(false)}>WP list</Button> : null}
-      <div className={cn("z-20 absolute bottom-0 m-2 w-[930px] ease-in-out duration-200", hidden ? "bottom-[-100vh]" : "")}>
-        <div className={cn("bg-white rounded-lg shadow-lg shadow-black")}>
-          <div className="flex">
-            <CurEdit onHide={() => setHidden(true)} />
-            <div className="flex flex-wrap">
-              <WaypointEditor />
-              <LatLngEditor />
+      <div className="h-[100dvh] absolute z-20">
+        {hidden ? <Button className="absolute z-20 rounded-lg left-2 bottom-2" onClick={() => setHidden(false)}>Editor</Button> : null}
+        <div className={cn("z-20 absolute bottom-0 m-2 w-[930px] ease-in-out duration-200", hidden ? "bottom-[-100vh]" : "")}>
+          <div className={cn("bg-white rounded-lg shadow-lg shadow-black")}>
+            <div className="flex">
+              <CurEdit onHide={() => setHidden(true)} />
+              <div className="flex flex-wrap">
+                <WaypointEditor />
+                <LatLngEditor />
+              </div>
             </div>
+            <HeightMap />
           </div>
-          <HeightMap />
         </div>
       </div>
     </>

@@ -1,9 +1,9 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
-import WaypointProvider from '@/util/context/WaypointProvider'
-import VehicleProvider from '@/util/context/VehicleTypeProvider'
 import { Analytics } from "@vercel/analytics/react"
+import AuthProvider from '@/util/context/AuthProvider'
+import { cn } from '@/lib/utils'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -22,13 +22,14 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <link rel="preload" href="/marker-icon.png" as="image" />
+      <link rel="preload" href="/marker-shadow.png" as="image" />
+      <link rel="preload" href="/insert.png" as="image" />
+      <body className={cn(inter.className, "fixed overflow-hidden h-[100dvh] w-full")}>
         <Analytics />
-        <WaypointProvider>
-          <VehicleProvider>
-            {children}
-          </VehicleProvider>
-        </WaypointProvider>
+        <AuthProvider>
+          {children}
+        </AuthProvider>
       </body>
     </html>
   )

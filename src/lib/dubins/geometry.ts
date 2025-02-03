@@ -1,4 +1,4 @@
-import { Segment, Path, XY } from "@/types/dubins";
+import { Segment, Path, XY, LatLng } from "@/types/dubins";
 
 export function segmentLength(seg: Segment): number {
   switch (seg.type) {
@@ -50,7 +50,25 @@ export function pathEnergyRequirements(path: Path) {
   return totalEnergy
 }
 
+export function worldDist(a: LatLng, b: LatLng) {
+  const R = 6371000; // Earth's radius in meters
+  const lat1 = a.lat * Math.PI / 180;
+  const lat2 = b.lat * Math.PI / 180;
+  const deltaLat = (b.lat - a.lat) * Math.PI / 180;
+  const deltaLon = (b.lng - a.lng) * Math.PI / 180;
+
+  const aHav = Math.sin(deltaLat / 2) * Math.sin(deltaLat / 2) +
+    Math.cos(lat1) * Math.cos(lat2) *
+    Math.sin(deltaLon / 2) * Math.sin(deltaLon / 2);
+
+  const c = 2 * Math.atan2(Math.sqrt(aHav), Math.sqrt(1 - aHav));
+
+  // Return the distance in meters
+  return R * c;
+}
+
 export function world_dist(a: XY, b: XY) {
+  // todo remove
   const R = 6371000; // Earth's radius in meters
   const lat1 = a.y * Math.PI / 180;
   const lat2 = b.y * Math.PI / 180;

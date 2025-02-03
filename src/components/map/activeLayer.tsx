@@ -1,4 +1,3 @@
-import { findnthwaypoint, get_waypoints, insert_waypoint } from "@/util/WPCollection";
 import { LayerGroup, Polyline } from "react-leaflet";
 import DraggableMarker from "../marker/DraggableMarker";
 import { useWaypointContext } from "@/util/context/WaypointContext";
@@ -12,7 +11,7 @@ export default function ActiveLayer({ onMove }: { onMove: (lat: number, lng: num
   const { setSelectedWPs, setActiveMission, waypoints, activeMission, setWaypoints, selectedWPs } = useWaypointContext()
   if (noshow.includes(activeMission)) return null
 
-  const activeWPs = get_waypoints(activeMission, waypoints)
+  const activeWPs = waypoints.flatten(activeMission)
 
   let insertBtns = []
   for (let i = 0; i < activeWPs.length - 1; i++) {
@@ -41,13 +40,16 @@ export default function ActiveLayer({ onMove }: { onMove: (lat: number, lng: num
       param7: 100,
       autocontinue: 1
     };
-    setWaypoints(insert_waypoint(id, activeMission, { type: "Waypoint", wps: newMarker }, waypoints));
+    setWaypoints((prevWPS) => {
+      prevWPS.insert(id + 1, activeMission, { type: "Waypoint", wps: newMarker })
+      return prevWPS.clone()
+    });
 
   }
 
 
   function handleMarkerClick(id: number) {
-    const a = findnthwaypoint(activeMission, id, waypoints)
+    const a = waypoints.findNthPosition(activeMission, id)
     if (!a) return
     setActiveMission(a[0])
     setSelectedWPs([a[1]])
@@ -58,11 +60,11 @@ export default function ActiveLayer({ onMove }: { onMove: (lat: number, lng: num
     <LayerGroup>
       {activeWPs.map((waypoint, idx) => {
         let active = false
-        let x = findnthwaypoint(activeMission, idx, waypoints)
+        let x = waypoints.findNthPosition(activeMission, idx)
         if (x) {
           if (x[0] == activeMission && selectedWPs.includes(x[1])) active = true
         }
-        return <DraggableMarker key={idx} waypoint={waypoint} onMove={(lat, lng) => onMove(lat, lng, idx)} active={active} onClick={() => handleMarkerClick(idx)} />
+        return <DraggableMarker key={idx} waypoint={{ ...waypoint }} onMove={(lat, lng) => onMove(lat, lng, idx)} active={active} onClick={() => handleMarkerClick(idx)} />
       })
       }
       <Polyline pathOptions={limeOptions} positions={toPolyline(activeWPs)} />
