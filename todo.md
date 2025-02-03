@@ -17,9 +17,9 @@ auto move viewport when loading
 ### Dubins paths
 
 wpm wide reference point
-Export correctly
+Export correctly                    | partial
 optimise button / modal / popover
-more unit tests
+more unit tests                     | partial
 auto height adjustment
 geofence avoidance
 optionally render min safe fly by radius
