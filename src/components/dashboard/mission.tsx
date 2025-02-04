@@ -6,14 +6,12 @@ import { deleteMission } from "./actions";
 import { timeAgo } from "@/util/time";
 import { cn } from "@/lib/utils";
 import { useWaypointContext } from "@/util/context/WaypointContext";
-import { authClient } from "@/util/auth-client";
 
-export default function MissionTile({ mission, userId }: { mission: { title: string, modifiedAt: Date, id: string }, userId: string }) {
+export default function MissionTile({ mission }: { mission: { title: string, modifiedAt: Date, id: string } }) {
   const { missionId } = useWaypointContext()
-  let session = authClient.useSession()
   const router = useRouter()
   function handleDelete() {
-    deleteMission(mission.id, userId).then(() => router.refresh())
+    deleteMission(mission.id).then(() => router.refresh())
   }
 
   return (

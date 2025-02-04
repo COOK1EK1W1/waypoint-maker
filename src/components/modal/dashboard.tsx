@@ -35,9 +35,9 @@ export default async function DashboardModal() {
 
   return (<div>
     <div className="flex flex-col max-h-[80dvh] overflow-auto">
-      <CreateMission userId={user.id} />
+      <CreateMission />
       {user?.missions.map((mission, i) => (
-        <MissionTile mission={mission} key={i} userId={user.id} />
+        <MissionTile mission={mission} key={i} />
       ))}
       {user?.missions.length == 0 ? <div className="w-full text-center py-10">No Saved Missions</div> : null}
     </div>
