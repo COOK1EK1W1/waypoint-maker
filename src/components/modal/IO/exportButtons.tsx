@@ -10,7 +10,6 @@ export default function DownloadButtons() {
 
   function downloadQGC() {
     const output = waypointTo_waypoints_file(waypoints)
-    console.log(output)
     downloadTextAsFile("mission.waypoints", output)
   }
 

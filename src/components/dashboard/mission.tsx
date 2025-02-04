@@ -11,7 +11,6 @@ import { authClient } from "@/util/auth-client";
 export default function MissionTile({ mission, userId }: { mission: { title: string, modifiedAt: Date, id: string }, userId: string }) {
   const { missionId } = useWaypointContext()
   let session = authClient.useSession()
-  console.log(session)
   const router = useRouter()
   function handleDelete() {
     deleteMission(mission.id, userId).then(() => router.refresh())
