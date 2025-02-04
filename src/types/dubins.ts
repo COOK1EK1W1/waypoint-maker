@@ -8,26 +8,32 @@ export type LatLng = {
   lng: number
 }
 
-export type Curve = {
+export type Curve<S = XY | LatLng> = {
   type: "Curve"
-  center: XY,
+  center: S,
   radius: number,
   start: number,
   theta: number
 }
 
-export type Straight = {
+export type Straight<S = XY | LatLng> = {
   type: "Straight"
-  start: XY,
-  end: XY
+  start: S,
+  end: S
 }
 
-export type Segment = Curve | Straight
+export type Segment<S = XY | LatLng> = Curve<S> | Straight<S>
 
-export type Path = Segment[]
+export type Path<S = XY | LatLng> = Segment<S>[]
 
 export type bound = {
   min?: number,
   max?: number,
   circular?: boolean
+}
+
+export type dubinsPoint = {
+  pos: XY,
+  radius: number,
+  bounds: bound
 }

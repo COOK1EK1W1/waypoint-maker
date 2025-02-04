@@ -1,11 +1,12 @@
 import { applyBounds, dubinsBetweenWaypoint, getBounds, getTunableParameters, setTunableParameter, splitDubinsRuns } from "@/lib/dubins/dubinWaypoints";
 import { res } from "@/lib/optimisation/types";
 import { WaypointCollection } from "@/lib/waypoints/waypointCollection";
-import { bound, Path } from "@/types/dubins";
+import { g2l } from "@/lib/world/conversion";
+import { bound, dubinsPoint, LatLng, Path } from "@/types/dubins";
 import { Waypoint } from "@/types/waypoints";
 import { Dispatch, SetStateAction } from "react";
 
-export function bakeDubins(waypoints: WaypointCollection, activeMission: string, optimisationmethod: (initialGuess: readonly number[], bounds: bound[], fn: (a: number[]) => number) => res, setWaypoints: Dispatch<SetStateAction<WaypointCollection>>, optimisationFunction: (path: Path) => number) {
+export function bakeDubins(waypoints: WaypointCollection, activeMission: string, optimisationmethod: (initialGuess: readonly number[], bounds: bound[], fn: (a: number[]) => number) => res, setWaypoints: Dispatch<SetStateAction<WaypointCollection>>, optimisationFunction: (path: Path<LatLng>) => number) {
   let activeWaypoints: Waypoint[] = waypoints.flatten(activeMission)
 
   const startTime = performance.now()
@@ -16,6 +17,7 @@ export function bakeDubins(waypoints: WaypointCollection, activeMission: string,
   let dubinSections = splitDubinsRuns(activeWaypoints)
   let endingFitness = 0
   let startingFitness = 0
+
 
   // This function is a closure that takes in the waypoints and returns a function that takes in the tunable parameters and returns the total length of the path
   function create_evaluate(wps: Waypoint[]) {
@@ -40,6 +42,13 @@ export function bakeDubins(waypoints: WaypointCollection, activeMission: string,
 
   // optimise each section of the path
   for (const section of dubinSections) {
+
+    let dubinsPoints: dubinsPoint[] = []
+    for (let i = 0; i < section.wps.length; i++) {
+      dubinsPoints.push({ pos: g2l({ lat: section.wps[i].param5, lng: section.wps[i].param6 }, reference), bounds: {} })
+    }
+
+
     let starting_params = [...getTunableParameters(section.wps)]
     let bounds: bound[] = [...getBounds(section.wps)]
     applyBounds(starting_params, bounds)

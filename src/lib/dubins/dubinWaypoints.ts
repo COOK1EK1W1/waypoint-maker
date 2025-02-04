@@ -1,7 +1,7 @@
 import { Waypoint } from "@/types/waypoints";
 import { deg2rad, modf, offset, rad2deg } from "./geometry";
 import { Dir, DubinsBetweenDiffRad } from "./dubins";
-import { bound, LatLng, Path } from "@/types/dubins";
+import { bound, dubinsPoint, LatLng, Path, Segment, XY } from "@/types/dubins";
 import { g2l, l2g } from "../world/conversion";
 
 /*
@@ -50,27 +50,31 @@ function num2dir(num: number) {
   return undefined
 }
 
-export function localisePath(path: Path, reference: LatLng): Path {
+export function localisePath(path: Path<XY>, reference: LatLng): Path<LatLng> {
+  let newPath: Path<LatLng> = []
   for (let segment of path) {
     switch (segment.type) {
       case "Curve": {
-        let center = l2g(reference, { x: segment.center.x, y: segment.center.y })
-        segment.center = { x: center.lng, y: center.lat }
+        let { center, ...rest } = segment
+        let newCenter = l2g(reference, { x: center.x, y: center.y })
+        let newSegment: Segment<LatLng> = { ...rest, center: newCenter }
+        newPath.push(newSegment)
         break;
       }
       case "Straight": {
-        let start = l2g(reference, { x: segment.start.x, y: segment.start.y })
-        segment.start = { x: start.lng, y: start.lat }
-        let end = l2g(reference, { x: segment.end.x, y: segment.end.y })
-        segment.end = { x: end.lng, y: end.lat }
+        let { start, end, ...rest } = segment
+        let newStart = l2g(reference, { x: start.x, y: start.y })
+        let newEnd = l2g(reference, { x: end.x, y: end.y })
+        let newSegment: Segment<LatLng> = { ...rest, end: newEnd, start: newStart }
+        newPath.push(newSegment)
         break
       }
     }
   }
-  return path
+  return newPath
 }
 
-export function dubinsBetweenWaypoint(a: Waypoint, b: Waypoint, reference: LatLng): Path {
+export function dubinsBetweenWaypoint(a: Waypoint, b: Waypoint, reference: LatLng): Path<LatLng> {
   const start = g2l(reference, { lat: a.param5, lng: a.param6 })
   const end = g2l(reference, { lat: b.param5, lng: b.param6 })
   if (a.type == 69) {
