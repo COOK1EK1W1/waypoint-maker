@@ -3,14 +3,14 @@ import { useRouter } from "next/navigation";
 import { FaTrash } from "react-icons/fa";
 import Button from "../toolBar/button";
 import { deleteMission } from "./actions";
-import { useSession } from "next-auth/react";
 import { timeAgo } from "@/util/time";
 import { cn } from "@/lib/utils";
 import { useWaypointContext } from "@/util/context/WaypointContext";
+import { authClient } from "@/util/auth-client";
 
 export default function MissionTile({ mission, userId }: { mission: { title: string, modifiedAt: Date, id: string }, userId: string }) {
   const { missionId } = useWaypointContext()
-  const session = useSession()
+  let session = authClient.useSession()
   const router = useRouter()
   function handleDelete() {
     deleteMission(mission.id, userId).then(() => router.refresh())

@@ -1,8 +1,12 @@
 "use client"
 
-import { signOut } from "next-auth/react"
+import { authClient } from "@/util/auth-client"
 import Button from "./button"
+import { useRouter } from "next/navigation"
 
 export default function SignOut() {
-  return (<Button onClick={() => signOut()}>Sign Out</Button>)
+  const router = useRouter()
+  const { signOut } = authClient
+  return (<Button onClick={() => { signOut(); router.refresh() }
+  }> Sign Out</Button >)
 }

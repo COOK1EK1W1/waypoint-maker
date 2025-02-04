@@ -35,4 +35,4 @@ waypoint grouping on mobile
 waypoint editing on mobile
 double click? to open sub mission
 hide do land start WPs etc. (potentially stack them under/above marker locations)
-
+help page

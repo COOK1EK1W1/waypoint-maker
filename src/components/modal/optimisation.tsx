@@ -3,11 +3,9 @@
 import Button from "../toolBar/button";
 import { useWaypointContext } from "@/util/context/WaypointContext";
 import { bakeDubins } from "../toolBar/bakeDubins";
-import { pathEnergyRequirements, pathLength, worldPathLength } from "@/lib/dubins/geometry";
+import { pathEnergyRequirements, pathLength } from "@/lib/dubins/geometry";
 import { geneticOptimise } from "@/lib/optimisation/genetic";
 import { particleOptimise } from "@/lib/optimisation/particleSwarm";
-import { optimisationAlgorithm } from "@/lib/optimisation/types";
-import { Path } from "@/types/dubins";
 import { useState } from "react";
 
 const algorithms = { "Particle": particleOptimise, "Genetic": geneticOptimise }
@@ -21,7 +19,6 @@ export default function OptimiseModal() {
 
 	function runOptimisation() {
 		let res = bakeDubins(waypoints, activeMission, algorithms[algorithm], setWaypoints, metrics[metric])
-		console.log(res)
 		setOptimiseRes(res)
 	}
 

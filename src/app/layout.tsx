@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 import { Analytics } from "@vercel/analytics/react"
-import AuthProvider from '@/util/context/AuthProvider'
+import { SpeedInsights } from "@vercel/speed-insights/next"
 import { cn } from '@/lib/utils'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -27,9 +27,8 @@ export default function RootLayout({
       <link rel="preload" href="/insert.png" as="image" />
       <body className={cn(inter.className, "fixed overflow-hidden h-[100dvh] w-full")}>
         <Analytics />
-        <AuthProvider>
-          {children}
-        </AuthProvider>
+        <SpeedInsights />
+        {children}
       </body>
     </html>
   )

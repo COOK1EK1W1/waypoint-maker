@@ -1,56 +1,20 @@
-import NextAuth from "next-auth";
-import GitHubProvider from 'next-auth/providers/github'
-import { Provider } from "next-auth/providers/index";
+import { betterAuth } from "better-auth"
+import { prismaAdapter } from "better-auth/adapters/prisma";
 import prisma from "./prisma";
-import Credentials from "next-auth/providers/credentials";
 
-
-// the authorisation providers
-export const providers: Provider[] = [
-
-  GitHubProvider({
-    clientId: process.env.GITHUB_ID as string,
-    clientSecret: process.env.GITHUB_SECRET as string
+export const auth = betterAuth({
+  database: prismaAdapter(prisma, {
+    provider: "postgresql"
   }),
-
-  Credentials({
-    credentials: {
-      email: { label: 'Email', type: "text" },
-      password: { label: 'Password', type: 'password' }
+  socialProviders: {
+    github: {
+      clientId: process.env.GITHUB_ID as string,
+      clientSecret: process.env.GITHUB_SECRET as string
     },
-    async authorize(credentials) {
-
-      // check password and email are present
-      if (!credentials?.email || !credentials?.password) {
-        throw new Error("Missing Email or password")
-      }
-
-      const email = credentials.email as string
-      const password = credentials.password as string
-
-      // get the user from db
-      const user = await prisma.user.findUnique({
-        where: { email: email }
-      })
-
-      if (!user) {
-        throw new Error("No user with email")
-      }
-
-      if (!user.password) {
-        throw new Error("Email taken by other provider")
-      }
-
-      // check password
-      const isValidPassword = password === user.password
-      if (!isValidPassword) {
-        throw new Error("Invalid Password")
-      }
-      return { id: user.id, name: user.name, email: user.email }
+    google: {
+      clientId: process.env.GOOGLE_ID as string,
+      clientSecret: process.env.GOOGLE_SECRET as string
     }
-  })
-]
 
-export const { handlers, auth, signIn, signOut } = NextAuth({
-  providers: providers,
+  }
 })
