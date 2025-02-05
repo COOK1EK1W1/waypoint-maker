@@ -117,6 +117,17 @@ export function getTunableParameters(wps: Waypoint[]): number[] {
   return ret
 }
 
+export function getTunableDubinsParameters(wps: dubinsPoint[]): number[] {
+  let ret: number[] = []
+  for (const waypoint of wps) {
+    if (waypoint.tunable) {
+      ret.push(deg2rad(waypoint.heading))
+      ret.push(waypoint.radius)
+    }
+  }
+  return ret
+}
+
 export function getBounds(wps: Waypoint[]): bound[] {
   let bounds = []
   for (const waypoint of wps) {
@@ -149,6 +160,14 @@ export function applyBounds(params: number[], bounds: bound[]): void {
   }
 }
 
+export function waypointToDubins(wp: Waypoint, reference: LatLng): dubinsPoint {
+  if (wp.type == 69) {
+    return { pos: g2l(reference, { lat: wp.param5, lng: wp.param6 }), bounds: {}, radius: wp.param3, heading: wp.param2, tunable: true }
+  } else {
+    return { pos: g2l(reference, { lat: wp.param5, lng: wp.param6 }), bounds: {}, radius: 0, heading: wp.param2, tunable: false }
+  }
+}
+
 export function setTunableParameter(wps: Waypoint[], params: number[]): void {
   let paramI = 0
   for (let i = 0; i < wps.length; i++) {
@@ -158,7 +177,18 @@ export function setTunableParameter(wps: Waypoint[], params: number[]): void {
       cur.param2 = rad2deg(params[paramI++])
       cur.param3 = params[paramI++]
     }
+  }
+}
+
+export function setTunableDubinsParameter(wps: dubinsPoint[], params: number[]): void {
+  let paramI = 0
+  for (let i = 0; i < wps.length; i++) {
+    let cur = wps[i]
+    if (cur.tunable) {
+      // radians
+      cur.heading = rad2deg(params[paramI++])
+      cur.radius = params[paramI++]
+    }
 
   }
-
 }

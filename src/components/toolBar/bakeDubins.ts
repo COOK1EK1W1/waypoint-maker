@@ -1,12 +1,14 @@
-import { applyBounds, dubinsBetweenWaypoint, getBounds, getTunableParameters, setTunableParameter, splitDubinsRuns } from "@/lib/dubins/dubinWaypoints";
+import { DubinsBetweenDiffRad } from "@/lib/dubins/dubins";
+import { applyBounds, getBounds, getTunableDubinsParameters, setTunableDubinsParameter, setTunableParameter, splitDubinsRuns, waypointToDubins } from "@/lib/dubins/dubinWaypoints";
+import { deg2rad } from "@/lib/dubins/geometry";
 import { res } from "@/lib/optimisation/types";
 import { WaypointCollection } from "@/lib/waypoints/waypointCollection";
 import { g2l } from "@/lib/world/conversion";
-import { bound, dubinsPoint, LatLng, Path } from "@/types/dubins";
+import { bound, dubinsPoint, Path, XY } from "@/types/dubins";
 import { Waypoint } from "@/types/waypoints";
 import { Dispatch, SetStateAction } from "react";
 
-export function bakeDubins(waypoints: WaypointCollection, activeMission: string, optimisationmethod: (initialGuess: readonly number[], bounds: bound[], fn: (a: number[]) => number) => res, setWaypoints: Dispatch<SetStateAction<WaypointCollection>>, optimisationFunction: (path: Path<LatLng>) => number) {
+export function bakeDubins(waypoints: WaypointCollection, activeMission: string, optimisationmethod: (initialGuess: readonly number[], bounds: bound[], fn: (a: number[]) => number) => res, setWaypoints: Dispatch<SetStateAction<WaypointCollection>>, optimisationFunction: (path: Path<XY>) => number) {
   let activeWaypoints: Waypoint[] = waypoints.flatten(activeMission)
 
   const startTime = performance.now()
@@ -20,20 +22,22 @@ export function bakeDubins(waypoints: WaypointCollection, activeMission: string,
 
 
   // This function is a closure that takes in the waypoints and returns a function that takes in the tunable parameters and returns the total length of the path
-  function create_evaluate(wps: Waypoint[]) {
-    let localWPS: Waypoint[] = []
+  function createEvaluate(wps: dubinsPoint[]) {
+    let localWPS: dubinsPoint[] = []
     for (let x = 0; x < wps.length; x++) {
       localWPS.push({ ...wps[x] })
     }
     function evaluate(x: number[]): number {
-      setTunableParameter(localWPS, x)
+      setTunableDubinsParameter(localWPS, x)
       let totalLength = 0
       for (let i = 0; i < wps.length - 1; i++) {
-        let curves = dubinsBetweenWaypoint(localWPS[i], localWPS[i + 1], reference)
+        let a = localWPS[i]
+        let b = localWPS[i + 1]
+        // huh
+        let curves = DubinsBetweenDiffRad(a.pos, b.pos, deg2rad(a.heading), deg2rad(b.heading), a.radius, b.radius)
         totalLength += optimisationFunction(curves)
       }
       return totalLength
-
     }
     return evaluate
   }
@@ -43,22 +47,20 @@ export function bakeDubins(waypoints: WaypointCollection, activeMission: string,
   // optimise each section of the path
   for (const section of dubinSections) {
 
-    let dubinsPoints: dubinsPoint[] = []
-    for (let i = 0; i < section.wps.length; i++) {
-      dubinsPoints.push({ pos: g2l({ lat: section.wps[i].param5, lng: section.wps[i].param6 }, reference), bounds: {} })
-    }
+    let dubinsPoints: dubinsPoint[] = section.wps.map((x) => waypointToDubins(x, reference))
 
-
-    let starting_params = [...getTunableParameters(section.wps)]
+    let startingParams = [...getTunableDubinsParameters(dubinsPoints)]
     let bounds: bound[] = [...getBounds(section.wps)]
-    applyBounds(starting_params, bounds)
+    applyBounds(startingParams, bounds)
 
-    let b = create_evaluate(section.wps)
-    startingFitness += b(starting_params)
+    let evaluate = createEvaluate(dubinsPoints)
+    startingFitness += evaluate(startingParams)
+    console.log(startingFitness)
 
-    let result = optimisationmethod(starting_params, bounds, b) // 2041
+    let result = optimisationmethod(startingParams, bounds, evaluate) // 2041
+    console.log(result)
     applyBounds(result.finalVals, bounds)
-    endingFitness += b(result.finalVals)
+    endingFitness += evaluate(result.finalVals)
     console.log("fitness: ", result.fitness, "  took: ", result.time)
 
     setTunableParameter(section.wps, result.finalVals)

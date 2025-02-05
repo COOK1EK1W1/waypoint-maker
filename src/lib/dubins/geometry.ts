@@ -25,16 +25,17 @@ export function energyRequirement(radius: number, velocity: number) {
 }
 
 export function pathEnergyRequirements(path: Path<XY>) {
-  let velocity = 23
+  let velocity = 30
   let energyConstant = 1
   let totalEnergy = 0
   for (const seg of path) {
+    let segLength = segmentLength(seg)
     switch (seg.type) {
       case "Curve":
-        totalEnergy += Math.abs(seg.theta * seg.radius) * energyRequirement(seg.radius, velocity) * energyConstant
+        totalEnergy += segLength * energyRequirement(seg.radius, velocity) * energyConstant
         continue;
       case "Straight":
-        totalEnergy += dist(seg.start, seg.end) * energyConstant
+        totalEnergy += segLength * energyConstant
         continue;
     }
   }

@@ -1,6 +1,6 @@
 import { expect, test } from "bun:test";
-import { Segment, XY } from "@/types/dubins";
-import { bearing, deg2rad, dist, mod2pi, modf, offset, rad2deg, segmentLength, worldBearing, worldDist } from "@/lib/dubins/geometry";
+import { Path, Segment, XY } from "@/types/dubins";
+import { bearing, deg2rad, dist, mod2pi, modf, offset, pathLength, rad2deg, segmentLength, worldBearing, worldDist } from "@/lib/dubins/geometry";
 
 test("straight line len", () => {
   const a: Segment<XY> = { type: "Straight", start: { x: 0, y: 0 }, end: { x: 3, y: 4 } }
@@ -119,3 +119,12 @@ test("rad2deg", () => {
   expect(rad2deg(-Math.PI)).toBe(-180)
 })
 
+test("path length", () => {
+  let curves: Path<XY> = []
+  expect(pathLength(curves)).toBe(0)
+
+  curves.push({ type: "Straight", start: { x: 0, y: 0 }, end: { x: 0, y: 10 } })
+  expect(pathLength(curves)).toBe(10)
+  curves.push({ type: "Curve", center: { x: 0, y: 0 }, start: 0, theta: Math.PI, radius: 10 })
+  expect(pathLength(curves)).toBeCloseTo(10 + 31.4159)
+})

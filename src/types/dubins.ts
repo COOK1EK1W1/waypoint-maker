@@ -33,7 +33,9 @@ export type bound = {
 }
 
 export type dubinsPoint = {
+  tunable: boolean,
   pos: XY,
   radius: number,
-  bounds: bound
+  bounds: bound,
+  heading: number // degrees
 }

@@ -2,7 +2,7 @@ import { optimisationAlgorithm } from "./types"
 
 export const particleOptimise: optimisationAlgorithm = (initialGuess, bounds, fn) => {
   const start = performance.now()
-  console.assert(initialGuess.length == bounds.length, "Params are different length to bounds")
+  console.assert(initialGuess.length == bounds.length, `Params are different length to bounds, ${initialGuess.length} ${bounds.length}`)
 
   const dims = initialGuess.length
   const popsize = dims * 20
