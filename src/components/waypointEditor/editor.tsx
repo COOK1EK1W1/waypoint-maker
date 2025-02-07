@@ -35,35 +35,22 @@ export default function Editor() {
     wpsIds = selectedWPs;
   }
 
-  if (wps.length == 0) {
-    return
-  }
-
   return (
     <>
-      <div className="h-[100dvh] absolute z-20">
-        {hidden ? <Button className="absolute z-20 rounded-lg left-2 bottom-2" onClick={() => setHidden(false)}>Editor</Button> : null}
-        <div className={cn("z-20 absolute bottom-0 m-2 w-[930px] ease-in-out duration-200", hidden ? "bottom-[-100vh]" : "")}>
-          <div className={cn("bg-white rounded-lg shadow-lg shadow-black flex h-60 p-2")}>
-            <div className="flex flex-col">
-              <div className="flex-grow">
-                {Object.keys(tabs).map((x, i) => (
-                  <Button key={i} onClick={() => setTab(x as keyof typeof tabs)} className={cn("w-28", x != tab ? "bg-white" : null)}>{x}</Button>
-                ))}
-              </div>
-              <Button onClick={() => setHidden(true)} className={cn("w-28 bg-white")}>Hide <FaArrowDown className="ml-2" /></Button>
+      {hidden ? <Button className="absolute z-20 rounded-lg left-2 bottom-2" onClick={() => setHidden(false)}>Editor</Button> : null}
+      <div className={cn("z-20 p-2 absolute bottom-0 w-full md:w-[600px] lg:w-[920px] ease-in-out duration-200", hidden ? "bottom-[-100dvh]" : "")}>
+        <div className={cn("bg-white w-full rounded-lg shadow-lg shadow-black flex h-60 flex-col md:flex-row")}>
+          <div className="flex flex-row md:flex-col">
+            <div className="flex-grow flex flex-row md:flex-col">
+              {Object.keys(tabs).map((x, i) => (
+                <Button key={i} onClick={() => setTab(x as keyof typeof tabs)} className={cn("w-28", x != tab ? "bg-white" : null)}>{x}</Button>
+              ))}
             </div>
-            <div className="w-1 mx-2 h-full bg-gray-200"></div>
-            <div className="flex-grow flex flex-wrap">
-              {tabs[tab]}
-            </div>
-            {/*
-            <div className="flex">
-              <CurEdit onHide={() => setHidden(true)} />
-              <div className="flex flex-wrap">
-              </div>
-            </div>
-          */}
+            <Button onClick={() => setHidden(true)} className={cn("w-28 bg-white")}>Hide <FaArrowDown className="ml-2" /></Button>
+          </div>
+          <div className="w-1 mx-2 h-full bg-gray-200"></div>
+          <div className="flex-grow flex flex-wrap">
+            {tabs[tab]}
           </div>
         </div>
       </div >

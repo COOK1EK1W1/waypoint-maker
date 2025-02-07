@@ -1,7 +1,7 @@
 
 
 import { useWaypointContext } from "@/util/context/WaypointContext";
-import { bakeDubins } from "@/components/toolBar/bakeDubins";
+import { bakeDubins, staticEvaluate } from "@/components/toolBar/bakeDubins";
 import { pathEnergyRequirements, pathLength } from "@/lib/dubins/geometry";
 import { geneticOptimise } from "@/lib/optimisation/genetic";
 import { particleOptimise } from "@/lib/optimisation/particleSwarm";
@@ -21,6 +21,9 @@ export function Optimise() {
     let res = bakeDubins(waypoints, activeMission, algorithms[algorithm], setWaypoints, metrics[metric])
     setOptimiseRes(res)
   }
+
+  let energy = staticEvaluate(waypoints, activeMission, pathEnergyRequirements)
+  let length = staticEvaluate(waypoints, activeMission, pathLength)
 
   return (
     <div className="flex">
@@ -46,6 +49,11 @@ export function Optimise() {
           <p>time: {optimiseRes.t}ms</p>
         </div> : null
         }
+      </div>
+      <div>
+        <h2>current</h2>
+        <p>length: {length}</p>
+        <p>energy: {energy}</p>
       </div>
 
     </div>
