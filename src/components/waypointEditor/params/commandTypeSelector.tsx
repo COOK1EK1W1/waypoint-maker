@@ -1,11 +1,11 @@
 import { commandName } from "@/util/translationTable";
-import { useWaypointContext } from "../../util/context/WaypointContext";
+import { useWaypointContext } from "@/util/context/WaypointContext";
 import { commands, planeSupported } from "@/util/commands";
 import { Node } from "@/types/waypoints";
 
 
 
-export default function WaypointTypeSelector({ wps, change, allSame }: { wps: Node[], change: (e: React.ChangeEvent<HTMLSelectElement>) => void, allSame: boolean }) {
+export default function CommandTypeSelector({ wps, change, allSame }: { wps: Node[], change: (e: React.ChangeEvent<HTMLSelectElement>) => void, allSame: boolean }) {
   const { activeMission, waypoints } = useWaypointContext()
 
   const mission = waypoints.get(activeMission)

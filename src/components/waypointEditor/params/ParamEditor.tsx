@@ -1,10 +1,11 @@
-import { useWaypointContext } from "../../util/context/WaypointContext"
-import WaypointTypeSelector from "./WaypointTypeSelector";
+import { useWaypointContext } from "@/util/context/WaypointContext"
 import { commands } from "@/util/commands";
 import { Node, Waypoint } from "@/types/waypoints";
 import Parameter from "./Parameter";
+import CommandTypeSelector from "./commandTypeSelector";
+import { LatLngEditor } from "./LatLngEditor";
 
-export default function WaypointEditor() {
+export default function ParamEditor() {
   const { activeMission, selectedWPs, waypoints, setWaypoints } = useWaypointContext()
 
   const mission = waypoints.get(activeMission)
@@ -72,7 +73,7 @@ export default function WaypointEditor() {
 
   if (allSame && wps.length > 0) {
     return <>
-      <WaypointTypeSelector change={changeSelect} wps={wps} allSame={allSame} />
+      <CommandTypeSelector change={changeSelect} wps={wps} allSame={allSame} />
 
       <Parameter param={commanddesc.parameters[0]} name="param1" change={changeInput} value={(x) => x.wps.param1} wps={wps} />
       <Parameter param={commanddesc.parameters[1]} name="param2" change={changeInput} value={(x) => x.wps.param2} wps={wps} />
@@ -81,7 +82,7 @@ export default function WaypointEditor() {
       {!hasLocationParams && <Parameter param={commanddesc.parameters[4]} name="param5" change={changeInput} value={(x) => x.wps.param5} wps={wps} />}
       {!hasLocationParams && <Parameter param={commanddesc.parameters[5]} name="param6" change={changeInput} value={(x) => x.wps.param6} wps={wps} />}
       <Parameter param={commanddesc.parameters[6]} name="param7" change={changeInput} value={(x) => x.wps.param7} wps={wps} />
-
+      <LatLngEditor />
     </>
   } else {
     return (
