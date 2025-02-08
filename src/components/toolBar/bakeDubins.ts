@@ -1,13 +1,10 @@
-import { DubinsBetweenDiffRad } from "@/lib/dubins/dubins";
-import { applyBounds, getBounds, getTunableDubinsParameters, setTunableDubinsParameter, setTunableParameter, splitDubinsRuns, waypointToDubins } from "@/lib/dubins/dubinWaypoints";
-import { deg2rad, offset } from "@/lib/dubins/geometry";
+import { applyBounds, dubinsBetweenDubins, getBounds, getTunableDubinsParameters, setTunableDubinsParameter, setTunableParameter, splitDubinsRuns, waypointToDubins } from "@/lib/dubins/dubinWaypoints";
 import { res } from "@/lib/optimisation/types";
 import { WaypointCollection } from "@/lib/waypoints/waypointCollection";
 import { bound, dubinsPoint, Path, XY } from "@/types/dubins";
 import { Plane } from "@/types/vehicleType";
 import { Waypoint } from "@/types/waypoints";
 import { Dispatch, SetStateAction } from "react";
-
 
 // This function is a closure that takes in the waypoints and returns a function that takes in the tunable parameters and returns the total length of the path
 export function createEvaluate(wps: dubinsPoint[], optimisationFunction: (path: Path<XY>) => number) {
@@ -17,16 +14,8 @@ export function createEvaluate(wps: dubinsPoint[], optimisationFunction: (path: 
   }
   function evaluate(x: number[]): number {
     setTunableDubinsParameter(localWPS, x)
-    let totalLength = 0
-    for (let i = 0; i < wps.length - 1; i++) {
-      let a = localWPS[i]
-      let b = localWPS[i + 1]
-      let offsetA = offset(a.pos, a.passbyRadius, a.heading)
-      let offsetB = offset(b.pos, a.passbyRadius, a.heading)
-      let curves = DubinsBetweenDiffRad(offsetA, offsetB, deg2rad(a.heading), deg2rad(b.heading), a.radius, b.radius)
-      totalLength += optimisationFunction(curves)
-    }
-    return totalLength
+    let path = dubinsBetweenDubins(localWPS)
+    return optimisationFunction(path)
   }
   return evaluate
 }

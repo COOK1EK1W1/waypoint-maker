@@ -1,9 +1,10 @@
 import { Waypoint } from "@/types/waypoints";
 import { deg2rad, modf, offset, rad2deg } from "./geometry";
 import { Dir, DubinsBetweenDiffRad } from "./dubins";
-import { bound, dubinsPoint, LatLng, Path, Segment, XY } from "@/types/dubins";
+import { bound, Curve, dubinsPoint, LatLng, Path, Segment, XY } from "@/types/dubins";
 import { g2l, l2g } from "../world/conversion";
 import { Plane, Vehicle } from "@/types/vehicleType";
+import { crossProduct } from "../waypoints/fns";
 
 /*
  * find all the sections of a waypoint list which require a dubins path between
@@ -73,6 +74,30 @@ export function localisePath(path: Path<XY>, reference: LatLng): Path<LatLng> {
     }
   }
   return newPath
+}
+
+export function dubinsBetweenDubins(wps: dubinsPoint[]) {
+  let path: Path<XY> = []
+  for (let i = 0; i < wps.length - 1; i++) {
+    const a = wps[i]
+    const b = wps[i + 1]
+
+    let adir = 0;
+    let bdir = 0
+
+    //figure out offset direction
+    if (i > 0) {
+      adir = crossProduct(wps[i - 1].pos, a.pos, b.pos) > 0 ? 1 : -1 // clamp to 1 and -1
+    }
+    if (i < wps.length - 2) {
+      bdir = crossProduct(a.pos, b.pos, wps[i + 2].pos) > 0 ? 1 : -1
+    }
+
+    let offsetA = offset(a.pos, a.passbyRadius * adir, deg2rad(a.heading + 90))
+    let offsetB = offset(b.pos, b.passbyRadius * bdir, deg2rad(b.heading + 90))
+    path = path.concat(DubinsBetweenDiffRad(offsetA, offsetB, deg2rad(a.heading), deg2rad(b.heading), a.radius, b.radius))
+  }
+  return path
 }
 
 export function dubinsBetweenWaypoint(a: Waypoint, b: Waypoint, reference: LatLng): Path<LatLng> {
