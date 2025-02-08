@@ -15,17 +15,17 @@ export function convertToMAV(wps: Waypoint[], reference: LatLng): Waypoint[] {
       if (c1.type == "Curve") {
         const absTheta = Math.abs(c1.theta / (Math.PI * 2))
         const dir = absTheta / (c1.theta / (Math.PI * 2))
-        newMavWP.push({ frame: 3, type: 18, param1: absTheta, param2: 0, param3: c1.radius * dir, param4: 1, param5: c1.center.y, param6: c1.center.x, param7: section.wps[i].param7, autocontinue: 1 })
+        newMavWP.push({ frame: 3, type: 18, param1: absTheta, param2: 0, param3: c1.radius * dir, param4: 1, param5: c1.center.lat, param6: c1.center.lng, param7: section.wps[i].param7, autocontinue: 1 })
       }
       const s = path[1]
       if (s.type == "Straight") {
-        newMavWP.push({ frame: 3, type: 16, param1: 0, param2: 0, param3: 0, param4: 1, param5: s.end.y, param6: s.end.x, param7: section.wps[i + 1].param7, autocontinue: 1 })
+        newMavWP.push({ frame: 3, type: 16, param1: 0, param2: 0, param3: 0, param4: 1, param5: s.end.lat, param6: s.end.lng, param7: section.wps[i + 1].param7, autocontinue: 1 })
       }
       const c2 = path[2]
       if (c2.type == "Curve") {
         const absTheta = Math.abs(c2.theta / (Math.PI * 2))
         const dir = absTheta / (c2.theta / (Math.PI * 2))
-        newMavWP.push({ frame: 3, type: 18, param1: absTheta, param2: 0, param3: c2.radius * dir, param4: 1, param5: c2.center.y, param6: c2.center.x, param7: section.wps[i].param7, autocontinue: 1 })
+        newMavWP.push({ frame: 3, type: 18, param1: absTheta, param2: 0, param3: c2.radius * dir, param4: 1, param5: c2.center.lat, param6: c2.center.lng, param7: section.wps[i].param7, autocontinue: 1 })
       }
     }
 
