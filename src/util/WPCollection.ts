@@ -4,40 +4,6 @@ import { WaypointCollection } from "@/lib/waypoints/waypointCollection";
 import { LatLng } from "@/types/dubins";
 
 
-export function AvgLatLng(nodes: Node[], store: WaypointCollection): [number, number] {
-  let latTotal = 0
-  let lngTotal = 0
-  let count = 0
-  for (let i = 0; i < nodes.length; i++) {
-    const curNode = nodes[i]
-    switch (curNode.type) {
-      case "Waypoint": {
-        if (hasLocation(curNode.wps)) {
-          count += 1
-          latTotal += curNode.wps.param5
-          lngTotal += curNode.wps.param6
-        }
-        break;
-      }
-      case "Collection": {
-        const subCol = store.get(curNode.collectionID)
-        if (subCol != undefined) {
-          const [subLat, subLng] = AvgLatLng(subCol, store)
-          count += subCol.length
-          latTotal += subLat * subCol.length
-          lngTotal += subLng * subCol.length
-        }
-        break
-      }
-      default: {
-        const _exhaustiveCheck: never = curNode;
-        return _exhaustiveCheck
-      }
-    }
-  }
-  return [latTotal / count, lngTotal / count]
-}
-
 export function MoveWPsAvgTo(pos: LatLng, waypoints: WaypointCollection, selectedWPs: number[], active: string): WaypointCollection {
   const mission = waypoints.get(active);
   if (!mission) return waypoints;
@@ -52,7 +18,9 @@ export function MoveWPsAvgTo(pos: LatLng, waypoints: WaypointCollection, selecte
     wpsIds = selectedWPs;
   }
 
-  const [lat, lng] = AvgLatLng(wps, waypoints);
+  const leaves = wps.map((x) => waypoints.flattenNode(x)).reduce((cur, acc) => (acc.concat(cur)), [])
+
+  const { lat, lng } = avgLatLng(leaves)
   let waypointsUpdated = waypoints.clone();
   for (let i = 0; i < wps.length; i++) {
     waypointsUpdated.changeParam(wpsIds[i], active, (wp: Waypoint) => {
@@ -96,7 +64,6 @@ export function isPointInPolygon(polygon: Waypoint[], point: Waypoint) {
 }
 
 export function avgLatLng(wps: Waypoint[]): LatLng {
-
   let latTotal = 0
   let lngTotal = 0
   let count = 0
@@ -106,10 +73,8 @@ export function avgLatLng(wps: Waypoint[]): LatLng {
       latTotal += wp.param5
       lngTotal += wp.param6
     }
-
   }
   return { lat: latTotal / count, lng: lngTotal / count }
-
 }
 
 export function hasLocation(waypoint: Waypoint): boolean {
