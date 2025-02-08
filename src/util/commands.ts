@@ -7311,7 +7311,7 @@ const WpmCmds: Command[] = [{
   parameters: [{
     index: 1,
     label: "Fly-By distance",
-    description: "The distance so safely fly by the waypoint",
+    description: "The distance so safely fly pass the waypoint",
     units: "m",
     minValue: 0,
     maxValue: null,
@@ -7338,17 +7338,7 @@ const WpmCmds: Command[] = [{
     increment: null,
     default: null,
     options: [],
-  }, {
-    index: 4,
-    label: "Direction",
-    description: "The direction to fly by",
-    units: "",
-    minValue: -1,
-    maxValue: 1,
-    increment: 1,
-    default: 0,
-    options: [],
-  }, {
+  }, null, {
     index: 5,
     label: "Latitude",
     description: "Latitude",

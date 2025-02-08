@@ -3,7 +3,7 @@ import { useWaypointContext } from "@/util/context/WaypointContext";
 import { Waypoint } from "@/types/waypoints"
 import Arc from "../marker/arc";
 import { ReactNode } from "react";
-import { dubinsBetweenDubins, dubinsBetweenWaypoint, localisePath, splitDubinsRuns, waypointToDubins } from "@/lib/dubins/dubinWaypoints";
+import { dubinsBetweenDubins, localisePath, splitDubinsRuns, waypointToDubins } from "@/lib/dubins/dubinWaypoints";
 import DraggableMarker from "../marker/DraggableMarker";
 
 const curveOptions = { color: '#ff0000' }

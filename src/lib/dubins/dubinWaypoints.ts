@@ -1,9 +1,9 @@
 import { Waypoint } from "@/types/waypoints";
-import { deg2rad, modf, offset, rad2deg } from "./geometry";
-import { Dir, DubinsBetweenDiffRad } from "./dubins";
-import { bound, Curve, dubinsPoint, LatLng, Path, Segment, XY } from "@/types/dubins";
+import { deg2rad, mod2pi, modf, offset, rad2deg } from "./geometry";
+import { DubinsBetweenDiffRad } from "./dubins";
+import { bound, dubinsPoint, LatLng, Path, Segment, XY } from "@/types/dubins";
 import { g2l, l2g } from "../world/conversion";
-import { Plane, Vehicle } from "@/types/vehicleType";
+import { Plane } from "@/types/vehicleType";
 import { crossProduct } from "../waypoints/fns";
 
 /*
@@ -40,16 +40,6 @@ export function splitDubinsRuns(wps: Waypoint[]): { start: number, wps: Waypoint
   }
   return dubinSections
 
-}
-
-function num2dir(num: number) {
-  if (num >= 1) {
-    return Dir.Right
-  }
-  if (num <= -1) {
-    return Dir.Left
-  }
-  return undefined
 }
 
 export function localisePath(path: Path<XY>, reference: LatLng): Path<LatLng> {
@@ -98,49 +88,6 @@ export function dubinsBetweenDubins(wps: dubinsPoint[]) {
     path = path.concat(DubinsBetweenDiffRad(offsetA, offsetB, deg2rad(a.heading), deg2rad(b.heading), a.radius, b.radius))
   }
   return path
-}
-
-export function dubinsBetweenWaypoint(a: Waypoint, b: Waypoint, reference: LatLng): Path<LatLng> {
-  const start = g2l(reference, { lat: a.param5, lng: a.param6 })
-  const end = g2l(reference, { lat: b.param5, lng: b.param6 })
-  if (a.type == 69) {
-    let angleA = deg2rad(a.param2)
-    if (b.type == 69) {
-      let angleB = deg2rad(b.param2)
-      let offset_a = offset(start, a.param1, angleA - Math.PI / 2)
-      let offset_b = offset(end, b.param1, angleB - Math.PI / 2)
-      let res = DubinsBetweenDiffRad(offset_a, offset_b, angleA, angleB, a.param3, b.param3, num2dir(a.param4), num2dir(b.param4))
-      return localisePath(res, reference)
-    } else {
-      let offset_a = offset(start, a.param1, angleA - Math.PI / 2)
-      let offset_b = end
-      let res = DubinsBetweenDiffRad(offset_a, offset_b, angleA, 0, a.param3, 0, num2dir(a.param4), undefined)
-      return localisePath(res, reference)
-    }
-  } else {
-    if (b.type == 69) {
-      let angleB = deg2rad(b.param2)
-      let offset_a = start
-      let offset_b = offset(end, b.param1, angleB - Math.PI / 2)
-      let res = DubinsBetweenDiffRad(offset_a, offset_b, 0, angleB, 0, b.param3, undefined, num2dir(b.param4))
-      return localisePath(res, reference)
-
-    } else {
-      return []
-    }
-
-  }
-}
-
-export function getTunableParameters(wps: Waypoint[]): number[] {
-  let ret: number[] = []
-  for (const waypoint of wps) {
-    if (waypoint.type == 69) {
-      ret.push(deg2rad(waypoint.param2))
-      ret.push(waypoint.param3)
-    }
-  }
-  return ret
 }
 
 export function getTunableDubinsParameters(wps: dubinsPoint[]): number[] {
@@ -204,7 +151,7 @@ export function setTunableParameter(wps: Waypoint[], params: number[]): void {
     let cur = wps[i]
     if (cur.type == 69) {
       // radians
-      cur.param2 = rad2deg(params[paramI++])
+      cur.param2 = rad2deg(mod2pi(params[paramI++]))
       cur.param3 = params[paramI++]
     }
   }
@@ -219,6 +166,5 @@ export function setTunableDubinsParameter(wps: dubinsPoint[], params: number[]):
       cur.heading = rad2deg(params[paramI++])
       cur.radius = params[paramI++]
     }
-
   }
 }
