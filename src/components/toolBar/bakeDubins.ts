@@ -1,11 +1,11 @@
 import { DubinsBetweenDiffRad } from "@/lib/dubins/dubins";
 import { applyBounds, getBounds, getTunableDubinsParameters, setTunableDubinsParameter, setTunableParameter, splitDubinsRuns, waypointToDubins } from "@/lib/dubins/dubinWaypoints";
-import { deg2rad } from "@/lib/dubins/geometry";
+import { deg2rad, offset } from "@/lib/dubins/geometry";
 import { res } from "@/lib/optimisation/types";
 import { WaypointCollection } from "@/lib/waypoints/waypointCollection";
 import { bound, dubinsPoint, Path, XY } from "@/types/dubins";
-import { Plane, Vehicle } from "@/types/vehicleType";
-import { Node, Waypoint } from "@/types/waypoints";
+import { Plane } from "@/types/vehicleType";
+import { Waypoint } from "@/types/waypoints";
 import { Dispatch, SetStateAction } from "react";
 
 
@@ -21,7 +21,9 @@ export function createEvaluate(wps: dubinsPoint[], optimisationFunction: (path: 
     for (let i = 0; i < wps.length - 1; i++) {
       let a = localWPS[i]
       let b = localWPS[i + 1]
-      let curves = DubinsBetweenDiffRad(a.pos, b.pos, deg2rad(a.heading), deg2rad(b.heading), a.radius, b.radius)
+      let offsetA = offset(a.pos, a.passbyRadius, a.heading)
+      let offsetB = offset(b.pos, a.passbyRadius, a.heading)
+      let curves = DubinsBetweenDiffRad(offsetA, offsetB, deg2rad(a.heading), deg2rad(b.heading), a.radius, b.radius)
       totalLength += optimisationFunction(curves)
     }
     return totalLength

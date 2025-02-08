@@ -38,4 +38,5 @@ export type dubinsPoint = {
   radius: number,
   bounds: bound,
   heading: number // degrees
+  passbyRadius: number
 }

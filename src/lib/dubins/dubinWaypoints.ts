@@ -167,9 +167,9 @@ export function applyBounds(params: number[], bounds: bound[]): void {
 
 export function waypointToDubins(wp: Waypoint, reference: LatLng): dubinsPoint {
   if (wp.type == 69) {
-    return { pos: g2l(reference, { lat: wp.param5, lng: wp.param6 }), bounds: {}, radius: wp.param3, heading: wp.param2, tunable: true }
+    return { pos: g2l(reference, { lat: wp.param5, lng: wp.param6 }), bounds: {}, radius: wp.param3, heading: wp.param2, tunable: true, passbyRadius: wp.param1 }
   } else {
-    return { pos: g2l(reference, { lat: wp.param5, lng: wp.param6 }), bounds: {}, radius: 0, heading: wp.param2, tunable: false }
+    return { pos: g2l(reference, { lat: wp.param5, lng: wp.param6 }), bounds: {}, radius: 0, heading: wp.param2, tunable: false, passbyRadius: wp.param1 }
   }
 }
 
