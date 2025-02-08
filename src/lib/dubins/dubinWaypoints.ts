@@ -3,6 +3,7 @@ import { deg2rad, modf, offset, rad2deg } from "./geometry";
 import { Dir, DubinsBetweenDiffRad } from "./dubins";
 import { bound, dubinsPoint, LatLng, Path, Segment, XY } from "@/types/dubins";
 import { g2l, l2g } from "../world/conversion";
+import { Plane, Vehicle } from "@/types/vehicleType";
 
 /*
  * find all the sections of a waypoint list which require a dubins path between
@@ -128,12 +129,16 @@ export function getTunableDubinsParameters(wps: dubinsPoint[]): number[] {
   return ret
 }
 
-export function getBounds(wps: Waypoint[]): bound[] {
+export function getMinTurnRadius(maxBank: number, velocity: number) {
+  return Math.pow(velocity, 2) / (9.8 * Math.tan((maxBank * Math.PI) / 180))
+}
+
+export function getBounds(wps: Waypoint[], vehicle: Plane): bound[] {
   let bounds = []
   for (const waypoint of wps) {
     if (waypoint.type == 69) {
       bounds.push({ min: 0, max: 6.28, circular: true })
-      bounds.push({ min: 50 })
+      bounds.push({ min: getMinTurnRadius(vehicle.maxBank, vehicle.cruiseAirspeed) })
     }
   }
   return bounds

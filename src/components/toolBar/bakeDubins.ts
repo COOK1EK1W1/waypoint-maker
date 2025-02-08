@@ -4,6 +4,7 @@ import { deg2rad } from "@/lib/dubins/geometry";
 import { res } from "@/lib/optimisation/types";
 import { WaypointCollection } from "@/lib/waypoints/waypointCollection";
 import { bound, dubinsPoint, Path, XY } from "@/types/dubins";
+import { Plane, Vehicle } from "@/types/vehicleType";
 import { Node, Waypoint } from "@/types/waypoints";
 import { Dispatch, SetStateAction } from "react";
 
@@ -28,7 +29,7 @@ export function createEvaluate(wps: dubinsPoint[], optimisationFunction: (path: 
   return evaluate
 }
 
-export function staticEvaluate(waypoints: WaypointCollection, activeMission: string, optimisationFunction: (path: Path<XY>) => number) {
+export function staticEvaluate(waypoints: WaypointCollection, activeMission: string, optimisationFunction: (path: Path<XY>) => number, vehicle: Plane) {
   let activeWaypoints: Waypoint[] = waypoints.flatten(activeMission)
 
   const reference = waypoints.getReferencePoint()
@@ -42,7 +43,7 @@ export function staticEvaluate(waypoints: WaypointCollection, activeMission: str
     let dubinsPoints: dubinsPoint[] = section.wps.map((x) => waypointToDubins(x, reference))
 
     let startingParams = [...getTunableDubinsParameters(dubinsPoints)]
-    let bounds: bound[] = [...getBounds(section.wps)]
+    let bounds: bound[] = [...getBounds(section.wps, vehicle)]
     applyBounds(startingParams, bounds)
 
     let evaluate = createEvaluate(dubinsPoints, optimisationFunction)
@@ -52,7 +53,7 @@ export function staticEvaluate(waypoints: WaypointCollection, activeMission: str
 
 }
 
-export function bakeDubins(waypoints: WaypointCollection, activeMission: string, optimisationmethod: (initialGuess: readonly number[], bounds: bound[], fn: (a: number[]) => number) => res, setWaypoints: Dispatch<SetStateAction<WaypointCollection>>, optimisationFunction: (path: Path<XY>) => number) {
+export function bakeDubins(waypoints: WaypointCollection, activeMission: string, optimisationmethod: (initialGuess: readonly number[], bounds: bound[], fn: (a: number[]) => number) => res, setWaypoints: Dispatch<SetStateAction<WaypointCollection>>, optimisationFunction: (path: Path<XY>) => number, vehicle: Plane) {
   let activeWaypoints: Waypoint[] = waypoints.flatten(activeMission)
 
   const startTime = performance.now()
@@ -72,7 +73,7 @@ export function bakeDubins(waypoints: WaypointCollection, activeMission: string,
     let dubinsPoints: dubinsPoint[] = section.wps.map((x) => waypointToDubins(x, reference))
 
     let startingParams = [...getTunableDubinsParameters(dubinsPoints)]
-    let bounds: bound[] = [...getBounds(section.wps)]
+    let bounds: bound[] = [...getBounds(section.wps, vehicle)]
     applyBounds(startingParams, bounds)
 
     let evaluate = createEvaluate(dubinsPoints, optimisationFunction)
