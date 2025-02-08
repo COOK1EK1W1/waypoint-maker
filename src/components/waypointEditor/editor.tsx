@@ -12,7 +12,7 @@ import { Optimise } from "./optimisaion/optimisation";
 const tabs = {
   "Params": <ParamEditor />,
   "Terrain": <HeightMap />,
-  "Opimise": <Optimise />
+  "Optimise": <Optimise />
 }
 
 export default function Editor() {
@@ -42,7 +42,7 @@ export default function Editor() {
         <div className={cn("bg-white w-full rounded-lg shadow-lg shadow-black flex h-60 flex-col md:flex-row")}>
           <div className="flex flex-row md:flex-col">
             <div className="flex-grow flex flex-row md:flex-col">
-              {Object.keys(tabs).map((x, i) => (
+              {Object.keys(tabs).filter((x) => process.env.NEXT_PUBLIC_ALLOWDUBINS || x !== "Optimise").map((x, i) => (
                 <Button key={i} onClick={() => setTab(x as keyof typeof tabs)} className={cn("w-28", x != tab ? "bg-white" : null)}>{x}</Button>
               ))}
             </div>
