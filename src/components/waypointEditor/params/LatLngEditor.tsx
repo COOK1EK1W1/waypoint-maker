@@ -1,5 +1,5 @@
 import { AvgLatLng, MoveWPsAvgTo } from "@/util/WPCollection";
-import { useWaypointContext } from "../../util/context/WaypointContext";
+import { useWaypointContext } from "@/util/context/WaypointContext";
 import { Node, Waypoint } from "@/types/waypoints";
 import { FaArrowDown, FaArrowLeft, FaArrowRight, FaArrowUp } from "react-icons/fa";
 import { FaArrowRotateLeft, FaArrowRotateRight } from "react-icons/fa6";

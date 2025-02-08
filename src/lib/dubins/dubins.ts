@@ -28,7 +28,7 @@ export function findCenters(a: XY, heading: number, dist: number): { l: XY, r: X
  * @param {number} radA - The radius coming out of waypoint A
  * @param {number} radB - The radius coming into waypoint B
  */
-export function DubinsBetweenDiffRad(a: XY, b: XY, thetaA: number, thetaB: number, radA: number, radB: number, Adir?: Dir, Bdir?: Dir): Path {
+export function DubinsBetweenDiffRad(a: XY, b: XY, thetaA: number, thetaB: number, radA: number, radB: number, Adir?: Dir, Bdir?: Dir): Path<XY> {
 
   // nomalise angles
   thetaA = mod2pi(thetaA)
@@ -44,7 +44,7 @@ export function DubinsBetweenDiffRad(a: XY, b: XY, thetaA: number, thetaB: numbe
   const ar2bl = bearing(a_centers.r, b_centers.l)
   const al2br = bearing(a_centers.l, b_centers.r)
 
-  let sections: Path[] = []
+  let sections: Path<XY>[] = []
 
   // the angles for first curves
   let left_start = thetaA + Math.PI / 2
@@ -53,77 +53,77 @@ export function DubinsBetweenDiffRad(a: XY, b: XY, thetaA: number, thetaB: numbe
   //RSR
   if ((Adir != Dir.Left) && (Bdir != Dir.Left) && dist(a_centers.r, b_centers.r) > Math.abs(radA - radB)) {
     let a = Math.asin((radA - radB) / dist(a_centers.r, b_centers.r)) + ar2br
-    let c1: Curve = {
+    let c1: Curve<XY> = {
       type: "Curve",
       center: a_centers.r,
       radius: radA,
       start: right_start,
       theta: mod2pi(a - thetaA)
     }
-    let s: Straight = {
+    let s: Straight<XY> = {
       type: "Straight",
       start: offset(a_centers.r, radA, a - Math.PI / 2),
       end: offset(b_centers.r, radB, a - Math.PI / 2)
     }
-    let c2: Curve = {
+    let c2: Curve<XY> = {
       type: "Curve",
       center: b_centers.r,
       radius: radB,
       start: a - Math.PI / 2,
       theta: mod2pi(thetaB - a)
     }
-    let RSL: Path = [c1, s, c2]
+    let RSL: Path<XY> = [c1, s, c2]
     sections.push(RSL)
   }
 
   //LSL
   if ((Adir != Dir.Right) && (Bdir != Dir.Left) && dist(a_centers.l, b_centers.l) > Math.abs(radA - radB)) {
     let a = al2bl - Math.asin((radA - radB) / dist(a_centers.l, b_centers.l))
-    let c1: Curve = {
+    let c1: Curve<XY> = {
       type: "Curve",
       center: a_centers.l,
       radius: radA,
       start: left_start,
       theta: mod2pi(a - thetaA) - Math.PI * 2
     }
-    let s: Straight = {
+    let s: Straight<XY> = {
       type: "Straight",
       start: offset(a_centers.l, radA, a + Math.PI / 2),
       end: offset(b_centers.l, radB, a + Math.PI / 2)
     }
-    let c2: Curve = {
+    let c2: Curve<XY> = {
       type: "Curve",
       center: b_centers.l,
       radius: radB, start: a - 3 * (Math.PI / 2),
       theta: mod2pi(thetaB - a) - Math.PI * 2
     }
-    let RSL: Path = [c1, s, c2]
+    let RSL: Path<XY> = [c1, s, c2]
     sections.push(RSL)
   }
 
   //RSL
   if ((Adir != Dir.Left) && (Bdir != Dir.Right) && dist(a_centers.r, b_centers.l) > Math.abs(radA + radB)) {
     let a = Math.asin((radA + radB) / dist(a_centers.r, b_centers.l)) + ar2bl
-    let c1: Curve = {
+    let c1: Curve<XY> = {
       type: "Curve",
       center: a_centers.r,
       radius: radA,
       start: right_start,
       theta: mod2pi(a - thetaA)
     }
-    let s: Straight = {
+    let s: Straight<XY> = {
       type: "Straight",
       start: offset(a_centers.r, radA, a - Math.PI / 2),
       end: offset(b_centers.l, -radB, a - Math.PI / 2)
     }
-    let c2: Curve = {
+    let c2: Curve<XY> = {
       type: "Curve",
       center: b_centers.l,
       radius: radB,
       start: a - 3 * (Math.PI / 2),
       theta: mod2pi(thetaB - a) - Math.PI * 2
     }
-    let RSL: Path = [c1, s, c2]
+    let RSL: Path<XY> = [c1, s, c2]
     sections.push(RSL)
 
   }
@@ -131,26 +131,26 @@ export function DubinsBetweenDiffRad(a: XY, b: XY, thetaA: number, thetaB: numbe
   //LSR
   if ((Adir != Dir.Right) && (Bdir != Dir.Left) && dist(a_centers.l, b_centers.r) > Math.abs(radA + radB)) {
     let a = al2br - Math.asin((radA + radB) / dist(a_centers.l, b_centers.r))
-    let c1: Curve = {
+    let c1: Curve<XY> = {
       type: "Curve",
       center: a_centers.l,
       radius: radA,
       start: left_start,
       theta: mod2pi(a - thetaA) - Math.PI * 2
     }
-    let s: Straight = {
+    let s: Straight<XY> = {
       type: "Straight",
       start: offset(a_centers.l, radA, a + Math.PI / 2),
       end: offset(b_centers.r, -radB, a + Math.PI / 2)
     }
-    let c2: Curve = {
+    let c2: Curve<XY> = {
       type: "Curve",
       center: b_centers.r,
       radius: radB,
       start: a - Math.PI / 2,
       theta: mod2pi(thetaB - a)
     }
-    let LSR: Path = [c1, s, c2]
+    let LSR: Path<XY> = [c1, s, c2]
     sections.push(LSR)
   }
 

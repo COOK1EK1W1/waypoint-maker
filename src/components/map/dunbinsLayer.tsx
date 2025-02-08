@@ -34,12 +34,12 @@ export default function DubinsLayer() {
       curves.map((c, a) => {
         switch (c.type) {
           case "Curve":
-            let rWaypoint: Waypoint = { frame: 0, type: 189, param1: 0, param2: 0, param3: 0, param4: 0, param6: c.center.x, param5: c.center.y, param7: 0, autocontinue: 0 }
+            let rWaypoint: Waypoint = { frame: 0, type: 189, param1: 0, param2: 0, param3: 0, param4: 0, param6: c.center.lat, param5: c.center.lng, param7: 0, autocontinue: 0 }
             //markers.push(<DraggableMarker key={"" + i + a} waypoint={rWaypoint} active={false} />)
             lines.push(<Arc key={key++} curve={c} pathOptions={curveOptions} />)
             break;
           case "Straight":
-            lines.push(<Polyline key={key++} pathOptions={straightOptions} positions={[{ lat: c.start.y, lng: c.start.x }, { lat: c.end.y, lng: c.end.x }]} />)
+            lines.push(<Polyline key={key++} pathOptions={straightOptions} positions={[c.start, c.end]} />)
             break
         }
       })

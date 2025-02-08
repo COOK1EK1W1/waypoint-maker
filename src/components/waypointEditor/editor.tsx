@@ -1,20 +1,25 @@
 "use client"
 import { useWaypointContext } from "@/util/context/WaypointContext";
-import { LatLngEditor } from "./LatLngEditor";
-import WaypointEditor from "./WaypointEditor";
-import CurEdit from "./curEdit";
 import { Node } from "@/types/waypoints";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
-import HeightMap from "./heightMap";
 import Button from "../toolBar/button";
+import HeightMap from "./terrain/heightMap";
+import ParamEditor from "./params/ParamEditor";
+import { FaArrowDown } from "react-icons/fa";
+import { Optimise } from "./optimisaion/optimisation";
+
+const tabs = {
+  "Params": <ParamEditor />,
+  "Terrain": <HeightMap />,
+  "Optimise": <Optimise />
+}
 
 export default function Editor() {
 
   const { activeMission, selectedWPs, waypoints } = useWaypointContext()
   const [hidden, setHidden] = useState(false)
-
-
+  const [tab, setTab] = useState<keyof typeof tabs>("Params");
 
 
   const mission = waypoints.get(activeMission)
@@ -30,28 +35,25 @@ export default function Editor() {
     wpsIds = selectedWPs;
   }
 
-  if (wps.length == 0) {
-    return
-
-  }
-
   return (
     <>
-      <div className="h-[100dvh] absolute z-20">
-        {hidden ? <Button className="absolute z-20 rounded-lg left-2 bottom-2" onClick={() => setHidden(false)}>Editor</Button> : null}
-        <div className={cn("z-20 absolute bottom-0 m-2 w-[930px] ease-in-out duration-200", hidden ? "bottom-[-100vh]" : "")}>
-          <div className={cn("bg-white rounded-lg shadow-lg shadow-black")}>
-            <div className="flex">
-              <CurEdit onHide={() => setHidden(true)} />
-              <div className="flex flex-wrap">
-                <WaypointEditor />
-                <LatLngEditor />
-              </div>
+      {hidden ? <Button className="absolute z-20 rounded-lg left-2 bottom-2" onClick={() => setHidden(false)}>Editor</Button> : null}
+      <div className={cn("z-20 p-2 absolute bottom-0 w-full md:w-[600px] lg:w-[920px] ease-in-out duration-200", hidden ? "bottom-[-100dvh]" : "")}>
+        <div className={cn("bg-white w-full rounded-lg shadow-lg shadow-black flex h-60 flex-col md:flex-row")}>
+          <div className="flex flex-row md:flex-col">
+            <div className="flex-grow flex flex-row md:flex-col">
+              {Object.keys(tabs).filter((x) => process.env.NEXT_PUBLIC_ALLOWDUBINS || x !== "Optimise").map((x, i) => (
+                <Button key={i} onClick={() => setTab(x as keyof typeof tabs)} className={cn("w-28", x != tab ? "bg-white" : null)}>{x}</Button>
+              ))}
             </div>
-            <HeightMap />
+            <Button onClick={() => setHidden(true)} className={cn("w-28 bg-white")}>Hide <FaArrowDown className="ml-2" /></Button>
+          </div>
+          <div className="w-1 mx-2 h-full bg-gray-200"></div>
+          <div className="flex-grow flex flex-wrap">
+            {tabs[tab]}
           </div>
         </div>
-      </div>
+      </div >
     </>
 
   )

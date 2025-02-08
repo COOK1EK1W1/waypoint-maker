@@ -1,12 +1,10 @@
 "use client"
 
 import Button from "../toolBar/button"
-import { useRouter } from "next/navigation"
 import { authClient } from "@/util/auth-client"
 import { cn } from "@/lib/utils"
 
 export default function LoginModal() {
-  const router = useRouter()
   const { signIn } = authClient
   return (
     <div className="flex flex-row w-full justify-around py-4">

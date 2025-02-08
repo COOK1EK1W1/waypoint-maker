@@ -1,7 +1,7 @@
 import { Waypoint } from "@/types/waypoints";
 import { deg2rad, modf, offset, rad2deg } from "./geometry";
 import { Dir, DubinsBetweenDiffRad } from "./dubins";
-import { bound, LatLng, Path } from "@/types/dubins";
+import { bound, dubinsPoint, LatLng, Path, Segment, XY } from "@/types/dubins";
 import { g2l, l2g } from "../world/conversion";
 
 /*
@@ -50,27 +50,31 @@ function num2dir(num: number) {
   return undefined
 }
 
-export function localisePath(path: Path, reference: LatLng): Path {
+export function localisePath(path: Path<XY>, reference: LatLng): Path<LatLng> {
+  let newPath: Path<LatLng> = []
   for (let segment of path) {
     switch (segment.type) {
       case "Curve": {
-        let center = l2g(reference, { x: segment.center.x, y: segment.center.y })
-        segment.center = { x: center.lng, y: center.lat }
+        let { center, ...rest } = segment
+        let newCenter = l2g(reference, { x: center.x, y: center.y })
+        let newSegment: Segment<LatLng> = { ...rest, center: newCenter }
+        newPath.push(newSegment)
         break;
       }
       case "Straight": {
-        let start = l2g(reference, { x: segment.start.x, y: segment.start.y })
-        segment.start = { x: start.lng, y: start.lat }
-        let end = l2g(reference, { x: segment.end.x, y: segment.end.y })
-        segment.end = { x: end.lng, y: end.lat }
+        let { start, end, ...rest } = segment
+        let newStart = l2g(reference, { x: start.x, y: start.y })
+        let newEnd = l2g(reference, { x: end.x, y: end.y })
+        let newSegment: Segment<LatLng> = { ...rest, end: newEnd, start: newStart }
+        newPath.push(newSegment)
         break
       }
     }
   }
-  return path
+  return newPath
 }
 
-export function dubinsBetweenWaypoint(a: Waypoint, b: Waypoint, reference: LatLng): Path {
+export function dubinsBetweenWaypoint(a: Waypoint, b: Waypoint, reference: LatLng): Path<LatLng> {
   const start = g2l(reference, { lat: a.param5, lng: a.param6 })
   const end = g2l(reference, { lat: b.param5, lng: b.param6 })
   if (a.type == 69) {
@@ -113,6 +117,17 @@ export function getTunableParameters(wps: Waypoint[]): number[] {
   return ret
 }
 
+export function getTunableDubinsParameters(wps: dubinsPoint[]): number[] {
+  let ret: number[] = []
+  for (const waypoint of wps) {
+    if (waypoint.tunable) {
+      ret.push(deg2rad(waypoint.heading))
+      ret.push(waypoint.radius)
+    }
+  }
+  return ret
+}
+
 export function getBounds(wps: Waypoint[]): bound[] {
   let bounds = []
   for (const waypoint of wps) {
@@ -145,6 +160,14 @@ export function applyBounds(params: number[], bounds: bound[]): void {
   }
 }
 
+export function waypointToDubins(wp: Waypoint, reference: LatLng): dubinsPoint {
+  if (wp.type == 69) {
+    return { pos: g2l(reference, { lat: wp.param5, lng: wp.param6 }), bounds: {}, radius: wp.param3, heading: wp.param2, tunable: true }
+  } else {
+    return { pos: g2l(reference, { lat: wp.param5, lng: wp.param6 }), bounds: {}, radius: 0, heading: wp.param2, tunable: false }
+  }
+}
+
 export function setTunableParameter(wps: Waypoint[], params: number[]): void {
   let paramI = 0
   for (let i = 0; i < wps.length; i++) {
@@ -154,7 +177,18 @@ export function setTunableParameter(wps: Waypoint[], params: number[]): void {
       cur.param2 = rad2deg(params[paramI++])
       cur.param3 = params[paramI++]
     }
+  }
+}
+
+export function setTunableDubinsParameter(wps: dubinsPoint[], params: number[]): void {
+  let paramI = 0
+  for (let i = 0; i < wps.length; i++) {
+    let cur = wps[i]
+    if (cur.tunable) {
+      // radians
+      cur.heading = rad2deg(params[paramI++])
+      cur.radius = params[paramI++]
+    }
 
   }
-
 }

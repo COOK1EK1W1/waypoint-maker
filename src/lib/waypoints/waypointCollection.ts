@@ -42,7 +42,7 @@ export class WaypointCollection {
   }
 
   getMissions() {
-    return this.collection.keys()
+    return Array.from(this.collection.keys())
   }
 
   pushToMission(missionName: string, waypoint: Node) {

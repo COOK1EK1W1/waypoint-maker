@@ -1,6 +1,6 @@
 import { Segment, Path, XY, LatLng } from "@/types/dubins";
 
-export function segmentLength(seg: Segment): number {
+export function segmentLength(seg: Segment<XY>): number {
   switch (seg.type) {
     case "Curve":
       return Math.abs(seg.theta * seg.radius)
@@ -17,15 +17,6 @@ export function rad2deg(rad: number): number {
   return rad * 180 / Math.PI
 }
 
-export function worldSegmentLength(seg: Segment): number {
-  switch (seg.type) {
-    case "Curve":
-      return Math.abs(seg.theta * seg.radius)
-    case "Straight":
-      return world_dist(seg.start, seg.end)
-  }
-}
-
 export function energyRequirement(radius: number, velocity: number) {
   if (radius == 0) {
     return 0
@@ -33,17 +24,18 @@ export function energyRequirement(radius: number, velocity: number) {
   return (Math.sqrt(radius * radius * 9.81 * 9.81 + Math.pow(velocity, 4))) / (radius * 9.81)
 }
 
-export function pathEnergyRequirements(path: Path) {
-  let velocity = 23
+export function pathEnergyRequirements(path: Path<XY>) {
+  let velocity = 30
   let energyConstant = 1
   let totalEnergy = 0
   for (const seg of path) {
+    let segLength = segmentLength(seg)
     switch (seg.type) {
       case "Curve":
-        totalEnergy += Math.abs(seg.theta * seg.radius) * energyRequirement(seg.radius, velocity) * energyConstant
+        totalEnergy += segLength * energyRequirement(seg.radius, velocity) * energyConstant
         continue;
       case "Straight":
-        totalEnergy += world_dist(seg.start, seg.end) * energyConstant
+        totalEnergy += segLength * energyConstant
         continue;
     }
   }
@@ -67,37 +59,15 @@ export function worldDist(a: LatLng, b: LatLng) {
   return R * c;
 }
 
-export function world_dist(a: XY, b: XY) {
-  // todo remove
-  const R = 6371000; // Earth's radius in meters
-  const lat1 = a.y * Math.PI / 180;
-  const lat2 = b.y * Math.PI / 180;
-  const deltaLat = (b.y - a.y) * Math.PI / 180;
-  const deltaLon = (b.x - a.x) * Math.PI / 180;
-
-  const aHav = Math.sin(deltaLat / 2) * Math.sin(deltaLat / 2) +
-    Math.cos(lat1) * Math.cos(lat2) *
-    Math.sin(deltaLon / 2) * Math.sin(deltaLon / 2);
-
-  const c = 2 * Math.atan2(Math.sqrt(aHav), Math.sqrt(1 - aHav));
-
-  // Return the distance in meters
-  return R * c;
-
-}
-
 export function dist(a: XY, b: XY) {
   // euclidean distance function
   return Math.sqrt(Math.pow(b.x - a.x, 2) + Math.pow(b.y - a.y, 2))
 }
 
-export function pathLength(path: Path) {
-  return path.map((x: Segment) => segmentLength(x)).reduce((acc, a) => acc + a, 0)
+export function pathLength(path: Path<XY>) {
+  return path.map((x: Segment<XY>) => segmentLength(x)).reduce((acc, a) => acc + a, 0)
 }
 
-export function worldPathLength(path: Path) {
-  return path.map((x: Segment) => worldSegmentLength(x)).reduce((acc, a) => acc + a, 0)
-}
 
 export function offset(a: XY, dist: number, angle: number): XY {
   return {
@@ -106,21 +76,21 @@ export function offset(a: XY, dist: number, angle: number): XY {
   }
 }
 
-export function worldOffset(a: XY, dist: number, angle: number): XY {
-  const latRad = a.y * Math.PI / 180
+export function worldOffset(a: LatLng, dist: number, angle: number): LatLng {
+  const latRad = a.lat * Math.PI / 180
   const mpld = 111320.0;
   const mplo = 111320.0 * Math.cos(latRad);
   return {
-    x: a.x + dist * Math.sin(angle) / mplo,
-    y: a.y + dist * Math.cos(angle) / mpld
+    lng: a.lng + dist * Math.sin(angle) / mplo,
+    lat: a.lat + dist * Math.cos(angle) / mpld
   }
 }
 
-export function worldBearing(a: XY, b: XY): number {
-  const lat1 = a.y * Math.PI / 180; // Convert latitude of point a to radians
-  const lat2 = b.y * Math.PI / 180; // Convert latitude of point b to radians
-  const lon1 = a.x * Math.PI / 180; // Convert longitude of point a to radians
-  const lon2 = b.x * Math.PI / 180; // Convert longitude of point b to radians
+export function worldBearing(a: LatLng, b: LatLng): number {
+  const lat1 = a.lat * Math.PI / 180; // Convert latitude of point a to radians
+  const lat2 = b.lat * Math.PI / 180; // Convert latitude of point b to radians
+  const lon1 = a.lng * Math.PI / 180; // Convert longitude of point a to radians
+  const lon2 = b.lng * Math.PI / 180; // Convert longitude of point b to radians
 
   const deltaLon = lon2 - lon1;
 

@@ -1,36 +1,36 @@
 import { expect, test } from "bun:test";
-import { Segment } from "@/types/dubins";
-import { bearing, mod2pi, modf, offset, pathLength, segmentLength, world_dist, worldBearing, worldDist } from "@/lib/dubins/geometry";
+import { Path, Segment, XY } from "@/types/dubins";
+import { bearing, deg2rad, dist, mod2pi, modf, offset, pathLength, rad2deg, segmentLength, worldBearing, worldDist } from "@/lib/dubins/geometry";
 
 test("straight line len", () => {
-  const a: Segment = { type: "Straight", start: { x: 0, y: 0 }, end: { x: 3, y: 4 } }
+  const a: Segment<XY> = { type: "Straight", start: { x: 0, y: 0 }, end: { x: 3, y: 4 } }
   expect(segmentLength(a)).toBe(5);
 
-  const b: Segment = { type: "Straight", end: { x: 0, y: 0 }, start: { x: 3, y: 4 } }
+  const b: Segment<XY> = { type: "Straight", end: { x: 0, y: 0 }, start: { x: 3, y: 4 } }
   expect(segmentLength(b)).toBe(5);
 
-  const c: Segment = { type: "Straight", end: { x: 0, y: 0 }, start: { x: 3, y: 4 } }
+  const c: Segment<XY> = { type: "Straight", end: { x: 0, y: 0 }, start: { x: 3, y: 4 } }
   expect(segmentLength(c)).toBe(5);
 
-  const d: Segment = { type: "Straight", end: { x: 0, y: 0 }, start: { x: 0, y: 0 } }
+  const d: Segment<XY> = { type: "Straight", end: { x: 0, y: 0 }, start: { x: 0, y: 0 } }
   expect(segmentLength(d)).toBe(0);
 });
 
 
 test("curve length", () => {
-  const a: Segment = { type: "Curve", center: { x: 3, y: 4 }, radius: 10, start: Math.PI, theta: -Math.PI }
+  const a: Segment<XY> = { type: "Curve", center: { x: 3, y: 4 }, radius: 10, start: Math.PI, theta: -Math.PI }
   expect(segmentLength(a)).toBeCloseTo(Math.PI * 10);
 
-  const b: Segment = { type: "Curve", center: { x: 3, y: 4 }, radius: 10, start: 0, theta: -Math.PI }
+  const b: Segment<XY> = { type: "Curve", center: { x: 3, y: 4 }, radius: 10, start: 0, theta: -Math.PI }
   expect(segmentLength(b)).toBeCloseTo(Math.PI * 10);
 
-  const c: Segment = { type: "Curve", center: { x: 3, y: 4 }, radius: 10, start: 0, theta: Math.PI }
+  const c: Segment<XY> = { type: "Curve", center: { x: 3, y: 4 }, radius: 10, start: 0, theta: Math.PI }
   expect(segmentLength(c)).toBeCloseTo(Math.PI * 10);
 
-  const d: Segment = { type: "Curve", center: { x: 3, y: 4 }, radius: 10, start: 0, theta: Math.PI * 2 }
+  const d: Segment<XY> = { type: "Curve", center: { x: 3, y: 4 }, radius: 10, start: 0, theta: Math.PI * 2 }
   expect(segmentLength(d)).toBeCloseTo(Math.PI * 20);
 
-  const e: Segment = { type: "Curve", center: { x: 3, y: 4 }, radius: 10, start: 0, theta: 0 }
+  const e: Segment<XY> = { type: "Curve", center: { x: 3, y: 4 }, radius: 10, start: 0, theta: 0 }
   expect(segmentLength(e)).toBeCloseTo(0);
 
 });
@@ -83,17 +83,8 @@ test("mod2pi", () => {
 })
 
 test("world Bearing", () => {
-  expect(worldBearing({ x: 0, y: 0 }, { x: 0, y: 10 })).toBe(0)
-  expect(worldBearing({ x: 0, y: 0 }, { x: 0, y: -10 })).toBeCloseTo(Math.PI)
-})
-
-test("world distance", () => {
-  expect(world_dist({ x: 0, y: 0 }, { x: 0, y: 0 })).toBeCloseTo(0)
-  expect(world_dist({ x: 0, y: 0 }, { x: 20, y: 20 })).toBeCloseTo(3112445.04)
-  expect(world_dist({ x: 20, y: 20 }, { x: 0, y: 0 })).toBeCloseTo(3112445.04)
-  expect(world_dist({ x: 0, y: 0 }, { x: 90, y: 0 })).toBeCloseTo(10007543.4)
-  expect(world_dist({ x: 0, y: 0 }, { x: 90, y: 40 })).toBeCloseTo(10007543.4)
-  expect(world_dist({ y: 40.7128, x: 74.006 }, { y: 51.5072, x: 0.1276 })).toBeCloseTo(5570242.31)
+  expect(worldBearing({ lng: 0, lat: 0 }, { lng: 0, lat: 10 })).toBe(0)
+  expect(worldBearing({ lng: 0, lat: 0 }, { lng: 0, lat: -10 })).toBeCloseTo(Math.PI)
 })
 
 test("world distance better func", () => {
@@ -103,4 +94,37 @@ test("world distance better func", () => {
   expect(worldDist({ lng: 0, lat: 0 }, { lng: 90, lat: 0 })).toBeCloseTo(10007543.4)
   expect(worldDist({ lng: 0, lat: 0 }, { lng: 90, lat: 40 })).toBeCloseTo(10007543.4)
   expect(worldDist({ lat: 40.7128, lng: 74.006 }, { lat: 51.5072, lng: 0.1276 })).toBeCloseTo(5570242.31)
+})
+
+test("dist", () => {
+  expect(dist({ x: 0, y: 0 }, { x: 0, y: 0 })).toBe(0)
+  expect(dist({ x: 0, y: 0 }, { x: 3, y: 4 })).toBe(5)
+  expect(dist({ x: -1, y: -1 }, { x: 2, y: 3 })).toBe(5)
+  expect(dist({ x: 1, y: 1 }, { x: -2, y: -3 })).toBe(5)
+})
+
+test("deg2rad", () => {
+  expect(deg2rad(0)).toBe(0)
+  expect(deg2rad(90)).toBe(Math.PI / 2)
+  expect(deg2rad(180)).toBe(Math.PI)
+  expect(deg2rad(360)).toBe(Math.PI * 2)
+  expect(deg2rad(-180)).toBe(-Math.PI)
+})
+
+test("rad2deg", () => {
+  expect(rad2deg(0)).toBe(0)
+  expect(rad2deg(Math.PI / 2)).toBe(90)
+  expect(rad2deg(Math.PI)).toBe(180)
+  expect(rad2deg(Math.PI * 2)).toBe(360)
+  expect(rad2deg(-Math.PI)).toBe(-180)
+})
+
+test("path length", () => {
+  let curves: Path<XY> = []
+  expect(pathLength(curves)).toBe(0)
+
+  curves.push({ type: "Straight", start: { x: 0, y: 0 }, end: { x: 0, y: 10 } })
+  expect(pathLength(curves)).toBe(10)
+  curves.push({ type: "Curve", center: { x: 0, y: 0 }, start: 0, theta: Math.PI, radius: 10 })
+  expect(pathLength(curves)).toBeCloseTo(10 + 31.4159)
 })

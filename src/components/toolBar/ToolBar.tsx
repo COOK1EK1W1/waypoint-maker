@@ -2,7 +2,6 @@ import WPCheck from "./WPcheck"
 import VehicleTypeButton from "../vehicleType/vehicleTypeButton"
 import Image from "next/image"
 import MissionIO from "./missionIO"
-import OptimiseButton from "./optimise"
 import User from "./user"
 
 export default function ToolBar() {
@@ -15,7 +14,6 @@ export default function ToolBar() {
         <MissionIO />
         <WPCheck />
         <VehicleTypeButton />
-        <OptimiseButton />
         {process.env.ALLOWLOGIN ? <User /> : null}
       </div>
     </div>

@@ -4,7 +4,7 @@ import { getTerrain } from "@/util/terrain";
 import { useThrottle } from "@uidotdev/usehooks";
 import { useEffect, useState } from "react";
 import { Area, CartesianGrid, ComposedChart, Line, XAxis, YAxis } from "recharts";
-import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "../ui/chart";
+import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 
 function interpolate(lat1: number, lat2: number, lng1: number, lng2: number, c: number) {
   return { lat: lat1 * (1 - c) + lat2 * c, lng: lng1 * (1 - c) + lng2 * c }
@@ -105,47 +105,45 @@ export default function HeightMap() {
   }
 
   return (
-    <div>
-      <ChartContainer config={chartConfig} className="h-[150px] w-full" >
-        <ComposedChart
-          accessibilityLayer
-          data={data}
-        >
-          <CartesianGrid vertical={false} />
-          <XAxis
-            dataKey="distance"
-            tickLine={false}
-            axisLine={false}
-            tickMargin={8}
-          />
-          <YAxis
-            dataKey="waypointHeight"
-            tickLine={false}
-            axisLine={false}
-            tickMargin={8}
-            domain={[minTerrainHeight - terrainData[0]?.elevation || 0 - 2, "dataMax"]}
-          />
-          <ChartTooltip
-            cursor={false}
-            content={<ChartTooltipContent indicator="line" />}
-          />
-          <Area
-            dataKey="terrainHeight"
-            type="natural"
-            fill="var(--color-desktop)"
-            fillOpacity={0.4}
-            stroke="var(--color-desktop)"
-          />
-          <Line
-            dataKey="waypointHeight"
-            type="linear"
-            stroke="var(--color-desktop)"
-            strokeWidth={2}
-            dot={true}
-            connectNulls={true}
-          />
-        </ComposedChart>
-      </ChartContainer>
-    </div >
+    <ChartContainer config={chartConfig} className="h-full w-full" >
+      <ComposedChart
+        accessibilityLayer
+        data={data}
+      >
+        <CartesianGrid vertical={false} />
+        <XAxis
+          dataKey="distance"
+          tickLine={false}
+          axisLine={false}
+          tickMargin={8}
+        />
+        <YAxis
+          dataKey="waypointHeight"
+          tickLine={false}
+          axisLine={false}
+          tickMargin={8}
+          domain={[minTerrainHeight - terrainData[0]?.elevation || 0 - 2, "dataMax"]}
+        />
+        <ChartTooltip
+          cursor={false}
+          content={<ChartTooltipContent indicator="line" />}
+        />
+        <Area
+          dataKey="terrainHeight"
+          type="natural"
+          fill="var(--color-desktop)"
+          fillOpacity={0.4}
+          stroke="var(--color-desktop)"
+        />
+        <Line
+          dataKey="waypointHeight"
+          type="linear"
+          stroke="var(--color-desktop)"
+          strokeWidth={2}
+          dot={true}
+          connectNulls={true}
+        />
+      </ComposedChart>
+    </ChartContainer>
   )
 }
