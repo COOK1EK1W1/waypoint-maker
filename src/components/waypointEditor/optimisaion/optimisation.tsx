@@ -14,15 +14,17 @@ import { cn } from "@/lib/utils";
 
 
 export function Optimise() {
-  const { waypoints, setWaypoints, activeMission } = useWaypointContext()
   const { vehicle } = useVehicleTypeContext()
-  const [optimiseRes, setOptimiseRes] = useState<{ s: number, e: number, t: number } | null>(null)
-  const [algorithm, setAlgorithm] = useState<keyof typeof algorithms>("Particle")
-  const [metric, setMetric] = useState<keyof typeof metrics>("Length")
   if (vehicle.type != "Plane") return <div>only planes are supported with optimisation</div>
 
   const algorithms = { "Particle": particleOptimise, "Genetic": geneticOptimise }
   const metrics = { "Length": pathLength, "Energy": (x: Path<XY>) => pathEnergyRequirements(x, vehicle.cruiseAirspeed, vehicle.energyConstant) }
+
+  const { waypoints, setWaypoints, activeMission } = useWaypointContext()
+  const [optimiseRes, setOptimiseRes] = useState<{ s: number, e: number, t: number } | null>(null)
+  const [algorithm, setAlgorithm] = useState<keyof typeof algorithms>("Particle")
+  const [metric, setMetric] = useState<keyof typeof metrics>("Length")
+
 
   function runOptimisation() {
     let res = bakeDubins(waypoints, activeMission, algorithms[algorithm], setWaypoints, metrics[metric], vehicle as Plane)

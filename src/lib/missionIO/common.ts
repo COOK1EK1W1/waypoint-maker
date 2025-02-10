@@ -2,6 +2,21 @@ import { Waypoint } from "@/types/waypoints";
 import { dubinsBetweenDubins, localisePath, splitDubinsRuns, waypointToDubins } from "@/lib/dubins/dubinWaypoints";
 import { LatLng } from "@/types/dubins";
 
+export function simplifyDubinsWaypoints(wps: Waypoint[]) {
+  // simplify dubins runs
+  let simplifiedMavWP: Waypoint[] = []
+  for (let i = 0; i < wps.length - 1; i++) {
+    if (wps[i].type == 18 && wps[i + 1].type == 18 && wps[i].param5 == wps[i + 1].param5 && wps[i].param6 == wps[i + 1].param6 && wps[i].param3 == wps[i + 1].param3) {
+      simplifiedMavWP.push({ frame: 3, type: 18, param1: wps[i].param1 + wps[i + 1].param1, param2: 0, param3: wps[i].param3, param4: 1, param5: wps[i].param5, param6: wps[i].param6, param7: wps[i + 1].param7, autocontinue: 1 })
+      i++
+    } else {
+      simplifiedMavWP.push(wps[i])
+    }
+  }
+  simplifiedMavWP = simplifiedMavWP.filter((x) => (x.type != 18 || x.param1 > 0.03))
+  return simplifiedMavWP
+}
+
 export function convertToMAV(wps: Waypoint[], reference: LatLng): Waypoint[] {
 
   // render the dubins runs to waypoints
@@ -15,15 +30,16 @@ export function convertToMAV(wps: Waypoint[], reference: LatLng): Waypoint[] {
     let newMavWP: Waypoint[] = []
     for (let i = 0; i < worldPath.length; i++) {
       const section = worldPath[i]
+      const curWaypoint = Math.floor(i / 3)
       switch (section.type) {
         case "Curve": {
           const absTheta = Math.abs(section.theta / (Math.PI * 2))
           const dir = absTheta / (section.theta / (Math.PI * 2))
-          newMavWP.push({ frame: 3, type: 18, param1: absTheta, param2: 0, param3: section.radius * dir, param4: 1, param5: section.center.lat, param6: section.center.lng, param7: run.wps[i].param7, autocontinue: 1 })
+          newMavWP.push({ frame: 3, type: 18, param1: absTheta, param2: 0, param3: section.radius * dir, param4: 1, param5: section.center.lat, param6: section.center.lng, param7: run.wps[curWaypoint].param7, autocontinue: 1 })
           break
         }
         case "Straight": {
-          newMavWP.push({ frame: 3, type: 16, param1: 0, param2: 0, param3: 0, param4: 1, param5: section.end.lat, param6: section.end.lng, param7: run.wps[i + 1].param7, autocontinue: 1 })
+          newMavWP.push({ frame: 3, type: 16, param1: 0, param2: 0, param3: 0, param4: 0, param5: section.end.lat, param6: section.end.lng, param7: run.wps[curWaypoint].param7, autocontinue: 1 })
           break
         }
 
@@ -31,20 +47,9 @@ export function convertToMAV(wps: Waypoint[], reference: LatLng): Waypoint[] {
       convertedRuns.push()
 
     }
+    const simplifiedWaypoints = simplifyDubinsWaypoints(newMavWP)
 
-    // simplify dubins runs
-    let simplifiedMavWP: Waypoint[] = []
-    for (let i = 0; i < newMavWP.length - 1; i++) {
-      if (newMavWP[i].type == 18 && newMavWP[i + 1].type == 18 && newMavWP[i].param5 == newMavWP[i + 1].param5 && newMavWP[i].param6 == newMavWP[i + 1].param6 && newMavWP[i].param3 == newMavWP[i + 1].param3) {
-        simplifiedMavWP.push({ frame: 3, type: 18, param1: newMavWP[i].param1 + newMavWP[i + 1].param1, param2: 0, param3: newMavWP[i].param3, param4: 1, param5: newMavWP[i].param5, param6: newMavWP[i].param6, param7: newMavWP[i + 1].param7, autocontinue: 1 })
-
-        i++
-      } else {
-        simplifiedMavWP.push(newMavWP[i])
-      }
-    }
-
-    convertedRuns.push({ start: run.start, wps: simplifiedMavWP, length: run.wps.length })
+    convertedRuns.push({ start: run.start, wps: simplifiedWaypoints, length: run.wps.length })
   }
 
   // compile into single mission

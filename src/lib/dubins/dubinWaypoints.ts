@@ -122,7 +122,6 @@ export function applyBounds(params: number[], bounds: bound[]): void {
   for (let i = 0; i < bounds.length; i++) {
     let bound = bounds[i]
     if (bound.min != undefined && bound.max != undefined && bound.circular) {
-      console.log("circular bound")
       let range = bound.max - bound.min
       let diff = params[i] - bound.min
       params[i] = bound.min + modf(diff, range)
