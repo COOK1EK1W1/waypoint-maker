@@ -34,7 +34,7 @@ export function staticEvaluate(waypoints: WaypointCollection, activeMission: str
     let dubinsPoints: dubinsPoint[] = section.wps.map((x) => waypointToDubins(x, reference))
 
     let startingParams = [...getTunableDubinsParameters(dubinsPoints)]
-    let bounds: bound[] = [...getBounds(section.wps, vehicle)]
+    let bounds: bound[] = [...getBounds(dubinsPoints, vehicle)]
     applyBounds(startingParams, bounds)
 
     let evaluate = createEvaluate(dubinsPoints, optimisationFunction)
@@ -64,7 +64,7 @@ export function bakeDubins(waypoints: WaypointCollection, activeMission: string,
     let dubinsPoints: dubinsPoint[] = section.wps.map((x) => waypointToDubins(x, reference))
 
     let startingParams = [...getTunableDubinsParameters(dubinsPoints)]
-    let bounds: bound[] = [...getBounds(section.wps, vehicle)]
+    let bounds: bound[] = [...getBounds(dubinsPoints, vehicle)]
     applyBounds(startingParams, bounds)
 
     let evaluate = createEvaluate(dubinsPoints, optimisationFunction)
