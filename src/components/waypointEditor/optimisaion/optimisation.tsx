@@ -11,13 +11,14 @@ import { useVehicleTypeContext } from "@/util/context/VehicleTypeContext";
 import { Path, XY } from "@/types/dubins";
 import { Plane } from "@/types/vehicleType";
 import { cn } from "@/lib/utils";
+import { binaryGradient } from "@/lib/optimisation/binaryGradient";
 
 
 export function Optimise() {
   const { vehicle } = useVehicleTypeContext()
   if (vehicle.type != "Plane") return <div>only planes are supported with optimisation</div>
 
-  const algorithms = { "Particle": particleOptimise, "Genetic": geneticOptimise }
+  const algorithms = { "Particle": particleOptimise, "Genetic": geneticOptimise, "Binary": binaryGradient }
   const metrics = { "Length": pathLength, "Energy": (x: Path<XY>) => pathEnergyRequirements(x, vehicle.cruiseAirspeed, vehicle.energyConstant) }
 
   const { waypoints, setWaypoints, activeMission } = useWaypointContext()
@@ -41,6 +42,7 @@ export function Optimise() {
         <h2>Algorithm</h2>
         <Button className={cn("w-28", algorithm == "Particle" ? "border-green-300 bg-green-200" : "")} onClick={() => setAlgorithm("Particle")}>Particle</Button>
         <Button className={cn("w-28", algorithm == "Genetic" ? "border-green-300 bg-green-200" : "")} onClick={() => setAlgorithm("Genetic")}>Genetic</Button>
+        <Button className={cn("w-28", algorithm == "Binary" ? "border-green-300 bg-green-200" : "")} onClick={() => setAlgorithm("Binary")}>Binary</Button>
       </div>
       <div>
         <h2>Fitness</h2>
