@@ -95,7 +95,7 @@ export function getTunableDubinsParameters(wps: dubinsPoint[]): number[] {
   let ret: number[] = []
   for (const waypoint of wps) {
     if (waypoint.tunable) {
-      ret.push(deg2rad(waypoint.heading))
+      ret.push(waypoint.heading)
       ret.push(waypoint.radius)
     }
   }
@@ -111,7 +111,7 @@ export function getBounds(wps: dubinsPoint[], vehicle: Plane): bound[] {
   const bounds = []
   for (const waypoint of wps) {
     if (waypoint.tunable) {
-      bounds.push({ min: 0, max: Math.PI * 2, circular: true })
+      bounds.push({ min: 0, max: 360, circular: true })
       bounds.push({ min: getMinTurnRadius(vehicle.maxBank, vehicle.cruiseAirspeed) })
     }
   }
@@ -147,7 +147,7 @@ export function setTunableParameter(wps: Waypoint[], params: number[]): void {
     let cur = wps[i]
     if (cur.type == 69) {
       // radians
-      cur.param2 = rad2deg(mod2pi(params[paramI++]))
+      cur.param2 = modf(params[paramI++], 360)
       cur.param3 = params[paramI++]
     }
   }
@@ -159,7 +159,7 @@ export function setTunableDubinsParameter(wps: dubinsPoint[], params: number[]):
     let cur = wps[i]
     if (cur.tunable) {
       // radians
-      cur.heading = rad2deg(params[paramI++])
+      cur.heading = modf(params[paramI++], 360)
       cur.radius = params[paramI++]
     }
   }

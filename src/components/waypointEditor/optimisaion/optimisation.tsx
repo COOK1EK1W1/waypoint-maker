@@ -31,8 +31,8 @@ export function Optimise() {
     setOptimiseRes(res)
   }
 
-  let energy = staticEvaluate(waypoints, activeMission, (x) => pathEnergyRequirements(x, vehicle.cruiseAirspeed, vehicle.energyConstant), vehicle as Plane)
-  let length = staticEvaluate(waypoints, activeMission, pathLength, vehicle as Plane)
+  let energy = staticEvaluate(waypoints, activeMission, metrics["Energy"], vehicle as Plane)
+  let length = staticEvaluate(waypoints, activeMission, metrics["Length"], vehicle as Plane)
 
   return (
     <div className="flex">
