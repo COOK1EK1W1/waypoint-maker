@@ -11,26 +11,29 @@ import { useVehicleTypeContext } from "@/util/context/VehicleTypeContext";
 import { Path, XY } from "@/types/dubins";
 import { Plane } from "@/types/vehicleType";
 import { cn } from "@/lib/utils";
+import { binaryGradient } from "@/lib/optimisation/binaryGradient";
 
 
 export function Optimise() {
-  const { waypoints, setWaypoints, activeMission } = useWaypointContext()
   const { vehicle } = useVehicleTypeContext()
+
+
+  const { waypoints, setWaypoints, activeMission } = useWaypointContext()
   const [optimiseRes, setOptimiseRes] = useState<{ s: number, e: number, t: number } | null>(null)
   const [algorithm, setAlgorithm] = useState<keyof typeof algorithms>("Particle")
   const [metric, setMetric] = useState<keyof typeof metrics>("Length")
   if (vehicle.type != "Plane") return <div>only planes are supported with optimisation</div>
-
-  const algorithms = { "Particle": particleOptimise, "Genetic": geneticOptimise }
   const metrics = { "Length": pathLength, "Energy": (x: Path<XY>) => pathEnergyRequirements(x, vehicle.cruiseAirspeed, vehicle.energyConstant) }
+  const algorithms = { "Particle": particleOptimise, "Genetic": geneticOptimise, "Binary": binaryGradient }
+
 
   function runOptimisation() {
     let res = bakeDubins(waypoints, activeMission, algorithms[algorithm], setWaypoints, metrics[metric], vehicle as Plane)
     setOptimiseRes(res)
   }
 
-  let energy = staticEvaluate(waypoints, activeMission, (x) => pathEnergyRequirements(x, vehicle.cruiseAirspeed, vehicle.energyConstant), vehicle as Plane)
-  let length = staticEvaluate(waypoints, activeMission, pathLength, vehicle as Plane)
+  let energy = staticEvaluate(waypoints, activeMission, metrics["Energy"], vehicle as Plane)
+  let length = staticEvaluate(waypoints, activeMission, metrics["Length"], vehicle as Plane)
 
   return (
     <div className="flex">
@@ -39,6 +42,7 @@ export function Optimise() {
         <h2>Algorithm</h2>
         <Button className={cn("w-28", algorithm == "Particle" ? "border-green-300 bg-green-200" : "")} onClick={() => setAlgorithm("Particle")}>Particle</Button>
         <Button className={cn("w-28", algorithm == "Genetic" ? "border-green-300 bg-green-200" : "")} onClick={() => setAlgorithm("Genetic")}>Genetic</Button>
+        <Button className={cn("w-28", algorithm == "Binary" ? "border-green-300 bg-green-200" : "")} onClick={() => setAlgorithm("Binary")}>Binary</Button>
       </div>
       <div>
         <h2>Fitness</h2>

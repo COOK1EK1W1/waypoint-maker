@@ -31,13 +31,13 @@ export const particleOptimise: optimisationAlgorithm = (initialGuess, bounds, fn
     local_best_value.push(fn(particle_pos))
   }
 
-  for (let i = 0; i < 100; i++) {
+  for (let i = 0; i < 200; i++) {
     if (previous_global_best.length == 5) {
       previous_global_best.shift()
     }
     previous_global_best.push(global_best_value)
     if (previous_global_best.length == 5 && (previous_global_best[0] - previous_global_best[4]) < improvementThreshold) {
-      break;
+      //break;
     }
 
 
@@ -60,10 +60,11 @@ export const particleOptimise: optimisationAlgorithm = (initialGuess, bounds, fn
       for (let a = 0; a < initialGuess.length; a++) {
         const b = Math.random() * cogWeight
         const d = Math.random() * socialWeight
+        const e = Math.pow((Math.random() - 0.5), 3) * 1
 
         const newVel = 0.9 * velocities[p][a] +
           b * (local_best_position[p][a] - population[p][a]) +
-          d * (global_best_position[a] - population[p][a])
+          d * (global_best_position[a] - population[p][a]) + e
         velocities[p][a] = newVel
         population[p][a] += 1 * newVel
 

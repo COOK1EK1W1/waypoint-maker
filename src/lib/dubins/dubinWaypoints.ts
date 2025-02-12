@@ -91,10 +91,11 @@ export function dubinsBetweenDubins(wps: dubinsPoint[]) {
 }
 
 export function getTunableDubinsParameters(wps: dubinsPoint[]): number[] {
+  // heading | radius
   let ret: number[] = []
   for (const waypoint of wps) {
     if (waypoint.tunable) {
-      ret.push(deg2rad(waypoint.heading))
+      ret.push(waypoint.heading)
       ret.push(waypoint.radius)
     }
   }
@@ -102,14 +103,15 @@ export function getTunableDubinsParameters(wps: dubinsPoint[]): number[] {
 }
 
 export function getMinTurnRadius(maxBank: number, velocity: number) {
-  return Math.pow(velocity, 2) / (9.8 * Math.tan((maxBank * Math.PI) / 180))
+  return Math.pow(velocity, 2) / (9.8 * Math.tan(deg2rad(maxBank)))
 }
 
-export function getBounds(wps: Waypoint[], vehicle: Plane): bound[] {
-  let bounds = []
+export function getBounds(wps: dubinsPoint[], vehicle: Plane): bound[] {
+  // heading | radius
+  const bounds = []
   for (const waypoint of wps) {
-    if (waypoint.type == 69) {
-      bounds.push({ min: 0, max: 6.28, circular: true })
+    if (waypoint.tunable) {
+      bounds.push({ min: 0, max: 360, circular: true })
       bounds.push({ min: getMinTurnRadius(vehicle.maxBank, vehicle.cruiseAirspeed) })
     }
   }
@@ -119,20 +121,14 @@ export function getBounds(wps: Waypoint[], vehicle: Plane): bound[] {
 export function applyBounds(params: number[], bounds: bound[]): void {
   for (let i = 0; i < bounds.length; i++) {
     let bound = bounds[i]
-    if (bound.min && bound.max && bound.circular) {
+    if (bound.min != undefined && bound.max != undefined && bound.circular) {
       let range = bound.max - bound.min
       let diff = params[i] - bound.min
       params[i] = bound.min + modf(diff, range)
-    }
-    if (bound.min) {
-      if (params[i] < bound.min) {
-        params[i] = bound.min
-      }
-    }
-    if (bound.max) {
-      if (params[i] > bound.max) {
-        params[i] = bound.max
-      }
+    } else if (bound.min != undefined && params[i] < bound.min) {
+      params[i] = bound.min
+    } else if (bound.max != undefined && params[i] > bound.max) {
+      params[i] = bound.max
     }
   }
 }
@@ -151,7 +147,7 @@ export function setTunableParameter(wps: Waypoint[], params: number[]): void {
     let cur = wps[i]
     if (cur.type == 69) {
       // radians
-      cur.param2 = rad2deg(mod2pi(params[paramI++]))
+      cur.param2 = modf(params[paramI++], 360)
       cur.param3 = params[paramI++]
     }
   }
@@ -163,7 +159,7 @@ export function setTunableDubinsParameter(wps: dubinsPoint[], params: number[]):
     let cur = wps[i]
     if (cur.tunable) {
       // radians
-      cur.heading = rad2deg(params[paramI++])
+      cur.heading = modf(params[paramI++], 360)
       cur.radius = params[paramI++]
     }
   }

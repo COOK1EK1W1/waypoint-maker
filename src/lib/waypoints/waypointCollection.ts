@@ -172,15 +172,15 @@ export class WaypointCollection {
       const curMission = this.collection.get(mission)
       if (!curMission) throw new MissingMission(mission)
       for (let i = 0; i < curMission.length; i++) {
+        if (count === id) {
+          let newMission = curMission
+          newMission.splice(i, 0, waypoint)
+          return count
+        }
         let cur = curMission[i]
         if (cur.type === "Collection") {
           count = rec(count, cur.collectionID)
-
         } else {
-          if (count === id) {
-            let newMission = curMission
-            newMission.splice(i, 0, waypoint)
-          }
           count++;
         }
       }

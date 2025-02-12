@@ -25,12 +25,12 @@ export default function DubinsLayer() {
   let markers: ReactNode[] = []
   let lines: ReactNode[] = []
 
+  let key = 0
   let dubinsSections = splitDubinsRuns(activeWPs)
   for (const section of dubinsSections) {
     let dubinsPoints = section.wps.map((x) => waypointToDubins(x, reference))
     let path = dubinsBetweenDubins(dubinsPoints)
     const worldPath = localisePath(path, reference)
-    let key = 0
     worldPath.map((c, a) => {
       switch (c.type) {
         case "Curve":
