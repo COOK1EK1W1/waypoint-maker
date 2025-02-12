@@ -171,7 +171,7 @@ test("get tunable params", () => {
   expect(params.length).toBe(4)
   expect(params[0]).toBe(0)
   expect(params[1]).toBe(4)
-  expect(params[2]).toBe(Math.PI)
+  expect(params[2]).toBe(180)
   expect(params[3]).toBe(10)
 })
 
@@ -187,7 +187,7 @@ test("get bounds for dubins", () => {
   expect(bounds.length).toBe(4)
   expect(bounds[0].circular).toBe(true)
   expect(bounds[0].min).toBe(0)
-  expect(bounds[0].max).toBe(Math.PI * 2)
+  expect(bounds[0].max).toBe(360)
   expect(bounds[1].min).toBeCloseTo(51.0778, 2)
   expect(bounds[2].circular).toBe(true)
   expect(bounds[3].min).toBeCloseTo(51.0778, 2)
@@ -199,12 +199,12 @@ test("apply bounds to dubins", () => {
     { tunable: true, pos: { x: 0, y: 10 }, radius: 10, bounds: {}, heading: 180, passbyRadius: 0 },
     { tunable: false, pos: { x: 10, y: 10 }, radius: 6, bounds: {}, heading: 270, passbyRadius: 0 }
   ]
-  let params = [1, 58, -1, -1]
+  let params = [1, 58, -90, -1]
   let bounds = getBounds(points, defaultPlane)
   applyBounds(params, bounds)
   expect(params[0]).toBe(1)
   expect(params[1]).toBe(58)
-  expect(params[2]).toBe(Math.PI * 2 - 1)
+  expect(params[2]).toBe(270)
   expect(params[3]).toBeCloseTo(51.0778, 2)
 })
 /*

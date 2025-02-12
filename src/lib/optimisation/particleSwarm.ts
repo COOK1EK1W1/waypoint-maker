@@ -60,7 +60,7 @@ export const particleOptimise: optimisationAlgorithm = (initialGuess, bounds, fn
       for (let a = 0; a < initialGuess.length; a++) {
         const b = Math.random() * cogWeight
         const d = Math.random() * socialWeight
-        const e = Math.pow(Math.random() - 0.5, 4) * 4
+        const e = Math.pow((Math.random() - 0.5), 3) * 1
 
         const newVel = 0.9 * velocities[p][a] +
           b * (local_best_position[p][a] - population[p][a]) +
