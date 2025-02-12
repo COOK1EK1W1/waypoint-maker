@@ -7371,14 +7371,7 @@ const WpmCmds: Command[] = [{
   }],
 }]
 
-
-let commandspre = []
-if (process.env.NEXT_PUBLIC_ALLOWDUBINS) {
-  commandspre = mavCmds.concat(WpmCmds)
-} else {
-  commandspre = mavCmds
-}
-export const commands = commandspre
+export const commands = mavCmds.concat(WpmCmds)
 
 export const planeSupported = [
   "MAV_CMD_NAV_WAYPOINT",
@@ -7421,8 +7414,11 @@ export const planeSupported = [
   "MAV_CMD_DO_AUTOTUNE_ENABLE",
   "MAV_CMD_DO_SET_RESUME_REPEAT_DIST",
   "MAV_CMD_STORAGE_FORMAT",
-  "WM_CMD_NAV_DUBINS",
 ]
+
+if (process.env.NEXT_PUBLIC_ALLOWDUBINS) {
+  planeSupported.push("WM_CMD_NAV_DUBINS")
+}
 
 export const copterSupported = [
   "MAV_CMD_NAV_WAYPOINT",
