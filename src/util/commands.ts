@@ -7320,7 +7320,7 @@ const WpmCmds: Command[] = [{
     options: [],
   }, {
     index: 2,
-    label: "heading",
+    label: "Heading",
     description: "The heading to fly through",
     units: "deg",
     minValue: 0,

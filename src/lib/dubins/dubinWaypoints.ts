@@ -112,7 +112,7 @@ export function getBounds(wps: dubinsPoint[], vehicle: Plane): bound[] {
   for (const waypoint of wps) {
     if (waypoint.tunable) {
       bounds.push({ min: 0, max: 360, circular: true })
-      bounds.push({ min: getMinTurnRadius(vehicle.maxBank, vehicle.cruiseAirspeed) })
+      bounds.push({ min: Math.max(getMinTurnRadius(vehicle.maxBank, vehicle.cruiseAirspeed), waypoint.passbyRadius) })
     }
   }
   return bounds
