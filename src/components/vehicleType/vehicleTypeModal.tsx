@@ -18,7 +18,7 @@ export default function VehicleTypeModal() {
         <div className="flex flex-row justify-around py-4">
           <label className="flex-col flex w-40">
             <span>Cruise Airspeed</span>
-            <DraggableNumberInput value={vehicle.cruiseAirspeed} onChange={(x) => setVehicle((v) => {
+            <DraggableNumberInput value={vehicle.cruiseAirspeed} className="w-40" onChange={(x) => setVehicle((v) => {
               if (v.type != "Plane") return v
               v.cruiseAirspeed = Number(x.target.value)
               return { ...v }
@@ -26,9 +26,18 @@ export default function VehicleTypeModal() {
           </label>
           <label className="flex-col flex w-40">
             <span>Max Bank Angle</span>
-            <DraggableNumberInput value={vehicle.maxBank} className="border-slate-200" onChange={(x) => setVehicle((v) => {
+            <DraggableNumberInput value={vehicle.maxBank} className="w-40" onChange={(x) => setVehicle((v) => {
               if (v.type != "Plane") return v
               v.maxBank = Number(x.target.value)
+              return { ...v }
+
+            })} />
+          </label>
+          <label className="flex-col flex w-40">
+            <span>Energy Constant</span>
+            <DraggableNumberInput min={0} value={vehicle.energyConstant} className="w-40" onChange={(x) => setVehicle((v) => {
+              if (v.type != "Plane") return v
+              v.energyConstant = Number(x.target.value)
               return { ...v }
 
             })} />
