@@ -1,4 +1,3 @@
-import { modf } from "../dubins/geometry"
 import { optimisationAlgorithm } from "./types"
 
 export const particleOptimise: optimisationAlgorithm = (initialGuess, bounds, fn) => {
@@ -50,7 +49,7 @@ export const particleOptimise: optimisationAlgorithm = (initialGuess, bounds, fn
       }
       if (current_fitness < global_best_value) {
         global_best_value = current_fitness
-        global_best_position = local_best_position[p]
+        global_best_position = [...local_best_position[p]]
       }
     }
 
@@ -62,7 +61,7 @@ export const particleOptimise: optimisationAlgorithm = (initialGuess, bounds, fn
         const d = Math.random() * socialWeight
         const e = Math.pow((Math.random() - 0.5), 3) * 1
 
-        const newVel = 0.9 * velocities[p][a] +
+        const newVel = 0.8 * velocities[p][a] +
           b * (local_best_position[p][a] - population[p][a]) +
           d * (global_best_position[a] - population[p][a]) + e
         velocities[p][a] = newVel
@@ -101,13 +100,8 @@ export const particleOptimise: optimisationAlgorithm = (initialGuess, bounds, fn
     }
 
   }
-  //console.log("ending fitness: ", global_best_value)
-  //console.timeEnd("Swarm optimisation")
   const end = performance.now()
   return {
     finalVals: global_best_position, fitness: global_best_value, time: end - start
   }
 }
-
-
-
