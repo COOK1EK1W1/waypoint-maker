@@ -34,7 +34,7 @@ export default function VehicleTypeModal() {
             })} />
           </label>
           <label className="flex-col flex w-40">
-            <span>Energy Constant</span>
+            <span>Energy Constant (wh/km)</span>
             <DraggableNumberInput min={0} value={vehicle.energyConstant} className="w-40" onChange={(x) => setVehicle((v) => {
               if (v.type != "Plane") return v
               v.energyConstant = Number(x.target.value)

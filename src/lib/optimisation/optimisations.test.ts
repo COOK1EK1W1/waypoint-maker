@@ -1,7 +1,7 @@
 import { expect, test } from "bun:test";
 import { geneticOptimise } from "./genetic";
 import { particleOptimise } from "./particleSwarm";
-import { binaryGradient } from "./binaryGradient";
+import { gradientOptimise } from "./binaryGradient";
 
 const square = (x: number[]) => Math.pow(x[0], 2)
 const squareStargingValues = [[0], [1], [-1], [10], [-10]]
@@ -21,7 +21,7 @@ test.each(squareStargingValues)("genetic optimise square function", (...starting
 })
 
 test.each(squareStargingValues)("gradient optimise square function", (...starting) => {
-  let res = binaryGradient(starting, [{}], square)
+  let res = gradientOptimise(starting, [{}], square)
   expect(res.finalVals[0]).toBeCloseTo(0, 1)
   expect(res.fitness).toBeCloseTo(0, 1)
   expect(res.time).toBeGreaterThan(0)
@@ -48,7 +48,7 @@ test.each(bowlStarting)("genetic optimise bowl function", (...starting) => {
 })
 
 test.each(bowlStarting)("gradient optimise bowl function", (...starting) => {
-  let res = binaryGradient(starting, [...Array(bowlDim)].map(_ => ({})), bowl)
+  let res = gradientOptimise(starting, [...Array(bowlDim)].map(_ => ({})), bowl)
   expect(res.finalVals.reduce((a, b) => a + b, 0)).toBeCloseTo(0, -1)
   expect(res.fitness).toBeCloseTo(0, -1)
   expect(res.time).toBeGreaterThan(0)
