@@ -11,7 +11,7 @@ import { useVehicleTypeContext } from "@/util/context/VehicleTypeContext";
 import { Path, XY } from "@/types/dubins";
 import { Plane } from "@/types/vehicleType";
 import { cn } from "@/lib/utils";
-import { binaryGradient } from "@/lib/optimisation/binaryGradient";
+import { gradientOptimise } from "@/lib/optimisation/binaryGradient";
 
 
 export function Optimise() {
@@ -24,7 +24,7 @@ export function Optimise() {
   const [metric, setMetric] = useState<keyof typeof metrics>("Length")
   if (vehicle.type != "Plane") return <div>only planes are supported with optimisation</div>
   const metrics = { "Length": pathLength, "Energy": (x: Path<XY>) => pathEnergyRequirements(x, vehicle.cruiseAirspeed, vehicle.energyConstant) }
-  const algorithms = { "Particle": particleOptimise, "Genetic": geneticOptimise, "Binary": binaryGradient }
+  const algorithms = { "Particle": particleOptimise, "Genetic": geneticOptimise, "Gradient": gradientOptimise }
 
 
   function runOptimisation() {
@@ -38,33 +38,34 @@ export function Optimise() {
   return (
     <div className="flex">
 
-      <div>
+      <div className="mx-2">
         <h2>Algorithm</h2>
         <Button className={cn("w-28", algorithm == "Particle" ? "border-green-300 bg-green-200" : "")} onClick={() => setAlgorithm("Particle")}>Particle</Button>
         <Button className={cn("w-28", algorithm == "Genetic" ? "border-green-300 bg-green-200" : "")} onClick={() => setAlgorithm("Genetic")}>Genetic</Button>
-        <Button className={cn("w-28", algorithm == "Binary" ? "border-green-300 bg-green-200" : "")} onClick={() => setAlgorithm("Binary")}>Binary</Button>
+        <Button className={cn("w-28", algorithm == "Gradient" ? "border-green-300 bg-green-200" : "")} onClick={() => setAlgorithm("Gradient")}>Gradient</Button>
       </div>
-      <div>
+      <div className="mx-2">
         <h2>Fitness</h2>
         <Button className={cn("w-28", metric == "Energy" ? "border-green-300 bg-green-200" : "")} onClick={() => setMetric("Energy")}>Energy</Button>
         <Button className={cn("w-28", metric == "Length" ? "border-green-300 bg-green-200" : "")} onClick={() => setMetric("Length")}>Length</Button>
       </div>
 
-      <div>
+      <div className="w-40 mx-2">
         <h2>Optimise</h2>
         <Button className="w-28" onClick={() => runOptimisation()}>Optimise</Button>
         {optimiseRes ? <div>
-          <p>starting: <span className="text-red-600">{optimiseRes.s.toFixed(1)}</span></p>
-          <p>ending: <span className="text-green-600">{optimiseRes.e.toFixed(1)}</span></p>
-          <p>reduced: <span className="text-green-600">{(optimiseRes.e / optimiseRes.s * 100).toFixed(1)}%</span></p>
-          <p>time: {optimiseRes.t}ms</p>
+          <p>Starting: <span className="text-red-600">{optimiseRes.s.toFixed(1)}</span></p>
+          <p>Ending: <span className="text-green-600">{optimiseRes.e.toFixed(1)}</span></p>
+          <p>Reduced: <span className="text-green-600">{(100 - optimiseRes.e / optimiseRes.s * 100).toFixed(1)}%</span></p>
+          <p>Time: {optimiseRes.t}ms</p>
         </div> : null
         }
       </div>
-      <div>
-        <h2>current</h2>
-        <p>length: {length}</p>
-        <p>energy: {energy}</p>
+      <div className="w-40">
+        <h2>Current</h2>
+        <p>Length: {length.toFixed(1)}m</p>
+        <p>Time: {(length / vehicle.cruiseAirspeed).toFixed(1)}s</p>
+        <p>Energy: {(energy / 1000).toFixed(1)}wh</p>
       </div>
 
     </div>

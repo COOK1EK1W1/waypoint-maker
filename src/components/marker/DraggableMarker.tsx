@@ -1,5 +1,5 @@
 import { useMemo, useRef } from "react"
-import { Marker } from "react-leaflet"
+import { Marker, Tooltip } from "react-leaflet"
 import * as Leaflet from "leaflet"
 import { activeIcon, normalIcon } from "./waypoint"
 import { toLatLng } from "@/util/waypointToLeaflet"
@@ -35,6 +35,7 @@ export default function DraggableMarker({ waypoint, active, onMove, onClick }: {
       ref={markerRef}
       icon={active ? activeIcon : normalIcon}
     >
+      {/*<Tooltip>{waypoint.type}</Tooltip>*/}
     </Marker>
   )
 }
