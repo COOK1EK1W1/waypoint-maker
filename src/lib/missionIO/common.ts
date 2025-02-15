@@ -49,7 +49,7 @@ export function convertToMAV(wps: Waypoint[], reference: LatLng): Waypoint[] {
     }
     const simplifiedWaypoints = simplifyDubinsWaypoints(newMavWP)
 
-    convertedRuns.push({ start: run.start, wps: simplifiedWaypoints, length: run.wps.length })
+    convertedRuns.push({ start: run.start, wps: simplifiedWaypoints, length: run.wps.length - run.wps.filter((x) => x.type != 69).length })
   }
 
   // compile into single mission
@@ -60,9 +60,11 @@ export function convertToMAV(wps: Waypoint[], reference: LatLng): Waypoint[] {
       ret.push(wps[i])
     } else {
       ret = ret.concat(run.wps)
-      i += run.length - 1
+      i += run.length
     }
   }
+
+  ret.map((x) => { console.assert(x.type != 69, "dubins found :skull: ") })
   return ret
 }
 
