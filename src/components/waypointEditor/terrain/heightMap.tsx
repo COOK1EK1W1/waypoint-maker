@@ -3,8 +3,11 @@ import { gradient, haversineDistance } from "@/util/distance";
 import { getTerrain } from "@/util/terrain";
 import { useThrottle } from "@uidotdev/usehooks";
 import { useEffect, useState } from "react";
-import { Area, CartesianGrid, ComposedChart, Line, XAxis, YAxis } from "recharts";
-import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+
+import { Chart as ChartJS, CategoryScale, LinearScale, LineElement, PointElement, Tooltip } from 'chart.js';
+import { Line } from 'react-chartjs-2';
+
+ChartJS.register(CategoryScale, LinearScale, LineElement, PointElement, Tooltip);
 
 function interpolate(lat1: number, lat2: number, lng1: number, lng2: number, c: number) {
   return { lat: lat1 * (1 - c) + lat2 * c, lng: lng1 * (1 - c) + lng2 * c }
@@ -81,13 +84,6 @@ export default function HeightMap() {
   let distance = haversineDistance(wps[wps.length - 2].param5, wps[wps.length - 2].param6, wps[wps.length - 1].param5, wps[wps.length - 1].param6)
   gradients.push(gradient(distance, wps[wps.length - 2].param7, wps[wps.length - 1].param7))
 
-  const chartConfig = {
-    desktop: {
-      label: "Elevation",
-      color: "hsl(var(--chart-1))",
-    },
-  } satisfies ChartConfig
-
   let minTerrainHeight = terrainData[0]?.elevation || 0
   for (let i = 1; i < terrainData.length; i++) {
     minTerrainHeight = Math.min(terrainData[i].elevation, minTerrainHeight)
@@ -104,46 +100,66 @@ export default function HeightMap() {
     }
   }
 
-  return (
-    <ChartContainer config={chartConfig} className="h-full w-full" >
-      <ComposedChart
-        accessibilityLayer
-        data={data}
-      >
-        <CartesianGrid vertical={false} />
-        <XAxis
-          dataKey="distance"
-          tickLine={false}
-          axisLine={false}
-          tickMargin={8}
-        />
-        <YAxis
-          dataKey="waypointHeight"
-          tickLine={false}
-          axisLine={false}
-          tickMargin={8}
-          domain={[minTerrainHeight - terrainData[0]?.elevation || 0 - 2, "dataMax"]}
-        />
-        <ChartTooltip
-          cursor={false}
-          content={<ChartTooltipContent indicator="line" />}
-        />
-        <Area
-          dataKey="terrainHeight"
-          type="natural"
-          fill="var(--color-desktop)"
-          fillOpacity={0.4}
-          stroke="var(--color-desktop)"
-        />
-        <Line
-          dataKey="waypointHeight"
-          type="linear"
-          stroke="var(--color-desktop)"
-          strokeWidth={2}
-          dot={true}
-          connectNulls={true}
-        />
-      </ComposedChart>
-    </ChartContainer>
-  )
+
+
+  const chartData = {
+    labels: distances,
+    datasets: [
+      {
+        label: 'Terrain Height',
+        data: data.map((x) => x.terrainHeight ? x.terrainHeight[0] : 0),
+        borderColor: 'rgba(75, 192, 192, 1)',
+        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+        tension: 0.4,
+        fill: true,
+      },
+      {
+        label: 'Waypoint Height',
+        data: data.map((x) => x.waypointHeight),
+        borderColor: 'rgba(255, 99, 132, 1)',
+        tension: 0.4,
+        fill: false,
+      },
+    ],
+  };
+  console.log((data.map((x) => x.terrainHeight)))
+  console.log((data.map((x) => x.waypointHeight)))
+
+  const chartOptions = {
+    responsive: true,
+    plugins: {
+      tooltip: {
+        mode: 'index',
+        intersect: false,
+      },
+    },
+    spanGaps: true,
+    scales: {
+      x: {
+        title: { display: true, text: 'Distance (m)' },
+      },
+      y: {
+        title: { display: true, text: 'Height (m)' },
+      },
+    },
+  };
+
+  return <Line className="w-full" width={620} data={chartData} options={{
+    responsive: true,
+    plugins: {
+      tooltip: {
+        mode: 'index',
+        intersect: false,
+      },
+    },
+    spanGaps: true,
+    scales: {
+      x: {
+        title: { display: true, text: 'Distance (m)' },
+      },
+      y: {
+        title: { display: true, text: 'Height (m)' },
+      },
+    }
+  }} />;
 }

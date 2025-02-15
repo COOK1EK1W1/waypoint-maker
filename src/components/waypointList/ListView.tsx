@@ -1,6 +1,6 @@
 import { useState } from "react"
-import SubMissionList from "../subMissionList/subMissionList"
-import MissionList from "./MissionList"
+import SubMissionList from "@/components/subMissionList/subMissionList"
+import MissionList from "@/components/waypointList/MissionList"
 import { cn } from "@/lib/utils"
 import Button from "@/components/toolBar/button"
 
