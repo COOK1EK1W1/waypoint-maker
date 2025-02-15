@@ -60,7 +60,7 @@ export function convertToMAV(wps: Waypoint[], reference: LatLng): Waypoint[] {
       ret.push(wps[i])
     } else {
       ret = ret.concat(run.wps)
-      i += run.length
+      i += run.length - 1
     }
   }
 
