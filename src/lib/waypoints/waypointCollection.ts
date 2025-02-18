@@ -63,28 +63,33 @@ export class WaypointCollection {
   }
 
   flatten(mission: string) {
-    let retlist: Waypoint[] = []
+    let retList: Waypoint[] = []
     const waypoints = this.collection.get(mission)
     if (waypoints === undefined) return []
     for (let i = 0; i < waypoints.length; i++) {
-      const node = waypoints[i]
-      switch (node.type) {
-        case "Collection": {
-          retlist = retlist.concat(this.flatten(node.collectionID))
-          break
-        }
-        case "Waypoint": {
-          retlist.push(node.wps)
-          break;
-        }
-        default: {
-          const _exhaustiveCheck: never = node;
-          return _exhaustiveCheck
-        }
-      }
+      retList = retList.concat(this.flattenNode(waypoints[i]))
 
     }
-    return retlist
+    return retList
+  }
+
+  flattenNode(node: Node) {
+    let retList: Waypoint[] = []
+    switch (node.type) {
+      case "Collection": {
+        retList = retList.concat(this.flatten(node.collectionID))
+        break
+      }
+      case "Waypoint": {
+        retList.push(node.wps)
+        break;
+      }
+      default: {
+        const _exhaustiveCheck: never = node;
+        return _exhaustiveCheck
+      }
+    }
+    return retList
   }
 
   addSubMission(name: string, nodes: Node[] = []) {
@@ -167,15 +172,15 @@ export class WaypointCollection {
       const curMission = this.collection.get(mission)
       if (!curMission) throw new MissingMission(mission)
       for (let i = 0; i < curMission.length; i++) {
+        if (count === id) {
+          let newMission = curMission
+          newMission.splice(i, 0, waypoint)
+          return count
+        }
         let cur = curMission[i]
         if (cur.type === "Collection") {
           count = rec(count, cur.collectionID)
-
         } else {
-          if (count === id) {
-            let newMission = curMission
-            newMission.splice(i, 0, waypoint)
-          }
           count++;
         }
       }

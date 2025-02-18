@@ -30,7 +30,7 @@ export const particleOptimise: optimisationAlgorithm = (initialGuess, bounds, fn
     local_best_value.push(fn(particle_pos))
   }
 
-  for (let i = 0; i < 100; i++) {
+  for (let i = 0; i < 200; i++) {
     if (previous_global_best.length == 5) {
       previous_global_best.shift()
     }
@@ -49,7 +49,7 @@ export const particleOptimise: optimisationAlgorithm = (initialGuess, bounds, fn
       }
       if (current_fitness < global_best_value) {
         global_best_value = current_fitness
-        global_best_position = local_best_position[p]
+        global_best_position = [...local_best_position[p]]
       }
     }
 
@@ -57,35 +57,51 @@ export const particleOptimise: optimisationAlgorithm = (initialGuess, bounds, fn
     for (let p = 0; p < popsize; p++) {
 
       for (let a = 0; a < initialGuess.length; a++) {
-        let b = Math.random() * cogWeight
-        let d = Math.random() * socialWeight
+        const b = Math.random() * cogWeight
+        const d = Math.random() * socialWeight
+        const e = Math.pow((Math.random() - 0.5), 3) * 1
 
-        let newVel = 0.9 * velocities[p][a] +
+        const newVel = 0.8 * velocities[p][a] +
           b * (local_best_position[p][a] - population[p][a]) +
-          d * (global_best_position[a] - population[p][a])
+          d * (global_best_position[a] - population[p][a]) + e
         velocities[p][a] = newVel
         population[p][a] += 1 * newVel
 
-        let curBound = bounds[a]
-        if (curBound.max && population[p][a] > curBound.max) {
-          population[p][a] = curBound.max
-          velocities[p][a] *= -1
+        const curBound = bounds[a]
+
+        // random movement
+        if (curBound.circular && curBound.max && curBound.min !== undefined && Math.random() > 0.99) {
+          population[p][a] += (curBound.max - curBound.min) / 2
         }
-        if (curBound.min && population[p][a] < curBound.min) {
-          population[p][a] = curBound.min
-          velocities[p][a] *= -1
+
+        // handle edge boundaries
+        if (curBound.max && population[p][a] > curBound.max) {
+          if (curBound.circular && curBound.min !== undefined) {
+            population[p][a] = population[p][a] - (curBound.max - curBound.min)
+          } else {
+            population[p][a] = curBound.max
+            velocities[p][a] *= -1
+          }
+        }
+        if (curBound.min && population[p][a] < curBound.min !== undefined) {
+          if (curBound.circular && curBound.max) {
+            population[p][a] = population[p][a] + (curBound.max - curBound.min)
+          } else {
+            population[p][a] = curBound.min
+            velocities[p][a] *= -1
+          }
+        }
+
+        // random movement
+        if (curBound.circular && curBound.max && curBound.min && Math.random() > 0.9) {
+          population[p][a] += (curBound.max - curBound.min) / 2
         }
       }
     }
 
   }
-  //console.log("ending fitness: ", global_best_value)
-  //console.timeEnd("Swarm optimisation")
   const end = performance.now()
   return {
     finalVals: global_best_position, fitness: global_best_value, time: end - start
   }
 }
-
-
-

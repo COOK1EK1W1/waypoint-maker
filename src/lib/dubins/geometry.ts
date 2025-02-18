@@ -24,9 +24,7 @@ export function energyRequirement(radius: number, velocity: number) {
   return (Math.sqrt(radius * radius * 9.81 * 9.81 + Math.pow(velocity, 4))) / (radius * 9.81)
 }
 
-export function pathEnergyRequirements(path: Path<XY>) {
-  let velocity = 30
-  let energyConstant = 1
+export function pathEnergyRequirements(path: Path<XY>, velocity: number, energyConstant: number = 1) {
   let totalEnergy = 0
   for (const seg of path) {
     let segLength = segmentLength(seg)

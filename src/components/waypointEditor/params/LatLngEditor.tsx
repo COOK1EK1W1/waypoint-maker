@@ -1,4 +1,4 @@
-import { AvgLatLng, MoveWPsAvgTo } from "@/util/WPCollection";
+import { avgLatLng, MoveWPsAvgTo } from "@/util/WPCollection";
 import { useWaypointContext } from "@/util/context/WaypointContext";
 import { Node, Waypoint } from "@/types/waypoints";
 import { FaArrowDown, FaArrowLeft, FaArrowRight, FaArrowUp } from "react-icons/fa";
@@ -22,7 +22,9 @@ export function LatLngEditor() {
     wpsIds = selectedWPs;
   }
 
-  const [lat, lng] = AvgLatLng(wps, waypoints);
+  const leaves = wps.map((x) => waypoints.flattenNode(x)).reduce((cur, acc) => (acc.concat(cur)), [])
+
+  const { lat, lng } = avgLatLng(leaves)
 
   function nudge(x: number, y: number) {
     setWaypoints((waypoints) => {
