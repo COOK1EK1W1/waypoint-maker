@@ -11,7 +11,7 @@ export default function CurEdit({ onHide }: { onHide: () => void }) {
   </span>
   if (selectedWPs.length == 0) {
     item = <span>
-      <TbTopologyRing className="inline m-1" /> {activeMission} ({waypoints.get(activeMission)?.length})
+      <TbTopologyRing className="inline m-1" /> {activeMission} ({waypoints.get(activeMission).length})
     </span>
   } else if (selectedWPs.length > 1) {
     item = <span>

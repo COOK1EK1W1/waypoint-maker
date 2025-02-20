@@ -9,12 +9,19 @@ import { DialogDescription } from "@radix-ui/react-dialog";
 import { auth } from "@/util/auth";
 import { headers } from "next/headers";
 
+export function UserSkeleton() {
+  return <Button className="w-28"><span className="h-6 rounded-full animate-pulse w-20 bg-slate-300" /></Button>
+}
+
 export default async function User() {
   let data = await auth.api.getSession({ headers: await headers() })
 
   return (< Dialog >
     <DialogTrigger asChild>
-      {data?.user ? <Button className="w-28">{<FaUser />}{data.user?.name}</Button> : <Button className="w-28">Sign In</Button>}
+      {data?.user ?
+        <Button className="w-28">{<FaUser />}{data.user?.name}</Button> :
+        <Button className="w-28">Sign In</Button>
+      }
     </DialogTrigger>
     <DialogContent>
       {data?.user ? (

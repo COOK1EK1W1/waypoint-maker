@@ -33,8 +33,12 @@ export class WaypointCollection {
     return { lat: 0, lng: 0 }
   }
 
-  get(mission: string) {
-    return this.collection.get(mission)
+  get(mission: string): Node[] {
+    const a = this.collection.get(mission)
+    if (a === undefined) {
+      throw new MissingMission(mission)
+    }
+    return a
   }
 
   set(mission: string, nodes: Node[]) {

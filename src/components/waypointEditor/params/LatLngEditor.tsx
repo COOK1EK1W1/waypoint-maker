@@ -10,7 +10,6 @@ export function LatLngEditor() {
   const { selectedWPs, waypoints, setWaypoints, activeMission, setTool } = useWaypointContext();
 
   const mission = waypoints.get(activeMission);
-  if (!mission) return null;
 
   let wps: Node[] = [];
   let wpsIds: number[] = [];

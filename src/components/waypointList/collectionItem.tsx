@@ -14,7 +14,6 @@ export default function CollectionItem({ node, selected, onMouseDown, onDelete }
     onDelete()
   }
   const wps = waypoints.get(node.collectionID)
-  if (wps == undefined) return null
 
   return (
     <ListItem onMouseDown={onMouseDown} selected={selected} actions={[

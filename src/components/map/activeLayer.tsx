@@ -25,8 +25,6 @@ export default function ActiveLayer({ onMove }: { onMove: (lat: number, lng: num
 
 
   function insert(id: number, lat: number, lng: number) {
-    const mission = waypoints.get(activeMission)
-    if (mission == null) return
 
     const newMarker = {
       frame: 3,

@@ -2,7 +2,8 @@ import WPCheck from "./WPcheck"
 import VehicleTypeButton from "../vehicleType/vehicleTypeButton"
 import Image from "next/image"
 import MissionIO from "./missionIO"
-import User from "./user"
+import User, { UserSkeleton } from "./user"
+import { Suspense } from "react"
 
 export default function ToolBar() {
 
@@ -14,7 +15,7 @@ export default function ToolBar() {
         <MissionIO />
         <WPCheck />
         <VehicleTypeButton />
-        {process.env.ALLOWLOGIN ? <User /> : null}
+        {process.env.ALLOWLOGIN ? <Suspense fallback={<UserSkeleton />}><User /></Suspense> : null}
       </div>
     </div>
   </div>

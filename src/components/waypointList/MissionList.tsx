@@ -16,7 +16,6 @@ export default function MissionList({ onHide }: { onHide: () => void }) {
   const [lastSelectedIndex, setLastSelectedIndex] = useState<number | null>(null);
 
   const mainMission = waypoints.get(activeMission)
-  if (mainMission == null) return null
 
   function handleClick(id: number, e: React.MouseEvent<HTMLDivElement>) {
     if (e.shiftKey && lastSelectedIndex !== null) {

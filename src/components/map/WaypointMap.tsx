@@ -110,11 +110,7 @@ export default function MapStuff() {
 
   if (typeof window != undefined) {
 
-    const mission = waypoints.get(activeMission)
-    if (mission == undefined) return
-
     return (
-
       <MapContainer
         center={{ lat: 55.91289, lng: -3.32560 }}
         zoom={13}

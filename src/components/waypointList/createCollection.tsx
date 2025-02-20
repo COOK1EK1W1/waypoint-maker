@@ -9,7 +9,6 @@ export default function CreateCollection() {
     if (name == null) return
 
     const curMission = waypoints.get(activeMission)
-    if (curMission == undefined) return
     const newWPs = curMission.filter((_, id) => selectedWPs.includes(id))
     const oldWPs = curMission.filter((_, id) => !selectedWPs.includes(id))
 

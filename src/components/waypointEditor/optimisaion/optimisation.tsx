@@ -12,6 +12,7 @@ import { Path, XY } from "@/types/dubins";
 import { Plane } from "@/types/vehicleType";
 import { cn } from "@/lib/utils";
 import { gradientOptimise } from "@/lib/optimisation/binaryGradient";
+import { splitDubinsRuns } from "@/lib/dubins/dubinWaypoints";
 
 
 export function Optimise() {
@@ -34,6 +35,11 @@ export function Optimise() {
 
   let energy = staticEvaluate(waypoints, activeMission, metrics["Energy"], vehicle as Plane)
   let length = staticEvaluate(waypoints, activeMission, metrics["Length"], vehicle as Plane)
+
+  let dubinSections = splitDubinsRuns(waypoints.flatten(activeMission))
+  if (dubinSections.length == 0) {
+    return <div className="h-full w-full text-center content-center">Create some dubins waypoints to run optimisations</div>
+  }
 
   return (
     <div className="flex">

@@ -4,12 +4,27 @@ import { Node, Waypoint } from "@/types/waypoints";
 import Parameter from "./Parameter";
 import CommandTypeSelector from "./commandTypeSelector";
 import { LatLngEditor } from "./LatLngEditor";
+import { hasLocation } from "@/util/WPCollection";
+
+function nodesAllSame(nodes: Node[]): boolean {
+  let allSame = true;
+  if (nodes[0].type == "Collection") return false
+  const type = nodes[0].wps.type
+  for (let i = 1; i < nodes.length; i++) {
+    const a = nodes[i]
+    if (a.type == "Collection") return false
+    if (a.wps.type != type) {
+      allSame = false;
+    }
+  }
+  return allSame
+
+}
 
 export default function ParamEditor() {
   const { activeMission, selectedWPs, waypoints, setWaypoints } = useWaypointContext()
 
   const mission = waypoints.get(activeMission)
-  if (mission == undefined) return null
 
   let wps: Node[] = [];
   let wpsIds: number[] = [];
@@ -22,8 +37,10 @@ export default function ParamEditor() {
   }
 
   if (wps.length == 0) {
-    return <div className="h-[60px]"> place a waypoint to begin</div>
+    return <div className="h-full w-full text-center content-center">Select or place a waypoint to begin</div>
   }
+
+  const allSame = nodesAllSame(wps);
 
   //on change function
   function changeInput(e: { target: { name?: string; value: number } }) {
@@ -53,42 +70,29 @@ export default function ParamEditor() {
     })
   }
 
-  let allSame = true;
-  if (wps[0].type == "Collection") return
-  let type = wps[0].wps.type
-  for (let i = 1; i < wps.length; i++) {
-    const a = wps[i]
-    if (a.type == "Collection") return
-    if (a.wps.type != type) {
-      allSame = false;
-    }
+  if (!allSame) {
+    return <div className="w-full h-full">
+      <div className=" text-center content-center py-4">Selected waypoints are of different types</div>
+      <div className="flex flex-wrap">
+        <LatLngEditor />
+      </div>
+    </div>
   }
 
   const commanddesc = commands[commands.findIndex(a => wps[0].type == "Waypoint" && a.value == wps[0].wps.type)]
 
-  const hasLocationParams = commanddesc.parameters[4] &&
-    commanddesc.parameters[5] &&
-    commanddesc.parameters[4].label == "Latitude" &&
-    commanddesc.parameters[5].label == "Longitude"
+  const hasLocationParams = wps[0].type == "Waypoint" && hasLocation(wps[0].wps)
 
-  if (allSame && wps.length > 0) {
-    return <>
-      <CommandTypeSelector change={changeSelect} wps={wps} allSame={allSame} />
+  return <>
+    <CommandTypeSelector change={changeSelect} wps={wps} allSame={allSame} />
 
-      <Parameter param={commanddesc.parameters[0]} name="param1" change={changeInput} value={(x) => x.wps.param1} wps={wps} />
-      <Parameter param={commanddesc.parameters[1]} name="param2" change={changeInput} value={(x) => x.wps.param2} wps={wps} />
-      <Parameter param={commanddesc.parameters[2]} name="param3" change={changeInput} value={(x) => x.wps.param3} wps={wps} />
-      <Parameter param={commanddesc.parameters[3]} name="param4" change={changeInput} value={(x) => x.wps.param4} wps={wps} />
-      {!hasLocationParams && <Parameter param={commanddesc.parameters[4]} name="param5" change={changeInput} value={(x) => x.wps.param5} wps={wps} />}
-      {!hasLocationParams && <Parameter param={commanddesc.parameters[5]} name="param6" change={changeInput} value={(x) => x.wps.param6} wps={wps} />}
-      <Parameter param={commanddesc.parameters[6]} name="param7" change={changeInput} value={(x) => x.wps.param7} wps={wps} />
-      <LatLngEditor />
-    </>
-  } else {
-    return (
-      <div className="h-[60px]"> nodes are different types</div>
-
-    )
-
-  }
+    <Parameter param={commanddesc.parameters[0]} name="param1" change={changeInput} value={(x) => x.wps.param1} wps={wps} />
+    <Parameter param={commanddesc.parameters[1]} name="param2" change={changeInput} value={(x) => x.wps.param2} wps={wps} />
+    <Parameter param={commanddesc.parameters[2]} name="param3" change={changeInput} value={(x) => x.wps.param3} wps={wps} />
+    <Parameter param={commanddesc.parameters[3]} name="param4" change={changeInput} value={(x) => x.wps.param4} wps={wps} />
+    {!hasLocationParams && <Parameter param={commanddesc.parameters[4]} name="param5" change={changeInput} value={(x) => x.wps.param5} wps={wps} />}
+    {!hasLocationParams && <Parameter param={commanddesc.parameters[5]} name="param6" change={changeInput} value={(x) => x.wps.param6} wps={wps} />}
+    <Parameter param={commanddesc.parameters[6]} name="param7" change={changeInput} value={(x) => x.wps.param7} wps={wps} />
+    <LatLngEditor />
+  </>
 }

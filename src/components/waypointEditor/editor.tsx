@@ -1,6 +1,4 @@
 "use client"
-import { useWaypointContext } from "@/util/context/WaypointContext";
-import { Node } from "@/types/waypoints";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import Button from "../toolBar/button";
@@ -17,23 +15,8 @@ const tabs = {
 
 export default function Editor() {
 
-  const { activeMission, selectedWPs, waypoints } = useWaypointContext()
   const [hidden, setHidden] = useState(false)
   const [tab, setTab] = useState<keyof typeof tabs>("Params");
-
-
-  const mission = waypoints.get(activeMission)
-  if (mission == undefined) return null
-
-  let wps: Node[] = [];
-  let wpsIds: number[] = [];
-  if (selectedWPs.length === 0) {
-    wps = mission;
-    wpsIds = mission.map((_, index) => index);
-  } else {
-    wps = mission.filter((_, id) => selectedWPs.includes(id));
-    wpsIds = selectedWPs;
-  }
 
   return (
     <>
