@@ -1,1 +1,1 @@
-export type Tool = "Waypoint" | "Place" | "Takeoff"
+export type Tool = "Waypoint" | "Place" | "Takeoff" | "Landing"

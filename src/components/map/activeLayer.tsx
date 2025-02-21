@@ -39,8 +39,9 @@ export default function ActiveLayer({ onMove }: { onMove: (lat: number, lng: num
       autocontinue: 1
     };
     setWaypoints((prevWPS) => {
-      prevWPS.insert(id + 1, activeMission, { type: "Waypoint", wps: newMarker })
-      return prevWPS.clone()
+      const a = prevWPS.clone()
+      a.insert(id + 1, activeMission, { type: "Waypoint", wps: newMarker })
+      return a
     });
 
   }

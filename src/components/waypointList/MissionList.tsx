@@ -9,8 +9,6 @@ import { commands } from "@/util/commands";
 import { FaArrowRight, FaTrashAlt } from "react-icons/fa";
 import { useState } from "react";
 
-const defaultLanding: Node[] = [{ type: "Waypoint", wps: { frame: 0, type: 189, param1: 0, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0, autocontinue: 0 } }]
-
 export default function MissionList({ onHide }: { onHide: () => void }) {
   const { setActiveMission, waypoints, setSelectedWPs, selectedWPs, setWaypoints, activeMission, setTool } = useWaypoints()
   const [lastSelectedIndex, setLastSelectedIndex] = useState<number | null>(null);
@@ -44,11 +42,12 @@ export default function MissionList({ onHide }: { onHide: () => void }) {
   const hasTakeoff = missions.includes("Takeoff")
 
   function createTakeoff() {
-    waypoints.addSubMission("Takeoff", [])
 
     setWaypoints((waypoints) => {
-      waypoints.insert(0, "Main", { type: "Collection", collectionID: "Takeoff", ColType: CollectionType.Mission, offsetLng: 0, offsetLat: 0, name: "Takeoff" })
-      return waypoints.clone()
+      const a = waypoints.clone()
+      a.addSubMission("Takeoff", [])
+      a.insert(0, "Main", { type: "Collection", collectionID: "Takeoff", ColType: CollectionType.Mission, offsetLng: 0, offsetLat: 0, name: "Takeoff" })
+      return a
     })
     setActiveMission("Takeoff")
     setSelectedWPs([])
@@ -57,12 +56,14 @@ export default function MissionList({ onHide }: { onHide: () => void }) {
 
   function createLanding() {
     setWaypoints((waypoints) => {
-      waypoints.addSubMission("Landing", defaultLanding)
-      waypoints.pushToMission("Main", { type: "Collection", collectionID: "Landing", ColType: CollectionType.Mission, offsetLng: 0, offsetLat: 0, name: "Landing" })
-      return waypoints.clone()
+      const a = waypoints.clone()
+      a.addSubMission("Landing", [])
+      a.pushToMission("Main", { type: "Collection", collectionID: "Landing", ColType: CollectionType.Mission, offsetLng: 0, offsetLat: 0, name: "Landing" })
+      return a
     })
     setActiveMission("Landing")
     setSelectedWPs([])
+    setTool("Landing")
   }
 
   return (

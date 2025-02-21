@@ -11,7 +11,7 @@ import GeofenceLayer from "./geofenceLayer";
 import MarkerLayer from "./markerLayer";
 import DubinsLayer from "./dunbinsLayer";
 import { MoveWPsAvgTo } from "@/util/WPCollection";
-import { defaultTakeoff, defaultWaypoint } from "@/lib/waypoints/defaults";
+import { defaultDoLandStart, defaultTakeoff, defaultWaypoint } from "@/lib/waypoints/defaults";
 
 
 export default function MapStuff() {
@@ -67,8 +67,18 @@ export default function MapStuff() {
       case "Takeoff": {
         setTool("Waypoint")
         setWaypoints((waypoints) => {
-          waypoints.pushToMission(activeMission, { type: "Waypoint", wps: defaultTakeoff(e.latlng) })
-          return waypoints.clone()
+          const a = waypoints.clone()
+          a.pushToMission(activeMission, { type: "Waypoint", wps: defaultTakeoff(e.latlng) })
+          return a
+        })
+        break;
+      }
+      case "Landing": {
+        setTool("Waypoint")
+        setWaypoints((waypoints) => {
+          const a = waypoints.clone()
+          a.pushToMission(activeMission, { type: "Waypoint", wps: defaultDoLandStart(e.latlng) })
+          return a
         })
         break;
       }
