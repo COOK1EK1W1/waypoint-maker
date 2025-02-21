@@ -1,5 +1,5 @@
 import { Circle, LayerGroup, Polyline } from "react-leaflet";
-import { useWaypointContext } from "@/util/context/WaypointContext";
+import { useWaypoints } from "@/util/context/WaypointContext";
 import { Waypoint } from "@/types/waypoints"
 import Arc from "../marker/arc";
 import { ReactNode } from "react";
@@ -12,7 +12,7 @@ const straightOptions = { color: '#bb0000' }
 const noshow = ["Markers", "Geofence"]
 
 export default function DubinsLayer() {
-  const { waypoints, activeMission } = useWaypointContext()
+  const { waypoints, activeMission } = useWaypoints()
   if (noshow.includes(activeMission)) return null
 
   // get reference waypoint

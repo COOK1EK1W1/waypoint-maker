@@ -1,6 +1,6 @@
 import { LayerGroup, Polyline } from "react-leaflet";
 import DraggableMarker from "../marker/DraggableMarker";
-import { useWaypointContext } from "@/util/context/WaypointContext";
+import { useWaypoints } from "@/util/context/WaypointContext";
 import { toPolyline } from "@/util/waypointToLeaflet";
 import InsertBtn from "../marker/insertBtn";
 
@@ -8,7 +8,7 @@ const limeOptions = { color: 'lime' }
 const noshow = ["Markers", "Geofence"]
 
 export default function ActiveLayer({ onMove }: { onMove: (lat: number, lng: number, id: number) => void }) {
-  const { setSelectedWPs, setActiveMission, waypoints, activeMission, setWaypoints, selectedWPs } = useWaypointContext()
+  const { setSelectedWPs, setActiveMission, waypoints, activeMission, setWaypoints, selectedWPs } = useWaypoints()
   if (noshow.includes(activeMission)) return null
 
   const activeWPs = waypoints.flatten(activeMission)

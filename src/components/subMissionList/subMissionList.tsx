@@ -1,5 +1,5 @@
 "use client"
-import { useWaypointContext } from "@/util/context/WaypointContext";
+import { useWaypoints } from "@/util/context/WaypointContext";
 import { CollectionType } from "@/types/waypoints";
 import ListItem from "../waypointList/ListItem";
 import { TbFence, TbTopologyRing } from "react-icons/tb";
@@ -9,7 +9,7 @@ import { FaArrowTurnUp } from "react-icons/fa6";
 const noAddNames = ["Main", "Geofence", "Takoeff", "Landing", "Markers"]
 
 export default function SubMissionList() {
-  const { waypoints, activeMission, setActiveMission, setWaypoints, setSelectedWPs } = useWaypointContext()
+  const { waypoints, activeMission, setActiveMission, setWaypoints, setSelectedWPs } = useWaypoints()
 
   function addSub(e: React.MouseEvent<HTMLButtonElement>, name: string) {
     e.stopPropagation()

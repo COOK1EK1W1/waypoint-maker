@@ -18,11 +18,9 @@ auto move viewport when loading
 
 wpm wide reference point
 Export correctly                    | partial
-optimise button / modal / popover
 more unit tests                     | partial
 auto height adjustment
 geofence avoidance
-optionally render min safe fly by radius
 add WPChecks
 
 ### misc

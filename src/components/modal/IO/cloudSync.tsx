@@ -1,12 +1,12 @@
 "use client"
 import Button from "@/components/toolBar/button";
-import { useWaypointContext } from "@/util/context/WaypointContext";
+import { useWaypoints } from "@/util/context/WaypointContext";
 import { syncMission } from "./syncAction";
 import { useState, useTransition } from "react";
 import { FaCheck, FaSpinner } from "react-icons/fa";
 
 export default function CloudSync() {
-  const { waypoints, missionId } = useWaypointContext();
+  const { waypoints, missionId } = useWaypoints();
 
   const [isPending, startTransition] = useTransition();
   const [b, setb] = useState(false)

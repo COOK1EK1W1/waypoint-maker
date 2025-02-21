@@ -1,4 +1,4 @@
-import { useWaypointContext } from "@/util/context/WaypointContext";
+import { useWaypoints } from "@/util/context/WaypointContext";
 import { gradient, haversineDistance } from "@/util/distance";
 import { getTerrain } from "@/util/terrain";
 import { useThrottle } from "@uidotdev/usehooks";
@@ -12,7 +12,7 @@ function interpolate(lat1: number, lat2: number, lng1: number, lng2: number, c: 
 }
 
 export default function HeightMap() {
-  const { activeMission, waypoints } = useWaypointContext()
+  const { activeMission, waypoints } = useWaypoints()
   const [terrainData, setTerrainData] = useState<{ latitude: number, longitude: number, elevation: number }[]>([])
   const wps = waypoints.flatten(activeMission)
   const throttledValue = useThrottle(waypoints, 2000)

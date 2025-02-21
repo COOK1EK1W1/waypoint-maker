@@ -1,9 +1,9 @@
 import { Fault, Severity } from "@/types/waypoints";
-import { useWaypointContext } from "@/util/context/WaypointContext";
+import { useWaypoints } from "@/util/context/WaypointContext";
 import { cn } from "@/lib/utils";
 
 export default function FaultItem({ fault, onMouseDown }: { fault: Fault, onMouseDown: () => void }) {
-  const { setSelectedWPs, setActiveMission } = useWaypointContext()
+  const { setSelectedWPs, setActiveMission } = useWaypoints()
 
   function dostuff(mission: string | undefined, id: number | undefined) {
     if (id) {

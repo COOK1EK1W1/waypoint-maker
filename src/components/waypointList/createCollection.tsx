@@ -1,8 +1,8 @@
 import { CollectionType } from "@/types/waypoints"
-import { useWaypointContext } from "@/util/context/WaypointContext"
+import { useWaypoints } from "@/util/context/WaypointContext"
 
 export default function CreateCollection() {
-  const { selectedWPs, waypoints, setWaypoints, activeMission, setSelectedWPs } = useWaypointContext()
+  const { selectedWPs, waypoints, setWaypoints, activeMission, setSelectedWPs } = useWaypoints()
   function handleGroup() {
     let name: string | null = null
     name = prompt("enter name")

@@ -18,7 +18,7 @@ type provided = {
 
 export const waypointContext = createContext<provided>(undefined as any);
 
-export function useWaypointContext() {
+export function useWaypoints() {
   const context = useContext(waypointContext);
 
   if (context === undefined) {

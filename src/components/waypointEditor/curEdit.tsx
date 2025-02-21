@@ -1,10 +1,10 @@
-import { useWaypointContext } from "@/util/context/WaypointContext";
+import { useWaypoints } from "@/util/context/WaypointContext";
 import { TbTopologyRing } from "react-icons/tb";
 import { TfiTarget } from "react-icons/tfi";
 import Button from "../toolBar/button";
 
 export default function CurEdit({ onHide }: { onHide: () => void }) {
-  const { activeMission, selectedWPs, waypoints } = useWaypointContext()
+  const { activeMission, selectedWPs, waypoints } = useWaypoints()
 
   let item = <span>
     <TfiTarget className="inline m-1" /> 1 waypoint

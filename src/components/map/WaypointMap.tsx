@@ -2,7 +2,7 @@
 
 import { MapContainer, TileLayer, useMapEvent } from "react-leaflet"
 import 'leaflet/dist/leaflet.css';
-import { useWaypointContext } from "../../util/context/WaypointContext";
+import { useWaypoints } from "../../util/context/WaypointContext";
 import { Tool } from "@/types/tools";
 import { LeafletMouseEvent, Map } from "leaflet";
 import { useEffect, useRef } from "react";
@@ -15,7 +15,7 @@ import { defaultTakeoff, defaultWaypoint } from "@/lib/waypoints/defaults";
 
 
 export default function MapStuff() {
-  const { waypoints, setWaypoints, activeMission, tool, setTool, moveMap, selectedWPs } = useWaypointContext()
+  const { waypoints, setWaypoints, activeMission, tool, setTool, moveMap, selectedWPs } = useWaypoints()
 
   const mapRef = useRef<Map | null>(null)
 

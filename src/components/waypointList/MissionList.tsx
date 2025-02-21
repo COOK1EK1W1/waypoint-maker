@@ -1,4 +1,4 @@
-import { useWaypointContext } from "@/util/context/WaypointContext";
+import { useWaypoints } from "@/util/context/WaypointContext";
 import CreateCollection from "./createCollection";
 import CollectionItem from "./collectionItem";
 import ListItem from "./ListItem";
@@ -12,7 +12,7 @@ import { useState } from "react";
 const defaultLanding: Node[] = [{ type: "Waypoint", wps: { frame: 0, type: 189, param1: 0, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0, autocontinue: 0 } }]
 
 export default function MissionList({ onHide }: { onHide: () => void }) {
-  const { setActiveMission, waypoints, setSelectedWPs, selectedWPs, setWaypoints, activeMission, setTool } = useWaypointContext()
+  const { setActiveMission, waypoints, setSelectedWPs, selectedWPs, setWaypoints, activeMission, setTool } = useWaypoints()
   const [lastSelectedIndex, setLastSelectedIndex] = useState<number | null>(null);
 
   const mainMission = waypoints.get(activeMission)

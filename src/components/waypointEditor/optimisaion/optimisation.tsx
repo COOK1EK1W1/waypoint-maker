@@ -1,6 +1,6 @@
 
 
-import { useWaypointContext } from "@/util/context/WaypointContext";
+import { useWaypoints } from "@/util/context/WaypointContext";
 import { bakeDubins, staticEvaluate } from "@/components/toolBar/bakeDubins";
 import { pathEnergyRequirements, pathLength } from "@/lib/dubins/geometry";
 import { geneticOptimise } from "@/lib/optimisation/genetic";
@@ -19,7 +19,7 @@ export function Optimise() {
   const { vehicle } = useVehicleTypeContext()
 
 
-  const { waypoints, setWaypoints, activeMission } = useWaypointContext()
+  const { waypoints, setWaypoints, activeMission } = useWaypoints()
   const [optimiseRes, setOptimiseRes] = useState<{ s: number, e: number, t: number } | null>(null)
   const [algorithm, setAlgorithm] = useState<keyof typeof algorithms>("Particle")
   const [metric, setMetric] = useState<keyof typeof metrics>("Length")

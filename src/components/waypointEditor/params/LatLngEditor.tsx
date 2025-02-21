@@ -1,5 +1,5 @@
 import { avgLatLng, MoveWPsAvgTo } from "@/util/WPCollection";
-import { useWaypointContext } from "@/util/context/WaypointContext";
+import { useWaypoints } from "@/util/context/WaypointContext";
 import { Node, Waypoint } from "@/types/waypoints";
 import { FaArrowDown, FaArrowLeft, FaArrowRight, FaArrowUp } from "react-icons/fa";
 import { FaArrowRotateLeft, FaArrowRotateRight } from "react-icons/fa6";
@@ -7,7 +7,7 @@ import { LuMousePointerClick } from "react-icons/lu";
 import { TfiTarget } from "react-icons/tfi";
 
 export function LatLngEditor() {
-  const { selectedWPs, waypoints, setWaypoints, activeMission, setTool } = useWaypointContext();
+  const { selectedWPs, waypoints, setWaypoints, activeMission, setTool } = useWaypoints();
 
   const mission = waypoints.get(activeMission);
 
