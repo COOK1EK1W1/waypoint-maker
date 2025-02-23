@@ -2,7 +2,7 @@ import { useWaypoints } from "@/util/context/WaypointContext";
 import CreateCollection from "./createCollection";
 import CollectionItem from "./collectionItem";
 import ListItem from "./ListItem";
-import { CollectionType, Node } from "@/types/waypoints";
+import { CollectionType } from "@/types/waypoints";
 import { TfiTarget } from "react-icons/tfi";
 import { commandName } from "@/util/translationTable";
 import { commands } from "@/util/commands";

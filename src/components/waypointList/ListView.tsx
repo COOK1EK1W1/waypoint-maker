@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils"
 import Button from "@/components/toolBar/button"
 
 export default function ListView() {
-  const [hidden, setHidden] = useState(false)
+  const [hidden, setHidden] = useState(typeof window !== "undefined" ? window.innerWidth < 768 : false)
   return <>
     {hidden ? <Button className="absolute z-20 rounded-lg right-2 top-14 md:top-2" onClick={() => setHidden(false)}>WP list</Button> : null}
 

@@ -1,7 +1,8 @@
 import { Fault, Severity, Waypoint } from "@/types/waypoints";
-import { angleBetweenPoints, gradient, haversineDistance } from "./distance";
+import { angleBetweenPoints, gradient } from "./distance";
 import { getLatLng, hasLocation, isPointInPolygon } from "./WPCollection";
 import { WaypointCollection } from "@/lib/waypoints/waypointCollection";
+import { haversineDistance } from "@/lib/world/distance";
 
 
 
@@ -181,7 +182,7 @@ export function wpCheck(wps: Waypoint[], waypoints: WaypointCollection): Fault[]
   let gradients: (number | null)[] = []
   for (let i = 0; i < wps.length - 1; i++) {
     if (hasLocation(wps[i])) {
-      gradients.push(gradient(haversineDistance(wps[i].param5, wps[i].param6, wps[i + 1].param5, wps[i + 1].param6), wps[i].param7, wps[i + 1].param7))
+      gradients.push(gradient(haversineDistance(getLatLng(wps[i]), getLatLng(wps[i + 1])), wps[i].param7, wps[i + 1].param7))
     } else {
       gradients.push(null)
     }
