@@ -1,5 +1,5 @@
-import { applyBounds } from "../dubins/dubinWaypoints";
-import { optimisationAlgorithm } from "./types";
+import { applyBounds } from "@/lib/dubins/dubinWaypoints";
+import { optimisationAlgorithm } from "@/lib/optimisation/types";
 
 
 export const gradientOptimise: optimisationAlgorithm = (initialGuess, bounds, fn) => {

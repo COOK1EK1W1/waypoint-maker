@@ -1,6 +1,6 @@
 import { bound } from "@/types/dubins";
-import { applyBounds } from "../dubins/dubinWaypoints";
-import { optimisationAlgorithm } from "./types";
+import { applyBounds } from "@/lib/dubins/dubinWaypoints";
+import { optimisationAlgorithm } from "@/lib/optimisation/types";
 
 export const geneticOptimise: optimisationAlgorithm = (initialGuess, bounds, fn) => {
   // an implementation of the genetic algorithm
