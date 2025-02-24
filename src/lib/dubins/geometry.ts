@@ -20,8 +20,8 @@ export function segmentLength(seg: Segment<XY>): number {
  * @param {number} radius - The radius of the curve
  * @param {number} velocity - The velocity of the vehicle
  * @returns {number} The energy requirement for the curve segment
- */ 
-export function energyRequirement(radius: number, velocity: number) {
+ */
+export function energyRequirement(radius: number, velocity: number): number {
   if (radius == 0) {
     return 0
   }
@@ -34,8 +34,8 @@ export function energyRequirement(radius: number, velocity: number) {
  * @param {number} velocity - The velocity of the vehicle
  * @param {number} energyConstant - The energy constant to use
  * @returns {number} The total energy requirement for the path
- */ 
-export function pathEnergyRequirements(path: Path<XY>, velocity: number, energyConstant: number = 1) {
+ */
+export function pathEnergyRequirements(path: Path<XY>, velocity: number, energyConstant: number = 1): number {
   let totalEnergy = 0
   for (const seg of path) {
     let segLength = segmentLength(seg)
@@ -56,7 +56,7 @@ export function pathEnergyRequirements(path: Path<XY>, velocity: number, energyC
  * @param {Path<XY>} path - The path to calculate the length for
  * @returns {number} The length of the path
  */
-export function pathLength(path: Path<XY>) {
+export function pathLength(path: Path<XY>): number {
   return path.map((x: Segment<XY>) => segmentLength(x)).reduce((acc, a) => acc + a, 0)
 }
 
