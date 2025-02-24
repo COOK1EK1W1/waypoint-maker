@@ -1,5 +1,5 @@
 import { WaypointCollection } from "@/lib/waypoints/waypointCollection";
-import { waypointTo_waypoints_file } from "@/util/waypointToFile";
+import { waypointTo_waypoints_file } from "@/lib/missionIO/waypointToFile";
 import { expect, test } from "bun:test";
 
 test("waypoints to file", () => {
