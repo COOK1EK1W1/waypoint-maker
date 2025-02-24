@@ -1,10 +1,11 @@
 import { Waypoint } from "@/types/waypoints";
-import { deg2rad, mod2pi, modf, offset, rad2deg } from "./geometry";
+import { modf, offset } from "@/lib/math/geometry"
 import { DubinsBetweenDiffRad } from "./dubins";
 import { bound, dubinsPoint, LatLng, Path, Segment, XY } from "@/types/dubins";
 import { g2l, l2g } from "../world/conversion";
 import { Plane } from "@/types/vehicleType";
 import { crossProduct } from "../waypoints/fns";
+import { deg2rad } from "../math/geometry";
 
 /*
  * find all the sections of a waypoint list which require a dubins path between
@@ -42,6 +43,12 @@ export function splitDubinsRuns(wps: Waypoint[]): { start: number, wps: Waypoint
 
 }
 
+/**
+ * Converts a path from local XY coordinates to global latitude/longitude coordinates
+ * @param {Path<XY>} path - The path in local XY coordinates
+ * @param {LatLng} reference - The reference point used for coordinate conversion
+ * @returns {Path<LatLng>} The path converted to latitude/longitude coordinates
+ */
 export function localisePath(path: Path<XY>, reference: LatLng): Path<LatLng> {
   let newPath: Path<LatLng> = []
   for (let segment of path) {
@@ -66,7 +73,12 @@ export function localisePath(path: Path<XY>, reference: LatLng): Path<LatLng> {
   return newPath
 }
 
-export function dubinsBetweenDubins(wps: dubinsPoint[]) {
+/**
+ * Generates a Dubins path between a list of waypoints
+ * @param {dubinsPoint[]} wps - The list of waypoints
+ * @returns {Path<XY>} The Dubins path
+ */
+export function dubinsBetweenDubins(wps: dubinsPoint[]): Path<XY> {
   let path: Path<XY> = []
   for (let i = 0; i < wps.length - 1; i++) {
     const a = wps[i]
@@ -90,6 +102,11 @@ export function dubinsBetweenDubins(wps: dubinsPoint[]) {
   return path
 }
 
+/**
+ * Extracts the tunable parameters from a list of waypoints
+ * @param {dubinsPoint[]} wps - The list of waypoints
+ * @returns {number[]} The tunable parameters
+ */
 export function getTunableDubinsParameters(wps: dubinsPoint[]): number[] {
   // heading | radius
   let ret: number[] = []
@@ -102,10 +119,22 @@ export function getTunableDubinsParameters(wps: dubinsPoint[]): number[] {
   return ret
 }
 
-export function getMinTurnRadius(maxBank: number, velocity: number) {
+/**
+ * Calculates the minimum turn radius based on the maximum bank angle and velocity
+ * @param {number} maxBank - The maximum bank angle
+ * @param {number} velocity - The velocity
+ * @returns {number} The minimum turn radius
+ */
+export function getMinTurnRadius(maxBank: number, velocity: number): number {
   return Math.pow(velocity, 2) / (9.8 * Math.tan(deg2rad(maxBank)))
 }
 
+/**
+ * Calculates the bounds for the tunable parameters of a list of waypoints
+ * @param {dubinsPoint[]} wps - The list of waypoints
+ * @param {Plane} vehicle - The vehicle type
+ * @returns {bound[]} The bounds for the tunable parameters
+ */
 export function getBounds(wps: dubinsPoint[], vehicle: Plane): bound[] {
   // heading | radius
   const bounds = []
@@ -118,6 +147,11 @@ export function getBounds(wps: dubinsPoint[], vehicle: Plane): bound[] {
   return bounds
 }
 
+/**
+ * Applies bounds to the tunable parameters
+ * @param {number[]} params - The tunable parameters
+ * @param {bound[]} bounds - The bounds for the tunable parameters
+ */
 export function applyBounds(params: number[], bounds: bound[]): void {
   for (let i = 0; i < bounds.length; i++) {
     let bound = bounds[i]
@@ -133,6 +167,12 @@ export function applyBounds(params: number[], bounds: bound[]): void {
   }
 }
 
+/**
+ * Converts a waypoint to a dubins point, Dubins points are in local XY coordinates
+ * @param {Waypoint} wp - The waypoint
+ * @param {LatLng} reference - The reference point used for coordinate conversion
+ * @returns {dubinsPoint} The dubins point
+ */
 export function waypointToDubins(wp: Waypoint, reference: LatLng): dubinsPoint {
   if (wp.type == 69) {
     return { pos: g2l(reference, { lat: wp.param5, lng: wp.param6 }), bounds: {}, radius: wp.param3, heading: wp.param2, tunable: true, passbyRadius: wp.param1 }
@@ -141,6 +181,11 @@ export function waypointToDubins(wp: Waypoint, reference: LatLng): dubinsPoint {
   }
 }
 
+/**
+ * Sets the tunable parameters for a list of waypoints
+ * @param {Waypoint[]} wps - The list of waypoints
+ * @param {number[]} params - The tunable parameters
+ */
 export function setTunableParameter(wps: Waypoint[], params: number[]): void {
   let paramI = 0
   for (let i = 0; i < wps.length; i++) {
@@ -153,6 +198,11 @@ export function setTunableParameter(wps: Waypoint[], params: number[]): void {
   }
 }
 
+/**
+ * Sets the tunable parameters for a list of dubins points
+ * @param {dubinsPoint[]} wps - The list of dubins points
+ * @param {number[]} params - The tunable parameters
+ */
 export function setTunableDubinsParameter(wps: dubinsPoint[], params: number[]): void {
   let paramI = 0
   for (let i = 0; i < wps.length; i++) {

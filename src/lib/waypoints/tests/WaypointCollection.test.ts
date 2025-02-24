@@ -208,6 +208,7 @@ test("insert", () => {
 
   a.insert(0, "Main", { type: "Collection", name: "a", ColType: CollectionType.Mission, collectionID: "a", offsetLat: 0, offsetLng: 0 })
   a.insert(0, "Main", { type: "Waypoint", wps: { frame: 10, type: 69, param1: 0, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0, autocontinue: 0 } })
+  console.log(a.get("Main"))
   expect(a.get("Main")[0].type).toBe("Waypoint")
 
   a.insert(10, "Main", { type: "Waypoint", wps: { frame: 10, type: 69, param1: 0, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0, autocontinue: 0 } })

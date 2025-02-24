@@ -1,11 +1,10 @@
 import { useWaypoints } from "@/util/context/WaypointContext";
-import { gradient } from "@/util/distance";
 import { getTerrain } from "@/util/terrain";
 import { useThrottle } from "@uidotdev/usehooks";
 import { useEffect, useState } from "react";
 import { Area, CartesianGrid, ComposedChart, Line, XAxis, YAxis } from "recharts";
 import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
-import { haversineDistance } from "@/lib/world/distance";
+import { gradient, haversineDistance } from "@/lib/world/distance";
 import { getLatLng } from "@/util/WPCollection";
 import { LatLng } from "@/types/dubins";
 

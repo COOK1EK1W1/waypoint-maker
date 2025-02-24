@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { g2l, l2g } from "./conversion";
+import { g2l, l2g } from "@/lib/world/conversion";
 
 // Test case: Reference point matches input point
 test("test same points", () => {

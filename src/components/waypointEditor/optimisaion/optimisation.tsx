@@ -11,7 +11,7 @@ import { useVehicleTypeContext } from "@/util/context/VehicleTypeContext";
 import { Path, XY } from "@/types/dubins";
 import { Plane } from "@/types/vehicleType";
 import { cn } from "@/lib/utils";
-import { gradientOptimise } from "@/lib/optimisation/binaryGradient";
+import { gradientOptimise } from "@/lib/optimisation/gradient";
 import { splitDubinsRuns } from "@/lib/dubins/dubinWaypoints";
 
 

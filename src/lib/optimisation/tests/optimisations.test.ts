@@ -1,7 +1,7 @@
 import { expect, test } from "bun:test";
-import { geneticOptimise } from "./genetic";
-import { particleOptimise } from "./particleSwarm";
-import { gradientOptimise } from "./binaryGradient";
+import { geneticOptimise } from "@/lib/optimisation/genetic";
+import { particleOptimise } from "@/lib/optimisation/particleSwarm";
+import { gradientOptimise } from "@/lib/optimisation/gradient";
 
 const square = (x: number[]) => Math.pow(x[0], 2)
 const squareStargingValues = [[0], [1], [-1], [10], [-10]]

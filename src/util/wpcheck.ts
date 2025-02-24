@@ -1,8 +1,7 @@
 import { Fault, Severity, Waypoint } from "@/types/waypoints";
-import { angleBetweenPoints, gradient } from "./distance";
 import { getLatLng, hasLocation, isPointInPolygon } from "./WPCollection";
 import { WaypointCollection } from "@/lib/waypoints/waypointCollection";
-import { haversineDistance } from "@/lib/world/distance";
+import { angleBetweenPoints, gradient, haversineDistance } from "@/lib/world/distance";
 
 
 
