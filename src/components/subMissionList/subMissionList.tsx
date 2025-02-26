@@ -6,7 +6,7 @@ import { TbFence, TbTopologyRing } from "react-icons/tb";
 import { FaMapMarkedAlt, FaTrashAlt } from "react-icons/fa";
 import { FaArrowTurnUp } from "react-icons/fa6";
 
-const noAddNames = ["Main", "Geofence", "Takoeff", "Landing", "Markers"]
+const noAddNames = ["Main", "Geofence", "Takeoff", "Landing", "Markers"]
 
 export default function SubMissionList() {
   const { waypoints, activeMission, setActiveMission, setWaypoints, setSelectedWPs } = useWaypoints()

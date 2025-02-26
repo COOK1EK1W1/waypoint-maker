@@ -100,6 +100,11 @@ export class WaypointCollection {
     this.collection.set(name, nodes)
   }
 
+  removeSubMission(name: string) {
+    this.collection.delete(name)
+
+  }
+
   contains(missionName: string, A: string): boolean {
     const curWaypoints = this.collection.get(missionName)
     if (!curWaypoints) { throw new Error("No mission") }

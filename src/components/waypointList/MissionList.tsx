@@ -30,8 +30,13 @@ export default function MissionList({ onHide }: { onHide: () => void }) {
 
   function onDelete(id: number) {
     setWaypoints((waypoints) => {
-      waypoints.pop(activeMission, id)
-      return waypoints.clone()
+      const temp = waypoints.clone()
+      const wp = waypoints.get(activeMission)[id]
+      if (wp.type == "Collection" && ["Landing", "Takeoff"].includes(wp.name)) {
+        temp.removeSubMission(wp.name)
+      }
+      temp.pop(activeMission, id)
+      return temp
     })
     setSelectedWPs([])
   }
