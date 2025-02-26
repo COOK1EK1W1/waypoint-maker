@@ -5,9 +5,11 @@ import Button from '@/components/toolBar/button';
 import { FaFileUpload } from 'react-icons/fa';
 import { avgLatLng } from '@/util/WPCollection';
 import { WaypointCollection } from '@/lib/waypoints/waypointCollection';
+import { useMap } from '@/util/context/MapContext';
 
 export default function LoadJson() {
-  const { setWaypoints, moveMap } = useWaypoints();
+  const { setWaypoints } = useWaypoints();
+  const { moveMap } = useMap();
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (!event.target.files) {

@@ -12,10 +12,12 @@ import MarkerLayer from "./markerLayer";
 import DubinsLayer from "./dunbinsLayer";
 import { MoveWPsAvgTo } from "@/util/WPCollection";
 import { defaultDoLandStart, defaultTakeoff, defaultWaypoint } from "@/lib/waypoints/defaults";
-
+import { useMap } from '@/util/context/MapContext';
+import MapController from "./mapController";
 
 export default function MapStuff() {
-  const { waypoints, setWaypoints, activeMission, tool, setTool, moveMap, selectedWPs } = useWaypoints()
+  const { waypoints, setWaypoints, activeMission, tool, setTool, selectedWPs } = useWaypoints()
+  const { moveMap } = useMap();
 
   const mapRef = useRef<Map | null>(null)
 
@@ -118,12 +120,15 @@ export default function MapStuff() {
 
   }
 
+  const { zoom, center } = useMap();
+  console.log(center)
+
   if (typeof window != undefined) {
 
     return (
       <MapContainer
-        center={{ lat: 55.91289, lng: -3.32560 }}
-        zoom={13}
+        center={[center.lat, center.lng]}
+        zoom={zoom}
         style={{ width: '100%', height: '100%' }}
         className="z-10"
         ref={mapRef}
@@ -136,6 +141,8 @@ export default function MapStuff() {
           url='https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}'
           maxZoom={20}
           subdomains={['mt1', 'mt2', 'mt3']} />
+
+        <MapController />
 
         <CreateHandler />
 

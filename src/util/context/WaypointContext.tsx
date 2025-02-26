@@ -12,7 +12,6 @@ type provided = {
   setActiveMission: Dispatch<SetStateAction<string>>,
   tool: Tool,
   setTool: Dispatch<SetStateAction<Tool>>,
-  moveMap: { move?: (lat: number, lng: number) => void }
   missionId?: string
 }
 

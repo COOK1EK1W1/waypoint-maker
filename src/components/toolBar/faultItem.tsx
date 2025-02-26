@@ -40,7 +40,7 @@ export default function FaultItem({ fault, onMouseDown }: { fault: Fault, onMous
     <div className={cn("p-2 flex flex-row justify-between border-2 rounded-lg my-2", bg)}>
       {fault.message}
       {(fault.offenderMission !== undefined) && (
-        <button onMouseDown={() => dostuff(fault.offenderMission, fault.offenderIndex)} className="bg-slate-200 p-2 m-1 rounded-lg">go to</button>
+        <button onMouseDown={() => dostuff(fault.offenderMission, fault.offenderIndex)} className="bg-slate-200 p-2 m-1 rounded-lg">Go To</button>
       )}
     </div>
 

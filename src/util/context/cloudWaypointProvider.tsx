@@ -21,7 +21,7 @@ export default function CloudWaypointProvider({ children, mission, missionId }: 
 
   const [tool, setTool] = useState<Tool>("Waypoint")
   return (
-    <waypointContext.Provider value={{ waypoints, setWaypoints, activeMission, setActiveMission, selectedWPs, setSelectedWPs, tool, setTool, moveMap: {}, missionId }} >
+    <waypointContext.Provider value={{ waypoints, setWaypoints, activeMission, setActiveMission, selectedWPs, setSelectedWPs, tool, setTool, missionId }} >
       {children}
     </ waypointContext.Provider>
   );
