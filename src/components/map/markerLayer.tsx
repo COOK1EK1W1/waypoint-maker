@@ -1,11 +1,11 @@
 import { LayerGroup } from "react-leaflet";
 import DraggableMarker from "../marker/DraggableMarker";
-import { useWaypointContext } from "@/util/context/WaypointContext";
+import { useWaypoints } from "@/util/context/WaypointContext";
 import GeofenceMarker from "../marker/geofenceMarker";
 
 
 export default function MarkerLayer({ onMove }: { onMove: (lat: number, lng: number, id: number) => void }) {
-  const { waypoints, activeMission, selectedWPs } = useWaypointContext()
+  const { waypoints, activeMission, selectedWPs } = useWaypoints()
 
   return (
     <LayerGroup>

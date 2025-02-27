@@ -1,8 +1,8 @@
-import { applyBounds } from "../dubins/dubinWaypoints";
-import { optimisationAlgorithm } from "./types";
+import { applyBounds } from "@/lib/dubins/dubinWaypoints";
+import { optimisationAlgorithm } from "@/lib/optimisation/types";
 
 
-export const binaryGradient: optimisationAlgorithm = (initialGuess, bounds, fn) => {
+export const gradientOptimise: optimisationAlgorithm = (initialGuess, bounds, fn) => {
 
   const learningRate = 0.4
   const maxIterations = 2000

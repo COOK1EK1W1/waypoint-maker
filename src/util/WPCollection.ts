@@ -1,12 +1,11 @@
 import { Waypoint, Node } from "@/types/waypoints";
-import { commands } from "./commands";
-import { WaypointCollection } from "@/lib/waypoints/waypointCollection";
+import { commands } from "@/util/commands";
+import type { WaypointCollection } from "@/lib/waypoints/waypointCollection";
 import { LatLng } from "@/types/dubins";
 
 
 export function MoveWPsAvgTo(pos: LatLng, waypoints: WaypointCollection, selectedWPs: number[], active: string): WaypointCollection {
   const mission = waypoints.get(active);
-  if (!mission) return waypoints;
 
   let wps: Node[] = [];
   let wpsIds: number[] = [];

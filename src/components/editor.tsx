@@ -11,8 +11,8 @@ export function WMEditor() {
     { ssr: false }
   );
   return (
-    <main style={{ height: "100vh" }
-    } className="flex flex-col absolute w-full" >
+    <main style={{ height: "100dvh" }
+    } className="flex flex-col absolute w-full h-[100dvh]" >
       <StartModal />
 
       <NonSSRMap />

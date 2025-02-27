@@ -2,7 +2,7 @@
 
 import { MapContainer, TileLayer, useMapEvent } from "react-leaflet"
 import 'leaflet/dist/leaflet.css';
-import { useWaypointContext } from "../../util/context/WaypointContext";
+import { useWaypoints } from "../../util/context/WaypointContext";
 import { Tool } from "@/types/tools";
 import { LeafletMouseEvent, Map } from "leaflet";
 import { useEffect, useRef } from "react";
@@ -11,11 +11,13 @@ import GeofenceLayer from "./geofenceLayer";
 import MarkerLayer from "./markerLayer";
 import DubinsLayer from "./dunbinsLayer";
 import { MoveWPsAvgTo } from "@/util/WPCollection";
-import { defaultTakeoff, defaultWaypoint } from "@/lib/waypoints/defaults";
-
+import { defaultDoLandStart, defaultTakeoff, defaultWaypoint } from "@/lib/waypoints/defaults";
+import { useMap } from '@/util/context/MapContext';
+import MapController from "./mapController";
 
 export default function MapStuff() {
-  const { waypoints, setWaypoints, activeMission, tool, setTool, moveMap, selectedWPs } = useWaypointContext()
+  const { waypoints, setWaypoints, activeMission, tool, setTool, selectedWPs } = useWaypoints()
+  const { moveMap } = useMap();
 
   const mapRef = useRef<Map | null>(null)
 
@@ -67,8 +69,18 @@ export default function MapStuff() {
       case "Takeoff": {
         setTool("Waypoint")
         setWaypoints((waypoints) => {
-          waypoints.pushToMission(activeMission, { type: "Waypoint", wps: defaultTakeoff(e.latlng) })
-          return waypoints.clone()
+          const a = waypoints.clone()
+          a.pushToMission(activeMission, { type: "Waypoint", wps: defaultTakeoff(e.latlng) })
+          return a
+        })
+        break;
+      }
+      case "Landing": {
+        setTool("Waypoint")
+        setWaypoints((waypoints) => {
+          const a = waypoints.clone()
+          a.pushToMission(activeMission, { type: "Waypoint", wps: defaultDoLandStart(e.latlng) })
+          return a
         })
         break;
       }
@@ -108,16 +120,15 @@ export default function MapStuff() {
 
   }
 
+  const { zoom, center } = useMap();
+  console.log(center)
+
   if (typeof window != undefined) {
 
-    const mission = waypoints.get(activeMission)
-    if (mission == undefined) return
-
     return (
-
       <MapContainer
-        center={{ lat: 55.91289, lng: -3.32560 }}
-        zoom={13}
+        center={[center.lat, center.lng]}
+        zoom={zoom}
         style={{ width: '100%', height: '100%' }}
         className="z-10"
         ref={mapRef}
@@ -130,6 +141,8 @@ export default function MapStuff() {
           url='https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}'
           maxZoom={20}
           subdomains={['mt1', 'mt2', 'mt3']} />
+
+        <MapController />
 
         <CreateHandler />
 

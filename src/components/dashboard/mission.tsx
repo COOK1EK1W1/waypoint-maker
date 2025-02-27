@@ -5,10 +5,10 @@ import Button from "../toolBar/button";
 import { deleteMission } from "./actions";
 import { timeAgo } from "@/util/time";
 import { cn } from "@/lib/utils";
-import { useWaypointContext } from "@/util/context/WaypointContext";
+import { useWaypoints } from "@/util/context/WaypointContext";
 
 export default function MissionTile({ mission }: { mission: { title: string, modifiedAt: Date, id: string } }) {
-  const { missionId } = useWaypointContext()
+  const { missionId } = useWaypoints()
   const router = useRouter()
   function handleDelete() {
     deleteMission(mission.id).then(() => router.refresh())

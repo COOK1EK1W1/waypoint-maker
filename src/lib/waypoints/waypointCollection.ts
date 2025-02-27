@@ -33,8 +33,12 @@ export class WaypointCollection {
     return { lat: 0, lng: 0 }
   }
 
-  get(mission: string) {
-    return this.collection.get(mission)
+  get(mission: string): Node[] {
+    const a = this.collection.get(mission)
+    if (a === undefined) {
+      throw new MissingMission(mission)
+    }
+    return a
   }
 
   set(mission: string, nodes: Node[]) {
@@ -94,6 +98,11 @@ export class WaypointCollection {
 
   addSubMission(name: string, nodes: Node[] = []) {
     this.collection.set(name, nodes)
+  }
+
+  removeSubMission(name: string) {
+    this.collection.delete(name)
+
   }
 
   contains(missionName: string, A: string): boolean {
@@ -171,10 +180,15 @@ export class WaypointCollection {
     const rec = (count: number, mission: string): number => {
       const curMission = this.collection.get(mission)
       if (!curMission) throw new MissingMission(mission)
+
+      if (count === id) {
+        curMission.splice(0, 0, waypoint)
+        return count
+      }
+
       for (let i = 0; i < curMission.length; i++) {
         if (count === id) {
-          let newMission = curMission
-          newMission.splice(i, 0, waypoint)
+          curMission.splice(i, 0, waypoint)
           return count
         }
         let cur = curMission[i]

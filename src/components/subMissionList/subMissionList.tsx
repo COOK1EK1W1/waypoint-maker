@@ -1,15 +1,15 @@
 "use client"
-import { useWaypointContext } from "@/util/context/WaypointContext";
+import { useWaypoints } from "@/util/context/WaypointContext";
 import { CollectionType } from "@/types/waypoints";
 import ListItem from "../waypointList/ListItem";
 import { TbFence, TbTopologyRing } from "react-icons/tb";
 import { FaMapMarkedAlt, FaTrashAlt } from "react-icons/fa";
 import { FaArrowTurnUp } from "react-icons/fa6";
 
-const noAddNames = ["Main", "Geofence", "Takoeff", "Landing", "Markers"]
+const noAddNames = ["Main", "Geofence", "Takeoff", "Landing", "Markers"]
 
 export default function SubMissionList() {
-  const { waypoints, activeMission, setActiveMission, setWaypoints, setSelectedWPs } = useWaypointContext()
+  const { waypoints, activeMission, setActiveMission, setWaypoints, setSelectedWPs } = useWaypoints()
 
   function addSub(e: React.MouseEvent<HTMLButtonElement>, name: string) {
     e.stopPropagation()
@@ -47,22 +47,20 @@ export default function SubMissionList() {
     <div className="">
       {Array.from(waypoints.getMissions()).map((mission, id) => {
         const wp = waypoints.get(mission)
-        if (wp != undefined) {
-          const canAdd = !noAddNames.includes(mission)
+        const canAdd = !noAddNames.includes(mission)
 
-          return <ListItem key={id} onMouseDown={() => click(mission)} selected={activeMission == mission} actions={[
-            (<>{canAdd ? <button onMouseDown={(e) => addSub(e, mission)} key={0}><FaArrowTurnUp /></button> : null}</>),
-            (<button onMouseDown={() => deleteMission(mission)} key={1}><FaTrashAlt /></button>)
-          ]}>
-            <div>
-              {mission == "Geofence" ? <span><TbFence className="inline m-1" /></span>
-                : mission == "Markers" ? <span><FaMapMarkedAlt className="inline m-1" /></span>
-                  : <span><TbTopologyRing className="inline m-1" /></span>
-              }
-              {mission} ({wp.length})
-            </div>
-          </ListItem>
-        }
+        return <ListItem key={id} onMouseDown={() => click(mission)} selected={activeMission == mission} actions={[
+          (<>{canAdd ? <button onMouseDown={(e) => addSub(e, mission)} key={0}><FaArrowTurnUp /></button> : null}</>),
+          (<button onMouseDown={() => deleteMission(mission)} key={1}><FaTrashAlt /></button>)
+        ]}>
+          <div>
+            {mission == "Geofence" ? <span><TbFence className="inline m-1" /></span>
+              : mission == "Markers" ? <span><FaMapMarkedAlt className="inline m-1" /></span>
+                : <span><TbTopologyRing className="inline m-1" /></span>
+            }
+            {mission} ({wp.length})
+          </div>
+        </ListItem>
 
       })}
 

@@ -2,6 +2,7 @@ import { WMEditor } from "@/components/editor";
 import ToolBar from "@/components/toolBar/ToolBar";
 import { auth } from "@/util/auth";
 import CloudWaypointProvider from "@/util/context/cloudWaypointProvider";
+import MapProvider from "@/util/context/MapProvider";
 import VehicleProvider from "@/util/context/VehicleTypeProvider";
 import prisma from "@/util/prisma";
 import { headers } from "next/headers";
@@ -24,8 +25,10 @@ export default async function Mission({ params }: { params: Promise<{ missionid:
   return (
     <CloudWaypointProvider mission={new Map(b)} missionId={missionId}>
       <VehicleProvider >
-        <ToolBar />
-        <WMEditor />
+        <MapProvider>
+          <ToolBar />
+          <WMEditor />
+        </MapProvider>
       </VehicleProvider >
     </CloudWaypointProvider >
   )

@@ -15,7 +15,7 @@ const DraggableNumberInput: React.FC<DraggableNumberInputProps> = ({
   onChange,
   className = 'w-40 border-slate-200',
   min = 0,
-  max
+  max = Infinity
 }) => {
   const [internalValue, setInternalValue] = useState<number | null>(externalValue);
   const [isDragging, setIsDragging] = useState(false);
@@ -36,7 +36,7 @@ const DraggableNumberInput: React.FC<DraggableNumberInputProps> = ({
 
     const currentValue = startValue || 0;
 
-    const newValue = Math.min(Math.max(min || -Infinity, currentValue + Math.round(delta / 2)), max || Infinity);
+    const newValue = Math.min(Math.max(min !== null ? min : -Infinity, currentValue + Math.round(delta / 2)), max !== null ? max : Infinity);
 
     setInternalValue(newValue);
     onChange?.({

@@ -7298,7 +7298,7 @@ export const mavCmds: Command[] = [{
     default: null,
     options: [],
   }, null, null, null, null, null, null],
-}]
+}] as const
 
 
 
@@ -7320,7 +7320,7 @@ const WpmCmds: Command[] = [{
     options: [],
   }, {
     index: 2,
-    label: "heading",
+    label: "Heading",
     description: "The heading to fly through",
     units: "deg",
     minValue: 0,
@@ -7371,7 +7371,6 @@ const WpmCmds: Command[] = [{
   }],
 }]
 
-export const commands = mavCmds.concat(WpmCmds)
 
 export const planeSupported = [
   "MAV_CMD_NAV_WAYPOINT",
@@ -7461,3 +7460,5 @@ export const copterSupported = [
   "MAV_CMD_DO_WINCH",
   "MAV_CMD_STORAGE_FORMAT"
 ]
+
+export const commands = mavCmds.concat(WpmCmds).filter((x) => planeSupported.includes(x.name) || copterSupported.includes(x.name))

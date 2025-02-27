@@ -1,13 +1,13 @@
 
 import { LayerGroup, Polygon } from "react-leaflet";
 import DraggableMarker from "../marker/DraggableMarker";
-import { useWaypointContext } from "@/util/context/WaypointContext";
+import { useWaypoints } from "@/util/context/WaypointContext";
 import { toPolyline } from "@/util/waypointToLeaflet";
 
 const fenceOptions = { color: 'red', fillOpacity: 0.1 }
 
 export default function GeofenceLayer({ onMove }: { onMove: (lat: number, lng: number, id: number) => void }) {
-  const { waypoints, activeMission, selectedWPs } = useWaypointContext()
+  const { waypoints, activeMission, selectedWPs } = useWaypoints()
 
   return (
     <LayerGroup>

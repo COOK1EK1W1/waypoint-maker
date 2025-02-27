@@ -1,5 +1,6 @@
 import { XY, Path, Curve, Straight } from "@/types/dubins";
-import { bearing, dist, mod2pi, offset, pathLength } from "./geometry";
+import { pathLength } from "./geometry";
+import { mod2pi, bearing, offset, dist } from "@/lib/math/geometry"
 
 export enum Dir {
   Left,

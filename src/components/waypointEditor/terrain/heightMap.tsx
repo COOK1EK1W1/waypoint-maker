@@ -1,10 +1,12 @@
-import { useWaypointContext } from "@/util/context/WaypointContext";
-import { gradient, haversineDistance } from "@/util/distance";
+import { useWaypoints } from "@/util/context/WaypointContext";
 import { getTerrain } from "@/util/terrain";
 import { useThrottle } from "@uidotdev/usehooks";
 import { useEffect, useState } from "react";
 import { Area, CartesianGrid, ComposedChart, Line, XAxis, YAxis } from "recharts";
 import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+import { gradient, haversineDistance } from "@/lib/world/distance";
+import { getLatLng } from "@/util/WPCollection";
+import { LatLng } from "@/types/dubins";
 
 function interpolate(lat1: number, lat2: number, lng1: number, lng2: number, c: number) {
   return { lat: lat1 * (1 - c) + lat2 * c, lng: lng1 * (1 - c) + lng2 * c }
@@ -12,18 +14,27 @@ function interpolate(lat1: number, lat2: number, lng1: number, lng2: number, c: 
 }
 
 export default function HeightMap() {
-  const { activeMission, waypoints } = useWaypointContext()
-  const [terrainData, setTerrainData] = useState<{ latitude: number, longitude: number, elevation: number }[]>([])
-  const wps = waypoints.flatten(activeMission)
+  const { activeMission, waypoints } = useWaypoints()
+  const [terrainData, setTerrainData] = useState<{ loc: LatLng, elevation: number }[]>([])
   const throttledValue = useThrottle(waypoints, 2000)
+
+  const wps = waypoints.flatten(activeMission)
+  const reference = waypoints.getReferencePoint()
 
   let locations: [number, number][] = []
 
+  // get new terrain data throttled
   useEffect(() => {
     if (wps.length < 2) return
     getTerrain(locations)
       .then((data) => {
-        if (data) setTerrainData(data)
+        if (data) {
+          setTerrainData(data.map((x) => {
+            return {
+              loc: { lat: x.latitude, lng: x.longitude }, elevation: x.elevation
+            }
+          }))
+        }
       })
   }, [throttledValue])
 
@@ -36,12 +47,12 @@ export default function HeightMap() {
 
   let totalDistance = 0
   for (let i = 1; i < wps.length; i++) {
-    totalDistance += haversineDistance(wps[i - 1].param5, wps[i - 1].param6, wps[i].param5, wps[i].param6)
+    totalDistance += haversineDistance(getLatLng(wps[i - 1]), getLatLng(wps[i]))
   }
 
   let terrainDistances = [0]
   for (let i = 1; i < terrainData.length; i++) {
-    let distance = haversineDistance(terrainData[i - 1].latitude, terrainData[i - 1].longitude, terrainData[i].latitude, terrainData[i].longitude)
+    let distance = haversineDistance(terrainData[i - 1].loc, terrainData[i].loc)
     terrainDistances.push(terrainDistances[i - 1] + distance)
   }
 
@@ -51,7 +62,7 @@ export default function HeightMap() {
   let gradients: (number | null)[] = [0]
   let prevDistance = 0
   for (let i = 1; i < wps.length; i++) {
-    let distance = haversineDistance(wps[i - 1].param5, wps[i - 1].param6, wps[i].param5, wps[i].param6)
+    let distance = haversineDistance(getLatLng(wps[i - 1]), getLatLng(wps[i]))
     for (let j = 0; j < distance / interpolatedist; j++) {
       distances.push(Math.round(prevDistance + (j / (distance / interpolatedist)) * distance))
       const a = interpolate(wps[i - 1].param5, wps[i].param5, wps[i - 1].param6, wps[i].param6, j / (distance / interpolatedist))
@@ -78,7 +89,7 @@ export default function HeightMap() {
   }
 
   heights.push(wps[wps.length - 1].param7)
-  let distance = haversineDistance(wps[wps.length - 2].param5, wps[wps.length - 2].param6, wps[wps.length - 1].param5, wps[wps.length - 1].param6)
+  let distance = haversineDistance(getLatLng(wps[wps.length - 2]), getLatLng(wps[wps.length - 1]))
   gradients.push(gradient(distance, wps[wps.length - 2].param7, wps[wps.length - 1].param7))
 
   const chartConfig = {

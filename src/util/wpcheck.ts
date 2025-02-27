@@ -1,7 +1,7 @@
 import { Fault, Severity, Waypoint } from "@/types/waypoints";
-import { angleBetweenPoints, gradient, haversineDistance } from "./distance";
 import { getLatLng, hasLocation, isPointInPolygon } from "./WPCollection";
 import { WaypointCollection } from "@/lib/waypoints/waypointCollection";
+import { angleBetweenPoints, gradient, haversineDistance } from "@/lib/world/distance";
 
 
 
@@ -181,7 +181,7 @@ export function wpCheck(wps: Waypoint[], waypoints: WaypointCollection): Fault[]
   let gradients: (number | null)[] = []
   for (let i = 0; i < wps.length - 1; i++) {
     if (hasLocation(wps[i])) {
-      gradients.push(gradient(haversineDistance(wps[i].param5, wps[i].param6, wps[i + 1].param5, wps[i + 1].param6), wps[i].param7, wps[i + 1].param7))
+      gradients.push(gradient(haversineDistance(getLatLng(wps[i]), getLatLng(wps[i + 1])), wps[i].param7, wps[i + 1].param7))
     } else {
       gradients.push(null)
     }
@@ -244,7 +244,6 @@ export function wpCheck(wps: Waypoint[], waypoints: WaypointCollection): Fault[]
     waypoints.getMissions().map((mission) => {
       if (mission == "Geofence" || mission == "Markers") return
       let nodes = waypoints.get(mission)
-      if (!nodes) return
       nodes.map((node) => {
         if (node.type != "Collection") return
         if (node.name == key) found = true
@@ -279,23 +278,18 @@ export function wpCheck(wps: Waypoint[], waypoints: WaypointCollection): Fault[]
   }
 
   const geofence = waypoints.get("Geofence")
-  if (geofence) {
-    if (geofence.length == 0) {
-      ret.push({
-        message: "No geofence setup",
-        severity: Severity.Med,
-      })
+  if (geofence.length == 0) {
+    ret.push({
+      message: "No geofence setup",
+      severity: Severity.Med,
+    })
 
-    } else if (geofence.length < 3) {
-      ret.push({
-        message: "Not enough geofence waypoints",
-        severity: Severity.Bad,
-      })
-    } else {
-
-    }
-
-
+  } else if (geofence.length < 3) {
+    ret.push({
+      message: "Not enough geofence waypoints",
+      severity: Severity.Bad,
+    })
+  } else {
   }
 
 

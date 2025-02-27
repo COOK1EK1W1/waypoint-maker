@@ -27,3 +27,15 @@ export const defaultTakeoff = (pos: LatLng) => ({
   autocontinue: 1
 })
 
+export const defaultDoLandStart = (pos: LatLng) => ({
+  frame: 0,
+  type: 189,
+  param1: 0,
+  param2: 0,
+  param3: 0,
+  param4: 0,
+  param5: pos.lat,
+  param6: pos.lng,
+  param7: 0,
+  autocontinue: 0
+})

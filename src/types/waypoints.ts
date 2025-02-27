@@ -50,6 +50,5 @@ export type Fault = {
   offenderIndex?: number,
   message: string,
   severity: Severity
-
 }
 

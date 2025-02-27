@@ -1,5 +1,5 @@
 "use client"
-import { useWaypointContext } from "@/util/context/WaypointContext"
+import { useWaypoints } from "@/util/context/WaypointContext"
 import { cn } from "@/lib/utils"
 import { FaCheck } from "react-icons/fa"
 import { FaX } from "react-icons/fa6"
@@ -10,13 +10,14 @@ import Button from "./button"
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import WPCheckModal from "../modal/WPCheckModal"
 import { DialogDescription } from "@radix-ui/react-dialog"
+import { ReactNode } from "react"
 
 export default function WPCheck() {
-  const { waypoints } = useWaypointContext()
+  const { waypoints } = useWaypoints()
   const msg = wpCheck(waypoints.flatten("Main"), waypoints)
   const bad = msg.filter((x) => x.severity == Severity.Bad)
 
-  let text: any = ""
+  let text: ReactNode = ""
   let color = ""
   if (bad.length == 0) {
     if (msg.length == 0) {
