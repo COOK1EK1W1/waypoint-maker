@@ -1,6 +1,6 @@
-import { LatLng } from "@/types/dubins";
 import { Node, Waypoint } from "@/types/waypoints";
 import { getLatLng, hasLocation } from "@/util/WPCollection";
+import { LatLng } from "../world/types";
 
 export class WaypointCollection {
 

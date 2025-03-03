@@ -1,4 +1,4 @@
-import { bound } from "@/types/dubins"
+import { bound } from "../dubins/types"
 
 export type res = { finalVals: number[], fitness: number, time: number }
 

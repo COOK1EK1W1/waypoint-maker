@@ -1,6 +1,6 @@
 import { Waypoint } from "@/types/waypoints";
 import { dubinsBetweenDubins, localisePath, splitDubinsRuns, waypointToDubins } from "@/lib/dubins/dubinWaypoints";
-import { LatLng } from "@/types/dubins";
+import { LatLng } from "@/lib/world/types";
 
 export function simplifyDubinsWaypoints(wps: Waypoint[]) {
   // simplify dubins runs

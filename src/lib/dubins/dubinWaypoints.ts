@@ -1,11 +1,13 @@
 import { Waypoint } from "@/types/waypoints";
 import { modf, offset } from "@/lib/math/geometry"
 import { DubinsBetweenDiffRad } from "./dubins";
-import { bound, dubinsPoint, LatLng, Path, Segment, XY } from "@/types/dubins";
-import { g2l, l2g } from "../world/conversion";
+import { g2l, l2g } from "@/lib/world/conversion";
 import { Plane } from "@/types/vehicleType";
-import { crossProduct } from "../waypoints/fns";
-import { deg2rad } from "../math/geometry";
+import { crossProduct } from "@/lib/waypoints/fns";
+import { deg2rad } from "@/lib/math/geometry";
+import { bound, dubinsPoint, Path, Segment } from "./types";
+import { LatLng } from "@/lib/world/types";
+import { XY } from "@/lib/math/types";
 
 /*
  * find all the sections of a waypoint list which require a dubins path between

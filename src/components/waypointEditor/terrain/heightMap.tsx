@@ -6,11 +6,10 @@ import { Area, CartesianGrid, ComposedChart, Line, XAxis, YAxis } from "recharts
 import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { gradient, haversineDistance } from "@/lib/world/distance";
 import { getLatLng } from "@/util/WPCollection";
-import { LatLng } from "@/types/dubins";
+import { LatLng } from "@/lib/world/types";
 
 function interpolate(lat1: number, lat2: number, lng1: number, lng2: number, c: number) {
   return { lat: lat1 * (1 - c) + lat2 * c, lng: lng1 * (1 - c) + lng2 * c }
-
 }
 
 export default function HeightMap() {

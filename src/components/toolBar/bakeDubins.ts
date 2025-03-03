@@ -1,17 +1,20 @@
 import { applyBounds, dubinsBetweenDubins, getBounds, getTunableDubinsParameters, setTunableDubinsParameter, setTunableParameter, splitDubinsRuns, waypointToDubins } from "@/lib/dubins/dubinWaypoints";
+import { bound, dubinsPoint, Path } from "@/lib/dubins/types";
+import { XY } from "@/lib/math/types";
 import { res } from "@/lib/optimisation/types";
 import { WaypointCollection } from "@/lib/waypoints/waypointCollection";
-import { bound, dubinsPoint, Path, XY } from "@/types/dubins";
 import { Plane } from "@/types/vehicleType";
 import { Waypoint } from "@/types/waypoints";
 import { Dispatch, SetStateAction } from "react";
 
 // This function is a closure that takes in the waypoints and returns a function that takes in the tunable parameters and returns the total length of the path
 export function createEvaluate(wps: dubinsPoint[], optimisationFunction: (path: Path<XY>) => number) {
+  // copy the dubins points
   let localWPS: dubinsPoint[] = []
   for (let x = 0; x < wps.length; x++) {
     localWPS.push({ ...wps[x] })
   }
+
   function evaluate(x: number[]): number {
     setTunableDubinsParameter(localWPS, x)
     let path = dubinsBetweenDubins(localWPS)

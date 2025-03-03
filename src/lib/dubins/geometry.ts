@@ -1,5 +1,6 @@
-import { Segment, Path, XY } from "@/types/dubins";
 import { dist } from "@/lib/math/geometry";
+import { XY } from "../math/types";
+import { Path, Segment } from "./types";
 
 /**
  * Calculates the length of a segment in a Dubins path

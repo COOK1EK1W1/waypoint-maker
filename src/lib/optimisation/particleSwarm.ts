@@ -14,13 +14,14 @@ export const particleOptimise: optimisationAlgorithm = (initialGuess, bounds, fn
 
   const improvementThreshold = 1e-6
 
-  let local_best_position = []
-  let local_best_value = []
+  let local_best_position: number[][] = []
+  let local_best_value: number[] = []
   let global_best_position = [...initialGuess]
   let global_best_value = fn(global_best_position)
-  let previous_global_best = []
+  let previous_global_best: number[] = []
   //console.log("Starting fitness: ", global_best_value)
 
+  // intialise population
   for (let i = 0; i < popsize; i++) {
     const particle_pos = Array.from({ length: dims }, (_, j) => initialGuess[j] + (Math.random() - 0.5 * 0.1))
     const particle_vel = Array.from({ length: dims }, () => Math.random() - 0.5)

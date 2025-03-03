@@ -1,6 +1,7 @@
 import { expect, test } from "bun:test";
-import { Path, Segment, XY } from "@/types/dubins";
 import { pathLength, segmentLength } from "@/lib/dubins/geometry";
+import { XY } from "@/lib/math/types";
+import { Path, Segment } from "../types";
 
 test("straight line len", () => {
   const a: Segment<XY> = { type: "Straight", start: { x: 0, y: 0 }, end: { x: 3, y: 4 } }

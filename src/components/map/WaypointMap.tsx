@@ -9,7 +9,7 @@ import { useEffect, useRef } from "react";
 import ActiveLayer from "./activeLayer";
 import GeofenceLayer from "./geofenceLayer";
 import MarkerLayer from "./markerLayer";
-import DubinsLayer from "./dunbinsLayer";
+import DubinsLayer from "./dubinsLayer";
 import { MoveWPsAvgTo } from "@/util/WPCollection";
 import { defaultDoLandStart, defaultTakeoff, defaultWaypoint } from "@/lib/waypoints/defaults";
 import { useMap } from '@/util/context/MapContext';

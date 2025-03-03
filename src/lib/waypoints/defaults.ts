@@ -1,4 +1,4 @@
-import { LatLng } from "@/types/dubins"
+import { LatLng } from "../world/types"
 
 export const defaultWaypoint = (pos: LatLng) => ({
   frame: 3,
