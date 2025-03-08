@@ -9,11 +9,14 @@ export function simplifyDubinsWaypoints(wps: Waypoint[]) {
     if (wps[i].type == 18 && wps[i + 1].type == 18 && wps[i].param5 == wps[i + 1].param5 && wps[i].param6 == wps[i + 1].param6 && wps[i].param3 == wps[i + 1].param3) {
       simplifiedMavWP.push({ frame: 3, type: 18, param1: wps[i].param1 + wps[i + 1].param1, param2: 0, param3: wps[i].param3, param4: 1, param5: wps[i].param5, param6: wps[i].param6, param7: wps[i + 1].param7, autocontinue: 1 })
       i++
+    } else if (wps[i].type == 16 && wps[i + 1].type == 16 && wps[i + 1] && wps[i].param5 == wps[i + 1].param5 && wps[i].param6 == wps[i + 1].param6) {
+      simplifiedMavWP.push(wps[i])
+      i++
     } else {
       simplifiedMavWP.push(wps[i])
     }
   }
-  simplifiedMavWP = simplifiedMavWP.filter((x) => (x.type != 18 || x.param1 > 0.03 || x.param3 > 0))
+  simplifiedMavWP = simplifiedMavWP.filter((x) => (x.type != 18 || x.param1 > 0.03 && x.param3 > 0))
   return simplifiedMavWP
 }
 
