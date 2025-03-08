@@ -7,17 +7,9 @@ local caching
 edit name
 auto move viewport when loading
 
--- Login --
--- send mission to DB --
--- load mission from DB --
--- create new mission --
--- delete mission from DB --
--- Sign up --
-
 ### Dubins paths
 
 wpm wide reference point
-Export correctly                    | partial
 more unit tests                     | partial
 auto height adjustment
 geofence avoidance
@@ -34,3 +26,10 @@ waypoint editing on mobile
 double click? to open sub mission
 hide do land start WPs etc. (potentially stack them under/above marker locations)
 help page
+
+layers in a folder
+
+sort out commands
+   Mav commands
+   WPM commands
+   better workflow for exporting 

@@ -30,8 +30,10 @@ export function findCenters(a: XY, heading: number, dist: number): { l: XY, r: X
  * @param {number} thetaB - the bearing for waypoint B
  * @param {number} radA - The radius coming out of waypoint A
  * @param {number} radB - The radius coming into waypoint B
+ * @param {number} dirA - Force pass direction of waypoint A
+ * @param {number} dirB - Force pass direction of waypoint B
  */
-export function DubinsBetweenDiffRad(a: XY, b: XY, thetaA: number, thetaB: number, radA: number, radB: number, Adir?: Dir, Bdir?: Dir): Path<XY> {
+export function DubinsBetweenDiffRad(a: XY, b: XY, thetaA: number, thetaB: number, radA: number, radB: number, dirA?: Dir, dirB?: Dir): Path<XY> {
 
   // nomalise angles
   thetaA = mod2pi(thetaA)
@@ -48,7 +50,7 @@ export function DubinsBetweenDiffRad(a: XY, b: XY, thetaA: number, thetaB: numbe
   let right_start = thetaA - Math.PI / 2
 
   //RSR
-  if ((Adir != Dir.Left) && (Bdir != Dir.Left) && dist(a_centers.r, b_centers.r) > Math.abs(radA - radB)) {
+  if ((dirA != Dir.Left) && (dirB != Dir.Left) && dist(a_centers.r, b_centers.r) > Math.abs(radA - radB)) {
     const ar2br = bearing(a_centers.r, b_centers.r)
     let a = Math.asin((radA - radB) / dist(a_centers.r, b_centers.r)) + ar2br
     let c1: Curve<XY> = {
@@ -75,7 +77,7 @@ export function DubinsBetweenDiffRad(a: XY, b: XY, thetaA: number, thetaB: numbe
   }
 
   //LSL
-  if ((Adir != Dir.Right) && (Bdir != Dir.Left) && dist(a_centers.l, b_centers.l) > Math.abs(radA - radB)) {
+  if ((dirA != Dir.Right) && (dirB != Dir.Left) && dist(a_centers.l, b_centers.l) > Math.abs(radA - radB)) {
     const al2bl = bearing(a_centers.l, b_centers.l)
     let a = al2bl - Math.asin((radA - radB) / dist(a_centers.l, b_centers.l))
     let c1: Curve<XY> = {
@@ -101,7 +103,7 @@ export function DubinsBetweenDiffRad(a: XY, b: XY, thetaA: number, thetaB: numbe
   }
 
   //RSL
-  if ((Adir != Dir.Left) && (Bdir != Dir.Right) && dist(a_centers.r, b_centers.l) > Math.abs(radA + radB)) {
+  if ((dirA != Dir.Left) && (dirB != Dir.Right) && dist(a_centers.r, b_centers.l) > Math.abs(radA + radB)) {
     const ar2bl = bearing(a_centers.r, b_centers.l)
     let a = Math.asin((radA + radB) / dist(a_centers.r, b_centers.l)) + ar2bl
     let c1: Curve<XY> = {
@@ -129,7 +131,7 @@ export function DubinsBetweenDiffRad(a: XY, b: XY, thetaA: number, thetaB: numbe
   }
 
   //LSR
-  if ((Adir != Dir.Right) && (Bdir != Dir.Left) && dist(a_centers.l, b_centers.r) > Math.abs(radA + radB)) {
+  if ((dirA != Dir.Right) && (dirB != Dir.Left) && dist(a_centers.l, b_centers.r) > Math.abs(radA + radB)) {
     const al2br = bearing(a_centers.l, b_centers.r)
     let a = al2br - Math.asin((radA + radB) / dist(a_centers.l, b_centers.r))
     let c1: Curve<XY> = {
@@ -158,7 +160,7 @@ export function DubinsBetweenDiffRad(a: XY, b: XY, thetaA: number, thetaB: numbe
   sections.sort((a, b) => pathLength(a) - pathLength(b))
   if (sections.length == 0) {
     console.log(thetaA, thetaB)
-    console.log(Adir, Bdir)
+    console.log(dirA, dirB)
   }
   console.assert(sections.length > 0);
   return sections[0]
