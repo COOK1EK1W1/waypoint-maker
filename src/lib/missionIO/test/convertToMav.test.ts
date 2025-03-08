@@ -97,6 +97,59 @@ test("single Dubins point", () => {
 
   expect(mavMission[3].type).toBe(16)
   expect(mavMission[3]).toEqual(mission[2])
+  expect(mavMission[4]).toBeUndefined()
+})
+
+
+test("single Dubins point reverse", () => {
+  const mission: Waypoint[] = [
+    {
+      frame: 3,
+      type: 16,
+      param1: 0,
+      param2: 0,
+      param3: 0,
+      param4: 0,
+      param5: 55.81282913789,
+      param6: -3.230659866333,
+      param7: 100,
+      autocontinue: 1
+    }, {
+      frame: 3,
+      type: 69,
+      param1: 0,
+      param2: 40,
+      param3: 230,
+      param4: 0,
+      param5: 55.81282913789,
+      param6: -3.330659866333,
+      param7: 100,
+      autocontinue: 1
+    }, {
+      frame: 3,
+      type: 16,
+      param1: 0,
+      param2: 0,
+      param3: 0,
+      param4: 0,
+      param5: 55.71282913789,
+      param6: -3.330659866333,
+      param7: 100,
+      autocontinue: 1
+    }
+  ]
+  const mavMission = convertToMAV(mission, { lat: 55.75, lng: -3.25 })
+  expect(mavMission[0].type).toBe(16)
+  expect(mavMission[0]).toEqual(mission[0])
+
+
+  expect(mavMission[1].type).toBe(16)
+
+  expect(mavMission[2].type).toBe(18)
+
+  expect(mavMission[3].type).toBe(16)
+  expect(mavMission[3]).toEqual(mission[2])
+  expect(mavMission[4]).toBeUndefined()
 })
 
 
@@ -119,7 +172,7 @@ test("double Dubins point", () => {
       type: 69,
       param1: 0,
       param2: 45,
-      param3: 10,
+      param3: 100,
       param4: 0,
       param5: 55.81282913789,
       param6: -3.330659866333,
@@ -129,8 +182,8 @@ test("double Dubins point", () => {
       frame: 3,
       type: 69,
       param1: 0,
-      param2: 0,
-      param3: 135,
+      param2: 135,
+      param3: 100,
       param4: 0,
       param5: 55.81282913789,
       param6: -3.230659866333,
@@ -150,6 +203,7 @@ test("double Dubins point", () => {
     }
   ]
   const mavMission = convertToMAV(mission, { lat: 55.75, lng: -3.25 })
+  console.log(mavMission)
   expect(mavMission[0].type).toBe(16)
   expect(mavMission[0]).toEqual(mission[0])
 

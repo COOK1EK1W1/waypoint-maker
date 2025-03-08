@@ -16,7 +16,7 @@ export function simplifyDubinsWaypoints(wps: Waypoint[]) {
       simplifiedMavWP.push(wps[i])
     }
   }
-  simplifiedMavWP = simplifiedMavWP.filter((x) => (x.type != 18 || x.param1 > 0.03 && x.param3 > 0))
+  simplifiedMavWP = simplifiedMavWP.filter((x) => (x.type != 18 || x.param1 > 0.03 && Math.abs(x.param3) > 0))
   return simplifiedMavWP
 }
 
