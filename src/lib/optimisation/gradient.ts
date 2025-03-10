@@ -11,7 +11,7 @@ export const gradientOptimise: optimisationAlgorithm = (initialGuess, bounds, fn
 
   // Function to estimate gradients using finite differences
   function calculateGradients(params: number[]): number[] {
-    const epsilon = 1e-6;
+    const epsilon = 1e-4;
     return params.map((_, i) => {
       const paramsPlusEpsilon = [...params];
       paramsPlusEpsilon[i] += epsilon;
