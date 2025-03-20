@@ -2,8 +2,9 @@ import { expect, test } from "bun:test";
 import { applyBounds, dubinsBetweenDubins, getBounds, getMinTurnRadius, getTunableDubinsParameters, localisePath, splitDubinsRuns } from "@/lib/dubins/dubinWaypoints";
 import { Waypoint } from "@/types/waypoints";
 import { defaultWaypoint } from "@/lib/waypoints/defaults";
-import { dubinsPoint, Path, XY } from "@/types/dubins";
 import { defaultPlane } from "@/util/defaultVehicles";
+import { XY } from "@/lib/math/types";
+import { dubinsPoint, Path } from "../types";
 
 
 test("Split Dubins runs empty", () => {

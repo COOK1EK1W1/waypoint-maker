@@ -1,4 +1,4 @@
-import { XY } from "@/types/dubins"
+import { XY } from "./types"
 
 /**
  * Converts degrees to radians

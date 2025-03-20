@@ -1,7 +1,7 @@
 import { Waypoint, Node } from "@/types/waypoints";
 import { commands } from "@/util/commands";
 import type { WaypointCollection } from "@/lib/waypoints/waypointCollection";
-import { LatLng } from "@/types/dubins";
+import { LatLng } from "@/lib/world/types";
 
 
 export function MoveWPsAvgTo(pos: LatLng, waypoints: WaypointCollection, selectedWPs: number[], active: string): WaypointCollection {

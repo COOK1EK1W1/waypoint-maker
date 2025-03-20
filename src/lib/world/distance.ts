@@ -1,6 +1,6 @@
-import { LatLng } from "@/types/dubins";
 import { deg2rad, mod2pi } from "@/lib/math/geometry";
 import { angleBetweenVectors } from "@/lib/math/vector";
+import { LatLng } from "./types";
 
 /*
  * Calculate the distance between two points on a globe
@@ -76,7 +76,7 @@ export function gradient(distance: number, alt1: number, alt2: number) {
  * Format a distance in meters to a human-readable string
  * @param {number} distanceInMeters - The distance in meters
  * @returns {string} The formatted distance
- */ 
+ */
 export function formatDistance(distanceInMeters: number) {
   // If the distance is less than 1 kilometer, return in meters rounded to three significant figures
   if (distanceInMeters < 1000) {

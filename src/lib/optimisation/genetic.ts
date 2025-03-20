@@ -1,12 +1,14 @@
-import { bound } from "@/types/dubins";
 import { applyBounds } from "@/lib/dubins/dubinWaypoints";
 import { optimisationAlgorithm } from "@/lib/optimisation/types";
+import { bound } from "../dubins/types";
+
+type populi = { vals: number[], fitness: number }
 
 export const geneticOptimise: optimisationAlgorithm = (initialGuess, bounds, fn) => {
   // an implementation of the genetic algorithm
   const start = performance.now()
-  let population: number[][] = []
-  let bestValues = [...initialGuess]
+  let population: populi[] = []
+  let bestpop: populi = { vals: [...initialGuess], fitness: fn([...initialGuess]) }
 
   const popsize = initialGuess.length * 20
 
@@ -16,20 +18,33 @@ export const geneticOptimise: optimisationAlgorithm = (initialGuess, bounds, fn)
   console.assert(ELITES + CHILDREN + MUTANTS == popsize, `${ELITES} ${CHILDREN} ${MUTANTS} ${popsize}`)
   console.assert(ELITES > 0, CHILDREN > 0, MUTANTS > 0)
 
+  let previous_global_best: number[] = []
+  const improvementThreshold = 1e-6
+
   for (let x = 0; x < popsize; x++) {
     let value = []
     for (let y = 0; y < initialGuess.length; y++) {
       value.push(initialGuess[y] + (Math.random() - 0.5) * 2)
     }
     console.assert(value.length == initialGuess.length, `${value.length}`)
-    population.push(value)
+    population.push({ vals: value, fitness: fn(value) })
   }
   for (let i = 0; i < 200; i++) {
-    let newpop: number[][] = []
-    population.sort((x, y) => fn(x) - fn(y))
 
-    if (fn(population[0]) < fn(bestValues)) {
-      bestValues = [...population[0]]
+    if (previous_global_best.length == 5) {
+      previous_global_best.shift()
+    }
+    previous_global_best.push(bestpop.fitness)
+    if (previous_global_best.length == 5 && (previous_global_best[0] - previous_global_best[4]) < improvementThreshold) {
+      //break;
+    }
+
+
+    let newpop: { vals: number[], fitness: number }[] = []
+    population.sort((x, y) => x.fitness - y.fitness)
+
+    if (population[0].fitness < bestpop.fitness) {
+      bestpop = { vals: [...population[0].vals], fitness: population[0].fitness }
     }
 
 
@@ -41,59 +56,71 @@ export const geneticOptimise: optimisationAlgorithm = (initialGuess, bounds, fn)
 
     // crossover
     for (let j = 0; j < CHILDREN; j++) {
-      const parent1 = tournamentSelection(population, fn)
-      const parent2 = tournamentSelection(population, fn)
-      newpop.push(crossover(parent1, parent2));
+      const parent1 = tournamentSelection(population)
+      const parent2 = tournamentSelection(population)
+      const vals = crossover(parent1, parent2)
+      newpop.push({ vals, fitness: fn(vals) });
 
     }
 
     // mutate
     for (let j = 0; j < MUTANTS; j++) {
       const parent = population[Math.floor(Math.random() * (popsize - ELITES)) + ELITES]
-      newpop.push(mutate(parent, bounds));
+      const vals = mutate(parent, bounds)
+      newpop.push({ vals, fitness: fn(vals) });
     }
 
     //console.assert(newpop.length == popsize)
     population = newpop
+    //console.log(bestpop.fitness)
 
   }
   const end = performance.now()
-  return { finalVals: bestValues, fitness: fn(bestValues), time: end - start }
+  return { finalVals: bestpop.vals, fitness: bestpop.fitness, time: end - start }
 }
 
-function crossover(a: number[], b: number[]): number[] {
-  console.assert(a.length == b.length)
+function crossover(a: populi, b: populi): number[] {
+  console.assert(a.vals.length == b.vals.length)
   let newVal = []
 
-  for (let i = 0; i < a.length; i++) {
+  for (let i = 0; i < a.vals.length; i++) {
     if (Math.random() > 0.5) {
-      newVal.push(a[i])
+      newVal.push(a.vals[i])
     } else {
-      newVal.push(b[i])
+      newVal.push(b.vals[i])
     }
 
   }
   return newVal
 }
 
-function mutate(a: number[], bounds: bound[]): number[] {
-  let newVal = [...a]
-  for (let i = 0; i < a.length; i++) {
-    a[i] += (Math.random() - 0.5) * 2
+function mutate(a: populi, bounds: bound[]): number[] {
+  let newVal = [...a.vals]
+  for (let i = 0; i < a.vals.length; i++) {
+    if (Math.random() < 0.2) {
+      newVal[i] += (Math.random() - 0.5) * 10
+    } else if (Math.random() < 0.2) {
+      let curBound = bounds[i]
+      if (curBound.circular) {
+        if (curBound.min != undefined && curBound.max != undefined) {
+          newVal[i] = (curBound.max - curBound.min) / 2 + newVal[i]
+        }
+      }
+
+    }
   }
   applyBounds(newVal, bounds)
   return newVal
 }
 
-function tournamentSelection(population: number[][], fn: (a: number[]) => number, k = 3) {
+function tournamentSelection(population: populi[], k = 3) {
   let best = population[Math.floor(Math.random() * population.length)];
 
   for (let i = 1; i < k; i++) {
     let challenger = population[Math.floor(Math.random() * population.length)];
-    if (fn(challenger) < fn(best)) {
+    if (challenger.fitness < best.fitness) {
       best = challenger;
     }
   }
   return best;
-
 }
