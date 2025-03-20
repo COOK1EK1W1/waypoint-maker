@@ -1,5 +1,6 @@
 import { XY } from "@/lib/math/types";
 import { LatLng } from "./types";
+import { deg2rad, rad2deg } from "../math/geometry";
 
 const worldRadius = 6371000 // meters
 
@@ -14,12 +15,12 @@ export function g2l(reference: LatLng, point: LatLng): XY {
   const { lat, lng } = point;
 
   // Convert latitude and longitude differences to radians
-  const dLat = (lat - refLat) * (Math.PI / 180);
-  const dLng = (lng - refLng) * (Math.PI / 180);
+  const dLat = deg2rad(lat - refLat);
+  const dLng = deg2rad(lng - refLng);
 
   // Calculate north and east distances
   const north = dLat * worldRadius;
-  const east = dLng * worldRadius * Math.cos(refLat * (Math.PI / 180));
+  const east = dLng * worldRadius * Math.cos(deg2rad(refLat));
 
   return { y: north, x: east };
 }
@@ -36,11 +37,11 @@ export function l2g(reference: LatLng, point: XY): LatLng {
 
   // Convert north and east distances to latitude and longitude differences
   const dLat = north / worldRadius;
-  const dLng = east / (worldRadius * Math.cos(refLat * (Math.PI / 180)));
+  const dLng = east / (worldRadius * Math.cos(deg2rad(refLat)));
 
   // Convert differences to degrees
-  const lat = refLat + dLat * (180 / Math.PI);
-  const lng = refLng + dLng * (180 / Math.PI);
+  const lat = refLat + rad2deg(dLat);
+  const lng = refLng + rad2deg(dLng);
 
   return { lat, lng };
 }
