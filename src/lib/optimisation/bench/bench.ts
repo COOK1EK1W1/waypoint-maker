@@ -7,6 +7,9 @@ import { Plane } from "@/types/vehicleType";
 import { geneticOptimise } from "../genetic";
 import { gradientOptimise } from "../gradient";
 
+const file = Bun.file("output.txt");
+const writer = file.writer();
+
 const vehicle: Plane = {
   type: "Plane",
   maxBank: 45,
@@ -21,9 +24,20 @@ const randomPoint: () => dubinsPoint = () => {
 const randomPoints: (n: number) => dubinsPoint[] = (n) => {
   return Array.from({ length: n }, randomPoint)
 }
-const funcs = [geneticOptimise, particleOptimise, gradientOptimise]
+const funcs = [geneticOptimise, particleOptimise]
 
-for (let amounts = 0; amounts < 10; amounts++) {
+const numTrials = 50
+// write headers
+writer.write("optimal, ")
+for (let trial = 0; trial < numTrials; trial++) {
+  writer.write(`genetic ${trial}, `)
+}
+for (let trial = 0; trial < numTrials; trial++) {
+  writer.write(`particle ${trial}, `)
+}
+writer.write("\n")
+
+for (let amounts = 0; amounts < 20; amounts++) {
   const dubinsPoints = randomPoints(10)
   const bounds = getBounds(dubinsPoints, vehicle)
 
@@ -36,18 +50,20 @@ for (let amounts = 0; amounts < 10; amounts++) {
   let c = gradientOptimise(a, bounds, evalFunc).fitness
   let res = Math.min(b.fitness, c)
   console.log("optimal: ", res)
+  const output = [res]
 
-
-  for (let func = 0; func < 3; func++) {
-    const vals = []
-    for (let trial = 0; trial < 10; trial++) {
+  for (let func = 0; func < funcs.length; func++) {
+    for (let trial = 0; trial < numTrials; trial++) {
       dubinsPoints.map((x) => x.heading = Math.random() * 360)
       const res = funcs[func](getTunableDubinsParameters(dubinsPoints), bounds, evalFunc)
       console.log(res.fitness)
-      vals.push(res.fitness)
+      output.push(res.fitness)
     }
-    console.log("Avg: ", vals.reduce((a, b) => a + b) / vals.length)
-    console.log("diff: ", ((vals.reduce((a, b) => a + b) / vals.length) / res))
   }
+  console.log(output)
+  writer.write(output.join(", "))
+  writer.write("\n")
 }
+writer.flush()
+writer.end()
 

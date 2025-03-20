@@ -37,7 +37,7 @@ export const particleOptimise: optimisationAlgorithm = (initialGuess, bounds, fn
     }
     previous_global_best.push(global_best_value)
     if (previous_global_best.length == 5 && (previous_global_best[0] - previous_global_best[4]) < improvementThreshold) {
-      //break;
+      // break;
     }
 
 

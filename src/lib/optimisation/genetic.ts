@@ -18,6 +18,9 @@ export const geneticOptimise: optimisationAlgorithm = (initialGuess, bounds, fn)
   console.assert(ELITES + CHILDREN + MUTANTS == popsize, `${ELITES} ${CHILDREN} ${MUTANTS} ${popsize}`)
   console.assert(ELITES > 0, CHILDREN > 0, MUTANTS > 0)
 
+  let previous_global_best: number[] = []
+  const improvementThreshold = 1e-6
+
   for (let x = 0; x < popsize; x++) {
     let value = []
     for (let y = 0; y < initialGuess.length; y++) {
@@ -27,6 +30,16 @@ export const geneticOptimise: optimisationAlgorithm = (initialGuess, bounds, fn)
     population.push({ vals: value, fitness: fn(value) })
   }
   for (let i = 0; i < 200; i++) {
+
+    if (previous_global_best.length == 5) {
+      previous_global_best.shift()
+    }
+    previous_global_best.push(bestpop.fitness)
+    if (previous_global_best.length == 5 && (previous_global_best[0] - previous_global_best[4]) < improvementThreshold) {
+      //break;
+    }
+
+
     let newpop: { vals: number[], fitness: number }[] = []
     population.sort((x, y) => x.fitness - y.fitness)
 
