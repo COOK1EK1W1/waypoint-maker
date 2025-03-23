@@ -1,7 +1,8 @@
 import { Node, WPNode } from "@/types/waypoints";
 import DraggableNumberInput from "@/components/ui/draggableNumericInput";
+import { ParameterDescription } from "@/lib/commands/types";
 
-export default function Parameter({ param, name, value, change, wps }: { param: Parameter | null, name: string, value: (n: WPNode) => number, change: (event: { target: { name?: string; value: number } }) => void, wps: Node[] }) {
+export default function Parameter({ param, name, value, change, wps }: { param: ParameterDescription | null, name: string, value: (n: WPNode) => number, change: (event: { target: { name?: string; value: number } }) => void, wps: Node[] }) {
   if (param == null) {
     return
   }

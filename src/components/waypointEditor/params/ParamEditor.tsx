@@ -5,6 +5,7 @@ import CommandTypeSelector from "./commandTypeSelector";
 import { LatLngEditor } from "./LatLngEditor";
 import { hasLocation } from "@/util/WPCollection";
 import { commands } from "@/lib/commands/commands";
+import { CommandDescription } from "@/lib/commands/types";
 
 function nodesAllSame(nodes: Node[]): boolean {
   let allSame = true;
@@ -79,7 +80,7 @@ export default function ParamEditor() {
     </div>
   }
 
-  const commanddesc = commands[commands.findIndex(a => wps[0].type == "Waypoint" && a.value == wps[0].wps.type)]
+  const commanddesc = commands[commands.findIndex(a => wps[0].type == "Waypoint" && a.value == wps[0].wps.type)] as CommandDescription
 
   const hasLocationParams = wps[0].type == "Waypoint" && hasLocation(wps[0].wps)
 

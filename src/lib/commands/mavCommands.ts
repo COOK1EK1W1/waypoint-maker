@@ -1,3 +1,4 @@
+ import { CommandDescription } from "./types";
 export const mavCmds = [{
   value: 16,
   name: "MAV_CMD_NAV_WAYPOINT",
@@ -1960,4 +1961,4 @@ export const mavCmds = [{
   default: null,
   options: [],
 }, null, null, null],
-}] as const satisfies Command[]
+}] as const satisfies CommandDescription[]

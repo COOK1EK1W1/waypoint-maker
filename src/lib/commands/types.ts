@@ -1,4 +1,4 @@
-export type Parameter = {
+export type ParameterDescription = {
   index: number
   label: string | null
   description: string
@@ -10,12 +10,12 @@ export type Parameter = {
   options: []
 }
 
-export type Command = {
+export type CommandDescription = {
   value: number
   name: string
   description: string
   hasLocation: boolean
   isDestination: boolean
-  parameters: (Parameter | null)[]
+  parameters: (ParameterDescription | null)[]
 
 }

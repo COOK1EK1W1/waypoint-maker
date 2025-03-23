@@ -1,3 +1,5 @@
+import { CommandDescription } from "./types";
+
 export const wpmCmds = [{
   value: 69,
   name: "WM_CMD_NAV_DUBINS",
@@ -65,4 +67,4 @@ export const wpmCmds = [{
     default: null,
     options: [],
   }],
-}] as const satisfies Command[]
+}] as const satisfies CommandDescription[]
