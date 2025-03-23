@@ -5,7 +5,7 @@
   "scripts": {
     "postinstall": "bunx prisma generate",
     "dev": "next dev",
-    "bruh": "node src/util/commandTypes.js",
+    "genCommands": "bun src/lib/commands/genCommands.ts",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
