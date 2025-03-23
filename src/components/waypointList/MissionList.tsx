@@ -5,9 +5,9 @@ import ListItem from "./ListItem";
 import { CollectionType } from "@/types/waypoints";
 import { TfiTarget } from "react-icons/tfi";
 import { commandName } from "@/util/translationTable";
-import { commands } from "@/util/commands";
 import { FaArrowRight, FaTrashAlt } from "react-icons/fa";
 import { useState } from "react";
+import { commands } from "@/lib/commands/commands";
 
 export default function MissionList({ onHide }: { onHide: () => void }) {
   const { setActiveMission, waypoints, setSelectedWPs, selectedWPs, setWaypoints, activeMission, setTool } = useWaypoints()

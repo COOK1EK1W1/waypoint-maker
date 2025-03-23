@@ -1,10 +1,10 @@
 import { useWaypoints } from "@/util/context/WaypointContext"
-import { commands } from "@/util/commands";
 import { Node, Waypoint } from "@/types/waypoints";
 import Parameter from "./Parameter";
 import CommandTypeSelector from "./commandTypeSelector";
 import { LatLngEditor } from "./LatLngEditor";
 import { hasLocation } from "@/util/WPCollection";
+import { commands } from "@/lib/commands/commands";
 
 function nodesAllSame(nodes: Node[]): boolean {
   let allSame = true;
