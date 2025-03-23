@@ -1,4 +1,6 @@
-export function commandName(name: string) {
+import { commands } from "@/lib/commands/commands"
+
+export function commandName(name: (typeof commands)[number]["name"]) {
   switch (name) {
     case "MAV_CMD_NAV_WAYPOINT":
       return "Waypoint"
@@ -14,8 +16,6 @@ export function commandName(name: string) {
       return "Land"
     case "MAV_CMD_NAV_TAKEOFF":
       return "Takeoff"
-    case "MAV_CMD_NAV_LAND_LOCAL":
-      return "Land Local"
     case "WM_CMD_NAV_DUBINS":
       return "Dubins"
 

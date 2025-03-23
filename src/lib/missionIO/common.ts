@@ -1,6 +1,7 @@
 import { Waypoint } from "@/types/waypoints";
 import { dubinsBetweenDubins, localisePath, splitDubinsRuns, waypointToDubins } from "@/lib/dubins/dubinWaypoints";
 import { LatLng } from "@/lib/world/types";
+import { MavCommand } from "../commands/types";
 
 export function simplifyDubinsWaypoints(wps: Waypoint[]) {
   // simplify dubins runs
@@ -20,7 +21,7 @@ export function simplifyDubinsWaypoints(wps: Waypoint[]) {
   return simplifiedMavWP
 }
 
-export function convertToMAV(wps: Waypoint[], reference: LatLng): Waypoint[] {
+export function convertToMAV(wps: Waypoint[], reference: LatLng): MavCommand[] {
 
   // render the dubins runs to waypoints
   let convertedRuns: { start: number, wps: Waypoint[], length: number }[] = []
@@ -68,7 +69,7 @@ export function convertToMAV(wps: Waypoint[], reference: LatLng): Waypoint[] {
   }
 
   ret.map((x) => { console.assert(x.type != 69, "dubins found :skull: ") })
-  return ret
+  return ret as MavCommand[]
 }
 
 export function downloadTextAsFile(filename: string, text: string) {
