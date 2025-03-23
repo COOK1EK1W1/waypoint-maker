@@ -1,7 +1,7 @@
 import { LayerGroup } from "react-leaflet";
-import DraggableMarker from "../marker/DraggableMarker";
 import { useWaypoints } from "@/util/context/WaypointContext";
-import GeofenceMarker from "../marker/geofenceMarker";
+import DraggableMarker from "@/components/marker/DraggableMarker";
+import GeofenceMarker from "@/components/marker/geofenceMarker";
 
 
 export default function MarkerLayer({ onMove }: { onMove: (lat: number, lng: number, id: number) => void }) {

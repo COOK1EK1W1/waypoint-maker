@@ -27,8 +27,6 @@ double click? to open sub mission
 hide do land start WPs etc. (potentially stack them under/above marker locations)
 help page
 
-layers in a folder
-
 sort out commands
    Mav commands
    WPM commands

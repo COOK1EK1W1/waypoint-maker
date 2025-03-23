@@ -1,8 +1,8 @@
 
 import { LayerGroup, Polygon } from "react-leaflet";
-import DraggableMarker from "../marker/DraggableMarker";
 import { useWaypoints } from "@/util/context/WaypointContext";
 import { toPolyline } from "@/util/waypointToLeaflet";
+import DraggableMarker from "@/components/marker/DraggableMarker";
 
 const fenceOptions = { color: 'red', fillOpacity: 0.1 }
 

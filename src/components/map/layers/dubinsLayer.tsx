@@ -1,11 +1,10 @@
 import { Circle, LayerGroup, Polyline } from "react-leaflet";
 import { useWaypoints } from "@/util/context/WaypointContext";
 import { Waypoint } from "@/types/waypoints"
-import Arc from "../marker/arc";
 import { ReactNode } from "react";
 import { dubinsBetweenDubins, localisePath, splitDubinsRuns, waypointToDubins } from "@/lib/dubins/dubinWaypoints";
-import DraggableMarker from "../marker/DraggableMarker";
 import { getLatLng } from "@/util/WPCollection";
+import Arc from "@/components/marker/arc";
 
 const curveOptions = { color: '#ff0000' }
 const straightOptions = { color: '#bb0000' }

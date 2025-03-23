@@ -1,8 +1,8 @@
 import { LayerGroup, Polyline } from "react-leaflet";
-import DraggableMarker from "../marker/DraggableMarker";
 import { useWaypoints } from "@/util/context/WaypointContext";
 import { toPolyline } from "@/util/waypointToLeaflet";
-import InsertBtn from "../marker/insertBtn";
+import InsertBtn from "@/components/marker/insertBtn";
+import DraggableMarker from "@/components/marker/DraggableMarker";
 
 const limeOptions = { color: 'lime' }
 const noshow = ["Markers", "Geofence"]

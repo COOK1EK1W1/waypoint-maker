@@ -6,14 +6,11 @@ import { useWaypoints } from "../../util/context/WaypointContext";
 import { Tool } from "@/types/tools";
 import { LeafletMouseEvent, Map } from "leaflet";
 import { useEffect, useRef } from "react";
-import ActiveLayer from "./activeLayer";
-import GeofenceLayer from "./geofenceLayer";
-import MarkerLayer from "./markerLayer";
-import DubinsLayer from "./dubinsLayer";
 import { MoveWPsAvgTo } from "@/util/WPCollection";
 import { defaultDoLandStart, defaultTakeoff, defaultWaypoint } from "@/lib/waypoints/defaults";
 import { useMap } from '@/util/context/MapContext';
 import MapController from "./mapController";
+import MapLayers from "./layers/layers";
 
 export default function MapStuff() {
   const { waypoints, setWaypoints, activeMission, tool, setTool, selectedWPs } = useWaypoints()
@@ -146,10 +143,7 @@ export default function MapStuff() {
 
         <CreateHandler />
 
-        <ActiveLayer onMove={onMove} />
-        <GeofenceLayer onMove={onMove} />
-        <MarkerLayer onMove={onMove} />
-        <DubinsLayer />
+        <MapLayers onMove={onMove} />
       </MapContainer>
     );
   }
