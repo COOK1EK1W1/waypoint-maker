@@ -2,6 +2,7 @@ import { LayerGroup } from "react-leaflet";
 import { useWaypoints } from "@/util/context/WaypointContext";
 import DraggableMarker from "@/components/marker/DraggableMarker";
 import GeofenceMarker from "@/components/marker/geofenceMarker";
+import { toLatLng } from "@/util/waypointToLeaflet";
 
 
 export default function MarkerLayer({ onMove }: { onMove: (lat: number, lng: number, id: number) => void }) {
@@ -16,9 +17,9 @@ export default function MarkerLayer({ onMove }: { onMove: (lat: number, lng: num
           if (x[0] == activeMission && selectedWPs.includes(x[1])) active = true
         }
         if (activeMission == "Markers") {
-          return <DraggableMarker key={idx} waypoint={waypoint} onMove={(lat, lng) => onMove(lat, lng, idx)} active={false} />
+          return <DraggableMarker key={idx} position={toLatLng(waypoint)} onMove={(lat, lng) => onMove(lat, lng, idx)} active={false} />
         } else {
-          return <GeofenceMarker key={idx} waypoint={waypoint} active={false} />
+          return <GeofenceMarker key={idx} position={toLatLng(waypoint)} active={false} />
 
         }
       })

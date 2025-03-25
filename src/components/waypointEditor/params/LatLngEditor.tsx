@@ -1,10 +1,11 @@
 import { avgLatLng, MoveWPsAvgTo } from "@/util/WPCollection";
 import { useWaypoints } from "@/util/context/WaypointContext";
-import { Node, Waypoint } from "@/types/waypoints";
+import { Node } from "@/types/waypoints";
 import { FaArrowDown, FaArrowLeft, FaArrowRight, FaArrowUp } from "react-icons/fa";
 import { FaArrowRotateLeft, FaArrowRotateRight } from "react-icons/fa6";
 import { LuMousePointerClick } from "react-icons/lu";
 import { TfiTarget } from "react-icons/tfi";
+import { Command } from "@/lib/commands/commands";
 
 export function LatLngEditor() {
   const { selectedWPs, waypoints, setWaypoints, activeMission, setTool } = useWaypoints();
@@ -28,10 +29,10 @@ export function LatLngEditor() {
   function nudge(x: number, y: number) {
     setWaypoints((waypoints) => {
       for (let i = 0; i < wpsIds.length; i++) {
-        waypoints.changeParam(wpsIds[i], activeMission, (wp: Waypoint) => {
-          wp.param5 += 0.0001 * y;
-          wp.param6 += 0.0001 * x;
-          return wp;
+        waypoints.changeParam(wpsIds[i], activeMission, (cmd: Command) => {
+          cmd.param5 += 0.0001 * y;
+          cmd.param6 += 0.0001 * x;
+          return cmd;
         });
       }
       return waypoints.clone();
@@ -50,17 +51,17 @@ export function LatLngEditor() {
 
     setWaypoints((waypoints) => {
       for (let i = 0; i < wps.length; i++) {
-        waypoints.changeParam(wpsIds[i], activeMission, (wp: Waypoint) => {
-          const x = (wp.param6 - lng) * Math.cos(lat * Math.PI / 180);
-          const y = wp.param5 - lat;
+        waypoints.changeParam(wpsIds[i], activeMission, (cmd: Command) => {
+          const x = (cmd.param6 - lng) * Math.cos(lat * Math.PI / 180);
+          const y = cmd.param5 - lat;
 
           const newX = x * Math.cos(angleRadians) - y * Math.sin(angleRadians);
           const newY = x * Math.sin(angleRadians) + y * Math.cos(angleRadians);
 
-          wp.param6 = newX / Math.cos(lat * Math.PI / 180) + lng;
-          wp.param5 = newY + lat;
+          cmd.param6 = newX / Math.cos(lat * Math.PI / 180) + lng;
+          cmd.param5 = newY + lat;
 
-          return wp;
+          return cmd;
         });
       }
       return waypoints.clone();

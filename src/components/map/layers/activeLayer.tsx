@@ -1,6 +1,6 @@
 import { LayerGroup, Polyline } from "react-leaflet";
 import { useWaypoints } from "@/util/context/WaypointContext";
-import { toPolyline } from "@/util/waypointToLeaflet";
+import { toLatLng, toPolyline } from "@/util/waypointToLeaflet";
 import InsertBtn from "@/components/marker/insertBtn";
 import DraggableMarker from "@/components/marker/DraggableMarker";
 
@@ -40,7 +40,7 @@ export default function ActiveLayer({ onMove }: { onMove: (lat: number, lng: num
     };
     setWaypoints((prevWPS) => {
       const a = prevWPS.clone()
-      a.insert(id + 1, activeMission, { type: "Waypoint", wps: newMarker })
+      a.insert(id + 1, activeMission, { type: "Command", cmd: newMarker })
       return a
     });
 
@@ -63,7 +63,7 @@ export default function ActiveLayer({ onMove }: { onMove: (lat: number, lng: num
         if (x) {
           if (x[0] == activeMission && selectedWPs.includes(x[1])) active = true
         }
-        return <DraggableMarker key={idx} waypoint={{ ...waypoint }} onMove={(lat, lng) => onMove(lat, lng, idx)} active={active} onClick={() => handleMarkerClick(idx)} />
+        return <DraggableMarker key={idx} position={toLatLng(waypoint)} onMove={(lat, lng) => onMove(lat, lng, idx)} active={active} onClick={() => handleMarkerClick(idx)} />
       })
       }
       <Polyline pathOptions={limeOptions} positions={toPolyline(activeWPs)} />

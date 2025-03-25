@@ -1,17 +1,4 @@
-export type Waypoint = {
-  frame: number
-  type: number
-
-  param1: number
-  param2: number
-  param3: number
-  param4: number
-  param5: number
-  param6: number
-  param7: number
-
-  autocontinue: number
-}
+import { Command } from "@/lib/commands/commands"
 
 export enum CollectionType {
   Mission,
@@ -20,8 +7,8 @@ export enum CollectionType {
 }
 
 export type WPNode = {
-  type: "Waypoint"
-  wps: Waypoint
+  type: "Command"
+  cmd: Command
 }
 
 export type ColNode = {
@@ -31,7 +18,6 @@ export type ColNode = {
   collectionID: string
   offsetLat: number
   offsetLng: number
-
 }
 
 export type Node = WPNode | ColNode
@@ -51,4 +37,3 @@ export type Fault = {
   message: string,
   severity: Severity
 }
-

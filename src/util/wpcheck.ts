@@ -1,11 +1,12 @@
-import { Fault, Severity, Waypoint } from "@/types/waypoints";
+import { Fault, Severity } from "@/types/waypoints";
 import { getLatLng, hasLocation, isPointInPolygon } from "./WPCollection";
 import { WaypointCollection } from "@/lib/waypoints/waypointCollection";
 import { angleBetweenPoints, gradient, haversineDistance } from "@/lib/world/distance";
+import { Command } from "@/lib/commands/commands";
 
 
 
-export function wpCheck(wps: Waypoint[], waypoints: WaypointCollection): Fault[] {
+export function wpCheck(wps: Command[], waypoints: WaypointCollection): Fault[] {
   let ret: Fault[] = []
 
   if (wps.length == 0) {

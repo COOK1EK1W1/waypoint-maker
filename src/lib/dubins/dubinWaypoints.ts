@@ -1,4 +1,3 @@
-import { Waypoint } from "@/types/waypoints";
 import { modf, offset } from "@/lib/math/geometry"
 import { DubinsBetweenDiffRad } from "./dubins";
 import { g2l, l2g } from "@/lib/world/conversion";
@@ -8,15 +7,17 @@ import { deg2rad } from "@/lib/math/geometry";
 import { bound, dubinsPoint, Path, Segment } from "./types";
 import { LatLng } from "@/lib/world/types";
 import { XY } from "@/lib/math/types";
+import { Command } from "../commands/commands";
+import { toLatLng } from "@/util/waypointToLeaflet";
 
 /*
  * find all the sections of a waypoint list which require a dubins path between
  * include pre + post waypoints to connect
  */
-export function splitDubinsRuns(wps: Waypoint[]): { start: number, wps: Waypoint[] }[] {
-  let dubinSections: { start: number, wps: Waypoint[] }[] = []
+export function splitDubinsRuns(wps: Command[]): { start: number, wps: Command[] }[] {
+  let dubinSections: { start: number, wps: Command[] }[] = []
 
-  let curSection: Waypoint[] = []
+  let curSection: Command[] = []
   let start = 0
   for (let i = 0; i < wps.length; i++) {
     const curWaypoint = wps[i]
@@ -175,11 +176,11 @@ export function applyBounds(params: number[], bounds: bound[]): void {
  * @param {LatLng} reference - The reference point used for coordinate conversion
  * @returns {dubinsPoint} The dubins point
  */
-export function waypointToDubins(wp: Waypoint, reference: LatLng): dubinsPoint {
-  if (wp.type == 69) {
-    return { pos: g2l(reference, { lat: wp.param5, lng: wp.param6 }), bounds: {}, radius: wp.param3, heading: wp.param2, tunable: true, passbyRadius: wp.param1 }
+export function waypointToDubins(cmd: Command, reference: LatLng): dubinsPoint {
+  if (cmd.type == 69) {
+    return { pos: g2l(reference, toLatLng(cmd)), bounds: {}, radius: cmd.param3, heading: cmd.param2, tunable: true, passbyRadius: cmd.param1 }
   } else {
-    return { pos: g2l(reference, { lat: wp.param5, lng: wp.param6 }), bounds: {}, radius: 0, heading: wp.param2, tunable: false, passbyRadius: wp.param1 }
+    return { pos: g2l(reference, toLatLng(cmd)), bounds: {}, radius: 0, heading: cmd.param2, tunable: false, passbyRadius: cmd.param1 }
   }
 }
 
@@ -188,7 +189,7 @@ export function waypointToDubins(wp: Waypoint, reference: LatLng): dubinsPoint {
  * @param {Waypoint[]} wps - The list of waypoints
  * @param {number[]} params - The tunable parameters
  */
-export function setTunableParameter(wps: Waypoint[], params: number[]): void {
+export function setTunableParameter(wps: Command[], params: number[]): void {
   let paramI = 0
   for (let i = 0; i < wps.length; i++) {
     let cur = wps[i]

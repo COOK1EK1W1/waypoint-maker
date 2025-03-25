@@ -1,7 +1,7 @@
-import { Waypoint, Node } from "@/types/waypoints";
+import { Node } from "@/types/waypoints";
 import type { WaypointCollection } from "@/lib/waypoints/waypointCollection";
 import { LatLng } from "@/lib/world/types";
-import { commands } from "@/lib/commands/commands";
+import { Command, commands } from "@/lib/commands/commands";
 
 
 export function MoveWPsAvgTo(pos: LatLng, waypoints: WaypointCollection, selectedWPs: number[], active: string): WaypointCollection {
@@ -22,17 +22,17 @@ export function MoveWPsAvgTo(pos: LatLng, waypoints: WaypointCollection, selecte
   const { lat, lng } = avgLatLng(leaves)
   let waypointsUpdated = waypoints.clone();
   for (let i = 0; i < wps.length; i++) {
-    waypointsUpdated.changeParam(wpsIds[i], active, (wp: Waypoint) => {
-      wp.param5 += pos.lat - lat
-      wp.param6 += pos.lng - lng
-      return wp;
+    waypointsUpdated.changeParam(wpsIds[i], active, (cmd: Command) => {
+      cmd.param5 += pos.lat - lat
+      cmd.param6 += pos.lng - lng
+      return cmd;
     });
   }
   return waypointsUpdated;
 }
 
 
-export function isPointInPolygon(polygon: Waypoint[], point: Waypoint) {
+export function isPointInPolygon(polygon: Command[], point: Command) {
   const num_vertices = polygon.length;
   const x = point.param5;
   const y = point.param6;
@@ -62,22 +62,22 @@ export function isPointInPolygon(polygon: Waypoint[], point: Waypoint) {
   return inside;
 }
 
-export function avgLatLng(wps: Waypoint[]): LatLng {
+export function avgLatLng(commands: Command[]): LatLng {
   let latTotal = 0
   let lngTotal = 0
   let count = 0
-  for (let wp of wps) {
-    if (hasLocation(wp)) {
+  for (let cmd of commands) {
+    if (hasLocation(cmd)) {
       count += 1
-      latTotal += wp.param5
-      lngTotal += wp.param6
+      latTotal += cmd.param5
+      lngTotal += cmd.param6
     }
   }
   return { lat: latTotal / count, lng: lngTotal / count }
 }
 
-export function hasLocation(waypoint: Waypoint): boolean {
-  const commanddesc = commands[commands.findIndex(a => a.value == waypoint.type)]
+export function hasLocation(command: Command): boolean {
+  const commanddesc = commands[commands.findIndex(a => a.value == command.type)]
   const hasLocationParams = commanddesc.parameters[4] &&
     commanddesc.parameters[5] &&
     commanddesc.parameters[4].label == "Latitude" &&
@@ -85,6 +85,6 @@ export function hasLocation(waypoint: Waypoint): boolean {
   return hasLocationParams || false
 }
 
-export function getLatLng(wp: Waypoint): LatLng {
+export function getLatLng(wp: Command): LatLng {
   return { lat: wp.param5, lng: wp.param6 }
 }

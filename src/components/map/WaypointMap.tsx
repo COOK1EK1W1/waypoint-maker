@@ -35,7 +35,7 @@ export default function MapStuff() {
 
 
           setWaypoints((waypoints) => {
-            waypoints.pushToMission(activeMission, { type: "Waypoint", wps: defaultWaypoint({ lat: Number(newLat), lng: Number(newLng) }) })
+            waypoints.pushToMission(activeMission, { type: "Command", cmd: defaultWaypoint({ lat: Number(newLat), lng: Number(newLng) }) })
             return waypoints.clone()
           })
           break;
@@ -58,7 +58,7 @@ export default function MapStuff() {
       case "Waypoint": {
         setWaypoints((waypoints) => {
           let waypointsNew = waypoints.clone()
-          waypointsNew.pushToMission(activeMission, { type: "Waypoint", wps: defaultWaypoint(e.latlng) })
+          waypointsNew.pushToMission(activeMission, { type: "Command", cmd: defaultWaypoint(e.latlng) })
           return waypointsNew
         })
         break;
@@ -67,7 +67,7 @@ export default function MapStuff() {
         setTool("Waypoint")
         setWaypoints((waypoints) => {
           const a = waypoints.clone()
-          a.pushToMission(activeMission, { type: "Waypoint", wps: defaultTakeoff(e.latlng) })
+          a.pushToMission(activeMission, { type: "Command", cmd: defaultTakeoff(e.latlng) })
           return a
         })
         break;
@@ -76,7 +76,7 @@ export default function MapStuff() {
         setTool("Waypoint")
         setWaypoints((waypoints) => {
           const a = waypoints.clone()
-          a.pushToMission(activeMission, { type: "Waypoint", wps: defaultDoLandStart(e.latlng) })
+          a.pushToMission(activeMission, { type: "Command", cmd: defaultDoLandStart(e.latlng) })
           return a
         })
         break;

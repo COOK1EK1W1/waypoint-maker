@@ -1,6 +1,7 @@
-import { Waypoint } from "@/types/waypoints"
+import { Command } from "@/lib/commands/commands"
+import { LatLng } from "@/lib/world/types"
 
-export function toPolyline(waypoints: Waypoint[]) {
+export function toPolyline(waypoints: Command[]) {
   const points: { lat: number, lng: number }[] = []
   waypoints.map((waypoint) => {
     if (typeof waypoint != "string") {
@@ -10,6 +11,6 @@ export function toPolyline(waypoints: Waypoint[]) {
   return points
 }
 
-export function toLatLng(waypoint: Waypoint) {
+export function toLatLng(waypoint: Command): LatLng {
   return { lat: waypoint.param5, lng: waypoint.param6 }
 }

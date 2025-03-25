@@ -1,6 +1,7 @@
-import { Node, Waypoint } from "@/types/waypoints";
+import { Node } from "@/types/waypoints";
 import { getLatLng, hasLocation } from "@/util/WPCollection";
 import { LatLng } from "../world/types";
+import { Command } from "@/lib/commands/commands";
 
 export class WaypointCollection {
 
@@ -67,7 +68,7 @@ export class WaypointCollection {
   }
 
   flatten(mission: string) {
-    let retList: Waypoint[] = []
+    let retList: Command[] = []
     const waypoints = this.collection.get(mission)
     if (waypoints === undefined) return []
     for (let i = 0; i < waypoints.length; i++) {
@@ -78,14 +79,14 @@ export class WaypointCollection {
   }
 
   flattenNode(node: Node) {
-    let retList: Waypoint[] = []
+    let retList: Command[] = []
     switch (node.type) {
       case "Collection": {
         retList = retList.concat(this.flatten(node.collectionID))
         break
       }
-      case "Waypoint": {
-        retList.push(node.wps)
+      case "Command": {
+        retList.push(node.cmd)
         break;
       }
       default: {
@@ -136,7 +137,7 @@ export class WaypointCollection {
       for (let i = 0; i < node.length; i++) {
         const curNode = node[i];
         switch (curNode.type) {
-          case "Waypoint": {
+          case "Command": {
             if (count === n) {
               return [name, i]; // Found nth waypoint
             }
@@ -204,16 +205,16 @@ export class WaypointCollection {
     rec(0, missionName)
   }
 
-  changeParam(id: number, missionName: string, mod: (wp: Waypoint) => Waypoint) {
+  changeParam(id: number, missionName: string, mod: (cmd: Command) => Command) {
     const curMission = this.collection.get(missionName)
     if (curMission == undefined) { throw new MissingMission(missionName) }
 
     let updatedWaypoint = curMission[id]
 
-    if (updatedWaypoint.type === "Waypoint") {
+    if (updatedWaypoint.type === "Command") {
       updatedWaypoint = {
         ...updatedWaypoint,
-        wps: mod(updatedWaypoint.wps)
+        cmd: mod(updatedWaypoint.cmd)
       }
     } else if (updatedWaypoint.type == "Collection") {
       const col = this.collection.get(updatedWaypoint.collectionID)

@@ -1,10 +1,10 @@
 import { Circle, LayerGroup, Polyline } from "react-leaflet";
 import { useWaypoints } from "@/util/context/WaypointContext";
-import { Waypoint } from "@/types/waypoints"
 import { ReactNode } from "react";
 import { dubinsBetweenDubins, localisePath, splitDubinsRuns, waypointToDubins } from "@/lib/dubins/dubinWaypoints";
 import { getLatLng } from "@/util/WPCollection";
 import Arc from "@/components/marker/arc";
+import { Command } from "@/lib/commands/commands";
 
 const curveOptions = { color: '#ff0000' }
 const straightOptions = { color: '#bb0000' }
@@ -39,7 +39,7 @@ export default function DubinsLayer() {
     worldPath.map((c, a) => {
       switch (c.type) {
         case "Curve":
-          let rWaypoint: Waypoint = { frame: 0, type: 189, param1: 0, param2: 0, param3: 0, param4: 0, param6: c.center.lat, param5: c.center.lng, param7: 0, autocontinue: 0 }
+          let rWaypoint: Command = { frame: 0, type: 189, param1: 0, param2: 0, param3: 0, param4: 0, param6: c.center.lat, param5: c.center.lng, param7: 0, autocontinue: 0 }
           //markers.push(<DraggableMarker key={"" + i + a} waypoint={rWaypoint} active={false} />)
           lines.push(<Arc key={key++} curve={c} pathOptions={curveOptions} />)
           break;

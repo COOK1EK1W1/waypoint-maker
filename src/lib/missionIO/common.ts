@@ -1,11 +1,11 @@
-import { Waypoint } from "@/types/waypoints";
 import { dubinsBetweenDubins, localisePath, splitDubinsRuns, waypointToDubins } from "@/lib/dubins/dubinWaypoints";
 import { LatLng } from "@/lib/world/types";
 import { MavCommand } from "../commands/types";
+import { Command } from "../commands/commands";
 
-export function simplifyDubinsWaypoints(wps: Waypoint[]) {
+export function simplifyDubinsWaypoints(wps: Command[]) {
   // simplify dubins runs
-  let simplifiedMavWP: Waypoint[] = []
+  let simplifiedMavWP: Command[] = []
   for (let i = 0; i < wps.length - 1; i++) {
     if (wps[i].type == 18 && wps[i + 1].type == 18 && wps[i].param5 == wps[i + 1].param5 && wps[i].param6 == wps[i + 1].param6 && wps[i].param3 == wps[i + 1].param3) {
       simplifiedMavWP.push({ frame: 3, type: 18, param1: wps[i].param1 + wps[i + 1].param1, param2: 0, param3: wps[i].param3, param4: 1, param5: wps[i].param5, param6: wps[i].param6, param7: wps[i + 1].param7, autocontinue: 1 })
@@ -21,17 +21,17 @@ export function simplifyDubinsWaypoints(wps: Waypoint[]) {
   return simplifiedMavWP
 }
 
-export function convertToMAV(wps: Waypoint[], reference: LatLng): MavCommand[] {
+export function convertToMAV(wps: Command[], reference: LatLng): MavCommand[] {
 
   // render the dubins runs to waypoints
-  let convertedRuns: { start: number, wps: Waypoint[], length: number }[] = []
+  let convertedRuns: { start: number, wps: Command[], length: number }[] = []
 
   const runs = splitDubinsRuns(wps)
   for (const run of runs) {
     const dubinsPoints = run.wps.map((x) => waypointToDubins(x, reference))
     const path = dubinsBetweenDubins(dubinsPoints)
     const worldPath = localisePath(path, reference)
-    let newMavWP: Waypoint[] = []
+    let newMavWP: Command[] = []
     for (let i = 0; i < worldPath.length; i++) {
       const section = worldPath[i]
       const curWaypoint = Math.floor(i / 3)
@@ -57,7 +57,7 @@ export function convertToMAV(wps: Waypoint[], reference: LatLng): MavCommand[] {
   }
 
   // compile into single mission
-  let ret: Waypoint[] = []
+  let ret: Command[] = []
   for (let i = 0; i < wps.length; i++) {
     let run = convertedRuns.find((x) => x.start == i)
     if (run == undefined) {
