@@ -11,3 +11,4 @@ export type Plane = {
 }
 
 export type Vehicle = Copter | Plane
+

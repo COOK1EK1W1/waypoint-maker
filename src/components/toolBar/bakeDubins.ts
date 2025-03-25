@@ -3,8 +3,8 @@ import { applyBounds, dubinsBetweenDubins, getBounds, getTunableDubinsParameters
 import { bound, dubinsPoint, Path } from "@/lib/dubins/types";
 import { XY } from "@/lib/math/types";
 import { res } from "@/lib/optimisation/types";
+import { Plane } from "@/lib/vehicles/types";
 import { WaypointCollection } from "@/lib/waypoints/waypointCollection";
-import { Plane } from "@/types/vehicleType";
 import { Dispatch, SetStateAction } from "react";
 
 // This function is a closure that takes in the waypoints and returns a function that takes in the tunable parameters and returns the total length of the path

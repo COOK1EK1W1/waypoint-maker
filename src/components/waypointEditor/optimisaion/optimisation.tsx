@@ -1,5 +1,3 @@
-
-
 import { useWaypoints } from "@/util/context/WaypointContext";
 import { bakeDubins, staticEvaluate } from "@/components/toolBar/bakeDubins";
 import { pathEnergyRequirements, pathLength } from "@/lib/dubins/geometry";
@@ -8,12 +6,12 @@ import { particleOptimise } from "@/lib/optimisation/particleSwarm";
 import { useState } from "react";
 import Button from "@/components/toolBar/button";
 import { useVehicleTypeContext } from "@/util/context/VehicleTypeContext";
-import { Plane } from "@/types/vehicleType";
 import { cn } from "@/lib/utils";
 import { gradientOptimise } from "@/lib/optimisation/gradient";
 import { splitDubinsRuns } from "@/lib/dubins/dubinWaypoints";
 import { Path } from "@/lib/dubins/types";
 import { XY } from "@/lib/math/types";
+import { Plane } from "@/lib/vehicles/types";
 
 
 export function Optimise() {

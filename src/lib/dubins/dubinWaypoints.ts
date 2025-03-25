@@ -1,7 +1,6 @@
 import { modf, offset } from "@/lib/math/geometry"
 import { DubinsBetweenDiffRad } from "./dubins";
 import { g2l, l2g } from "@/lib/world/conversion";
-import { Plane } from "@/types/vehicleType";
 import { crossProduct } from "@/lib/waypoints/fns";
 import { deg2rad } from "@/lib/math/geometry";
 import { bound, dubinsPoint, Path, Segment } from "./types";
@@ -9,6 +8,7 @@ import { LatLng } from "@/lib/world/types";
 import { XY } from "@/lib/math/types";
 import { Command } from "../commands/commands";
 import { toLatLng } from "@/util/waypointToLeaflet";
+import { Plane } from "../vehicles/types";
 
 /*
  * find all the sections of a waypoint list which require a dubins path between

@@ -1,8 +1,8 @@
 "use client";
-import { Vehicle } from '@/types/vehicleType';
+import { defaultPlane } from '@/lib/vehicles/defaults';
 import { vehicleTypeContext } from './VehicleTypeContext';
 import { useState } from 'react';
-import { defaultPlane } from '../defaultVehicles';
+import { Vehicle } from '@/lib/vehicles/types';
 
 type Props = {
   children: React.ReactNode;

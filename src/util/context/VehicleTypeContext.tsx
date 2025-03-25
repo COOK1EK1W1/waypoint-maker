@@ -1,5 +1,5 @@
 "use client";
-import { Vehicle } from '@/types/vehicleType';
+import { Vehicle } from '@/lib/vehicles/types';
 import { createContext, Dispatch, SetStateAction, useContext } from 'react';
 
 type provided = {
