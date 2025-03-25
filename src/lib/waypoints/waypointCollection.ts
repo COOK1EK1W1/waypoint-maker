@@ -1,7 +1,7 @@
 import { Node } from "@/types/waypoints";
 import { getLatLng, hasLocation } from "@/util/WPCollection";
 import { LatLng } from "../world/types";
-import { Command } from "@/lib/commands/commands";
+import { Command, filterLatLngCmds } from "@/lib/commands/commands";
 
 export class WaypointCollection {
 
@@ -25,11 +25,9 @@ export class WaypointCollection {
   }
 
   getReferencePoint(): LatLng {
-    const wps = this.flatten("Main")
+    const wps = filterLatLngCmds(this.flatten("Main"))
     for (let wp of wps) {
-      if (hasLocation(wp)) {
-        return getLatLng(wp)
-      }
+      return getLatLng(wp)
     }
     return { lat: 0, lng: 0 }
   }

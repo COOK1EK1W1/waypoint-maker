@@ -110,7 +110,7 @@ export default function MapStuff() {
     const [mission, pos] = a
     setWaypoints((waypoints2) => {
       const b = waypoints2.clone()
-      b.changeParam(pos, mission, (wp) => { wp.param5 = lat; wp.param6 = lng; return wp })
+      b.changeParam(pos, mission, (wp) => { if ("latitude" in wp.params) { wp.params.latitude = lat; wp.params.longitude = lng } return wp })
       return b
     })
     return
@@ -118,7 +118,6 @@ export default function MapStuff() {
   }
 
   const { zoom, center } = useMap();
-  console.log(center)
 
   if (typeof window != undefined) {
 

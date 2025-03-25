@@ -1,41 +1,42 @@
+import { ICommand } from "../commands/commands"
 import { LatLng } from "../world/types"
 
-export const defaultWaypoint = (pos: LatLng) => ({
+export const defaultWaypoint = (pos: LatLng): ICommand<"MAV_CMD_NAV_WAYPOINT"> => ({
   frame: 3,
   type: 16,
-  param1: 0,
-  param2: 0,
-  param3: 0,
-  param4: 0,
-  param5: pos.lat,
-  param6: pos.lng,
-  param7: 100,
+  params: {
+    "accept radius": 20,
+    yaw: 0,
+    hold: 0,
+    "pass radius": 0,
+    latitude: pos.lat,
+    longitude: pos.lng,
+    altitude: 100
+  },
   autocontinue: 1
 })
 
 
-export const defaultTakeoff = (pos: LatLng) => ({
+export const defaultTakeoff = (pos: LatLng): ICommand<"MAV_CMD_NAV_TAKEOFF"> => ({
   frame: 3,
   type: 22,
-  param1: 15,
-  param2: 0,
-  param3: 0,
-  param4: 0,
-  param5: pos.lat,
-  param6: pos.lng,
-  param7: 15,
+  params: {
+    yaw: 0,
+    pitch: 15,
+    latitude: pos.lat,
+    longitude: pos.lng,
+    altitude: 15
+  },
   autocontinue: 1
 })
 
-export const defaultDoLandStart = (pos: LatLng) => ({
+export const defaultDoLandStart = (pos: LatLng): ICommand<"MAV_CMD_DO_LAND_START"> => ({
   frame: 0,
   type: 189,
-  param1: 0,
-  param2: 0,
-  param3: 0,
-  param4: 0,
-  param5: pos.lat,
-  param6: pos.lng,
-  param7: 0,
+  params: {
+    latitude: pos.lat,
+    longitude: pos.lng,
+    altitude: 100,
+  },
   autocontinue: 0
 })

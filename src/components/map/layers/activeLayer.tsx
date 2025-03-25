@@ -1,8 +1,11 @@
 import { LayerGroup, Polyline } from "react-leaflet";
 import { useWaypoints } from "@/util/context/WaypointContext";
-import { toLatLng, toPolyline } from "@/util/waypointToLeaflet";
+import { toPolyline } from "@/util/waypointToLeaflet";
 import InsertBtn from "@/components/marker/insertBtn";
 import DraggableMarker from "@/components/marker/DraggableMarker";
+import { filterLatLngCmds } from "@/lib/commands/commands";
+import { defaultWaypoint } from "@/lib/waypoints/defaults";
+import { getLatLng } from "@/util/WPCollection";
 
 const limeOptions = { color: 'lime' }
 const noshow = ["Markers", "Geofence"]
@@ -11,41 +14,25 @@ export default function ActiveLayer({ onMove }: { onMove: (lat: number, lng: num
   const { setSelectedWPs, setActiveMission, waypoints, activeMission, setWaypoints, selectedWPs } = useWaypoints()
   if (noshow.includes(activeMission)) return null
 
-  const activeWPs = waypoints.flatten(activeMission)
+  const activeWPs = filterLatLngCmds(waypoints.flatten(activeMission))
 
   let insertBtns = []
   for (let i = 0; i < activeWPs.length - 1; i++) {
-    const midLat = (activeWPs[i].param5 + activeWPs[i + 1].param5) / 2
-    const midLng = (activeWPs[i].param6 + activeWPs[i + 1].param6) / 2
+    const midLat = (activeWPs[i].params.latitude + activeWPs[i + 1].params.latitude) / 2
+    const midLng = (activeWPs[i].params.longitude + activeWPs[i + 1].params.longitude) / 2
     insertBtns.push(
       <InsertBtn key={i} lat={midLat} lng={midLng} onClick={() => insert(i, midLat, midLng)} />
     )
 
   }
 
-
   function insert(id: number, lat: number, lng: number) {
-
-    const newMarker = {
-      frame: 3,
-      type: 16,
-      param1: 0,
-      param2: 0,
-      param3: 0,
-      param4: 0,
-      param5: lat,
-      param6: lng,
-      param7: 100,
-      autocontinue: 1
-    };
     setWaypoints((prevWPS) => {
       const a = prevWPS.clone()
-      a.insert(id + 1, activeMission, { type: "Command", cmd: newMarker })
+      a.insert(id + 1, activeMission, { type: "Command", cmd: defaultWaypoint({ lat, lng }) })
       return a
     });
-
   }
-
 
   function handleMarkerClick(id: number) {
     const a = waypoints.findNthPosition(activeMission, id)
@@ -63,7 +50,7 @@ export default function ActiveLayer({ onMove }: { onMove: (lat: number, lng: num
         if (x) {
           if (x[0] == activeMission && selectedWPs.includes(x[1])) active = true
         }
-        return <DraggableMarker key={idx} position={toLatLng(waypoint)} onMove={(lat, lng) => onMove(lat, lng, idx)} active={active} onClick={() => handleMarkerClick(idx)} />
+        return <DraggableMarker key={idx} position={getLatLng(waypoint)} onMove={(lat, lng) => onMove(lat, lng, idx)} active={active} onClick={() => handleMarkerClick(idx)} />
       })
       }
       <Polyline pathOptions={limeOptions} positions={toPolyline(activeWPs)} />

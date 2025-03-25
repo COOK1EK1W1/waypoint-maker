@@ -7,17 +7,21 @@ export function simplifyDubinsWaypoints(wps: Command[]) {
   // simplify dubins runs
   let simplifiedMavWP: Command[] = []
   for (let i = 0; i < wps.length - 1; i++) {
-    if (wps[i].type == 18 && wps[i + 1].type == 18 && wps[i].param5 == wps[i + 1].param5 && wps[i].param6 == wps[i + 1].param6 && wps[i].param3 == wps[i + 1].param3) {
-      simplifiedMavWP.push({ frame: 3, type: 18, param1: wps[i].param1 + wps[i + 1].param1, param2: 0, param3: wps[i].param3, param4: 1, param5: wps[i].param5, param6: wps[i].param6, param7: wps[i + 1].param7, autocontinue: 1 })
+    let cur = wps[i]
+    let next = wps[i + 1]
+    if (cur.type == 18 && next.type == 18 && cur.params.longitude == next.params.longitude
+      && cur.params.latitude == cur.params.latitude
+      && cur.params.radius == cur.params.radius) {
+      simplifiedMavWP.push({ frame: 3, type: 18, params: { latitude: cur.params.latitude, longitude: cur.params.longitude, radius: cur.params.radius + next.params.radius, turns: cur.params.turns + cur.params.turns, altitude: next.params.altitude, "": 0 }, autocontinue: 1 })
       i++
-    } else if (wps[i].type == 16 && wps[i + 1].type == 16 && wps[i + 1] && wps[i].param5 == wps[i + 1].param5 && wps[i].param6 == wps[i + 1].param6) {
+    } else if (cur.type == 16 && next.type == 16 && cur.params.longitude == next.params.longitude && cur.params.longitude == cur.params.latitude) {
       simplifiedMavWP.push(wps[i])
       i++
     } else {
       simplifiedMavWP.push(wps[i])
     }
   }
-  simplifiedMavWP = simplifiedMavWP.filter((x) => (x.type != 18 || x.param1 > 0.03 && Math.abs(x.param3) > 0))
+  simplifiedMavWP = simplifiedMavWP.filter((x) => (x.type != 18 || x.params.turns > 0.03 && Math.abs(x.params.radius) > 0))
   return simplifiedMavWP
 }
 
@@ -39,11 +43,11 @@ export function convertToMAV(wps: Command[], reference: LatLng): MavCommand[] {
         case "Curve": {
           const absTheta = Math.abs(section.theta / (Math.PI * 2))
           const dir = absTheta / (section.theta / (Math.PI * 2))
-          newMavWP.push({ frame: 3, type: 18, param1: absTheta, param2: 0, param3: section.radius * dir, param4: 1, param5: section.center.lat, param6: section.center.lng, param7: run.wps[curWaypoint].param7, autocontinue: 1 })
+          newMavWP.push({ frame: 3, type: 18, params: { turns: absTheta, "": 1, altitude: run.wps[curWaypoint].params.altitude, radius: section.radius * dir, latitude: section.center.lat, longitude: section.center.lng }, autocontinue: 1 })
           break
         }
         case "Straight": {
-          newMavWP.push({ frame: 3, type: 16, param1: 0, param2: 0, param3: 0, param4: 0, param5: section.end.lat, param6: section.end.lng, param7: run.wps[curWaypoint].param7, autocontinue: 1 })
+          newMavWP.push({ frame: 3, type: 16, params: { yaw: 0, "accept radius": 0, latitude: section.end.lat, longitude: section.end.lng, hold: 0, altitude: run.wps[curWaypoint].params.altitude, "pass radius": 0 }, autocontinue: 1 })
           break
         }
 

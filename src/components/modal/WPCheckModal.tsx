@@ -4,15 +4,18 @@ import { useEffect, useState } from "react"
 import FaultItem from "@/components/toolBar/faultItem"
 import { wpCheck } from "@/lib/wpcheck/wpcheck"
 import { Fault, Severity } from "@/lib/wpcheck/types"
+import { filterLatLngAltCmds } from "@/lib/commands/commands"
+import { getLatLng } from "@/util/WPCollection"
 
 export default function WPCheckModal() {
   const { waypoints } = useWaypoints()
-  const wps = waypoints.flatten("Main")
+  const wps = filterLatLngAltCmds(waypoints.flatten("Main"))
   const results = wpCheck(wps, waypoints)
   const [terrain, setTerrain] = useState<Fault[] | null>(null)
+  const locs = wps.map(getLatLng).filter((x) => x !== undefined)
 
   useEffect(() => {
-    getTerrain(wps.map((x) => [x.param5, x.param6]))
+    getTerrain(locs)
       .then((terrainHeights) => {
         if (!terrainHeights) return
         let ret: Fault[] = []
@@ -20,7 +23,7 @@ export default function WPCheckModal() {
         for (let i = 0; i < wps.length; i++) {
           let wp = waypoints.findNthPosition("Main", i)
           if (!wp) { continue }
-          let wpheight = wps[i].param7 - (terrainHeights[i].elevation - terrainoffset)
+          let wpheight = wps[i].params.altitude - (terrainHeights[i].elevation - terrainoffset)
           if (wpheight < 0) {
             ret.push({
               message: "The waypoint is below terrain",

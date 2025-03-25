@@ -30,8 +30,10 @@ export function LatLngEditor() {
     setWaypoints((waypoints) => {
       for (let i = 0; i < wpsIds.length; i++) {
         waypoints.changeParam(wpsIds[i], activeMission, (cmd: Command) => {
-          cmd.param5 += 0.0001 * y;
-          cmd.param6 += 0.0001 * x;
+          if ("latitude" in cmd.params) {
+            cmd.params.latitude += 0.0001 * y;
+            cmd.params.longitude += 0.0001 * x;
+          }
           return cmd;
         });
       }
@@ -52,14 +54,17 @@ export function LatLngEditor() {
     setWaypoints((waypoints) => {
       for (let i = 0; i < wps.length; i++) {
         waypoints.changeParam(wpsIds[i], activeMission, (cmd: Command) => {
-          const x = (cmd.param6 - lng) * Math.cos(lat * Math.PI / 180);
-          const y = cmd.param5 - lat;
+          if ("latitude" in cmd.params) {
 
-          const newX = x * Math.cos(angleRadians) - y * Math.sin(angleRadians);
-          const newY = x * Math.sin(angleRadians) + y * Math.cos(angleRadians);
+            const x = (cmd.params.longitude - lng) * Math.cos(lat * Math.PI / 180);
+            const y = cmd.params.latitude - lat;
 
-          cmd.param6 = newX / Math.cos(lat * Math.PI / 180) + lng;
-          cmd.param5 = newY + lat;
+            const newX = x * Math.cos(angleRadians) - y * Math.sin(angleRadians);
+            const newY = x * Math.sin(angleRadians) + y * Math.cos(angleRadians);
+
+            cmd.params.longitude = newX / Math.cos(lat * Math.PI / 180) + lng;
+            cmd.params.latitude = newY + lat;
+          }
 
           return cmd;
         });

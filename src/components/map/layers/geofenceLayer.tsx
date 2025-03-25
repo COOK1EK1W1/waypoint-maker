@@ -1,8 +1,9 @@
 
 import { LayerGroup, Polygon } from "react-leaflet";
 import { useWaypoints } from "@/util/context/WaypointContext";
-import { toLatLng, toPolyline } from "@/util/waypointToLeaflet";
+import { toPolyline } from "@/util/waypointToLeaflet";
 import DraggableMarker from "@/components/marker/DraggableMarker";
+import { filterLatLngCmds } from "@/lib/commands/commands";
 
 const fenceOptions = { color: 'red', fillOpacity: 0.1 }
 
@@ -11,7 +12,7 @@ export default function GeofenceLayer({ onMove }: { onMove: (lat: number, lng: n
 
   return (
     <LayerGroup>
-      {activeMission == "Geofence" ? waypoints.flatten("Geofence").map((waypoint, idx) => {
+      {activeMission == "Geofence" ? filterLatLngCmds(waypoints.flatten("Geofence")).map((waypoint, idx) => {
         let active = false
         let x = waypoints.findNthPosition("Geofence", idx)
         if (x) {

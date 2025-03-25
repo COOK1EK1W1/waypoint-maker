@@ -1,7 +1,7 @@
 import { Node } from "@/types/waypoints";
 import type { WaypointCollection } from "@/lib/waypoints/waypointCollection";
 import { LatLng } from "@/lib/world/types";
-import { Command, commands } from "@/lib/commands/commands";
+import { Command, commands, filterLatLngCmds, LatLngCommand } from "@/lib/commands/commands";
 
 
 export function MoveWPsAvgTo(pos: LatLng, waypoints: WaypointCollection, selectedWPs: number[], active: string): WaypointCollection {
@@ -23,8 +23,10 @@ export function MoveWPsAvgTo(pos: LatLng, waypoints: WaypointCollection, selecte
   let waypointsUpdated = waypoints.clone();
   for (let i = 0; i < wps.length; i++) {
     waypointsUpdated.changeParam(wpsIds[i], active, (cmd: Command) => {
-      cmd.param5 += pos.lat - lat
-      cmd.param6 += pos.lng - lng
+      if ("latitude" in cmd.params && "longitude" in cmd.params) {
+        cmd.params.latitude += pos.lat - lat
+        cmd.params.longitude += pos.lng - lng
+      }
       return cmd;
     });
   }
@@ -32,48 +34,26 @@ export function MoveWPsAvgTo(pos: LatLng, waypoints: WaypointCollection, selecte
 }
 
 
-export function isPointInPolygon(polygon: Command[], point: Command) {
-  const num_vertices = polygon.length;
-  const x = point.param5;
-  const y = point.param6;
-  let inside = false;
-
-  let p1 = polygon[0];
-  let p2;
-
-  for (let i = 1; i <= num_vertices; i++) {
-    p2 = polygon[i % num_vertices];
-
-    if (y > Math.min(p1.param6, p2.param6)) {
-      if (y <= Math.max(p1.param6, p2.param6)) {
-        if (x <= Math.max(p1.param5, p2.param5)) {
-          const x_intersection = ((y - p1.param6) * (p2.param5 - p1.param5)) / (p2.param6 - p1.param6) + p1.param5;
-
-          if (p1.param5 === p2.param5 || x <= x_intersection) {
-            inside = !inside;
-          }
-        }
-      }
-    }
-
-    p1 = p2;
-  }
-
-  return inside;
-}
-
 export function avgLatLng(commands: Command[]): LatLng {
   let latTotal = 0
   let lngTotal = 0
   let count = 0
-  for (let cmd of commands) {
-    if (hasLocation(cmd)) {
-      count += 1
-      latTotal += cmd.param5
-      lngTotal += cmd.param6
-    }
+  const b = filterLatLngCmds(commands)
+  for (let cmd of b) {
+    let res = getLatLng(cmd)
+    count += 1
+    latTotal += res.lat
+    lngTotal += res.lng
   }
   return { lat: latTotal / count, lng: lngTotal / count }
+}
+
+export function filter2d(cmds: Command[]) {
+  return cmds.filter((x) => ("latitude" in x && "longitude" in x))
+}
+
+export function filter3d(cmds: Command[]) {
+  return cmds.filter((x) => ("latitude" in x && "longitude" in x && "altitude" in x))
 }
 
 export function hasLocation(command: Command): boolean {
@@ -85,6 +65,13 @@ export function hasLocation(command: Command): boolean {
   return hasLocationParams || false
 }
 
-export function getLatLng(wp: Command): LatLng {
-  return { lat: wp.param5, lng: wp.param6 }
+/* get the latitude and longitude of a mission command
+ */
+export function getLatLng(cmd: LatLngCommand): LatLng;
+export function getLatLng(cmd: Command): LatLng | undefined;
+export function getLatLng(cmd: Command): LatLng | undefined {
+  if ("latitude" in cmd.params && "longitude" in cmd.params) {
+    return { lat: cmd.params.latitude, lng: cmd.params.longitude }
+  }
+  else return undefined;
 }

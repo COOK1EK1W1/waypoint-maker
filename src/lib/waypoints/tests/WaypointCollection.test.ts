@@ -12,35 +12,35 @@ test("WaypointCollection default config", () => {
 
 test("add_waypoint", () => {
   let a = new WaypointCollection()
-  a.pushToMission("Main", { type: "Command", cmd: { frame: 0, type: 0, param1: 0, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0, autocontinue: 0 } })
-  a.pushToMission("Main", { type: "Command", cmd: { frame: 0, type: 1, param1: 0, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0, autocontinue: 0 } })
-  a.pushToMission("Main", { type: "Command", cmd: { frame: 0, type: 2, param1: 0, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0, autocontinue: 0 } })
+  a.pushToMission("Main", { type: "Command", cmd: { frame: 0, type: 18, params: { latitude: 0, longitude: 0, altitude: 0, turns: 0, radius: 0, "": 0 }, autocontinue: 0 } })
+  a.pushToMission("Main", { type: "Command", cmd: { frame: 0, type: 19, params: { latitude: 0, longitude: 0, altitude: 0, time: 0, radius: 0, "": 0 }, autocontinue: 0 } })
+  a.pushToMission("Main", { type: "Command", cmd: { frame: 0, type: 20, params: {}, autocontinue: 0 } })
 
   const mission = a.get("Main")
   expect(mission).not.toBeUndefined()
   expect(mission?.length).toBe(3)
-  expect(mission[0].cmd.type).toBe(0)
-  expect(mission[1].cmd.type).toBe(1)
-  expect(mission[2].cmd.type).toBe(2)
-  expect(() => a.pushToMission("a", { type: "Command", cmd: { frame: 0, type: 2, param1: 0, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0, autocontinue: 0 } })).toThrowError(MissingMission)
+  expect(mission[0].cmd.type).toBe(16)
+  expect(mission[1].cmd.type).toBe(19)
+  expect(mission[2].cmd.type).toBe(20)
+  expect(() => a.pushToMission("a", { type: "Command", cmd: { frame: 0, type: 2, autocontinue: 0 } })).toThrowError(MissingMission)
 })
 
 
 test("Contains, recursive", () => {
   let a = new WaypointCollection();
   // add waypoints to main
-  a.pushToMission("Main", { type: "Command", cmd: { frame: 0, type: 69, param1: 0, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0, autocontinue: 0 } })
-  a.pushToMission("Main", { type: "Command", cmd: { frame: 0, type: 69, param1: 0, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0, autocontinue: 0 } })
-  a.pushToMission("Main", { type: "Command", cmd: { frame: 0, type: 69, param1: 0, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0, autocontinue: 0 } })
+  a.pushToMission("Main", { type: "Command", cmd: { frame: 0, type: 69, autocontinue: 0 } })
+  a.pushToMission("Main", { type: "Command", cmd: { frame: 0, type: 69, autocontinue: 0 } })
+  a.pushToMission("Main", { type: "Command", cmd: { frame: 0, type: 69, autocontinue: 0 } })
 
   expect(a.contains("Main", "a")).toBeFalse()
   expect(a.isRecursive("Main")).toBeFalse()
 
 
   a.addSubMission("a")
-  a.pushToMission("a", { type: "Command", cmd: { frame: 0, type: 69, param1: 0, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0, autocontinue: 0 } })
-  a.pushToMission("a", { type: "Command", cmd: { frame: 0, type: 69, param1: 0, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0, autocontinue: 0 } })
-  a.pushToMission("a", { type: "Command", cmd: { frame: 0, type: 69, param1: 0, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0, autocontinue: 0 } })
+  a.pushToMission("a", { type: "Command", cmd: { frame: 0, type: 69, autocontinue: 0 } })
+  a.pushToMission("a", { type: "Command", cmd: { frame: 0, type: 69, autocontinue: 0 } })
+  a.pushToMission("a", { type: "Command", cmd: { frame: 0, type: 69, autocontinue: 0 } })
 
   expect(a.contains("Main", "a")).toBeFalse()
   expect(a.isRecursive("a")).toBeFalse()
@@ -56,14 +56,14 @@ test("Contains, recursive", () => {
 test("find Nth position", () => {
   let a = new WaypointCollection();
   // add waypoints to main
-  a.pushToMission("Main", { type: "Command", cmd: { frame: 0, type: 69, param1: 0, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0, autocontinue: 0 } })
-  a.pushToMission("Main", { type: "Command", cmd: { frame: 0, type: 69, param1: 0, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0, autocontinue: 0 } })
-  a.pushToMission("Main", { type: "Command", cmd: { frame: 0, type: 69, param1: 0, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0, autocontinue: 0 } })
+  a.pushToMission("Main", { type: "Command", cmd: { frame: 0, type: 69, autocontinue: 0 } })
+  a.pushToMission("Main", { type: "Command", cmd: { frame: 0, type: 69, autocontinue: 0 } })
+  a.pushToMission("Main", { type: "Command", cmd: { frame: 0, type: 69, autocontinue: 0 } })
 
   a.addSubMission("a")
-  a.pushToMission("a", { type: "Command", cmd: { frame: 0, type: 69, param1: 0, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0, autocontinue: 0 } })
-  a.pushToMission("a", { type: "Command", cmd: { frame: 0, type: 69, param1: 0, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0, autocontinue: 0 } })
-  a.pushToMission("a", { type: "Command", cmd: { frame: 0, type: 69, param1: 0, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0, autocontinue: 0 } })
+  a.pushToMission("a", { type: "Command", cmd: { frame: 0, type: 69, autocontinue: 0 } })
+  a.pushToMission("a", { type: "Command", cmd: { frame: 0, type: 69, autocontinue: 0 } })
+  a.pushToMission("a", { type: "Command", cmd: { frame: 0, type: 69, autocontinue: 0 } })
 
   a.pushToMission("Main", { type: "Collection", name: "a", ColType: CollectionType.Mission, collectionID: "a", offsetLat: 0, offsetLng: 0 })
   a.pushToMission("Main", { type: "Collection", name: "a", ColType: CollectionType.Mission, collectionID: "a", offsetLat: 0, offsetLng: 0 })
@@ -97,9 +97,9 @@ test("find Nth position", () => {
 test("pop", () => {
   let a = new WaypointCollection();
   // add waypoints to main
-  a.pushToMission("Main", { type: "Command", cmd: { frame: 0, type: 69, param1: 0, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0, autocontinue: 0 } })
-  a.pushToMission("Main", { type: "Command", cmd: { frame: 1, type: 69, param1: 0, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0, autocontinue: 0 } })
-  a.pushToMission("Main", { type: "Command", cmd: { frame: 2, type: 69, param1: 0, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0, autocontinue: 0 } })
+  a.pushToMission("Main", { type: "Command", cmd: { frame: 0, type: 69, autocontinue: 0 } })
+  a.pushToMission("Main", { type: "Command", cmd: { frame: 1, type: 69, autocontinue: 0 } })
+  a.pushToMission("Main", { type: "Command", cmd: { frame: 2, type: 69, autocontinue: 0 } })
 
   expect(a.get("Main")?.length).toBe(3)
   const b = a.pop("Main")
@@ -121,9 +121,9 @@ test("pop", () => {
 test("pop with index", () => {
   let a = new WaypointCollection();
   // add waypoints to main
-  a.pushToMission("Main", { type: "Command", cmd: { frame: 0, type: 69, param1: 0, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0, autocontinue: 0 } })
-  a.pushToMission("Main", { type: "Command", cmd: { frame: 1, type: 69, param1: 0, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0, autocontinue: 0 } })
-  a.pushToMission("Main", { type: "Command", cmd: { frame: 2, type: 69, param1: 0, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0, autocontinue: 0 } })
+  a.pushToMission("Main", { type: "Command", cmd: { frame: 0, type: 69, autocontinue: 0 } })
+  a.pushToMission("Main", { type: "Command", cmd: { frame: 1, type: 69, autocontinue: 0 } })
+  a.pushToMission("Main", { type: "Command", cmd: { frame: 2, type: 69, autocontinue: 0 } })
 
   expect(a.get("Main")?.length).toBe(3)
   const b = a.pop("Main", 0)
@@ -145,9 +145,9 @@ test("pop with index", () => {
 test("clone", () => {
   let a = new WaypointCollection();
   // add waypoints to main
-  a.pushToMission("Main", { type: "Command", cmd: { frame: 0, type: 69, param1: 0, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0, autocontinue: 0 } })
-  a.pushToMission("Main", { type: "Command", cmd: { frame: 1, type: 69, param1: 0, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0, autocontinue: 0 } })
-  a.pushToMission("Main", { type: "Command", cmd: { frame: 2, type: 69, param1: 0, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0, autocontinue: 0 } })
+  a.pushToMission("Main", { type: "Command", cmd: { frame: 0, type: 69, autocontinue: 0 } })
+  a.pushToMission("Main", { type: "Command", cmd: { frame: 1, type: 69, autocontinue: 0 } })
+  a.pushToMission("Main", { type: "Command", cmd: { frame: 2, type: 69, autocontinue: 0 } })
 
   const b = a.clone()
   expect(b).not.toBe(a)
@@ -158,14 +158,14 @@ test("clone", () => {
 test("Flatten", () => {
   let a = new WaypointCollection();
   // add waypoints to main
-  a.pushToMission("Main", { type: "Command", cmd: { frame: 0, type: 69, param1: 0, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0, autocontinue: 0 } })
-  a.pushToMission("Main", { type: "Command", cmd: { frame: 0, type: 69, param1: 0, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0, autocontinue: 0 } })
-  a.pushToMission("Main", { type: "Command", cmd: { frame: 0, type: 69, param1: 0, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0, autocontinue: 0 } })
+  a.pushToMission("Main", { type: "Command", cmd: { frame: 0, type: 69, autocontinue: 0 } })
+  a.pushToMission("Main", { type: "Command", cmd: { frame: 0, type: 69, autocontinue: 0 } })
+  a.pushToMission("Main", { type: "Command", cmd: { frame: 0, type: 69, autocontinue: 0 } })
 
   a.addSubMission("a")
-  a.pushToMission("a", { type: "Command", cmd: { frame: 0, type: 69, param1: 0, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0, autocontinue: 0 } })
-  a.pushToMission("a", { type: "Command", cmd: { frame: 0, type: 69, param1: 0, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0, autocontinue: 0 } })
-  a.pushToMission("a", { type: "Command", cmd: { frame: 0, type: 69, param1: 0, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0, autocontinue: 0 } })
+  a.pushToMission("a", { type: "Command", cmd: { frame: 0, type: 69, autocontinue: 0 } })
+  a.pushToMission("a", { type: "Command", cmd: { frame: 0, type: 69, autocontinue: 0 } })
+  a.pushToMission("a", { type: "Command", cmd: { frame: 0, type: 69, autocontinue: 0 } })
 
   a.pushToMission("Main", { type: "Collection", name: "a", ColType: CollectionType.Mission, collectionID: "a", offsetLat: 0, offsetLng: 0 })
   const flattened = a.flatten("Main")
@@ -177,26 +177,26 @@ test("Flatten", () => {
 test("insert", () => {
   let a = new WaypointCollection();
   // add waypoints to main
-  a.pushToMission("Main", { type: "Command", cmd: { frame: 0, type: 69, param1: 0, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0, autocontinue: 0 } })
-  a.pushToMission("Main", { type: "Command", cmd: { frame: 1, type: 69, param1: 0, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0, autocontinue: 0 } })
-  a.pushToMission("Main", { type: "Command", cmd: { frame: 2, type: 69, param1: 0, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0, autocontinue: 0 } })
+  a.pushToMission("Main", { type: "Command", cmd: { frame: 0, type: 69, autocontinue: 0 } })
+  a.pushToMission("Main", { type: "Command", cmd: { frame: 1, type: 69, autocontinue: 0 } })
+  a.pushToMission("Main", { type: "Command", cmd: { frame: 2, type: 69, autocontinue: 0 } })
 
   a.addSubMission("a")
-  a.pushToMission("a", { type: "Command", cmd: { frame: 3, type: 69, param1: 0, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0, autocontinue: 0 } })
-  a.pushToMission("a", { type: "Command", cmd: { frame: 4, type: 69, param1: 0, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0, autocontinue: 0 } })
-  a.pushToMission("a", { type: "Command", cmd: { frame: 5, type: 69, param1: 0, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0, autocontinue: 0 } })
+  a.pushToMission("a", { type: "Command", cmd: { frame: 3, type: 69, autocontinue: 0 } })
+  a.pushToMission("a", { type: "Command", cmd: { frame: 4, type: 69, autocontinue: 0 } })
+  a.pushToMission("a", { type: "Command", cmd: { frame: 5, type: 69, autocontinue: 0 } })
 
   a.pushToMission("Main", { type: "Collection", name: "a", ColType: CollectionType.Mission, collectionID: "a", offsetLat: 0, offsetLng: 0 })
 
   // insert at start
-  a.insert(0, "Main", { type: "Command", cmd: { frame: 6, type: 69, param1: 0, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0, autocontinue: 0 } })
+  a.insert(0, "Main", { type: "Command", cmd: { frame: 6, type: 69, autocontinue: 0 } })
 
   expect(a.get("Main").length).toBe(5)
   expect(a.get("Main")[0].cmd.frame).toBe(6)
   expect(a.get("Main")[1].cmd.frame).toBe(0)
 
   // insert in middle
-  a.insert(3, "Main", { type: "Command", cmd: { frame: 10, type: 69, param1: 0, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0, autocontinue: 0 } })
+  a.insert(3, "Main", { type: "Command", cmd: { frame: 10, type: 69, autocontinue: 0 } })
 
   expect(a.get("Main").length).toBe(6)
   expect(a.get("Main")[0].cmd.frame).toBe(6)
@@ -204,14 +204,14 @@ test("insert", () => {
   expect(a.get("Main")[3].cmd.frame).toBe(10)
 
   // unexpected mission
-  expect(() => a.insert(0, "bruh", { type: "Command", cmd: { frame: 10, type: 69, param1: 0, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0, autocontinue: 0 } })).toThrowError(MissingMission)
+  expect(() => a.insert(0, "bruh", { type: "Command", cmd: { frame: 10, type: 69, autocontinue: 0 } })).toThrowError(MissingMission)
 
   a.insert(0, "Main", { type: "Collection", name: "a", ColType: CollectionType.Mission, collectionID: "a", offsetLat: 0, offsetLng: 0 })
-  a.insert(0, "Main", { type: "Command", cmd: { frame: 10, type: 69, param1: 0, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0, autocontinue: 0 } })
+  a.insert(0, "Main", { type: "Command", cmd: { frame: 10, type: 69, autocontinue: 0 } })
   console.log(a.get("Main"))
   expect(a.get("Main")[0].type).toBe("Command")
 
-  a.insert(10, "Main", { type: "Command", cmd: { frame: 10, type: 69, param1: 0, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0, autocontinue: 0 } })
+  a.insert(10, "Main", { type: "Command", cmd: { frame: 10, type: 69, autocontinue: 0 } })
   expect(a.get("Main")[6].type).toBe("Command")
   // todo do recursion or linear
 })
@@ -219,14 +219,14 @@ test("insert", () => {
 test("changeParam", () => {
   let a = new WaypointCollection();
   // add waypoints to main
-  a.pushToMission("Main", { type: "Command", cmd: { frame: 0, type: 69, param1: 0, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0, autocontinue: 0 } })
-  a.pushToMission("Main", { type: "Command", cmd: { frame: 1, type: 69, param1: 0, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0, autocontinue: 0 } })
-  a.pushToMission("Main", { type: "Command", cmd: { frame: 2, type: 69, param1: 0, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0, autocontinue: 0 } })
+  a.pushToMission("Main", { type: "Command", cmd: { frame: 0, type: 69, autocontinue: 0 } })
+  a.pushToMission("Main", { type: "Command", cmd: { frame: 1, type: 69, autocontinue: 0 } })
+  a.pushToMission("Main", { type: "Command", cmd: { frame: 2, type: 69, autocontinue: 0 } })
 
   a.addSubMission("a")
-  a.pushToMission("a", { type: "Command", cmd: { frame: 3, type: 69, param1: 0, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0, autocontinue: 0 } })
-  a.pushToMission("a", { type: "Command", cmd: { frame: 4, type: 69, param1: 0, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0, autocontinue: 0 } })
-  a.pushToMission("a", { type: "Command", cmd: { frame: 5, type: 69, param1: 0, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0, autocontinue: 0 } })
+  a.pushToMission("a", { type: "Command", cmd: { frame: 3, type: 69, autocontinue: 0 } })
+  a.pushToMission("a", { type: "Command", cmd: { frame: 4, type: 69, autocontinue: 0 } })
+  a.pushToMission("a", { type: "Command", cmd: { frame: 5, type: 69, autocontinue: 0 } })
 
   a.pushToMission("Main", { type: "Collection", name: "a", ColType: CollectionType.Mission, collectionID: "a", offsetLat: 0, offsetLng: 0 })
 

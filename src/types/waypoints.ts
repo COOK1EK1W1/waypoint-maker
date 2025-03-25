@@ -24,16 +24,3 @@ export type Node = WPNode | ColNode
 
 export type WaypointCollection3 = Map<string, Node[]>
 
-
-export enum Severity {
-  Good,
-  Med,
-  Bad,
-}
-
-export type Fault = {
-  offenderMission?: string,
-  offenderIndex?: number,
-  message: string,
-  severity: Severity
-}
