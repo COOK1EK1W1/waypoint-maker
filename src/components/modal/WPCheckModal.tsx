@@ -1,9 +1,9 @@
-import { Fault, Severity } from "@/types/waypoints"
 import { useWaypoints } from "@/util/context/WaypointContext"
 import { getTerrain } from "@/util/terrain"
-import { wpCheck } from "@/util/wpcheck"
 import { useEffect, useState } from "react"
 import FaultItem from "@/components/toolBar/faultItem"
+import { wpCheck } from "@/lib/wpcheck/wpcheck"
+import { Fault, Severity } from "@/lib/wpcheck/types"
 
 export default function WPCheckModal() {
   const { waypoints } = useWaypoints()

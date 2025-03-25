@@ -4,13 +4,13 @@ import { cn } from "@/lib/utils"
 import { FaCheck } from "react-icons/fa"
 import { FaX } from "react-icons/fa6"
 import { MdErrorOutline } from "react-icons/md"
-import { Severity } from "@/types/waypoints"
-import { wpCheck } from "@/util/wpcheck"
 import Button from "./button"
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import WPCheckModal from "../modal/WPCheckModal"
 import { DialogDescription } from "@radix-ui/react-dialog"
 import { ReactNode } from "react"
+import { wpCheck } from "@/lib/wpcheck/wpcheck"
+import { Severity } from "@/lib/wpcheck/types"
 
 export default function WPCheck() {
   const { waypoints } = useWaypoints()

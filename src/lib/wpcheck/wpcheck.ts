@@ -1,8 +1,8 @@
-import { Fault, Severity } from "@/types/waypoints";
-import { getLatLng, hasLocation, isPointInPolygon } from "./WPCollection";
 import { WaypointCollection } from "@/lib/waypoints/waypointCollection";
 import { angleBetweenPoints, gradient, haversineDistance } from "@/lib/world/distance";
 import { Command } from "@/lib/commands/commands";
+import { Fault, Severity } from "@/lib/wpcheck/types";
+import { getLatLng, hasLocation, isPointInPolygon } from "@/util/WPCollection";
 
 
 
