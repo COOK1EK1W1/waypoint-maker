@@ -1,4 +1,4 @@
-import { copterSupported, planeSupported } from "./supported";
+import { copterSupported, planeSupported } from "../supported";
 
 const jsdom = require('jsdom');
 const { JSDOM } = jsdom;
@@ -36,7 +36,7 @@ function serializeValue(value: any): string {
 
 function serializeToTypeScript(object: any) {
   const serializedObject = serializeValue(object);
-  return ` import { CommandDescription } from "./types";
+  return ` import { CommandDescription } from "../types";
 export const mavCmds = ${serializedObject} as const satisfies CommandDescription[]\n`;
 }
 
@@ -114,7 +114,7 @@ async function getData() {
   //writeFile("src/util/commands.ts", serializeToTypeScript(completedCommands), (a) => { console.log(a) })
   let filteredCommands = completedCommands.filter((x) => copterSupported.includes(x.name) || planeSupported.includes(x.name))
 
-  await Bun.write("src/lib/commands/mavCommands.ts", serializeToTypeScript(filteredCommands))
+  await Bun.write("src/lib/commands/mav/commands.ts", serializeToTypeScript(filteredCommands))
 }
 
 getData()

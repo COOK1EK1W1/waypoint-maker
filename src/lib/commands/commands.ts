@@ -1,5 +1,5 @@
-import { mavCmds } from "./mavCommands";
-import { wpmCmds } from "./wpmCommands";
+import { mavCmds } from "./mav/commands";
+import { wpmCmds } from "./wpm/wpmCommands";
 
 export const commands = [...mavCmds, ...wpmCmds] as const
 
@@ -25,6 +25,16 @@ export type ICommand<T extends CommandName> = {
 
 export type Command = { [K in CommandName]: ICommand<K> }[CommandName]
 
+
+export type CommandName = typeof commands[number]["name"]
+export type CommandValue = typeof commands[number]["value"]
+
+
+
+// ####################################################
+// #                 Lat Lng Commands                 #
+// ####################################################
+
 export type LatLngCommand = {
   [K in CommandName]:
   "Latitude" extends CommandParamsNames<K>
@@ -48,10 +58,3 @@ export function filterLatLngAltCmds(cmds: Command[]): LatLngAltCommand[] {
 
 }
 
-//let a: WPMCommand = { type: 16, frame: 1, autocontinue: 1, params: { "accept radius": 10, hold: 0, altitude: 10, latitude: 10, longitude: 10, "pass radius": 10, yaw: 10 } }
-
-//a.params.yaw = 10
-
-
-export type CommandName = typeof commands[number]["name"]
-export type CommandValue = typeof commands[number]["value"]

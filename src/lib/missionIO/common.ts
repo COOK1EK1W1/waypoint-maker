@@ -2,6 +2,7 @@ import { dubinsBetweenDubins, localisePath, splitDubinsRuns, waypointToDubins } 
 import { LatLng } from "@/lib/world/types";
 import { MavCommand } from "../commands/types";
 import { Command } from "../commands/commands";
+import { WPM2MAV } from "../commands/convert";
 
 export function simplifyDubinsWaypoints(wps: Command[]) {
   // simplify dubins runs
@@ -43,10 +44,12 @@ export function convertToMAV(wps: Command[], reference: LatLng): MavCommand[] {
         case "Curve": {
           const absTheta = Math.abs(section.theta / (Math.PI * 2))
           const dir = absTheta / (section.theta / (Math.PI * 2))
+          //@ts-ignore
           newMavWP.push({ frame: 3, type: 18, params: { turns: absTheta, "": 1, altitude: run.wps[curWaypoint].params.altitude, radius: section.radius * dir, latitude: section.center.lat, longitude: section.center.lng }, autocontinue: 1 })
           break
         }
         case "Straight": {
+          //@ts-ignore
           newMavWP.push({ frame: 3, type: 16, params: { yaw: 0, "accept radius": 0, latitude: section.end.lat, longitude: section.end.lng, hold: 0, altitude: run.wps[curWaypoint].params.altitude, "pass radius": 0 }, autocontinue: 1 })
           break
         }
@@ -73,7 +76,7 @@ export function convertToMAV(wps: Command[], reference: LatLng): MavCommand[] {
   }
 
   ret.map((x) => { console.assert(x.type != 69, "dubins found :skull: ") })
-  return ret as MavCommand[]
+  return WPM2MAV(ret)
 }
 
 export function downloadTextAsFile(filename: string, text: string) {

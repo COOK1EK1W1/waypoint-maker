@@ -7,9 +7,10 @@ import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "
 import { gradient, haversineDistance } from "@/lib/world/distance";
 import { getLatLng } from "@/util/WPCollection";
 import { LatLng } from "@/lib/world/types";
+import { filterLatLngAltCmds } from "@/lib/commands/commands";
 
-function interpolate(lat1: number, lat2: number, lng1: number, lng2: number, c: number) {
-  return { lat: lat1 * (1 - c) + lat2 * c, lng: lng1 * (1 - c) + lng2 * c }
+function interpolate(a: LatLng, b: LatLng, c: number) {
+  return { lat: a.lat * (1 - c) + b.lat * c, lng: a.lng * (1 - c) + b.lng * c }
 }
 
 export default function HeightMap() {
@@ -17,10 +18,10 @@ export default function HeightMap() {
   const [terrainData, setTerrainData] = useState<{ loc: LatLng, elevation: number }[]>([])
   const throttledValue = useThrottle(waypoints, 2000)
 
-  const wps = waypoints.flatten(activeMission)
+  const wps = filterLatLngAltCmds(waypoints.flatten(activeMission))
   const reference = waypoints.getReferencePoint()
 
-  let locations: [number, number][] = []
+  let locations: LatLng[] = []
 
   // get new terrain data throttled
   useEffect(() => {
@@ -64,16 +65,16 @@ export default function HeightMap() {
     let distance = haversineDistance(getLatLng(wps[i - 1]), getLatLng(wps[i]))
     for (let j = 0; j < distance / interpolatedist; j++) {
       distances.push(Math.round(prevDistance + (j / (distance / interpolatedist)) * distance))
-      const a = interpolate(wps[i - 1].param5, wps[i].param5, wps[i - 1].param6, wps[i].param6, j / (distance / interpolatedist))
-      locations.push([a.lat, a.lng])
+      const a = interpolate(getLatLng(wps[i - 1]), getLatLng(wps[i]), j / (distance / interpolatedist))
+      locations.push(a)
       if (j == 0) {
-        let curHeight = wps[i - 1].param7
+        let curHeight = wps[i - 1].params.altitude
         if (wps[i - 1].type == 22) {
           curHeight = 0
         }
         heights.push(curHeight)
         if (i != 1) {
-          let prevHeight = wps[i - 2].param7
+          let prevHeight = wps[i - 2].params.altitude
           if (wps[i - 2].type == 22) {
             prevHeight = 0
           }
@@ -87,9 +88,9 @@ export default function HeightMap() {
     prevDistance += distance
   }
 
-  heights.push(wps[wps.length - 1].param7)
+  heights.push(wps[wps.length - 1].params.altitude)
   let distance = haversineDistance(getLatLng(wps[wps.length - 2]), getLatLng(wps[wps.length - 1]))
-  gradients.push(gradient(distance, wps[wps.length - 2].param7, wps[wps.length - 1].param7))
+  gradients.push(gradient(distance, wps[wps.length - 2].params.altitude, wps[wps.length - 1].params.altitude))
 
   const chartConfig = {
     desktop: {

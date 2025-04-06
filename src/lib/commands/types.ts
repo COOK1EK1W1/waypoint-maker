@@ -1,4 +1,4 @@
-import { mavCmds } from "./mavCommands"
+import { mavCmds } from "./mav/commands"
 
 export type ParameterDescription = {
   index: number

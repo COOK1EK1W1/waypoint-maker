@@ -1,4 +1,4 @@
-import { CommandDescription } from "./types";
+import { CommandDescription } from "../types";
 
 export const wpmCmds = [{
   value: 69,
