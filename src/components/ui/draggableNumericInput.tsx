@@ -2,8 +2,8 @@ import React, { useState, useRef, useEffect } from 'react';
 
 interface DraggableNumberInputProps {
   value?: number;
-  name?: string;
-  onChange?: (event: { target: { name?: string; value: number } }) => void;
+  name: string;
+  onChange?: (event: { target: { name: string; value: number } }) => void;
   className?: string;
   min?: number | null;
   max?: number | null;
@@ -41,7 +41,7 @@ const DraggableNumberInput: React.FC<DraggableNumberInputProps> = ({
     setInternalValue(newValue);
     onChange?.({
       target: {
-        name,
+        name: name,
         value: newValue
       }
     });

@@ -4,7 +4,7 @@ import { wpmCmds } from "./wpmCommands";
 export const commands = [...mavCmds, ...wpmCmds] as const
 
 // Extract only non-null parameters and map them to an object
-type CommandParamsNames<T extends CommandName> = NonNullable<
+export type CommandParamsNames<T extends CommandName> = NonNullable<
   Extract<
     typeof commands[number],
     { name: T }
@@ -12,7 +12,7 @@ type CommandParamsNames<T extends CommandName> = NonNullable<
 >["label"]
 
 // Create a type to map command names to parameter objects, excluding `null` entries
-type CommandParams<T extends CommandName> = {
+export type CommandParams<T extends CommandName> = {
   [P in CommandParamsNames<T> as P extends string ? Lowercase<P> : never]: number
 }
 
