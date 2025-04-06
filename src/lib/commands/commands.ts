@@ -1,5 +1,5 @@
 import { mavCmds } from "./mav/commands";
-import { wpmCmds } from "./wpm/wpmCommands";
+import { wpmCmds } from "./wpm/commands";
 
 export const commands = [...mavCmds, ...wpmCmds] as const
 

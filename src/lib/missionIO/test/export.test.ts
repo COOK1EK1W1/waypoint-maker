@@ -1,6 +1,7 @@
 import { WaypointCollection } from "@/lib/waypoints/waypointCollection";
 import { waypointTo_waypoints_file } from "@/lib/missionIO/waypointToFile";
 import { expect, test } from "bun:test";
+import { makeCommand } from "@/lib/commands/default";
 
 test("waypoints to file", () => {
 
@@ -15,23 +16,23 @@ test("waypoints to file", () => {
 
   // single waypoint
   let wps3: WaypointCollection = new WaypointCollection
-  wps3.set("Main", [{ type: "Command", cmd: { frame: 0, type: 22, param1: 0, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0, autocontinue: 0 } }])
-  expect(waypointTo_waypoints_file(wps3)).toBe("QGC WPL 110\n0\t1\t0\t22\t0\t0\t0\t0\t0\t0\t0\t0\n")
+  wps3.set("Main", [{ type: "Command", cmd: makeCommand("MAV_CMD_NAV_TAKEOFF", {}) }])
+  expect(waypointTo_waypoints_file(wps3)).toBe("QGC WPL 110\n0\t1\t3\t22\t0\t0\t0\t0\t0\t0\t0\t1\n")
 
   // two waypoints
   let wps4: WaypointCollection = new WaypointCollection()
-  wps4.set("Main", [{ type: "Command", cmd: { frame: 0, type: 22, param1: 0, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0, autocontinue: 0 } }, { type: "Command", cmd: { frame: 0, type: 0, param1: 0, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0, autocontinue: 0 } }])
-  expect(waypointTo_waypoints_file(wps4)).toBe("QGC WPL 110\n0\t1\t0\t22\t0\t0\t0\t0\t0\t0\t0\t0\n1\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\n")
+  wps4.set("Main", [{ type: "Command", cmd: makeCommand("MAV_CMD_NAV_TAKEOFF", {}) }, { type: "Command", cmd: makeCommand("MAV_CMD_NAV_TAKEOFF", {}) }])
+  expect(waypointTo_waypoints_file(wps4)).toBe("QGC WPL 110\n0\t1\t3\t22\t0\t0\t0\t0\t0\t0\t0\t1\n1\t0\t3\t22\t0\t0\t0\t0\t0\t0\t0\t1\n")
 
   // param check
   let wps5: WaypointCollection = new WaypointCollection()
-  wps5.set("Main", [{ type: "Command", cmd: { frame: 1, type: 22, param1: 3, param2: 4, param3: 5, param4: 6, param5: 7, param6: 8, param7: 9, autocontinue: 10 } }, { type: "Command", cmd: { frame: 10, type: 11, param1: 12, param2: 13, param3: 14, param4: 15, param5: 16, param6: 17, param7: 18, autocontinue: 19 } }])
-  expect(waypointTo_waypoints_file(wps5)).toBe("QGC WPL 110\n0\t1\t1\t22\t3\t4\t5\t6\t7\t8\t9\t10\n1\t0\t10\t11\t12\t13\t14\t15\t16\t17\t18\t19\n")
+  wps5.set("Main", [{ type: "Command", cmd: makeCommand("MAV_CMD_NAV_WAYPOINT", { yaw: 10, altitude: 100, latitude: 52, longitude: -3, "pass radius": 30, "accept radius": 20, hold: 10 }) }, { type: "Command", cmd: makeCommand("MAV_CMD_NAV_WAYPOINT", { yaw: 20, altitude: 50, latitude: -52, longitude: -30, "pass radius": 300, "accept radius": 200, hold: 100 }) }])
+  expect(waypointTo_waypoints_file(wps5)).toBe("QGC WPL 110\n0\t1\t3\t16\t10\t20\t30\t10\t52\t-3\t100\t1\n1\t0\t3\t16\t100\t200\t300\t20\t-52\t-30\t50\t1\n")
 
   // sub mission
   let wps6: WaypointCollection = new WaypointCollection()
-  wps6.set("Main", [{ type: "Command", cmd: { frame: 1, type: 22, param1: 3, param2: 4, param3: 5, param4: 6, param5: 7, param6: 8, param7: 9, autocontinue: 10 } }, { type: "Collection", ColType: 0, collectionID: "Test", offsetLat: 0, offsetLng: 0, name: "Test" }])
-  wps6.set("Test", [{ type: "Command", cmd: { frame: 10, type: 11, param1: 12, param2: 13, param3: 14, param4: 15, param5: 16, param6: 17, param7: 18, autocontinue: 19 } }])
-  expect(waypointTo_waypoints_file(wps6)).toBe("QGC WPL 110\n0\t1\t1\t22\t3\t4\t5\t6\t7\t8\t9\t10\n1\t0\t10\t11\t12\t13\t14\t15\t16\t17\t18\t19\n")
+  wps6.set("Main", [{ type: "Command", cmd: makeCommand("MAV_CMD_NAV_WAYPOINT", { yaw: 10, altitude: 100, latitude: 52, longitude: -3, "pass radius": 30, "accept radius": 20, hold: 10 }) }, { type: "Collection", ColType: 0, collectionID: "Test", offsetLat: 0, offsetLng: 0, name: "Test" }])
+  wps6.set("Test", [{ type: "Command", cmd: makeCommand("MAV_CMD_NAV_WAYPOINT", { yaw: 20, altitude: 50, latitude: -52, longitude: -30, "pass radius": 300, "accept radius": 200, hold: 100 }) }])
+  expect(waypointTo_waypoints_file(wps5)).toBe("QGC WPL 110\n0\t1\t3\t16\t10\t20\t30\t10\t52\t-3\t100\t1\n1\t0\t3\t16\t100\t200\t300\t20\t-52\t-30\t50\t1\n")
 
 })
