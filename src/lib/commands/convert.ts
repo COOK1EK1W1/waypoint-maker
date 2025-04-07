@@ -1,7 +1,8 @@
 import { objectKeys } from "@/util/types";
-import { Command } from "./commands";
+import { Command, CommandName, ICommand } from "./commands";
 import { MavCommand } from "./types";
 import { mavCmds } from "./mav/commands";
+import { makeCommand } from "./default";
 
 export function WPM2MAV(commands: Command[]): MavCommand[] {
   const ret: MavCommand[] = []
@@ -30,4 +31,17 @@ export function WPM2MAV(commands: Command[]): MavCommand[] {
   })
 
   return ret
+}
+
+export function coerceCommand<T extends CommandName>(cmd: Command, type: T): ICommand<T> {
+  const newCmd = makeCommand(type, {})
+  let newparams = new Set(Object.keys(newCmd.params))
+  let oldParams = new Set(Object.keys(cmd.params))
+  let same = newparams.intersection(oldParams)
+  console.log(newparams, oldParams, same)
+  same.forEach((x) => {
+    //@ts-ignore
+    newCmd.params[x] = oldParams[x];
+  })
+  return newCmd
 }

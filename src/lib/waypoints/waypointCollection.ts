@@ -1,7 +1,7 @@
 import { Node } from "@/types/waypoints";
 import { getLatLng, hasLocation } from "@/util/WPCollection";
 import { LatLng } from "../world/types";
-import { Command, filterLatLngCmds } from "@/lib/commands/commands";
+import { Command, CommandName, filterLatLngCmds, ICommand } from "@/lib/commands/commands";
 
 export class WaypointCollection {
 
@@ -209,11 +209,12 @@ export class WaypointCollection {
 
     let updatedWaypoint = curMission[id]
 
-    if (updatedWaypoint.type === "Command") {
-      updatedWaypoint = {
-        ...updatedWaypoint,
-        cmd: mod(updatedWaypoint.cmd)
+    if (curMission[id].type === "Command") {
+      curMission[id] = {
+        ...curMission[id],
+        cmd: mod(curMission[id].cmd)
       }
+      console.log(this.collection)
     } else if (updatedWaypoint.type == "Collection") {
       const col = this.collection.get(updatedWaypoint.collectionID)
       if (col != null) {
