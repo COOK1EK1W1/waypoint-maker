@@ -1,11 +1,12 @@
-import { avgLatLng, MoveWPsAvgTo } from "@/util/WPCollection";
+import { getLatLng, MoveWPsAvgTo } from "@/util/WPCollection";
 import { useWaypoints } from "@/util/context/WaypointContext";
 import { Node } from "@/types/waypoints";
 import { FaArrowDown, FaArrowLeft, FaArrowRight, FaArrowUp } from "react-icons/fa";
 import { FaArrowRotateLeft, FaArrowRotateRight } from "react-icons/fa6";
 import { LuMousePointerClick } from "react-icons/lu";
 import { TfiTarget } from "react-icons/tfi";
-import { Command } from "@/lib/commands/commands";
+import { Command, filterLatLngCmds } from "@/lib/commands/commands";
+import { avgLatLng } from "@/lib/world/distance";
 
 export function LatLngEditor() {
   const { selectedWPs, waypoints, setWaypoints, activeMission, setTool } = useWaypoints();
@@ -24,7 +25,11 @@ export function LatLngEditor() {
 
   const leaves = wps.map((x) => waypoints.flattenNode(x)).reduce((cur, acc) => (acc.concat(cur)), [])
 
-  const { lat, lng } = avgLatLng(leaves)
+  const avgll = avgLatLng(filterLatLngCmds(leaves).map(getLatLng))
+  if (avgll == undefined) {
+    return null
+  }
+  const { lat, lng } = avgll
 
   function nudge(x: number, y: number) {
     setWaypoints((waypoints) => {

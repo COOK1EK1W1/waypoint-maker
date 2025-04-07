@@ -2,6 +2,7 @@ import { Node } from "@/types/waypoints";
 import type { WaypointCollection } from "@/lib/waypoints/waypointCollection";
 import { LatLng } from "@/lib/world/types";
 import { Command, commands, filterLatLngCmds, LatLngAltCommand, LatLngCommand } from "@/lib/commands/commands";
+import { avgLatLng } from "@/lib/world/distance";
 
 
 export function MoveWPsAvgTo(pos: LatLng, waypoints: WaypointCollection, selectedWPs: number[], active: string): WaypointCollection {
@@ -19,7 +20,9 @@ export function MoveWPsAvgTo(pos: LatLng, waypoints: WaypointCollection, selecte
 
   const leaves = wps.map((x) => waypoints.flattenNode(x)).reduce((cur, acc) => (acc.concat(cur)), [])
 
-  const { lat, lng } = avgLatLng(leaves)
+  const avgll = avgLatLng(filterLatLngCmds(leaves).map(getLatLng))
+  if (avgll == undefined) { return waypoints }
+  const { lat, lng } = avgll
   let waypointsUpdated = waypoints.clone();
   for (let i = 0; i < wps.length; i++) {
     waypointsUpdated.changeParam(wpsIds[i], active, (cmd: Command) => {
@@ -31,21 +34,6 @@ export function MoveWPsAvgTo(pos: LatLng, waypoints: WaypointCollection, selecte
     });
   }
   return waypointsUpdated;
-}
-
-
-export function avgLatLng(commands: Command[]): LatLng {
-  let latTotal = 0
-  let lngTotal = 0
-  let count = 0
-  const b = filterLatLngCmds(commands)
-  for (let cmd of b) {
-    let res = getLatLng(cmd)
-    count += 1
-    latTotal += res.lat
-    lngTotal += res.lng
-  }
-  return { lat: latTotal / count, lng: lngTotal / count }
 }
 
 export function filter2d(cmds: Command[]) {
@@ -67,12 +55,9 @@ export function hasLocation(command: Command): boolean {
 
 /* get the latitude and longitude of a mission command
  */
-export function getLatLng(cmd: LatLngAltCommand): LatLng;
-export function getLatLng(cmd: LatLngCommand): LatLng;
-export function getLatLng(cmd: Command): LatLng | undefined;
-export function getLatLng(cmd: Command): LatLng | undefined {
+export function getLatLng<T extends Command>(cmd: T): T extends LatLngCommand ? LatLng : (LatLng | undefined) {
   if ("latitude" in cmd.params && "longitude" in cmd.params) {
     return { lat: cmd.params.latitude, lng: cmd.params.longitude }
   }
-  else return undefined;
+  else return undefined as T extends LatLngCommand ? LatLng : (LatLng | undefined);
 }
