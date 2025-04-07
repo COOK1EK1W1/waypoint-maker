@@ -14,7 +14,7 @@ export default function ParamEditor() {
   const { activeMission, selectedWPs, waypoints, setWaypoints } = useWaypoints()
 
   const mission = waypoints.get(activeMission)
-  const selected = selectedWPs.length == 0 ? mission : mission.filter((_, i) => selectedWPs.includes(i))
+  const selected = (selectedWPs.length == 0 ? mission : mission.filter((_, i) => selectedWPs.includes(i))).filter((x) => x.type == "Command")
 
   if (selected.length == 0) {
     return (
@@ -23,13 +23,24 @@ export default function ParamEditor() {
       </div>
     )
   }
-  const cur = selected[0]
-  if (cur.type == "Collection") {
-    return (<div>not supported yet</div>)
+
+  let params = new Set(Object.keys(selected[0].cmd.params))
+
+  let vals = {}
+
+  for (let i = 0; i < selected.length; i++) {
+    params = params.intersection(new Set(Object.keys(selected[i].cmd.params)))
   }
 
-  const params = cur.cmd.params as any
-  const keys = objectKeys(params) as ({ [K in CommandName]: (keyof CommandParams<K>)[] }[CommandName])
+  for (const key of Array.from(params)) {
+    //@ts-ignore
+    const values = selected.map(obj => obj.cmd.params[key]);
+    console.log(values)
+    const allSame = values.every(val => val === values[0]);
+
+    //@ts-ignore
+    vals[key] = allSame ? values[0] : null
+  }
 
   function onChange(event: { target: { name: string, value: number } }) {
     setWaypoints((wps) => {
@@ -48,11 +59,12 @@ export default function ParamEditor() {
   return (
     <div className="flex-1 flex flex-wrap overflow-y-auto">
       <CommandTypeSelector />
-      {keys.map((x, i) => {
+      {Array.from(params).map((x, i) => {
         if (["longitude", "latitude"].includes(x)) {
           return
         }
-        return (<Parameter key={i} name={x} value={params[x]} onChange={onChange} />)
+        //@ts-ignore
+        return (<Parameter key={i} name={x} value={vals[x]} onChange={onChange} />)
       }
       )}
       < LatLngEditor />

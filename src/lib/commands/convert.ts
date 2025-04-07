@@ -40,7 +40,7 @@ export function coerceCommand<T extends CommandName>(cmd: Command, type: T): ICo
   let same = newparams.intersection(oldParams)
   same.forEach((x) => {
     //@ts-ignore
-    newCmd.params[x] = cmd.params[x];
+    newparams[x] = oldParams[x];
   })
   return newCmd
 }

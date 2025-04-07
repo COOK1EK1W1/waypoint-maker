@@ -1,9 +1,6 @@
-import { Node, WPNode } from "@/types/waypoints";
 import DraggableNumberInput from "@/components/ui/draggableNumericInput";
-import { ParameterDescription } from "@/lib/commands/types";
 
 export default function Parameter({ name, onChange, value }: { name: string, value: number, onChange?: (event: { target: { name: string; value: number } }) => void; }) {
-
   return (
     <div className="p-2">
       <label>
