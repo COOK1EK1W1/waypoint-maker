@@ -117,3 +117,18 @@ export function worldOffset(a: LatLng, dist: number, angle: number): LatLng {
   }
 }
 
+/*
+ * find the average latitude and longitude of an array of locations
+ * @param locs - Array of locations as LatLng
+ * returns a new LatLng
+ */
+export const avgLatLng = (locs: LatLng[]): LatLng | undefined => {
+  if (locs.length == 0) return undefined
+  let totLat = 0;
+  let totLng = 0;
+  locs.forEach((loc) => {
+    totLat += loc.lat;
+    totLng += loc.lng;
+  })
+  return { lat: totLat / locs.length, lng: totLng / locs.length }
+}

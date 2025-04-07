@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { haversineDistance, worldBearing } from "@/lib/world/distance";
+import { avgLatLng, haversineDistance, worldBearing } from "@/lib/world/distance";
 
 test("world distance better func", () => {
   expect(haversineDistance({ lng: 0, lat: 0 }, { lng: 0, lat: 0 })).toBeCloseTo(0)
@@ -14,4 +14,12 @@ test("world distance better func", () => {
 test("world Bearing", () => {
   expect(worldBearing({ lng: 0, lat: 0 }, { lng: 0, lat: 10 })).toBe(0)
   expect(worldBearing({ lng: 0, lat: 0 }, { lng: 0, lat: -10 })).toBeCloseTo(Math.PI)
+})
+
+test("Average LatLng", () => {
+  expect(avgLatLng([{ lat: 0, lng: 0 }])).toEqual({ lat: 0, lng: 0 })
+
+  expect(avgLatLng([])).toBeUndefined()
+
+  expect(avgLatLng([{ lat: 10, lng: 10 }, { lat: -10, lng: 10 }, { lat: -10, lng: -10 }, { lat: 10, lng: -10 }])).toEqual({ lat: 0, lng: 0 })
 })
