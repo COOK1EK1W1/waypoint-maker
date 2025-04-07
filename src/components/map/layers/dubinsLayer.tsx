@@ -32,7 +32,7 @@ export default function DubinsLayer() {
   for (const section of dubinsSections) {
     section.wps.map((x, i) => {
       if (i != 0 && x.type == 69 && i < section.wps.length - 1 && x.params["fly-by distance"] > 0)
-        passByCircles.push(<Circle center={getLatLng(x) as LatLng} radius={x.params.radius} key={key++} />)
+        passByCircles.push(<Circle center={getLatLng(x) as LatLng} radius={x.params["fly-by distance"]} key={key++} />)
     })
     let dubinsPoints = section.wps.map((x) => waypointToDubins(x, reference))
     let path = dubinsBetweenDubins(dubinsPoints)

@@ -59,6 +59,9 @@ export default function CommandTypeSelector() {
           {commands.filter((x) => (planeSupported as readonly string[]).includes(x.name)).map((cmd, index) => (
             <option key={index} data-cmd={cmd.name}>{commandName(cmd.name)}</option>
           ))}
+          {process.env.NEXT_PUBLIC_ALLOWDUBINS ? // remove when public
+            <option data-cmd={"WM_CMD_NAV_DUBINS"}>Dubins</option> : null
+          }
         </select>
       </label>
     </div>

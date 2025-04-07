@@ -35,7 +35,6 @@ export default function ParamEditor() {
   for (const key of Array.from(params)) {
     //@ts-ignore
     const values = selected.map(obj => obj.cmd.params[key]);
-    console.log(values)
     const allSame = values.every(val => val === values[0]);
 
     //@ts-ignore
@@ -45,12 +44,22 @@ export default function ParamEditor() {
   function onChange(event: { target: { name: string, value: number } }) {
     setWaypoints((wps) => {
       const newWps = wps.clone()
-      selectedWPs.forEach((x) => {
-        newWps.changeParam(x, activeMission, (cmd: any) => {
-          cmd.params[event.target.name] = event.target.value
-          return cmd
+      if (selectedWPs.length > 0) {
+        selectedWPs.forEach((x) => {
+          newWps.changeParam(x, activeMission, (cmd: any) => {
+            cmd.params[event.target.name] = event.target.value
+            return cmd
+          })
         })
-      })
+      } else {
+        mission.forEach((_, i) => {
+          newWps.changeParam(i, activeMission, (cmd: any) => {
+            cmd.params[event.target.name] = event.target.value
+            return cmd
+          })
+        })
+
+      }
       return newWps
     })
   }
