@@ -49,7 +49,7 @@ export default function ParamEditor() {
     <div className="flex-1 flex flex-wrap overflow-y-auto">
       <CommandTypeSelector />
       {keys.map((x, i) => {
-        if (["altitude", "longitude", "latitude"].includes(x)) {
+        if (["longitude", "latitude"].includes(x)) {
           return
         }
         return (<Parameter key={i} name={x} value={params[x]} onChange={onChange} />)

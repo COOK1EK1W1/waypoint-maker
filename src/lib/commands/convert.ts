@@ -38,10 +38,9 @@ export function coerceCommand<T extends CommandName>(cmd: Command, type: T): ICo
   let newparams = new Set(Object.keys(newCmd.params))
   let oldParams = new Set(Object.keys(cmd.params))
   let same = newparams.intersection(oldParams)
-  console.log(newparams, oldParams, same)
   same.forEach((x) => {
     //@ts-ignore
-    newCmd.params[x] = oldParams[x];
+    newCmd.params[x] = cmd.params[x];
   })
   return newCmd
 }

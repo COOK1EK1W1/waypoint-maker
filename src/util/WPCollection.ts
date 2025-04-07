@@ -1,7 +1,7 @@
 import { Node } from "@/types/waypoints";
 import type { WaypointCollection } from "@/lib/waypoints/waypointCollection";
 import { LatLng } from "@/lib/world/types";
-import { Command, commands, filterLatLngCmds, LatLngCommand } from "@/lib/commands/commands";
+import { Command, commands, filterLatLngCmds, LatLngAltCommand, LatLngCommand } from "@/lib/commands/commands";
 
 
 export function MoveWPsAvgTo(pos: LatLng, waypoints: WaypointCollection, selectedWPs: number[], active: string): WaypointCollection {
@@ -67,6 +67,7 @@ export function hasLocation(command: Command): boolean {
 
 /* get the latitude and longitude of a mission command
  */
+export function getLatLng(cmd: LatLngAltCommand): LatLng;
 export function getLatLng(cmd: LatLngCommand): LatLng;
 export function getLatLng(cmd: Command): LatLng | undefined;
 export function getLatLng(cmd: Command): LatLng | undefined {

@@ -214,7 +214,6 @@ export class WaypointCollection {
         ...curMission[id],
         cmd: mod(curMission[id].cmd)
       }
-      console.log(this.collection)
     } else if (updatedWaypoint.type == "Collection") {
       const col = this.collection.get(updatedWaypoint.collectionID)
       if (col != null) {

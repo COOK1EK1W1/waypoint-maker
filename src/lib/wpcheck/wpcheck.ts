@@ -31,7 +31,7 @@ export function wpCheck(wps: Command[], waypoints: WaypointCollection): Fault[] 
   // convert everything to local space
   const geofenceLocs = waypoints.flatten("Geofence").map(getLatLng).filter((x) => x != null)
   const missionLocsCmds = filterLatLngAltCmds(waypoints.flatten("Main"))
-  const missionLocs = waypoints.flatten("Main").map(getLatLng).filter((x) => x != null)
+  const missionLocs = missionLocsCmds.map(getLatLng) as LatLng[]
   const geofenceLocal = geofenceLocs.map((x) => g2l(waypoints.getReferencePoint(), x))
   const missionLocal = missionLocs.map((x) => g2l(waypoints.getReferencePoint(), x))
 
