@@ -4,7 +4,7 @@ import { bound, dubinsPoint, Path } from "@/lib/dubins/types";
 import { XY } from "@/lib/math/types";
 import { res } from "@/lib/optimisation/types";
 import { Plane } from "@/lib/vehicles/types";
-import { WaypointCollection } from "@/lib/waypoints/waypointCollection";
+import { Mission } from "@/lib/waypoints/waypointCollection";
 import { Dispatch, SetStateAction } from "react";
 
 // This function is a closure that takes in the waypoints and returns a function that takes in the tunable parameters and returns the total length of the path
@@ -23,7 +23,7 @@ export function createEvaluate(wps: dubinsPoint[], optimisationFunction: (path: 
   return evaluate
 }
 
-export function staticEvaluate(waypoints: WaypointCollection, activeMission: string, optimisationFunction: (path: Path<XY>) => number, vehicle: Plane) {
+export function staticEvaluate(waypoints: Mission, activeMission: string, optimisationFunction: (path: Path<XY>) => number, vehicle: Plane) {
   let activeWaypoints: Command[] = waypoints.flatten(activeMission)
 
   const reference = waypoints.getReferencePoint()
@@ -47,7 +47,7 @@ export function staticEvaluate(waypoints: WaypointCollection, activeMission: str
 
 }
 
-export function bakeDubins(waypoints: WaypointCollection, activeMission: string, optimisationmethod: (initialGuess: readonly number[], bounds: bound[], fn: (a: number[]) => number) => res, setWaypoints: Dispatch<SetStateAction<WaypointCollection>>, optimisationFunction: (path: Path<XY>) => number, vehicle: Plane) {
+export function bakeDubins(waypoints: Mission, activeMission: string, optimisationmethod: (initialGuess: readonly number[], bounds: bound[], fn: (a: number[]) => number) => res, setWaypoints: Dispatch<SetStateAction<Mission>>, optimisationFunction: (path: Path<XY>) => number, vehicle: Plane) {
   let activeWaypoints: Command[] = waypoints.flatten(activeMission)
 
   const startTime = performance.now()

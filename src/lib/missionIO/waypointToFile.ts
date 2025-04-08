@@ -1,8 +1,8 @@
-import { WaypointCollection } from "@/lib/waypoints/waypointCollection";
+import { Mission } from "@/lib/waypoints/waypointCollection";
 import { convertToMAV } from "@/lib/missionIO/common";
 import { MavCommand } from "../commands/types";
 
-export function waypointTo_waypoints_file(waypoints: WaypointCollection) {
+export function waypointTo_waypoints_file(waypoints: Mission) {
   let returnString = "QGC WPL 110\n"
 
   let wps = waypoints.flatten("Main")

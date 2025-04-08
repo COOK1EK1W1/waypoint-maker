@@ -29,7 +29,6 @@ export function WPM2MAV(commands: Command[]): MavCommand[] {
     });
     ret.push(a)
   })
-
   return ret
 }
 
@@ -38,11 +37,9 @@ export function coerceCommand<T extends CommandName>(cmd: Command, type: T): ICo
   let newparams = new Set(Object.keys(newCmd.params))
   let oldParams = new Set(Object.keys(cmd.params))
   let same = newparams.intersection(oldParams)
-  console.log(same)
   same.forEach((x) => {
     //@ts-ignore
     newCmd.params[x] = cmd.params[x];
   })
-  console.log(newCmd)
   return newCmd
 }

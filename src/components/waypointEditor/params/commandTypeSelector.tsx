@@ -32,7 +32,7 @@ export default function CommandTypeSelector() {
     }
   })
 
-  let nodes = selected as WPNode[]
+  let nodes = selected.filter((x) => x.type == "Command")
 
   function onChange(e: ChangeEvent<HTMLSelectElement>) {
     setWaypoints((wps) => {

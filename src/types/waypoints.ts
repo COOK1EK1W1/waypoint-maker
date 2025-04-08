@@ -21,6 +21,3 @@ export type ColNode = {
 }
 
 export type Node = WPNode | ColNode
-
-export type WaypointCollection3 = Map<string, Node[]>
-

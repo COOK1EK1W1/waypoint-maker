@@ -6,18 +6,21 @@ import { useWaypoints } from "../../util/context/WaypointContext";
 import { Tool } from "@/types/tools";
 import { LeafletMouseEvent, Map } from "leaflet";
 import { useEffect, useRef } from "react";
-import { MoveWPsAvgTo } from "@/util/WPCollection";
+import { getLatLng, MoveWPsAvgTo } from "@/util/WPCollection";
 import { defaultDoLandStart, defaultTakeoff, defaultWaypoint } from "@/lib/waypoints/defaults";
 import { useMap } from '@/util/context/MapContext';
 import MapController from "./mapController";
 import MapLayers from "./layers/layers";
 import { makeCommand } from "@/lib/commands/default";
+import { avgLatLng } from "@/lib/world/distance";
+import { filterLatLngAltCmds } from "@/lib/commands/commands";
 
 export default function MapStuff() {
   const { waypoints, setWaypoints, activeMission, tool, setTool, selectedWPs } = useWaypoints()
   const { moveMap } = useMap();
 
   const mapRef = useRef<Map | null>(null)
+
 
   useEffect(() => {
     moveMap.move = (lat, lng) => {
@@ -53,6 +56,13 @@ export default function MapStuff() {
     }
 
   }, [activeMission, setWaypoints, waypoints, moveMap])
+
+  useEffect(() => {
+    const pos = avgLatLng(filterLatLngAltCmds(waypoints.flatten("Main")).map(getLatLng))
+    if (mapRef.current != null && pos !== undefined) {
+      mapRef.current.setView(pos)
+    }
+  }, [mapRef.current, moveMap])
 
   function handleClick(tool: Tool, e: LeafletMouseEvent) {
     if (activeMission == "Geofence") {

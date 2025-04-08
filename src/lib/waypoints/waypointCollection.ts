@@ -1,11 +1,15 @@
 import { Node } from "@/types/waypoints";
-import { getLatLng, hasLocation } from "@/util/WPCollection";
+import { getLatLng } from "@/util/WPCollection";
 import { LatLng } from "../world/types";
-import { Command, CommandName, filterLatLngCmds, ICommand } from "@/lib/commands/commands";
+import { Command, filterLatLngCmds } from "@/lib/commands/commands";
 
-export class WaypointCollection {
+export class Mission {
 
   private collection: Map<string, Node[]>
+
+  destructure() {
+    return this.collection;
+  }
 
   constructor(collection?: Map<string, Node[]>) {
     if (collection) {
@@ -61,7 +65,7 @@ export class WaypointCollection {
   }
 
   clone() {
-    return new WaypointCollection(this.collection)
+    return new Mission(this.collection)
 
   }
 
@@ -106,7 +110,7 @@ export class WaypointCollection {
 
   contains(missionName: string, A: string): boolean {
     const curWaypoints = this.collection.get(missionName)
-    if (!curWaypoints) { throw new Error("No mission") }
+    if (!curWaypoints) { throw new Error(`No mission: ${missionName}`) }
     for (let wp of curWaypoints) {
       if (wp.type == "Collection") {
         if (wp.name == A) {

@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { waypointContext } from './WaypointContext';
 import { Tool } from '@/types/tools'
-import { WaypointCollection } from '@/lib/waypoints/waypointCollection';
+import { Mission } from '@/lib/waypoints/waypointCollection';
 import { Node } from '@/types/waypoints';
 
 type Props = {
@@ -13,7 +13,7 @@ type Props = {
 
 export default function CloudWaypointProvider({ children, mission, missionId }: Props) {
 
-  const [waypoints, setWaypoints] = useState<WaypointCollection>(new WaypointCollection(mission))
+  const [waypoints, setWaypoints] = useState<Mission>(new Mission(mission))
 
   const [selectedWPs, setSelectedWPs] = useState<number[]>([]);
 

@@ -3,11 +3,13 @@ import { useWaypoints } from '@/util/context/WaypointContext';
 import React from 'react';
 import Button from '@/components/toolBar/button';
 import { FaFileUpload } from 'react-icons/fa';
-import { WaypointCollection } from '@/lib/waypoints/waypointCollection';
+import { Mission } from '@/lib/waypoints/waypointCollection';
 import { useMap } from '@/util/context/MapContext';
 import { avgLatLng } from '@/lib/world/distance';
 import { filterLatLngCmds } from '@/lib/commands/commands';
 import { getLatLng } from '@/util/WPCollection';
+import { importwpm1 } from '@/lib/missionIO/wm1/spec';
+import { importwpm2 } from '@/lib/missionIO/wm2/spec';
 
 export default function LoadJson() {
   const { setWaypoints } = useWaypoints();
@@ -31,8 +33,11 @@ export default function LoadJson() {
     reader.onload = () => {
       try {
         if (reader.result == null) return
-        const parsedData = JSON.parse("" + reader.result);
-        let wps = new WaypointCollection(new Map(parsedData))
+        let wps = undefined
+        wps = importwpm2("" + reader.result) || importwpm1("" + reader.result)
+        if (wps === undefined) {
+          throw new Error("bruh")
+        }
         let main = wps.get("Main")
         if (main) {
           if (moveMap.move) {
@@ -41,9 +46,10 @@ export default function LoadJson() {
               moveMap.move(avgll.lat, avgll.lng)
             }
           }
-          setWaypoints(new WaypointCollection(new Map(parsedData)))
+          setWaypoints(wps)
         }
       } catch (err) {
+        console.error(err)
       }
     };
 

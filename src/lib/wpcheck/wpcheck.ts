@@ -1,4 +1,4 @@
-import { WaypointCollection } from "@/lib/waypoints/waypointCollection";
+import { Mission } from "@/lib/waypoints/waypointCollection";
 import { angleBetweenPoints, gradient, haversineDistance } from "@/lib/world/distance";
 import { Command, filterLatLngAltCmds } from "@/lib/commands/commands";
 import { Fault, Severity } from "@/lib/wpcheck/types";
@@ -9,7 +9,7 @@ import { LatLng } from "../world/types";
 
 
 
-export function wpCheck(wps: Command[], waypoints: WaypointCollection): Fault[] {
+export function wpCheck(wps: Command[], waypoints: Mission): Fault[] {
   let ret: Fault[] = []
 
   if (wps.length == 0) {

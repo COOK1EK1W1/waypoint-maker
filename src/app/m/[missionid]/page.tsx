@@ -1,5 +1,7 @@
 import { WMEditor } from "@/components/editor";
 import ToolBar from "@/components/toolBar/ToolBar";
+import { importwpm1 } from "@/lib/missionIO/wm1/spec";
+import { importwpm2, isValidMission } from "@/lib/missionIO/wm2/spec";
 import { auth } from "@/util/auth";
 import CloudWaypointProvider from "@/util/context/cloudWaypointProvider";
 import MapProvider from "@/util/context/MapProvider";
@@ -20,10 +22,14 @@ export default async function Mission({ params }: { params: Promise<{ missionid:
     return redirect("/")
   }
 
-  let b = JSON.parse(a.data)
+  const wps = importwpm2(a.data) || importwpm1(a.data)
+  if (wps === undefined) {
+    throw new Error("bruh")
+  }
+  if (!isValidMission(wps)) { console.assert("not valid") }
 
   return (
-    <CloudWaypointProvider mission={new Map(b)} missionId={missionId}>
+    <CloudWaypointProvider mission={wps.destructure()} missionId={missionId}>
       <VehicleProvider >
         <MapProvider>
           <ToolBar />

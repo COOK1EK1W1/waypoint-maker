@@ -1,10 +1,10 @@
 import { makeCommand } from "@/lib/commands/default";
-import { MissingMission, RecursiveMission, WaypointCollection } from "@/lib/waypoints/waypointCollection";
+import { MissingMission, RecursiveMission, Mission } from "@/lib/waypoints/waypointCollection";
 import { CollectionType } from "@/types/waypoints";
 import { expect, test } from "bun:test";
 
 test("WaypointCollection default config", () => {
-  const a = new WaypointCollection()
+  const a = new Mission()
   expect(Array.from(a.getMissions()).length).toBe(3)
   expect(a.get("Main")).not.toBeUndefined()
   expect(a.get("Geofence")).not.toBeUndefined()
@@ -12,7 +12,7 @@ test("WaypointCollection default config", () => {
 })
 
 test("add_waypoint", () => {
-  let a = new WaypointCollection()
+  let a = new Mission()
   a.pushToMission("Main", { type: "Command", cmd: makeCommand("MAV_CMD_NAV_LOITER_TURNS", {}) })
   a.pushToMission("Main", { type: "Command", cmd: makeCommand("MAV_CMD_NAV_LOITER_TIME", {}) })
   a.pushToMission("Main", { type: "Command", cmd: makeCommand("MAV_CMD_NAV_RETURN_TO_LAUNCH", {}) })
@@ -28,7 +28,7 @@ test("add_waypoint", () => {
 
 
 test("Contains, recursive", () => {
-  let a = new WaypointCollection();
+  let a = new Mission();
   // add waypoints to main
   a.pushToMission("Main", { type: "Command", cmd: makeCommand("WM_CMD_NAV_DUBINS", {}) })
   a.pushToMission("Main", { type: "Command", cmd: makeCommand("WM_CMD_NAV_DUBINS", {}) })
@@ -55,7 +55,7 @@ test("Contains, recursive", () => {
 })
 
 test("find Nth position", () => {
-  let a = new WaypointCollection();
+  let a = new Mission();
   // add waypoints to main
   a.pushToMission("Main", { type: "Command", cmd: makeCommand("WM_CMD_NAV_DUBINS", {}) })
   a.pushToMission("Main", { type: "Command", cmd: makeCommand("WM_CMD_NAV_DUBINS", {}) })
@@ -96,7 +96,7 @@ test("find Nth position", () => {
 
 
 test("pop", () => {
-  let a = new WaypointCollection();
+  let a = new Mission();
   // add waypoints to main
   a.pushToMission("Main", { type: "Command", cmd: makeCommand("WM_CMD_NAV_DUBINS", { altitude: 1 }) })
   a.pushToMission("Main", { type: "Command", cmd: makeCommand("WM_CMD_NAV_DUBINS", { altitude: 2 }) })
@@ -120,7 +120,7 @@ test("pop", () => {
 
 
 test("pop with index", () => {
-  let a = new WaypointCollection();
+  let a = new Mission();
   // add waypoints to main
   a.pushToMission("Main", { type: "Command", cmd: makeCommand("WM_CMD_NAV_DUBINS", { altitude: 1 }) })
   a.pushToMission("Main", { type: "Command", cmd: makeCommand("WM_CMD_NAV_DUBINS", { altitude: 2 }) })
@@ -144,7 +144,7 @@ test("pop with index", () => {
 
 
 test("clone", () => {
-  let a = new WaypointCollection();
+  let a = new Mission();
   // add waypoints to main
   a.pushToMission("Main", { type: "Command", cmd: makeCommand("WM_CMD_NAV_DUBINS", {}) })
   a.pushToMission("Main", { type: "Command", cmd: makeCommand("WM_CMD_NAV_DUBINS", {}) })
@@ -157,7 +157,7 @@ test("clone", () => {
 
 
 test("Flatten", () => {
-  let a = new WaypointCollection();
+  let a = new Mission();
   // add waypoints to main
   a.pushToMission("Main", { type: "Command", cmd: makeCommand("WM_CMD_NAV_DUBINS", {}) })
   a.pushToMission("Main", { type: "Command", cmd: makeCommand("WM_CMD_NAV_DUBINS", {}) })
@@ -176,7 +176,7 @@ test("Flatten", () => {
 
 
 test("insert", () => {
-  let a = new WaypointCollection();
+  let a = new Mission();
   // add waypoints to main
   a.pushToMission("Main", { type: "Command", cmd: makeCommand("WM_CMD_NAV_DUBINS", { altitude: 1 }) })
   a.pushToMission("Main", { type: "Command", cmd: makeCommand("WM_CMD_NAV_DUBINS", { altitude: 2 }) })
@@ -216,7 +216,7 @@ test("insert", () => {
 })
 
 test("changeParam", () => {
-  let a = new WaypointCollection();
+  let a = new Mission();
   // add waypoints to main
   a.pushToMission("Main", { type: "Command", cmd: makeCommand("WM_CMD_NAV_DUBINS", { altitude: 0 }) })
   a.pushToMission("Main", { type: "Command", cmd: makeCommand("WM_CMD_NAV_DUBINS", { altitude: 1 }) })
