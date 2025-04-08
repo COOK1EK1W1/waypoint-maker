@@ -11,6 +11,7 @@ import { defaultDoLandStart, defaultTakeoff, defaultWaypoint } from "@/lib/waypo
 import { useMap } from '@/util/context/MapContext';
 import MapController from "./mapController";
 import MapLayers from "./layers/layers";
+import { makeCommand } from "@/lib/commands/default";
 
 export default function MapStuff() {
   const { waypoints, setWaypoints, activeMission, tool, setTool, selectedWPs } = useWaypoints()
@@ -54,6 +55,22 @@ export default function MapStuff() {
   }, [activeMission, setWaypoints, waypoints, moveMap])
 
   function handleClick(tool: Tool, e: LeafletMouseEvent) {
+    if (activeMission == "Geofence") {
+      setWaypoints((waypoints) => {
+        let waypointsNew = waypoints.clone()
+        waypointsNew.pushToMission(activeMission, { type: "Command", cmd: makeCommand("WM_CMD_FENCE", { latitude: e.latlng.lat, longitude: e.latlng.lng }) })
+        return waypointsNew
+      })
+      return
+    }
+    if (activeMission == "Markers") {
+      setWaypoints((waypoints) => {
+        let waypointsNew = waypoints.clone()
+        waypointsNew.pushToMission(activeMission, { type: "Command", cmd: makeCommand("WM_CMD_MARKER", { latitude: e.latlng.lat, longitude: e.latlng.lng }) })
+        return waypointsNew
+      })
+      return
+    }
     switch (tool) {
       case "Waypoint": {
         setWaypoints((waypoints) => {

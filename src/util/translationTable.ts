@@ -18,6 +18,10 @@ export function commandName(name: (typeof commands)[number]["name"]) {
       return "Takeoff"
     case "WM_CMD_NAV_DUBINS":
       return "Dubins"
+    case "WM_CMD_FENCE":
+      return "Fence"
+    case "WM_CMD_MARKER":
+      return "Marker"
 
     default:
       return name.toLowerCase().slice(8).replaceAll("_", " ").replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase());

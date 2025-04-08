@@ -6,13 +6,12 @@ export function makeCommand<T extends CommandName>(name: T, params: { [K in keyo
   let a = commands.find((x) => x.name == name)
   a?.parameters.forEach((x) => {
     if (x === null) { return }
-    //@ts-ignore
-    if (params[x.label.toLowerCase()]) {
+    if (x.label.toLowerCase() in params) {
       //@ts-ignore
       newParams[x.label.toLowerCase()] = params[x.label.toLowerCase()]
     } else {
       //@ts-ignore
-      newParams[x.label.toLowerCase()] = 0
+      newParams[x.label.toLowerCase()] = x.default | 0
 
     }
   })
