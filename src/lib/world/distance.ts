@@ -130,5 +130,6 @@ export const avgLatLng = (locs: LatLng[]): LatLng | undefined => {
     totLat += loc.lat;
     totLng += loc.lng;
   })
+  console.log(totLat, totLng)
   return { lat: totLat / locs.length, lng: totLng / locs.length }
 }

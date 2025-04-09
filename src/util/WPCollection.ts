@@ -36,14 +36,6 @@ export function MoveWPsAvgTo(pos: LatLng, waypoints: Mission, selectedWPs: numbe
   return waypointsUpdated;
 }
 
-export function filter2d(cmds: Command[]) {
-  return cmds.filter((x) => ("latitude" in x && "longitude" in x))
-}
-
-export function filter3d(cmds: Command[]) {
-  return cmds.filter((x) => ("latitude" in x && "longitude" in x && "altitude" in x))
-}
-
 export function hasLocation(command: Command): boolean {
   const commanddesc = commands[commands.findIndex(a => a.value == command.type)]
   const hasLocationParams = commanddesc.parameters[4] &&

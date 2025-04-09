@@ -3,6 +3,10 @@ import { LatLng } from "@/lib/world/types";
 import { MavCommand } from "../commands/types";
 import { Command } from "../commands/commands";
 import { WPM2MAV } from "../commands/convert";
+import { importqgcWaypoints } from "./qgcWaypoints/spec";
+import { importwpm2, isValidMission } from "./wm2/spec";
+import { importwpm1 } from "./wm1/spec";
+import { Mission } from "../waypoints/waypointCollection";
 
 export function simplifyDubinsWaypoints(wps: Command[]) {
   // simplify dubins runs
@@ -87,4 +91,20 @@ export function downloadTextAsFile(filename: string, text: string) {
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
+}
+
+export function parseMissionString(a: string): Mission | undefined {
+  const importFuncs = [
+    importqgcWaypoints,
+    importwpm2,
+    importwpm1
+  ]
+  for (let i = 0; i < importFuncs.length; i++) {
+    let res = importFuncs[i](a)
+    if (res !== undefined && isValidMission(res)) {
+      console.log("found with ", importFuncs[i])
+      return res
+    }
+  }
+  return undefined
 }

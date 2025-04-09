@@ -3,13 +3,14 @@ import { useWaypoints } from '@/util/context/WaypointContext';
 import React from 'react';
 import Button from '@/components/toolBar/button';
 import { FaFileUpload } from 'react-icons/fa';
-import { Mission } from '@/lib/waypoints/waypointCollection';
 import { useMap } from '@/util/context/MapContext';
 import { avgLatLng } from '@/lib/world/distance';
 import { filterLatLngCmds } from '@/lib/commands/commands';
 import { getLatLng } from '@/util/WPCollection';
 import { importwpm1 } from '@/lib/missionIO/wm1/spec';
 import { importwpm2 } from '@/lib/missionIO/wm2/spec';
+import { importqgcWaypoints } from '@/lib/missionIO/qgcWaypoints/spec';
+import { parseMissionString } from '@/lib/missionIO/common';
 
 export default function LoadJson() {
   const { setWaypoints } = useWaypoints();
@@ -33,8 +34,7 @@ export default function LoadJson() {
     reader.onload = () => {
       try {
         if (reader.result == null) return
-        let wps = undefined
-        wps = importwpm2("" + reader.result) || importwpm1("" + reader.result)
+        let wps = parseMissionString("" + reader.result)
         if (wps === undefined) {
           throw new Error("bruh")
         }
@@ -56,7 +56,7 @@ export default function LoadJson() {
   };
 
   return <>
-    <input type="file" accept=".json" id="fileInput" className="hidden" onChange={handleFileChange} />
+    <input type="file" accept=".json, .waypoints" id="fileInput" className="hidden" onChange={handleFileChange} />
     <Button onClick={() => document.getElementById('fileInput')?.click()}>
       <FaFileUpload className="inline" />Load JSON
     </Button>
