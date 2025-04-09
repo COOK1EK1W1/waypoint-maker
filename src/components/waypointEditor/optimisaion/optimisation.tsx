@@ -5,7 +5,7 @@ import { geneticOptimise } from "@/lib/optimisation/genetic";
 import { particleOptimise } from "@/lib/optimisation/particleSwarm";
 import { useState } from "react";
 import Button from "@/components/toolBar/button";
-import { useVehicleTypeContext } from "@/util/context/VehicleTypeContext";
+import { useVehicle } from "@/util/context/VehicleTypeContext";
 import { cn } from "@/lib/utils";
 import { gradientOptimise } from "@/lib/optimisation/gradient";
 import { splitDubinsRuns } from "@/lib/dubins/dubinWaypoints";
@@ -15,7 +15,7 @@ import { Plane } from "@/lib/vehicles/types";
 
 
 export function Optimise() {
-  const { vehicle } = useVehicleTypeContext()
+  const { vehicle } = useVehicle()
 
 
   const { waypoints, setWaypoints, activeMission } = useWaypoints()

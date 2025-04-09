@@ -9,7 +9,7 @@ type provided = {
 
 export const vehicleTypeContext = createContext<provided>(undefined as any);
 
-export function useVehicleTypeContext() {
+export function useVehicle() {
   const context = useContext(vehicleTypeContext);
 
   if (context === undefined) {

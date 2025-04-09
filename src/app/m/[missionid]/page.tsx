@@ -26,11 +26,12 @@ export default async function Mission({ params }: { params: Promise<{ missionid:
   if (wps === undefined) {
     throw new Error("bruh")
   }
-  if (!isValidMission(wps)) { console.assert("not valid") }
+  if (!isValidMission(wps.mission)) { console.assert("not valid") }
+  console.log(wps)
 
   return (
-    <CloudWaypointProvider mission={wps.destructure()} missionId={missionId}>
-      <VehicleProvider >
+    <CloudWaypointProvider mission={wps.mission.destructure()} missionId={missionId}>
+      <VehicleProvider vehicle={wps.vehicle}>
         <MapProvider>
           <ToolBar />
           <WMEditor />

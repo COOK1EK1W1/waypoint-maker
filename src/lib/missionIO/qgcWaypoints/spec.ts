@@ -2,6 +2,8 @@ import { MavCommand } from "@/lib/commands/types"
 import { convertToMAV } from "../common"
 import { Mission } from "@/lib/mission/mission";
 import { commands, CommandValue } from "@/lib/commands/commands"
+import { Vehicle } from "@/lib/vehicles/types";
+import { defaultPlane } from "@/lib/vehicles/defaults";
 
 export function exportqgcWaypoints(mission: Mission) {
   let returnString = "QGC WPL 110\n"
@@ -19,7 +21,7 @@ function waypointString(i: number, wp: MavCommand): string {
   return `${i}\t${i == 0 ? "1" : "0"}\t${wp.frame}\t${wp.type}\t${wp.param1}\t${wp.param2}\t${wp.param3}\t${wp.param4}\t${wp.param5}\t${wp.param6}\t${wp.param7}\t${wp.autocontinue}\n`
 }
 
-export function importqgcWaypoints(a: string): Mission | undefined {
+export function importqgcWaypoints(a: string): { mission: Mission, vehicle: Vehicle } | undefined {
   const newMission = new Mission()
   const b = a.trim().split("\n")
   if (b[0] !== "QGC WPL 110") { return undefined }
@@ -49,6 +51,6 @@ export function importqgcWaypoints(a: string): Mission | undefined {
     })
 
   }
-  return newMission
+  return { mission: newMission, vehicle: defaultPlane }
 
 }

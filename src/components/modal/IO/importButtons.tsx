@@ -7,13 +7,12 @@ import { useMap } from '@/util/context/MapContext';
 import { avgLatLng } from '@/lib/world/distance';
 import { filterLatLngCmds } from '@/lib/commands/commands';
 import { getLatLng } from '@/util/WPCollection';
-import { importwpm1 } from '@/lib/missionIO/wm1/spec';
-import { importwpm2 } from '@/lib/missionIO/wm2/spec';
-import { importqgcWaypoints } from '@/lib/missionIO/qgcWaypoints/spec';
 import { parseMissionString } from '@/lib/missionIO/common';
+import { useVehicle } from '@/util/context/VehicleTypeContext';
 
 export default function LoadJson() {
   const { setWaypoints } = useWaypoints();
+  const { setVehicle } = useVehicle();
   const { moveMap } = useMap();
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -34,19 +33,21 @@ export default function LoadJson() {
     reader.onload = () => {
       try {
         if (reader.result == null) return
-        let wps = parseMissionString("" + reader.result)
-        if (wps === undefined) {
+        let parsed = parseMissionString("" + reader.result)
+        if (parsed === undefined) {
           throw new Error("bruh")
         }
-        let main = wps.get("Main")
+        const mission = parsed.mission
+        let main = mission.get("Main")
         if (main) {
           if (moveMap.move) {
-            const avgll = avgLatLng(filterLatLngCmds(wps.flatten("Main")).map(getLatLng))
+            const avgll = avgLatLng(filterLatLngCmds(mission.flatten("Main")).map(getLatLng))
             if (avgll !== undefined) {
               moveMap.move(avgll.lat, avgll.lng)
             }
           }
-          setWaypoints(wps)
+          setWaypoints(mission)
+          setVehicle(parsed.vehicle)
         }
       } catch (err) {
         console.error(err)

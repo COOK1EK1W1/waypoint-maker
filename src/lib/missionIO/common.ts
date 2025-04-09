@@ -7,6 +7,7 @@ import { importqgcWaypoints } from "./qgcWaypoints/spec";
 import { importwpm2, isValidMission } from "./wm2/spec";
 import { importwpm1 } from "./wm1/spec";
 import { Mission } from "@/lib/mission/mission";
+import { Vehicle } from "../vehicles/types";
 
 export function simplifyDubinsWaypoints(wps: Command[]) {
   // simplify dubins runs
@@ -93,17 +94,22 @@ export function downloadTextAsFile(filename: string, text: string) {
   document.body.removeChild(link);
 }
 
-export function parseMissionString(a: string): Mission | undefined {
+export function parseMissionString(a: string): { mission: Mission, vehicle: Vehicle } | undefined {
   const importFuncs = [
     importqgcWaypoints,
     importwpm2,
     importwpm1
   ]
   for (let i = 0; i < importFuncs.length; i++) {
-    let res = importFuncs[i](a)
-    if (res !== undefined && isValidMission(res)) {
-      console.log("found with ", importFuncs[i])
-      return res
+    let res = undefined
+    try {
+      res = importFuncs[i](a)
+      if (res !== undefined && isValidMission(res.mission)) {
+        console.log("found with ", importFuncs[i])
+        return res
+      }
+    } catch (err) {
+      continue
     }
   }
   return undefined

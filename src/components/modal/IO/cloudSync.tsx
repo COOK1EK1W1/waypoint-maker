@@ -4,16 +4,19 @@ import { useWaypoints } from "@/util/context/WaypointContext";
 import { syncMission } from "./syncAction";
 import { useState, useTransition } from "react";
 import { FaCheck, FaSpinner } from "react-icons/fa";
+import { exportwpm2 } from "@/lib/missionIO/wm2/spec";
+import { useVehicle } from "@/util/context/VehicleTypeContext";
 
 export default function CloudSync() {
   const { waypoints, missionId } = useWaypoints();
+  const { vehicle } = useVehicle();
 
   const [isPending, startTransition] = useTransition();
   const [b, setb] = useState(false)
   if (missionId) {
     return (
       <div className="flex items-center">
-        <Button onClick={() => startTransition(() => syncMission(missionId, waypoints.jsonify()).then(() => { setb(true) }))}> Sync Now</Button>
+        <Button onClick={() => startTransition(() => syncMission(missionId, exportwpm2(waypoints, vehicle)).then(() => { setb(true) }))}> Sync Now</Button>
         <span className="pl-1">
           {isPending ? <FaSpinner className="animate-spin" /> : b ? <FaCheck /> : null}
         </span>

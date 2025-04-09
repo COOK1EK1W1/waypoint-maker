@@ -1,8 +1,9 @@
 import { commands, CommandValue } from "@/lib/commands/commands";
 import { Mission } from "@/lib/mission/mission";
-import { isValidMission } from "../wm2/spec";
+import { Vehicle } from "@/lib/vehicles/types";
+import { defaultPlane } from "@/lib/vehicles/defaults";
 
-export function importwpm1(a: string): Mission | undefined {
+export function importwpm1(a: string): { mission: Mission, vehicle: Vehicle } | undefined {
   try {
     const newMission = new Map(JSON.parse(a))
 
@@ -42,7 +43,10 @@ export function importwpm1(a: string): Mission | undefined {
         }
       }
     }
-    return newWPC
+    return {
+      mission: newWPC,
+      vehicle: defaultPlane
+    }
   } catch (err) {
     return undefined
 

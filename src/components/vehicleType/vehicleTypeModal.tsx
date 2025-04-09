@@ -1,4 +1,4 @@
-import { useVehicleTypeContext } from "@/util/context/VehicleTypeContext";
+import { useVehicle } from "@/util/context/VehicleTypeContext";
 import Button from "../toolBar/button";
 import DraggableNumberInput from "../ui/draggableNumericInput";
 import { getMinTurnRadius } from "@/lib/dubins/dubinWaypoints";
@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 import { defaultCopter, defaultPlane } from "@/lib/vehicles/defaults";
 
 export default function VehicleTypeModal() {
-  let { vehicle, setVehicle } = useVehicleTypeContext()
+  let { vehicle, setVehicle } = useVehicle()
   let content = <></>
   switch (vehicle.type) {
     case "Copter": {
