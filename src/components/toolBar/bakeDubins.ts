@@ -2,9 +2,9 @@ import { Command } from "@/lib/commands/commands";
 import { applyBounds, dubinsBetweenDubins, getBounds, getTunableDubinsParameters, setTunableDubinsParameter, setTunableParameter, splitDubinsRuns, waypointToDubins } from "@/lib/dubins/dubinWaypoints";
 import { bound, dubinsPoint, Path } from "@/lib/dubins/types";
 import { XY } from "@/lib/math/types";
+import { Mission } from "@/lib/mission/mission";
 import { res } from "@/lib/optimisation/types";
 import { Plane } from "@/lib/vehicles/types";
-import { Mission } from "@/lib/waypoints/waypointCollection";
 import { Dispatch, SetStateAction } from "react";
 
 // This function is a closure that takes in the waypoints and returns a function that takes in the tunable parameters and returns the total length of the path

@@ -1,4 +1,4 @@
-import { Mission } from "@/lib/waypoints/waypointCollection";
+import { Mission } from "@/lib/mission/mission";
 import { expect, test } from "bun:test";
 import { makeCommand } from "@/lib/commands/default";
 import { exportqgcWaypoints } from "./spec";

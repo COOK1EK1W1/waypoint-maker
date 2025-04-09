@@ -1,5 +1,5 @@
 import { makeCommand } from "@/lib/commands/default";
-import { MissingMission, RecursiveMission, Mission } from "@/lib/waypoints/waypointCollection";
+import { MissingMission, RecursiveMission, Mission } from "@/lib/mission/mission";
 import { CollectionType } from "@/types/waypoints";
 import { expect, test } from "bun:test";
 

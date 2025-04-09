@@ -1,5 +1,5 @@
 import { commands, CommandValue } from "@/lib/commands/commands";
-import { Mission } from "@/lib/waypoints/waypointCollection";
+import { Mission } from "@/lib/mission/mission";
 import { isValidMission } from "../wm2/spec";
 
 export function importwpm1(a: string): Mission | undefined {

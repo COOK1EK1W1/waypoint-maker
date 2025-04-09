@@ -1,6 +1,6 @@
 import { expect, test } from "bun:test";
 import { applyBounds, dubinsBetweenDubins, getBounds, getMinTurnRadius, getTunableDubinsParameters, localisePath, splitDubinsRuns } from "@/lib/dubins/dubinWaypoints";
-import { defaultWaypoint } from "@/lib/waypoints/defaults";
+import { defaultWaypoint } from "@/lib/mission/defaults";
 import { XY } from "@/lib/math/types";
 import { dubinsPoint, Path } from "../types";
 import { Command } from "@/lib/commands/commands";

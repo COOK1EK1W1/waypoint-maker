@@ -1,5 +1,5 @@
 import { commands } from "@/lib/commands/commands";
-import { Mission } from "@/lib/waypoints/waypointCollection";
+import { Mission } from "@/lib/mission/mission";
 
 const commandInts = commands.map((x) => x.value)
 

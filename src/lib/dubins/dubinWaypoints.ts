@@ -1,7 +1,7 @@
 import { modf, offset } from "@/lib/math/geometry"
 import { DubinsBetweenDiffRad } from "./dubins";
 import { g2l, l2g } from "@/lib/world/conversion";
-import { crossProduct } from "@/lib/waypoints/fns";
+import { crossProduct } from "@/lib/mission/fns";
 import { deg2rad } from "@/lib/math/geometry";
 import { bound, dubinsPoint, Path, Segment } from "./types";
 import { LatLng } from "@/lib/world/types";

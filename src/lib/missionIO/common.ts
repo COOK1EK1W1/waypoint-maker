@@ -6,7 +6,7 @@ import { WPM2MAV } from "../commands/convert";
 import { importqgcWaypoints } from "./qgcWaypoints/spec";
 import { importwpm2, isValidMission } from "./wm2/spec";
 import { importwpm1 } from "./wm1/spec";
-import { Mission } from "../waypoints/waypointCollection";
+import { Mission } from "@/lib/mission/mission";
 
 export function simplifyDubinsWaypoints(wps: Command[]) {
   // simplify dubins runs

@@ -1,7 +1,7 @@
 "use client";
 import { Dispatch, SetStateAction, createContext, useContext } from 'react';
 import { Tool } from '@/types/tools';
-import { Mission } from '@/lib/waypoints/waypointCollection';
+import { Mission } from "@/lib/mission/mission";
 
 type provided = {
   waypoints: Mission,

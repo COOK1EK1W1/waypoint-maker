@@ -7,7 +7,7 @@ import { Tool } from "@/types/tools";
 import { LeafletMouseEvent, Map } from "leaflet";
 import { useEffect, useRef } from "react";
 import { getLatLng, MoveWPsAvgTo } from "@/util/WPCollection";
-import { defaultDoLandStart, defaultTakeoff, defaultWaypoint } from "@/lib/waypoints/defaults";
+import { defaultDoLandStart, defaultTakeoff, defaultWaypoint } from "@/lib/mission/defaults";
 import { useMap } from '@/util/context/MapContext';
 import MapController from "./mapController";
 import MapLayers from "./layers/layers";

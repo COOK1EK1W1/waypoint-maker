@@ -1,6 +1,6 @@
 import { MavCommand } from "@/lib/commands/types"
 import { convertToMAV } from "../common"
-import { Mission } from "@/lib/waypoints/waypointCollection"
+import { Mission } from "@/lib/mission/mission";
 import { commands, CommandValue } from "@/lib/commands/commands"
 
 export function exportqgcWaypoints(mission: Mission) {

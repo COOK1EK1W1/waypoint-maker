@@ -1,4 +1,4 @@
-import { Mission } from "@/lib/waypoints/waypointCollection";
+import { Mission } from "@/lib/mission/mission";
 import { angleBetweenPoints, gradient, haversineDistance } from "@/lib/world/distance";
 import { Command, filterLatLngAltCmds } from "@/lib/commands/commands";
 import { Fault, Severity } from "@/lib/wpcheck/types";

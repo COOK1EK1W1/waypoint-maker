@@ -1,5 +1,5 @@
 import { Node } from "@/types/waypoints";
-import type { Mission } from "@/lib/waypoints/waypointCollection";
+import { Mission } from "@/lib/mission/mission";
 import { LatLng } from "@/lib/world/types";
 import { Command, commands, filterLatLngCmds, LatLngAltCommand, LatLngCommand } from "@/lib/commands/commands";
 import { avgLatLng } from "@/lib/world/distance";

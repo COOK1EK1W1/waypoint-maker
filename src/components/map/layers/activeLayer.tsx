@@ -4,7 +4,7 @@ import { toPolyline } from "@/util/waypointToLeaflet";
 import InsertBtn from "@/components/marker/insertBtn";
 import DraggableMarker from "@/components/marker/DraggableMarker";
 import { filterLatLngCmds } from "@/lib/commands/commands";
-import { defaultWaypoint } from "@/lib/waypoints/defaults";
+import { defaultWaypoint } from "@/lib/mission/defaults";
 import { getLatLng } from "@/util/WPCollection";
 
 const limeOptions = { color: 'lime' }
