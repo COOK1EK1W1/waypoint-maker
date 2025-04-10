@@ -2,8 +2,7 @@
 import { useState } from 'react';
 import { waypointContext } from './WaypointContext';
 import { Tool } from '@/types/tools'
-import { Mission } from "@/lib/mission/mission";
-import { Node } from '@/types/waypoints';
+import { Mission, Node } from "@/lib/mission/mission";
 
 type Props = {
   children: React.ReactNode;

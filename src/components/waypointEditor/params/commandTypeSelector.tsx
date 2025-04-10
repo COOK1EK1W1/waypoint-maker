@@ -3,10 +3,8 @@ import { commandName } from "@/util/translationTable";
 import { Command, CommandName, commands } from "@/lib/commands/commands";
 import { planeSupported } from "@/lib/commands/supported";
 import { useWaypoints } from "@/util/context/WaypointContext";
-import { WPNode } from "@/types/waypoints";
 import { ChangeEvent } from "react";
 import { coerceCommand } from "@/lib/commands/convert";
-import { makeCommand } from "@/lib/commands/default";
 
 export default function CommandTypeSelector() {
   const { activeMission, selectedWPs, waypoints, setWaypoints } = useWaypoints()

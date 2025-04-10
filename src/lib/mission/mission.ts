@@ -1,7 +1,27 @@
-import { Node } from "@/types/waypoints";
 import { Command, filterLatLngCmds } from "@/lib/commands/commands";
 import { getLatLng, LatLng } from "../world/latlng";
 
+export enum CollectionType {
+  Mission,
+  Overlay,
+  Geofence
+}
+
+export type WPNode = {
+  type: "Command"
+  cmd: Command
+}
+
+export type ColNode = {
+  type: "Collection"
+  name: string
+  ColType: CollectionType
+  collectionID: string
+  offsetLat: number
+  offsetLng: number
+}
+
+export type Node = WPNode | ColNode
 export class Mission {
 
   private collection: Map<string, Node[]>

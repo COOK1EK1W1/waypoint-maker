@@ -12,8 +12,8 @@ import MapController from "./mapController";
 import MapLayers from "./layers/layers";
 import { makeCommand } from "@/lib/commands/default";
 import { Command, filterLatLngAltCmds, filterLatLngCmds } from "@/lib/commands/commands";
-import { Node } from "@/types/waypoints";
 import { avgLatLng, getLatLng } from "@/lib/world/latlng";
+import { Node } from "@/lib/mission/mission";
 
 export default function MapStuff() {
   const { waypoints, setWaypoints, activeMission, tool, setTool, selectedWPs } = useWaypoints()
