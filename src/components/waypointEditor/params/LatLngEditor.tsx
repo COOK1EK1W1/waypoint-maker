@@ -1,4 +1,3 @@
-import { getLatLng, MoveWPsAvgTo } from "@/util/WPCollection";
 import { useWaypoints } from "@/util/context/WaypointContext";
 import { Node } from "@/types/waypoints";
 import { FaArrowDown, FaArrowLeft, FaArrowRight, FaArrowUp } from "react-icons/fa";
@@ -6,7 +5,7 @@ import { FaArrowRotateLeft, FaArrowRotateRight } from "react-icons/fa6";
 import { LuMousePointerClick } from "react-icons/lu";
 import { TfiTarget } from "react-icons/tfi";
 import { Command, filterLatLngCmds } from "@/lib/commands/commands";
-import { avgLatLng } from "@/lib/world/distance";
+import { avgLatLng, getLatLng } from "@/lib/world/latlng";
 
 export function LatLngEditor() {
   const { selectedWPs, waypoints, setWaypoints, activeMission, setTool } = useWaypoints();
@@ -47,9 +46,29 @@ export function LatLngEditor() {
   }
 
   function move() {
-    const newLat = prompt("Enter latitude");
-    const newLng = prompt("Enter Longitude");
-    setWaypoints(MoveWPsAvgTo({ lat: Number(newLat), lng: Number(newLng) }, waypoints, selectedWPs, activeMission))
+    const inLat = prompt("Enter latitude");
+    const inLng = prompt("Enter Longitude");
+    if (inLat === null || inLng === null) { return }
+    const newLat = parseFloat(inLat)
+    const newLng = parseFloat(inLng)
+    setWaypoints((mission) => {
+      const leaves = wps.map((x) => waypoints.flattenNode(x)).reduce((cur, acc) => (acc.concat(cur)), [])
+
+      const avgll = avgLatLng(filterLatLngCmds(leaves).map(getLatLng))
+      if (avgll == undefined) { return waypoints }
+      const { lat, lng } = avgll
+      let waypointsUpdated = mission.clone();
+      for (let i = 0; i < wps.length; i++) {
+        waypointsUpdated.changeParam(wpsIds[i], activeMission, (cmd: Command) => {
+          if ("latitude" in cmd.params && "longitude" in cmd.params) {
+            cmd.params.latitude += newLat - lat
+            cmd.params.longitude += newLng - lng
+          }
+          return cmd;
+        });
+      }
+      return waypointsUpdated;
+    })
   }
 
   function rotateDeg(deg: number) {

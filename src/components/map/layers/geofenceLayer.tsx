@@ -4,7 +4,7 @@ import { useWaypoints } from "@/util/context/WaypointContext";
 import { toPolyline } from "@/util/waypointToLeaflet";
 import DraggableMarker from "@/components/marker/DraggableMarker";
 import { filterLatLngCmds } from "@/lib/commands/commands";
-import { getLatLng } from "@/util/WPCollection";
+import { getLatLng } from "@/lib/world/latlng";
 
 const fenceOptions = { color: 'red', fillOpacity: 0.1 }
 

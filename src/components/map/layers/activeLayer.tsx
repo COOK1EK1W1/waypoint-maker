@@ -5,7 +5,7 @@ import InsertBtn from "@/components/marker/insertBtn";
 import DraggableMarker from "@/components/marker/DraggableMarker";
 import { filterLatLngCmds } from "@/lib/commands/commands";
 import { defaultWaypoint } from "@/lib/mission/defaults";
-import { getLatLng } from "@/util/WPCollection";
+import { getLatLng } from "@/lib/world/latlng";
 
 const limeOptions = { color: 'lime' }
 const noshow = ["Markers", "Geofence"]

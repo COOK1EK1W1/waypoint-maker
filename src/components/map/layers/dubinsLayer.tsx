@@ -2,10 +2,9 @@ import { Circle, LayerGroup, Polyline } from "react-leaflet";
 import { useWaypoints } from "@/util/context/WaypointContext";
 import { ReactNode } from "react";
 import { dubinsBetweenDubins, localisePath, splitDubinsRuns, waypointToDubins } from "@/lib/dubins/dubinWaypoints";
-import { getLatLng } from "@/util/WPCollection";
 import Arc from "@/components/marker/arc";
 import { Command } from "@/lib/commands/commands";
-import { LatLng } from "@/lib/world/types";
+import { getLatLng } from "@/lib/world/latlng";
 
 const curveOptions = { color: '#ff0000' }
 const straightOptions = { color: '#bb0000' }
@@ -32,7 +31,7 @@ export default function DubinsLayer() {
   for (const section of dubinsSections) {
     section.wps.map((x, i) => {
       if (i != 0 && x.type == 69 && i < section.wps.length - 1 && x.params["fly-by distance"] > 0)
-        passByCircles.push(<Circle center={getLatLng(x) as LatLng} radius={x.params["fly-by distance"]} key={key++} />)
+        passByCircles.push(<Circle center={getLatLng(x)} radius={x.params["fly-by distance"]} key={key++} />)
     })
     let dubinsPoints = section.wps.map((x) => waypointToDubins(x, reference))
     let path = dubinsBetweenDubins(dubinsPoints)

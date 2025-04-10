@@ -2,10 +2,9 @@ import { Mission } from "@/lib/mission/mission";
 import { angleBetweenPoints, gradient, haversineDistance } from "@/lib/world/distance";
 import { Command, filterLatLngAltCmds } from "@/lib/commands/commands";
 import { Fault, Severity } from "@/lib/wpcheck/types";
-import { getLatLng, hasLocation } from "@/util/WPCollection";
 import { isPointInPolygon } from "../math/geometry";
 import { g2l } from "../world/conversion";
-import { LatLng } from "../world/types";
+import { getLatLng, LatLng } from "../world/latlng";
 
 
 
@@ -191,11 +190,7 @@ export function wpCheck(wps: Command[], waypoints: Mission): Fault[] {
 
   let gradients: (number | null)[] = []
   for (let i = 0; i < missionLocsCmds.length - 1; i++) {
-    if (hasLocation(wps[i])) {
-      gradients.push(gradient(haversineDistance(getLatLng(missionLocsCmds[i]) as LatLng, getLatLng(missionLocsCmds[i + 1]) as LatLng), missionLocsCmds[i].params.altitude, missionLocsCmds[i + 1].params.altitude))
-    } else {
-      gradients.push(null)
-    }
+    gradients.push(gradient(haversineDistance(getLatLng(missionLocsCmds[i]) as LatLng, getLatLng(missionLocsCmds[i + 1]) as LatLng), missionLocsCmds[i].params.altitude, missionLocsCmds[i + 1].params.altitude))
   }
 
   gradients.map((grad, idx) => {

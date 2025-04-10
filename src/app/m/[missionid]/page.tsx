@@ -27,7 +27,6 @@ export default async function Mission({ params }: { params: Promise<{ missionid:
     throw new Error("bruh")
   }
   if (!isValidMission(wps.mission)) { console.assert("not valid") }
-  console.log(wps)
 
   return (
     <CloudWaypointProvider mission={wps.mission.destructure()} missionId={missionId}>

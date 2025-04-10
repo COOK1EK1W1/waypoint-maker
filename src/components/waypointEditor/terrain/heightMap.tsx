@@ -5,9 +5,8 @@ import { useEffect, useState } from "react";
 import { Area, CartesianGrid, ComposedChart, Line, XAxis, YAxis } from "recharts";
 import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { gradient, haversineDistance } from "@/lib/world/distance";
-import { getLatLng } from "@/util/WPCollection";
-import { LatLng } from "@/lib/world/types";
 import { filterLatLngAltCmds } from "@/lib/commands/commands";
+import { getLatLng, LatLng } from "@/lib/world/latlng";
 
 function interpolate(a: LatLng, b: LatLng, c: number) {
   return { lat: a.lat * (1 - c) + b.lat * c, lng: a.lng * (1 - c) + b.lng * c }

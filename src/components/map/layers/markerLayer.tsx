@@ -3,7 +3,7 @@ import { useWaypoints } from "@/util/context/WaypointContext";
 import DraggableMarker from "@/components/marker/DraggableMarker";
 import GeofenceMarker from "@/components/marker/geofenceMarker";
 import { filterLatLngCmds } from "@/lib/commands/commands";
-import { getLatLng } from "@/util/WPCollection";
+import { getLatLng } from "@/lib/world/latlng";
 
 
 export default function MarkerLayer({ onMove }: { onMove: (lat: number, lng: number, id: number) => void }) {

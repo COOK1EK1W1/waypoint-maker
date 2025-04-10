@@ -1,5 +1,5 @@
 import { Command, filterLatLngCmds } from "@/lib/commands/commands"
-import { getLatLng } from "./WPCollection"
+import { getLatLng } from "@/lib/world/latlng"
 
 export function toPolyline(waypoints: Command[]) {
   const points: { lat: number, lng: number }[] = []

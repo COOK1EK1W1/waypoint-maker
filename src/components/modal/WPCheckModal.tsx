@@ -5,7 +5,7 @@ import FaultItem from "@/components/toolBar/faultItem"
 import { wpCheck } from "@/lib/wpcheck/wpcheck"
 import { Fault, Severity } from "@/lib/wpcheck/types"
 import { filterLatLngAltCmds } from "@/lib/commands/commands"
-import { getLatLng } from "@/util/WPCollection"
+import { getLatLng } from "@/lib/world/latlng"
 
 export default function WPCheckModal() {
   const { waypoints } = useWaypoints()

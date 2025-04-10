@@ -4,11 +4,10 @@ import React from 'react';
 import Button from '@/components/toolBar/button';
 import { FaFileUpload } from 'react-icons/fa';
 import { useMap } from '@/util/context/MapContext';
-import { avgLatLng } from '@/lib/world/distance';
 import { filterLatLngCmds } from '@/lib/commands/commands';
-import { getLatLng } from '@/util/WPCollection';
 import { parseMissionString } from '@/lib/missionIO/common';
 import { useVehicle } from '@/util/context/VehicleTypeContext';
+import { avgLatLng, getLatLng } from '@/lib/world/latlng';
 
 export default function LoadJson() {
   const { setWaypoints } = useWaypoints();

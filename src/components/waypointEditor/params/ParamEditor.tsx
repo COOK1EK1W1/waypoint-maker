@@ -1,13 +1,7 @@
 import { useWaypoints } from "@/util/context/WaypointContext"
-import { Node } from "@/types/waypoints";
 import Parameter from "./Parameter";
 import CommandTypeSelector from "./commandTypeSelector";
 import { LatLngEditor } from "./LatLngEditor";
-import { hasLocation } from "@/util/WPCollection";
-import { Command, CommandName, CommandParams, CommandParamsNames, commands } from "@/lib/commands/commands";
-import { CommandDescription } from "@/lib/commands/types";
-import { objectKeys } from "@/util/types";
-import { LatLng } from "leaflet";
 
 
 export default function ParamEditor() {

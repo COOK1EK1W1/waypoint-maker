@@ -1,5 +1,5 @@
 import { ICommand } from "../commands/commands"
-import { LatLng } from "../world/types"
+import { LatLng } from "../world/latlng"
 
 export const defaultWaypoint = (pos: LatLng): ICommand<"MAV_CMD_NAV_WAYPOINT"> => ({
   frame: 3,

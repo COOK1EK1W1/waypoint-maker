@@ -1,5 +1,5 @@
 import { dubinsBetweenDubins, localisePath, splitDubinsRuns, waypointToDubins } from "@/lib/dubins/dubinWaypoints";
-import { LatLng } from "@/lib/world/types";
+import { getLatLng, LatLng } from "../world/latlng";
 import { MavCommand } from "../commands/types";
 import { Command } from "../commands/commands";
 import { WPM2MAV } from "../commands/convert";
@@ -84,6 +84,7 @@ export function convertToMAV(wps: Command[], reference: LatLng): MavCommand[] {
   return WPM2MAV(ret)
 }
 
+// helper function to download some text as a file
 export function downloadTextAsFile(filename: string, text: string) {
   const blob = new Blob([text], { type: 'text/plain' });
   const link = document.createElement('a');
@@ -94,6 +95,7 @@ export function downloadTextAsFile(filename: string, text: string) {
   document.body.removeChild(link);
 }
 
+// parse a generic mission string
 export function parseMissionString(a: string): { mission: Mission, vehicle: Vehicle } | undefined {
   const importFuncs = [
     importqgcWaypoints,

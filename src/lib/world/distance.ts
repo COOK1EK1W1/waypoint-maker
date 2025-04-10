@@ -1,6 +1,6 @@
 import { deg2rad, mod2pi } from "@/lib/math/geometry";
 import { angleBetweenVectors } from "@/lib/math/vector";
-import { LatLng } from "./types";
+import { LatLng } from "./latlng";
 
 /*
  * Calculate the distance between two points on a globe
@@ -65,7 +65,7 @@ export function latLngToVector(pos: LatLng): [number, number, number] {
  * @param {number} alt2 - The second altitude
  * @returns {number} The gradient in degrees
  */
-export function gradient(distance: number, alt1: number, alt2: number) {
+export function gradient(distance: number, alt1: number, alt2: number): number {
   const altitudeChange = alt2 - alt1;
   const gradientRadians = Math.atan(altitudeChange / distance);
   const gradientDegrees = gradientRadians * (180 / Math.PI);
@@ -77,7 +77,7 @@ export function gradient(distance: number, alt1: number, alt2: number) {
  * @param {number} distanceInMeters - The distance in meters
  * @returns {string} The formatted distance
  */
-export function formatDistance(distanceInMeters: number) {
+export function formatDistance(distanceInMeters: number): string {
   // If the distance is less than 1 kilometer, return in meters rounded to three significant figures
   if (distanceInMeters < 1000) {
     const roundedMeters = Number(distanceInMeters.toPrecision(3));
@@ -115,21 +115,4 @@ export function worldOffset(a: LatLng, dist: number, angle: number): LatLng {
     lng: a.lng + dist * Math.sin(angle) / mplo,
     lat: a.lat + dist * Math.cos(angle) / mpld
   }
-}
-
-/*
- * find the average latitude and longitude of an array of locations
- * @param locs - Array of locations as LatLng
- * returns a new LatLng
- */
-export const avgLatLng = (locs: LatLng[]): LatLng | undefined => {
-  if (locs.length == 0) return undefined
-  let totLat = 0;
-  let totLng = 0;
-  locs.forEach((loc) => {
-    totLat += loc.lat;
-    totLng += loc.lng;
-  })
-  console.log(totLat, totLng)
-  return { lat: totLat / locs.length, lng: totLng / locs.length }
 }

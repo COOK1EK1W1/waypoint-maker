@@ -4,11 +4,10 @@ import { g2l, l2g } from "@/lib/world/conversion";
 import { crossProduct } from "@/lib/mission/fns";
 import { deg2rad } from "@/lib/math/geometry";
 import { bound, dubinsPoint, Path, Segment } from "./types";
-import { LatLng } from "@/lib/world/types";
 import { XY } from "@/lib/math/types";
 import { Command, filterLatLngCmds, LatLngCommand } from "../commands/commands";
 import { Plane } from "../vehicles/types";
-import { getLatLng } from "@/util/WPCollection";
+import { getLatLng, LatLng } from "../world/latlng";
 
 /*
  * find all the sections of a waypoint list which require a dubins path between

@@ -1,7 +1,6 @@
 import { Node } from "@/types/waypoints";
-import { getLatLng } from "@/util/WPCollection";
-import { LatLng } from "../world/types";
 import { Command, filterLatLngCmds } from "@/lib/commands/commands";
+import { getLatLng, LatLng } from "../world/latlng";
 
 export class Mission {
 

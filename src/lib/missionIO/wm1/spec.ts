@@ -5,7 +5,7 @@ import { defaultPlane } from "@/lib/vehicles/defaults";
 
 export function importwpm1(a: string): { mission: Mission, vehicle: Vehicle } | undefined {
   try {
-    const newMission = new Map(JSON.parse(a))
+    const newMission: Map<string, any[]> = new Map(JSON.parse(a))
 
     const newWPC = new Mission();
 

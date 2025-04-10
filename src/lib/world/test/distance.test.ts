@@ -1,5 +1,6 @@
 import { expect, test } from "bun:test";
-import { avgLatLng, haversineDistance, worldBearing } from "@/lib/world/distance";
+import { haversineDistance, worldBearing } from "@/lib/world/distance";
+import { avgLatLng } from "../latlng";
 
 test("world distance better func", () => {
   expect(haversineDistance({ lng: 0, lat: 0 }, { lng: 0, lat: 0 })).toBeCloseTo(0)

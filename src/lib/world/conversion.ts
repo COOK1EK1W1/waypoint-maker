@@ -1,6 +1,6 @@
 import { XY } from "@/lib/math/types";
-import { LatLng } from "./types";
 import { deg2rad, rad2deg } from "../math/geometry";
+import { LatLng } from "./latlng";
 
 const worldRadius = 6371000 // meters
 
