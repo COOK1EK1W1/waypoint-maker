@@ -1,4 +1,4 @@
-import { LatLng } from "@/lib/world/types";
+import { LatLng } from "@/lib/world/latlng";
 
 type openElevation = { elevation: number, latitude: number, longitude: number }[]
 
