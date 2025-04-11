@@ -1,4 +1,4 @@
- import { CommandDescription } from "../types";
+ import { CommandDescription } from "../commands";
 export const mavCmds = [{
   value: 16,
   name: "MAV_CMD_NAV_WAYPOINT",
@@ -1505,7 +1505,7 @@ export const mavCmds = [{
 }, {
   index: 2,
   label: "Types",
-  description: "Fence types to enable or disable as a bitmask. A value of 0 indicates that all fences should be enabled or disabled. This parameter is ignored if param 1 has the value 2",
+  description: "Fence types to enable or disable as a bitmask. 0: all fences should be enabled or disabled (parameter is ignored, for compatibility reasons).Parameter is ignored if param1=2",
   units: "",
   minValue: null,
   maxValue: null,
@@ -1593,7 +1593,7 @@ export const mavCmds = [{
 }, {
   index: 2,
   label: "Axis",
-  description: "Specify which axes are autotuned. 0 indicates autopilot default settings.",
+  description: "Specify axes for which autotuning is enabled/disabled. 0 indicates the field is unused (for compatiblity reasons). If 0 the autopilot will follow its default behaviour, which is usually to tune all axes.",
   units: "",
   minValue: null,
   maxValue: null,

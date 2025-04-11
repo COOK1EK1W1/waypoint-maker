@@ -36,7 +36,7 @@ function serializeValue(value: any): string {
 
 function serializeToTypeScript(object: any) {
   const serializedObject = serializeValue(object);
-  return ` import { CommandDescription } from "../types";
+  return ` import { CommandDescription } from "../commands";
 export const mavCmds = ${serializedObject} as const satisfies CommandDescription[]\n`;
 }
 
