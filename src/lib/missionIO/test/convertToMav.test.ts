@@ -1,7 +1,7 @@
 import { expect, test } from "bun:test";
 import { convertToMAV } from "../common";
 import { makeCommand } from "@/lib/commands/default";
-import { Command } from "@/lib/commands/commands";
+import { Command, LatLngCommand } from "@/lib/commands/commands";
 import { MavCommand } from "@/lib/commands/types";
 
 test("empty", () => {
@@ -52,6 +52,10 @@ test("single Dubins point", () => {
   expect(mavMission[1].type).toBe(16)
 
   expect(mavMission[2].type).toBe(18)
+  expect(mavMission[2].param3).toBe(100) // radius
+  expect(mavMission[2].param4).toBe(1) // exit tang
+  expect(mavMission[2].param1).toBeGreaterThan(0) // turns
+  expect(mavMission[2].param1).toBeLessThan(1) // turns
 
   expect(mavMission[3].type).toBe(16)
   expect(mavMission[3].param6).toEqual(-3.2)
@@ -113,7 +117,7 @@ test("double Dubins point", () => {
 })
 
 test("split Dubins point", () => {
-  const mission: Command[] = [
+  const mission: LatLngCommand[] = [
     makeCommand("MAV_CMD_NAV_WAYPOINT", { latitude: 55.7, longitude: -3.3 }),
     makeCommand("WM_CMD_NAV_DUBINS", { latitude: 55.8, longitude: -3.3, heading: 70, radius: 100 }),
     makeCommand("MAV_CMD_NAV_WAYPOINT", { latitude: 55.7, longitude: -3.25 }),
@@ -128,6 +132,10 @@ test("split Dubins point", () => {
   expect(mavMission[1].type).toBe(16)
 
   expect(mavMission[2].type).toBe(18)
+  expect(mavMission[2].param3).toBe(100) // radius
+  expect(mavMission[2].param4).toBe(1) // exit tang
+  expect(mavMission[2].param1).toBeGreaterThan(0) // turns
+  expect(mavMission[2].param1).toBeLessThan(1) // turns
 
   expect(mavMission[3].type).toBe(16)
   expect(mavMission[3].param5).toBeCloseTo(mission[2].params.latitude)
@@ -136,6 +144,10 @@ test("split Dubins point", () => {
   expect(mavMission[4].type).toBe(16)
 
   expect(mavMission[5].type).toBe(18)
+  expect(mavMission[5].param3).toBe(100) // radius
+  expect(mavMission[5].param4).toBe(1) // exit tang
+  expect(mavMission[5].param1).toBeGreaterThan(0) // turns
+  expect(mavMission[5].param1).toBeLessThan(1) // turns
 
   expect(mavMission[6].type).toBe(16)
   expect(mavMission[6].param5).toBeCloseTo(mission[4].params.latitude)
