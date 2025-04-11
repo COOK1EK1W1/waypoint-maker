@@ -125,3 +125,11 @@ export function filterLatLngAltCmds(cmds: Command[]): LatLngAltCommand[] {
 
 }
 
+/*
+ * Type safely find a command description
+ * @param {CommandValue} cmdId - The command id to find 
+ * @returns {CommandDescription} - The command description
+ */
+export function getCommandDesc(cmdId: CommandValue): (typeof commands)[number] {
+  return commands.find(x => x.value == cmdId) as (typeof commands)[number]
+}

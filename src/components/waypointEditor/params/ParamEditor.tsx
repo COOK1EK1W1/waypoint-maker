@@ -2,7 +2,19 @@ import { useWaypoints } from "@/util/context/WaypointContext"
 import Parameter from "./Parameter";
 import CommandTypeSelector from "./commandTypeSelector";
 import { LatLngEditor } from "./LatLngEditor";
+import { CommandValue, getCommandDesc, } from "@/lib/commands/commands";
 
+function findCommonParamsForTypes(cmdTypes: Set<CommandValue>): string[] {
+  const a = Array.from(cmdTypes)
+  if (a.length == 0) {
+    return []
+  }
+  let params = new Set(getCommandDesc(a[0]).parameters.map(x => x?.label?.toLowerCase()).filter(x => x !== undefined))
+  for (let i = 1; i < a.length; i++) {
+    params = params.intersection(new Set(getCommandDesc(a[1]).parameters.map(x => x?.label?.toLowerCase()).filter(x => x !== undefined)))
+  }
+  return Array.from(params)
+}
 
 export default function ParamEditor() {
   const { activeMission, selectedWPs, waypoints, setWaypoints } = useWaypoints()
@@ -11,22 +23,15 @@ export default function ParamEditor() {
   const selected = (selectedWPs.length == 0 ? mission : mission.filter((_, i) => selectedWPs.includes(i))).filter((x) => x.type == "Command")
 
   if (selected.length == 0) {
-    return (
-      <div className="flex-1 flex flex-wrap overflow-y-auto">
-        Place or select a waypoint to edit parameters,
-      </div>
-    )
+    return <div className="h-full w-full text-center content-center"> Select or place a waypoint to begin </div>
   }
 
-  let params = new Set(Object.keys(selected[0].cmd.params))
+  let types = new Set(selected.map(x => x.cmd.type))
+  const params = findCommonParamsForTypes(types)
 
   let vals = {}
 
-  for (let i = 0; i < selected.length; i++) {
-    params = params.intersection(new Set(Object.keys(selected[i].cmd.params)))
-  }
-
-  for (const key of Array.from(params)) {
+  for (const key of params) {
     //@ts-ignore
     const values = selected.map(obj => obj.cmd.params[key]);
     const allSame = values.every(val => val === values[0]);
@@ -38,22 +43,13 @@ export default function ParamEditor() {
   function onChange(event: { target: { name: string, value: number } }) {
     setWaypoints((wps) => {
       const newWps = wps.clone()
-      if (selectedWPs.length > 0) {
-        selectedWPs.forEach((x) => {
-          newWps.changeParam(x, activeMission, (cmd: any) => {
-            cmd.params[event.target.name] = event.target.value
-            return cmd
-          })
-        })
-      } else {
-        mission.forEach((_, i) => {
+      mission.forEach((_, i) => {
+        if (selectedWPs.length == 0 || selectedWPs.includes(i))
           newWps.changeParam(i, activeMission, (cmd: any) => {
             cmd.params[event.target.name] = event.target.value
             return cmd
           })
-        })
-
-      }
+      })
       return newWps
     })
   }

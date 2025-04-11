@@ -1,3 +1,5 @@
+import { CommandName } from "./commands"
+
 export const planeSupported = [
   "MAV_CMD_NAV_WAYPOINT",
   "MAV_CMD_NAV_RETURN_TO_LAUNCH",
@@ -6,7 +8,6 @@ export const planeSupported = [
   "MAV_CMD_NAV_LOITER_UNLIM",
   "MAV_CMD_NAV_LOITER_TURNS",
   "MAV_CMD_NAV_LOITER_TIME",
-  "MAV_CMD_NAV_ALTITUDE_WAIT",
   "MAV_CMD_NAV_LOITER_TO_ALT",
   "MAV_CMD_NAV_CONTINUE_AND_CHANGE_ALT",
   "MAV_CMD_NAV_VTOL_TAKEOFF",
@@ -15,7 +16,6 @@ export const planeSupported = [
   "MAV_CMD_NAV_PAYLOAD_PLACE",
   "MAV_CMD_CONDITION_DELAY",
   "MAV_CMD_CONDITION_DISTANCE",
-  "MAV_CMD_DO_AUX_FUNCTION",
   "MAV_CMD_DO_CHANGE_SPEED",
   "MAV_CMD_DO_ENGINE_CONTROL",
   "MAV_CMD_DO_VTOL_TRANSITION",
@@ -37,9 +37,8 @@ export const planeSupported = [
   "MAV_CMD_DO_LAND_START",
   "MAV_CMD_DO_FENCE_ENABLE",
   "MAV_CMD_DO_AUTOTUNE_ENABLE",
-  "MAV_CMD_DO_SET_RESUME_REPEAT_DIST",
   "MAV_CMD_STORAGE_FORMAT",
-] as const
+] as const satisfies CommandName[]
 
 export const copterSupported = [
   "MAV_CMD_NAV_WAYPOINT",
@@ -61,7 +60,6 @@ export const copterSupported = [
   "MAV_CMD_CONDITION_DELAY",
   "MAV_CMD_CONDITION_DISTANCE",
   "MAV_CMD_CONDITION_YAW",
-  "MAV_CMD_DO_AUX_FUNCTION",
   "MAV_CMD_DO_CHANGE_SPEED",
   "MAV_CMD_DO_SET_HOME",
   "MAV_CMD_DO_SET_SERVO",
@@ -77,8 +75,7 @@ export const copterSupported = [
   "MAV_CMD_DO_PARACHUTE",
   "MAV_CMD_DO_GRIPPER",
   "MAV_CMD_DO_GUIDED_LIMITS",
-  "MAV_CMD_DO_SET_RESUME_REPEAT_DIST",
   "MAV_CMD_DO_FENCE_ENABLE",
   "MAV_CMD_DO_WINCH",
   "MAV_CMD_STORAGE_FORMAT"
-] as const
+] as const satisfies CommandName[]

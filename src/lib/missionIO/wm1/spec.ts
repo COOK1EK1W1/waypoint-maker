@@ -1,4 +1,4 @@
-import { commands, CommandValue } from "@/lib/commands/commands";
+import { CommandValue, getCommandDesc } from "@/lib/commands/commands";
 import { Mission } from "@/lib/mission/mission";
 import { Vehicle } from "@/lib/vehicles/types";
 import { defaultPlane } from "@/lib/vehicles/defaults";
@@ -19,7 +19,7 @@ export function importwpm1(a: string): { mission: Mission, vehicle: Vehicle } | 
       for (const newCommand of newMission.get(subMissionName)) {
         if (newCommand.type == "Waypoint") {
           let params = {}
-          const cmdDef = commands.find((x) => x.value == newCommand.wps.type)
+          const cmdDef = getCommandDesc(newCommand.wps.type)
           for (let i = 1; i <= 7; i++) {
             let a = cmdDef?.parameters[i - 1]?.label.toLowerCase()
             if (a !== undefined) {

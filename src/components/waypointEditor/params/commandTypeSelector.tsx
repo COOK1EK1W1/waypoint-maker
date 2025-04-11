@@ -1,6 +1,6 @@
 "use client"
 import { commandName } from "@/util/translationTable";
-import { Command, CommandName, commands } from "@/lib/commands/commands";
+import { Command, CommandName, commands, getCommandDesc } from "@/lib/commands/commands";
 import { planeSupported } from "@/lib/commands/supported";
 import { useWaypoints } from "@/util/context/WaypointContext";
 import { ChangeEvent } from "react";
@@ -51,7 +51,7 @@ export default function CommandTypeSelector() {
     <div className="p-2 flex flex-col">
       <label>
         <span className="block pl-[3.5px]">Type</span>
-        <select className="w-40 h-[25px] border-slate-200 bg-slate-100" onChange={onChange} value={types.size > 1 ? "" : commandName(commands[commands.findIndex(a => a.value == nodes[0].cmd.type)].name)}>
+        <select className="w-40 h-[25px] border-slate-200 bg-slate-100" onChange={onChange} value={types.size > 1 ? "" : commandName(getCommandDesc(nodes[0].cmd.type).name)}>
 
           {types.size > 1 ? <option value="" disabled>--</option> : null}
           {commands.filter((x) => (planeSupported as readonly string[]).includes(x.name)).map((cmd, index) => (

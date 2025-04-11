@@ -1,7 +1,6 @@
-import { MavCommand } from "@/lib/commands/types"
 import { convertToMAV } from "../common"
 import { Mission } from "@/lib/mission/mission";
-import { commands, CommandValue } from "@/lib/commands/commands"
+import { commands, CommandValue, MavCommand } from "@/lib/commands/commands"
 import { Vehicle } from "@/lib/vehicles/types";
 import { defaultPlane } from "@/lib/vehicles/defaults";
 

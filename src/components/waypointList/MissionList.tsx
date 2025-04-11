@@ -6,7 +6,7 @@ import { TfiTarget } from "react-icons/tfi";
 import { commandName } from "@/util/translationTable";
 import { FaArrowRight, FaTrashAlt } from "react-icons/fa";
 import { useState } from "react";
-import { commands } from "@/lib/commands/commands";
+import { getCommandDesc } from "@/lib/commands/commands";
 import { CollectionType } from "@/lib/mission/mission";
 
 export default function MissionList({ onHide }: { onHide: () => void }) {
@@ -93,7 +93,7 @@ export default function MissionList({ onHide }: { onHide: () => void }) {
             <button className="pl-4" onMouseDown={() => onDelete(i)} key={0} name="delete"><FaTrashAlt /></button>
           ]}>
             <div className="flex justify-between">
-              <span><TfiTarget className="inline m-1" />{commandName(commands[commands.findIndex(a => a.value == waypoint.cmd.type)].name)}</span>
+              <span><TfiTarget className="inline m-1" />{commandName(getCommandDesc(waypoint.cmd.type).name)}</span>
             </div>
           </ListItem>
         }
