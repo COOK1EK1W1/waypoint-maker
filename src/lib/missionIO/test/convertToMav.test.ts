@@ -90,11 +90,12 @@ test("single Dubins point reverse", () => {
 
 
 test("double Dubins point", () => {
-  const mission: Command[] = [
+  const mission: LatLngCommand[] = [
     makeCommand("MAV_CMD_NAV_WAYPOINT", { latitude: 55.7, longitude: -3.3 }),
     makeCommand("WM_CMD_NAV_DUBINS", { latitude: 55.8, longitude: -3.3, heading: 45, radius: 100 }),
     makeCommand("WM_CMD_NAV_DUBINS", { latitude: 55.8, longitude: -3.2, heading: 135, radius: 100 }),
     makeCommand("MAV_CMD_NAV_WAYPOINT", { latitude: 55.7, longitude: -3.2 }),
+    makeCommand("MAV_CMD_NAV_WAYPOINT", { latitude: 55.6, longitude: -3.2 }),
   ]
   const mavMission = convertToMAV(mission, { lat: 55.75, lng: -3.25 })
   expect(mavMission[0].type).toBe(16)
@@ -113,7 +114,9 @@ test("double Dubins point", () => {
   expect(mavMission[5].type).toBe(16)
   expect(mavMission[5].param5).toBeCloseTo(mission[3].params.latitude)
   expect(mavMission[5].param6).toBeCloseTo(mission[3].params.longitude)
-  expect(mavMission[6]).toBeUndefined()
+  expect(mavMission[6].param5).toBeCloseTo(mission[4].params.latitude)
+  expect(mavMission[6].param6).toBeCloseTo(mission[4].params.longitude)
+  expect(mavMission[7]).toBeUndefined()
 })
 
 test("split Dubins point", () => {
