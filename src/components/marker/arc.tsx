@@ -2,7 +2,7 @@ import { Polyline } from "react-leaflet"
 import { latLng, LatLngExpression, PathOptions } from "leaflet"
 import { worldOffset } from "@/lib/world/distance"
 import { Curve } from "@/lib/dubins/types"
-import { LatLng } from "@/lib/world/types"
+import { LatLng } from "@/lib/world/latlng"
 
 export default function Arc({ curve, pathOptions }: { curve: Curve<LatLng>, pathOptions?: PathOptions }) {
 

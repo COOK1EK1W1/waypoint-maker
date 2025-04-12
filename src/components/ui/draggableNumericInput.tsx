@@ -1,9 +1,9 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 
 interface DraggableNumberInputProps {
   value?: number;
-  name?: string;
-  onChange?: (event: { target: { name?: string; value: number } }) => void;
+  name: string;
+  onChange?: (event: { target: { name: string; value: number } }) => void;
   className?: string;
   min?: number | null;
   max?: number | null;
@@ -27,7 +27,14 @@ const DraggableNumberInput: React.FC<DraggableNumberInputProps> = ({
     setInternalValue(externalValue);
   }, [externalValue]);
 
-  const handleMouseMove = (e: MouseEvent) => {
+  const handleMouseUp = useCallback(() => {
+    if (isDragging) {
+      setIsDragging(false);
+      document.body.style.cursor = 'default';
+    }
+  }, [isDragging]);
+
+  const handleMouseMove = useCallback((e: MouseEvent) => {
     if (!isDragging) return;
 
     const dx = e.clientX - startPos.x;
@@ -41,18 +48,22 @@ const DraggableNumberInput: React.FC<DraggableNumberInputProps> = ({
     setInternalValue(newValue);
     onChange?.({
       target: {
-        name,
+        name: name,
         value: newValue
       }
     });
-  };
+  }, [isDragging, startPos, startValue, min, max, name, onChange]);
 
-  const handleMouseUp = () => {
+  useEffect(() => {
     if (isDragging) {
-      setIsDragging(false);
-      document.body.style.cursor = 'default';
+      window.addEventListener('mousemove', handleMouseMove);
+      window.addEventListener('mouseup', handleMouseUp);
     }
-  };
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isDragging, handleMouseMove, handleMouseUp]);
 
   const handleMouseDown = (e: React.MouseEvent) => {
     setIsDragging(true);
@@ -87,30 +98,19 @@ const DraggableNumberInput: React.FC<DraggableNumberInputProps> = ({
     }
   };
 
-  useEffect(() => {
-    if (isDragging) {
-      window.addEventListener('mousemove', handleMouseMove);
-      window.addEventListener('mouseup', handleMouseUp);
-    }
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseup', handleMouseUp);
-    };
-  }, [isDragging, startPos, startValue]);
-
   return (
     <div className="relative inline-block">
       <input
         ref={inputRef}
         type="number"
         name={name}
-        value={internalValue === null ? '' : internalValue}
+        value={internalValue === null ? '--' : internalValue}
         onChange={handleInputChange}
         onMouseDown={handleMouseDown}
         onBlur={handleBlur}
         min={min || -Infinity}
         max={max || Infinity}
-        className={`cursor-move ${className}`}
+        className={`cursor-move ${className} ${internalValue === null ? 'text-center' : ''}`}
       />
       {isDragging && (
         <div className="fixed inset-0 z-50 cursor-move" />

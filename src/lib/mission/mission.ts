@@ -1,10 +1,34 @@
-import { Node, Waypoint } from "@/types/waypoints";
-import { getLatLng, hasLocation } from "@/util/WPCollection";
-import { LatLng } from "../world/types";
+import { Command, filterLatLngCmds } from "@/lib/commands/commands";
+import { getLatLng, LatLng } from "../world/latlng";
 
-export class WaypointCollection {
+export enum CollectionType {
+  Mission,
+  Overlay,
+  Geofence
+}
+
+export type WPNode = {
+  type: "Command"
+  cmd: Command
+}
+
+export type ColNode = {
+  type: "Collection"
+  name: string
+  ColType: CollectionType
+  collectionID: string
+  offsetLat: number
+  offsetLng: number
+}
+
+export type Node = WPNode | ColNode
+export class Mission {
 
   private collection: Map<string, Node[]>
+
+  destructure() {
+    return this.collection;
+  }
 
   constructor(collection?: Map<string, Node[]>) {
     if (collection) {
@@ -24,11 +48,9 @@ export class WaypointCollection {
   }
 
   getReferencePoint(): LatLng {
-    const wps = this.flatten("Main")
+    const wps = filterLatLngCmds(this.flatten("Main"))
     for (let wp of wps) {
-      if (hasLocation(wp)) {
-        return getLatLng(wp)
-      }
+      return getLatLng(wp)
     }
     return { lat: 0, lng: 0 }
   }
@@ -62,12 +84,12 @@ export class WaypointCollection {
   }
 
   clone() {
-    return new WaypointCollection(this.collection)
+    return new Mission(this.collection)
 
   }
 
   flatten(mission: string) {
-    let retList: Waypoint[] = []
+    let retList: Command[] = []
     const waypoints = this.collection.get(mission)
     if (waypoints === undefined) return []
     for (let i = 0; i < waypoints.length; i++) {
@@ -78,14 +100,14 @@ export class WaypointCollection {
   }
 
   flattenNode(node: Node) {
-    let retList: Waypoint[] = []
+    let retList: Command[] = []
     switch (node.type) {
       case "Collection": {
         retList = retList.concat(this.flatten(node.collectionID))
         break
       }
-      case "Waypoint": {
-        retList.push(node.wps)
+      case "Command": {
+        retList.push(node.cmd)
         break;
       }
       default: {
@@ -107,7 +129,7 @@ export class WaypointCollection {
 
   contains(missionName: string, A: string): boolean {
     const curWaypoints = this.collection.get(missionName)
-    if (!curWaypoints) { throw new Error("No mission") }
+    if (!curWaypoints) { throw new Error(`No mission: ${missionName}`) }
     for (let wp of curWaypoints) {
       if (wp.type == "Collection") {
         if (wp.name == A) {
@@ -136,7 +158,7 @@ export class WaypointCollection {
       for (let i = 0; i < node.length; i++) {
         const curNode = node[i];
         switch (curNode.type) {
-          case "Waypoint": {
+          case "Command": {
             if (count === n) {
               return [name, i]; // Found nth waypoint
             }
@@ -204,16 +226,16 @@ export class WaypointCollection {
     rec(0, missionName)
   }
 
-  changeParam(id: number, missionName: string, mod: (wp: Waypoint) => Waypoint) {
+  changeParam(id: number, missionName: string, mod: (cmd: Command) => Command) {
     const curMission = this.collection.get(missionName)
     if (curMission == undefined) { throw new MissingMission(missionName) }
 
     let updatedWaypoint = curMission[id]
 
-    if (updatedWaypoint.type === "Waypoint") {
-      updatedWaypoint = {
-        ...updatedWaypoint,
-        wps: mod(updatedWaypoint.wps)
+    if (curMission[id].type === "Command") {
+      curMission[id] = {
+        ...curMission[id],
+        cmd: mod(curMission[id].cmd)
       }
     } else if (updatedWaypoint.type == "Collection") {
       const col = this.collection.get(updatedWaypoint.collectionID)

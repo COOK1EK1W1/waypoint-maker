@@ -1,20 +1,65 @@
+"use client"
 import { commandName } from "@/util/translationTable";
-import { commands, planeSupported } from "@/util/commands";
-import { Node } from "@/types/waypoints";
+import { Command, CommandName, commands, getCommandDesc } from "@/lib/commands/commands";
+import { planeSupported } from "@/lib/commands/supported";
+import { useWaypoints } from "@/util/context/WaypointContext";
+import { ChangeEvent } from "react";
+import { coerceCommand } from "@/lib/commands/convert";
 
-export default function CommandTypeSelector({ wps, change, allSame }: { wps: Node[], change: (e: React.ChangeEvent<HTMLSelectElement>) => void, allSame: boolean }) {
+export default function CommandTypeSelector() {
+  const { activeMission, selectedWPs, waypoints, setWaypoints } = useWaypoints()
 
-  const active = wps[0]
-  if (active.type != "Waypoint") return null
+  const mission = waypoints.get(activeMission)
+  let selected = selectedWPs.length == 0 ? mission : mission.filter((_, i) => selectedWPs.includes(i))
+  let selectedIDs: number[] = []
+  if (selectedWPs.length == 0) {
+    for (let i = 0; i < mission.length; i++) {
+      selectedIDs.push(i)
+    }
+  } else {
+    selectedIDs = selectedWPs
+  }
+
+
+  console.assert(selected.length > 0, "command type selector with 0 selected :(")
+
+  const types: Set<number> = new Set();
+  selected.forEach((x) => {
+    if (x.type == "Command") {
+      types.add(x.cmd.type)
+    }
+  })
+
+  let nodes = selected.filter((x) => x.type == "Command")
+
+  function onChange(e: ChangeEvent<HTMLSelectElement>) {
+    setWaypoints((wps) => {
+      const newWPs = wps.clone()
+      for (let i = 0; i < selectedIDs.length; i++) {
+        newWPs.changeParam(selectedIDs[i], activeMission, (cmd) => {
+          let name = e.target.selectedOptions[0].getAttribute('data-cmd') as CommandName
+          if (name === null) return cmd
+          return coerceCommand(cmd, name) as Command
+        })
+      }
+
+      return newWPs
+    })
+  }
 
   return (
     <div className="p-2 flex flex-col">
       <label>
         <span className="block pl-[3.5px]">Type</span>
-        <select className="w-40 h-[25px] border-slate-200 bg-slate-100" onChange={change} value={commandName(commands[commands.findIndex(a => a.value == active.wps.type)].name)} disabled={!allSame}>
-          {commands.filter((x) => planeSupported.includes(x.name)).map((cmd, index) => (
-            <option key={index} data-cmd={cmd.value}>{commandName(cmd.name)}</option>
+        <select className="w-40 h-[25px] border-slate-200 bg-slate-100" onChange={onChange} value={types.size > 1 ? "" : commandName(getCommandDesc(nodes[0].cmd.type).name)}>
+
+          {types.size > 1 ? <option value="" disabled>--</option> : null}
+          {commands.filter((x) => (planeSupported as readonly string[]).includes(x.name)).map((cmd, index) => (
+            <option key={index} data-cmd={cmd.name}>{commandName(cmd.name)}</option>
           ))}
+          {process.env.NEXT_PUBLIC_ALLOWDUBINS ? // remove when public
+            <option data-cmd={"WM_CMD_NAV_DUBINS"}>Dubins</option> : null
+          }
         </select>
       </label>
     </div>

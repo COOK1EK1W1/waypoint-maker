@@ -1,4 +1,5 @@
-const { writeFile } = require("fs");
+import { copterSupported, planeSupported } from "../supported";
+
 const jsdom = require('jsdom');
 const { JSDOM } = jsdom;
 
@@ -12,7 +13,7 @@ const { JSDOM } = jsdom;
 // ]
 
 
-function serializeObject(obj) {
+function serializeObject(obj: any): string {
   let serialized = '{\n';
   for (const [key, value] of Object.entries(obj)) {
     serialized += `  ${key}: ${serializeValue(value)},\n`;
@@ -21,7 +22,7 @@ function serializeObject(obj) {
   return serialized;
 }
 
-function serializeValue(value) {
+function serializeValue(value: any): string {
   if (typeof value === 'object' && value !== null) {
     if (Array.isArray(value)) {
       return `[${value.map(v => serializeValue(v)).join(', ')}]`;
@@ -33,9 +34,10 @@ function serializeValue(value) {
   return JSON.stringify(value);
 }
 
-function serializeToTypeScript(object) {
+function serializeToTypeScript(object: any) {
   const serializedObject = serializeValue(object);
-  return `export const commands: Command[] = ${serializedObject};\n`;
+  return ` import { CommandDescription } from "../commands";
+export const mavCmds = ${serializedObject} as const satisfies CommandDescription[]\n`;
 }
 
 async function getData() {
@@ -47,7 +49,7 @@ async function getData() {
   const elements = enums[0].getElementsByTagName('entry');
   const commands = Array.from(elements)
 
-  const completedCommands = commands.map((command) => {
+  const completedCommands = commands.map((command: any) => {
     let newCommand = {
       value: Number(command.getAttribute("value")),
       name: command.getAttribute("name"),
@@ -57,13 +59,13 @@ async function getData() {
       parameters: [null, null, null, null, null, null, null]
     }
 
-    const params = Array.from(command.children)
+    const params: any[] = Array.from(command.children)
 
-    for (param of params) {
+    for (let param of params) {
       if (param.tagName == "param") {
         const attributes = param.getAttributeNames()
 
-        let newParameter = {
+        let newParameter: any = {
           index: -1,
           label: "",
           description: param.innerHTML,
@@ -91,7 +93,7 @@ async function getData() {
           } else if (attributes[i] === "default") {
             newParameter.default = Number(param.getAttribute(attributes[i]))
           } else if (attributes[i] === "enum") {
-            console.log("TODO enum options")
+            //console.log("TODO enum options")
             // newParameter.options == child.getAttribute(attributes[i])
           } else {
             //console.log(attributes[i])
@@ -108,7 +110,11 @@ async function getData() {
     }
     return newCommand
   })
-  writeFile("src/util/commands.ts", serializeToTypeScript(completedCommands), (a) => { console.log(a) })
+
+  //writeFile("src/util/commands.ts", serializeToTypeScript(completedCommands), (a) => { console.log(a) })
+  let filteredCommands = completedCommands.filter((x) => copterSupported.includes(x.name) || planeSupported.includes(x.name))
+
+  await Bun.write("src/lib/commands/mav/commands.ts", serializeToTypeScript(filteredCommands))
 }
 
-//getData()
+getData()

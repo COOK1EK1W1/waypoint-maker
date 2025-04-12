@@ -1,12 +1,12 @@
-import { useVehicleTypeContext } from "@/util/context/VehicleTypeContext";
-import { defaultCopter, defaultPlane } from "@/util/defaultVehicles";
+import { useVehicle } from "@/util/context/VehicleTypeContext";
 import Button from "../toolBar/button";
 import DraggableNumberInput from "../ui/draggableNumericInput";
 import { getMinTurnRadius } from "@/lib/dubins/dubinWaypoints";
 import { cn } from "@/lib/utils";
+import { defaultCopter, defaultPlane } from "@/lib/vehicles/defaults";
 
 export default function VehicleTypeModal() {
-  let { vehicle, setVehicle } = useVehicleTypeContext()
+  let { vehicle, setVehicle } = useVehicle()
   let content = <></>
   switch (vehicle.type) {
     case "Copter": {
@@ -18,7 +18,7 @@ export default function VehicleTypeModal() {
         <div className="grid grid-cols-2 justify-middle py-4">
           <label className="flex-col flex w-40 justify-self-center">
             <span>Cruise Airspeed</span>
-            <DraggableNumberInput value={vehicle.cruiseAirspeed} className="w-40" onChange={(x) => setVehicle((v) => {
+            <DraggableNumberInput name="Airspeed" value={vehicle.cruiseAirspeed} className="w-40" onChange={(x) => setVehicle((v) => {
               if (v.type != "Plane") return v
               v.cruiseAirspeed = Number(x.target.value)
               return { ...v }
@@ -26,7 +26,7 @@ export default function VehicleTypeModal() {
           </label>
           <label className="flex-col flex w-40 justify-self-center">
             <span>Max Bank Angle</span>
-            <DraggableNumberInput value={vehicle.maxBank} className="w-40" onChange={(x) => setVehicle((v) => {
+            <DraggableNumberInput name="Max Bank" value={vehicle.maxBank} className="w-40" onChange={(x) => setVehicle((v) => {
               if (v.type != "Plane") return v
               v.maxBank = Number(x.target.value)
               return { ...v }
@@ -35,7 +35,7 @@ export default function VehicleTypeModal() {
           </label>
           <label className="flex-col flex w-40 justify-self-center">
             <span>Energy Constant (wh/km)</span>
-            <DraggableNumberInput min={0} value={vehicle.energyConstant} className="w-40" onChange={(x) => setVehicle((v) => {
+            <DraggableNumberInput name="Energy Constant" min={0} value={vehicle.energyConstant} className="w-40" onChange={(x) => setVehicle((v) => {
               if (v.type != "Plane") return v
               v.energyConstant = Number(x.target.value)
               return { ...v }

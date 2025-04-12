@@ -1,4 +1,4 @@
-import { Copter, Plane } from "@/types/vehicleType";
+import { Copter, Plane } from "./types"
 
 export const defaultPlane: Plane = {
   type: "Plane",

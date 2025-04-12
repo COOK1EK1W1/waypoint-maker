@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import Button from "../toolBar/button";
-import HeightMap from "./terrain/heightMap";
+import HeightMap from "@/components/waypointEditor/terrain/heightMap";
 import ParamEditor from "./params/ParamEditor";
 import { FaArrowDown } from "react-icons/fa";
 import { Optimise } from "./optimisaion/optimisation";

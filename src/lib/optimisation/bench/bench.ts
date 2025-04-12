@@ -3,9 +3,9 @@ import { getBounds, getTunableDubinsParameters } from "@/lib/dubins/dubinWaypoin
 import { pathLength } from "@/lib/dubins/geometry";
 import { dubinsPoint } from "@/lib/dubins/types";
 import { particleOptimise } from "../particleSwarm";
-import { Plane } from "@/types/vehicleType";
 import { geneticOptimise } from "../genetic";
 import { gradientOptimise } from "../gradient";
+import { Plane } from "@/lib/vehicles/types";
 
 const file = Bun.file("output.txt");
 const writer = file.writer();

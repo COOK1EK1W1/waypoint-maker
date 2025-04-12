@@ -1,11 +1,14 @@
-import { Fault, Severity, Waypoint } from "@/types/waypoints";
-import { getLatLng, hasLocation, isPointInPolygon } from "./WPCollection";
-import { WaypointCollection } from "@/lib/waypoints/waypointCollection";
+import { Mission } from "@/lib/mission/mission";
 import { angleBetweenPoints, gradient, haversineDistance } from "@/lib/world/distance";
+import { Command, filterLatLngAltCmds } from "@/lib/commands/commands";
+import { Fault, Severity } from "@/lib/wpcheck/types";
+import { isPointInPolygon } from "../math/geometry";
+import { g2l } from "../world/conversion";
+import { getLatLng, LatLng } from "../world/latlng";
 
 
 
-export function wpCheck(wps: Waypoint[], waypoints: WaypointCollection): Fault[] {
+export function wpCheck(wps: Command[], waypoints: Mission): Fault[] {
   let ret: Fault[] = []
 
   if (wps.length == 0) {
@@ -23,6 +26,13 @@ export function wpCheck(wps: Waypoint[], waypoints: WaypointCollection): Fault[]
   }
 
 
+
+  // convert everything to local space
+  const geofenceLocs = waypoints.flatten("Geofence").map(getLatLng).filter((x) => x != null)
+  const missionLocsCmds = filterLatLngAltCmds(waypoints.flatten("Main"))
+  const missionLocs = missionLocsCmds.map(getLatLng) as LatLng[]
+  const geofenceLocal = geofenceLocs.map((x) => g2l(waypoints.getReferencePoint(), x))
+  const missionLocal = missionLocs.map((x) => g2l(waypoints.getReferencePoint(), x))
 
 
   /* -=x=-=x=-=x=-=x=-=x=-=x=-=x=-=x=-=x=-=x=-=x=-=x=-=x=-=x=-=x=- */
@@ -61,30 +71,30 @@ export function wpCheck(wps: Waypoint[], waypoints: WaypointCollection): Fault[]
     if (wp.type != 22) return
     const offender = waypoints.findNthPosition("Main", idx)
     if (offender) {
-      if (wp.param1 < 0) {
+      if (wp.params.pitch < 0) {
         ret.push({
           message: "Negative pitch on Takeoff",
           severity: Severity.Bad,
           offenderMission: offender[0],
           offenderIndex: offender[1]
         })
-      } else if (wp.param1 == 0) {
+      } else if (wp.params.pitch == 0) {
         ret.push({
           message: "No pitch up on Takeoff",
           severity: Severity.Bad,
           offenderMission: offender[0],
           offenderIndex: offender[1]
         })
-      } else if (wp.param1 <= 5) {
+      } else if (wp.params.pitch <= 5) {
         ret.push({
           message: "Not a lot of pitch up on Takeoff",
           severity: Severity.Med,
           offenderMission: offender[0],
           offenderIndex: offender[1]
         })
-      } else if (wp.param1 <= 40) {
+      } else if (wp.params.pitch <= 40) {
         // pass
-      } else if (wp.param1 <= 90) {
+      } else if (wp.params.pitch <= 90) {
         ret.push({
           message: "Very high pitch up on Takeoff",
           severity: Severity.Med,
@@ -123,14 +133,14 @@ export function wpCheck(wps: Waypoint[], waypoints: WaypointCollection): Fault[]
     if (x.type != 21) return
     const wp = waypoints.findNthPosition("Main", idx)
     if (wp) {
-      if (x.param7 > 1) {
+      if (x.params.altitude > 1) {
         ret.push({
           message: "Landing waypoint is above ground level",
           severity: Severity.Bad,
           offenderMission: wp[0],
           offenderIndex: wp[1]
         })
-      } else if (x.param7 < 0) {
+      } else if (x.params.altitude < 0) {
         ret.push({
           message: "Landing waypoint is below ground level",
           severity: Severity.Bad,
@@ -179,12 +189,8 @@ export function wpCheck(wps: Waypoint[], waypoints: WaypointCollection): Fault[]
   /* -=x=-=x=-=x=-=x=-=x=-=x=-=x=-=x=-=x=-=x=-=x=-=x=-=x=-=x=-=x=- */
 
   let gradients: (number | null)[] = []
-  for (let i = 0; i < wps.length - 1; i++) {
-    if (hasLocation(wps[i])) {
-      gradients.push(gradient(haversineDistance(getLatLng(wps[i]), getLatLng(wps[i + 1])), wps[i].param7, wps[i + 1].param7))
-    } else {
-      gradients.push(null)
-    }
+  for (let i = 0; i < missionLocsCmds.length - 1; i++) {
+    gradients.push(gradient(haversineDistance(getLatLng(missionLocsCmds[i]) as LatLng, getLatLng(missionLocsCmds[i + 1]) as LatLng), missionLocsCmds[i].params.altitude, missionLocsCmds[i + 1].params.altitude))
   }
 
   gradients.map((grad, idx) => {
@@ -216,9 +222,9 @@ export function wpCheck(wps: Waypoint[], waypoints: WaypointCollection): Fault[]
 
   for (let i = 0; i < wps.length - 2; i++) {
     angles.push(angleBetweenPoints(
-      getLatLng(wps[i]),
-      getLatLng(wps[i + 1]),
-      getLatLng(wps[i + 2])))
+      missionLocs[i],
+      missionLocs[i + 1],
+      missionLocs[i + 2]))
   }
   angles.map((angle, idx) => {
     const offender = waypoints.findNthPosition("Main", idx + 1)
@@ -264,9 +270,11 @@ export function wpCheck(wps: Waypoint[], waypoints: WaypointCollection): Fault[]
   /* -=x=-=x=-=x=-=x=-=x=-=x=-=x=-=x=-=x=-=x=-=x=-=x=-=x=-=x=-=x=- */
   /*                    all WPs inside geofence                    */
   /* -=x=-=x=-=x=-=x=-=x=-=x=-=x=-=x=-=x=-=x=-=x=-=x=-=x=-=x=-=x=- */
+
+
   let all_inside = true
-  wps.map((wp) => {
-    if (!isPointInPolygon(waypoints.flatten("Geofence"), wp)) {
+  missionLocal.map((wp) => {
+    if (!isPointInPolygon(geofenceLocal, wp)) {
       all_inside = false
     }
   })

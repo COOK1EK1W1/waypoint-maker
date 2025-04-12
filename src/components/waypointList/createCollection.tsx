@@ -1,4 +1,4 @@
-import { CollectionType } from "@/types/waypoints"
+import { CollectionType } from "@/lib/mission/mission"
 import { useWaypoints } from "@/util/context/WaypointContext"
 
 export default function CreateCollection() {

@@ -1,20 +1,20 @@
 import { expect, test } from "bun:test";
 import { applyBounds, dubinsBetweenDubins, getBounds, getMinTurnRadius, getTunableDubinsParameters, localisePath, splitDubinsRuns } from "@/lib/dubins/dubinWaypoints";
-import { Waypoint } from "@/types/waypoints";
-import { defaultWaypoint } from "@/lib/waypoints/defaults";
-import { defaultPlane } from "@/util/defaultVehicles";
+import { defaultWaypoint } from "@/lib/mission/defaults";
 import { XY } from "@/lib/math/types";
 import { dubinsPoint, Path } from "../types";
+import { Command } from "@/lib/commands/commands";
+import { defaultPlane } from "@/lib/vehicles/defaults";
 
 
 test("Split Dubins runs empty", () => {
-  const a: Waypoint[] = []
+  const a: Command[] = []
   let runs = splitDubinsRuns(a)
   expect(runs.length).toBe(0)
 })
 
 test("Split Dubins runs no runs", () => {
-  const a: Waypoint[] = []
+  const a: Command[] = []
   a.push(defaultWaypoint({ lat: 0, lng: 0 }))
   a.push(defaultWaypoint({ lat: 0, lng: 0 }))
   a.push(defaultWaypoint({ lat: 0, lng: 0 }))
@@ -23,7 +23,7 @@ test("Split Dubins runs no runs", () => {
 })
 
 test("Split Dubins runs sandwich 1", () => {
-  const a: Waypoint[] = []
+  const a: Command[] = []
   a.push(defaultWaypoint({ lat: 0, lng: 0 }))
   a.push(defaultWaypoint({ lat: 0, lng: 0 }))
   a.push(defaultWaypoint({ lat: 0, lng: 0 }))
@@ -39,7 +39,7 @@ test("Split Dubins runs sandwich 1", () => {
 
 
 test("Split Dubins runs end dubins", () => {
-  const a: Waypoint[] = []
+  const a: Command[] = []
   a.push(defaultWaypoint({ lat: 0, lng: 0 }))
   a.push(defaultWaypoint({ lat: 0, lng: 0 }))
   a.push(defaultWaypoint({ lat: 0, lng: 0 }))
@@ -54,7 +54,7 @@ test("Split Dubins runs end dubins", () => {
 })
 
 test("Split Dubins runs start + end", () => {
-  const a: Waypoint[] = []
+  const a: Command[] = []
   a.push(defaultWaypoint({ lat: 0, lng: 0 }))
   a.push(defaultWaypoint({ lat: 0, lng: 0 }))
   a.push(defaultWaypoint({ lat: 0, lng: 0 }))
@@ -78,7 +78,7 @@ test("Split Dubins runs start + end", () => {
 
 
 test("Split Dubins runs all dubins", () => {
-  const a: Waypoint[] = []
+  const a: Command[] = []
   a.push(defaultWaypoint({ lat: 0, lng: 0 }))
   a.push(defaultWaypoint({ lat: 0, lng: 0 }))
   a.push(defaultWaypoint({ lat: 0, lng: 0 }))

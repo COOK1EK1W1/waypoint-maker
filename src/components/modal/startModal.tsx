@@ -1,8 +1,8 @@
 "use client"
 
 import { useEffect, useState } from "react";
-import { Dialog, DialogContent, DialogFooter, DialogTitle } from "../ui/dialog";
-import Button from "../toolBar/button";
+import { Dialog, DialogContent, DialogFooter, DialogTitle } from "@/components/ui/dialog";
+import Button from "@/components/toolBar/button";
 
 export default function StartModal() {
 	const [displayPopUp, setDisplayPopUp] = useState(false);

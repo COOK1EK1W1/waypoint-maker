@@ -1,8 +1,10 @@
+import { LatLng } from "@/lib/world/latlng";
+
 type openElevation = { elevation: number, latitude: number, longitude: number }[]
 
-export function getTerrain(locs: [number, number][]): Promise<openElevation | null> {
+export function getTerrain(locs: LatLng[]): Promise<openElevation | null> {
   if (locs.length == 0) return Promise.resolve(null)
-  let locstring = locs.map((loc) => `${loc[0].toFixed(7)},${loc[1].toFixed(7)}`).join("|")
+  let locstring = locs.map((loc) => `${loc.lat.toFixed(7)},${loc.lng.toFixed(7)}`).join("|")
 
   return fetch(`https://api.open-elevation.com/api/v1/lookup?locations=${locstring}`)
     .then((response) => {

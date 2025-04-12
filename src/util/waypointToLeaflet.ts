@@ -1,15 +1,13 @@
-import { Waypoint } from "@/types/waypoints"
+import { Command, filterLatLngCmds } from "@/lib/commands/commands"
+import { getLatLng } from "@/lib/world/latlng"
 
-export function toPolyline(waypoints: Waypoint[]) {
+export function toPolyline(waypoints: Command[]) {
   const points: { lat: number, lng: number }[] = []
-  waypoints.map((waypoint) => {
+  const a = filterLatLngCmds(waypoints)
+  a.map((waypoint) => {
     if (typeof waypoint != "string") {
-      points.push(toLatLng(waypoint))
+      points.push(getLatLng(waypoint))
     }
   })
   return points
-}
-
-export function toLatLng(waypoint: Waypoint) {
-  return { lat: waypoint.param5, lng: waypoint.param6 }
 }

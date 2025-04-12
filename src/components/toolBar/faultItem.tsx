@@ -1,6 +1,6 @@
-import { Fault, Severity } from "@/types/waypoints";
 import { useWaypoints } from "@/util/context/WaypointContext";
 import { cn } from "@/lib/utils";
+import { Fault, Severity } from "@/lib/wpcheck/types";
 
 export default function FaultItem({ fault, onMouseDown }: { fault: Fault, onMouseDown: () => void }) {
   const { setSelectedWPs, setActiveMission } = useWaypoints()

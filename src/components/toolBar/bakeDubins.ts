@@ -1,10 +1,10 @@
+import { Command } from "@/lib/commands/commands";
 import { applyBounds, dubinsBetweenDubins, getBounds, getTunableDubinsParameters, setTunableDubinsParameter, setTunableParameter, splitDubinsRuns, waypointToDubins } from "@/lib/dubins/dubinWaypoints";
 import { bound, dubinsPoint, Path } from "@/lib/dubins/types";
 import { XY } from "@/lib/math/types";
+import { Mission } from "@/lib/mission/mission";
 import { res } from "@/lib/optimisation/types";
-import { WaypointCollection } from "@/lib/waypoints/waypointCollection";
-import { Plane } from "@/types/vehicleType";
-import { Waypoint } from "@/types/waypoints";
+import { Plane } from "@/lib/vehicles/types";
 import { Dispatch, SetStateAction } from "react";
 
 // This function is a closure that takes in the waypoints and returns a function that takes in the tunable parameters and returns the total length of the path
@@ -23,8 +23,8 @@ export function createEvaluate(wps: dubinsPoint[], optimisationFunction: (path: 
   return evaluate
 }
 
-export function staticEvaluate(waypoints: WaypointCollection, activeMission: string, optimisationFunction: (path: Path<XY>) => number, vehicle: Plane) {
-  let activeWaypoints: Waypoint[] = waypoints.flatten(activeMission)
+export function staticEvaluate(waypoints: Mission, activeMission: string, optimisationFunction: (path: Path<XY>) => number, vehicle: Plane) {
+  let activeWaypoints: Command[] = waypoints.flatten(activeMission)
 
   const reference = waypoints.getReferencePoint()
 
@@ -47,8 +47,8 @@ export function staticEvaluate(waypoints: WaypointCollection, activeMission: str
 
 }
 
-export function bakeDubins(waypoints: WaypointCollection, activeMission: string, optimisationmethod: (initialGuess: readonly number[], bounds: bound[], fn: (a: number[]) => number) => res, setWaypoints: Dispatch<SetStateAction<WaypointCollection>>, optimisationFunction: (path: Path<XY>) => number, vehicle: Plane) {
-  let activeWaypoints: Waypoint[] = waypoints.flatten(activeMission)
+export function bakeDubins(waypoints: Mission, activeMission: string, optimisationmethod: (initialGuess: readonly number[], bounds: bound[], fn: (a: number[]) => number) => res, setWaypoints: Dispatch<SetStateAction<Mission>>, optimisationFunction: (path: Path<XY>) => number, vehicle: Plane) {
+  let activeWaypoints: Command[] = waypoints.flatten(activeMission)
 
   const startTime = performance.now()
 
@@ -94,9 +94,9 @@ export function bakeDubins(waypoints: WaypointCollection, activeMission: string,
       if (!mission) continue;
       let curWP = mission[a[1]]
       if (!curWP) continue;
-      if (curWP.type == "Waypoint") {
-        console.assert(wps[i].type == curWP.wps.type, "Waypoint type mismatch")
-        curWP.wps = wps[i]
+      if (curWP.type == "Command") {
+        console.assert(wps[i].type == curWP.cmd.type, "Waypoint type mismatch")
+        curWP.cmd = wps[i]
       }
     }
   }
