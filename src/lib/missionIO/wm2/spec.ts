@@ -31,13 +31,17 @@ export function isValidMission(mission: Mission): boolean {
 }
 
 export function importwpm2(a: string): { mission: Mission, vehicle: Vehicle } | undefined {
-  const parsed = JSON.parse(a)
-  if ("mission" in parsed && "vehicle" in parsed) {
-    return {
-      mission: new Mission(new Map(parsed.mission)),
-      vehicle: parsed.vehicle
-    }
-  } else { return undefined }
+  try {
+    const parsed = JSON.parse(a)
+    if ("mission" in parsed && "vehicle" in parsed) {
+      return {
+        mission: new Mission(new Map(parsed.mission)),
+        vehicle: parsed.vehicle
+      }
+    } else { return undefined }
+  } catch (err) {
+    return undefined
+  }
 }
 
 export function exportwpm2(mission: Mission, vehicle: Vehicle) {
