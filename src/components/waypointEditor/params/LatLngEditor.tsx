@@ -12,15 +12,11 @@ export function LatLngEditor() {
 
   const mission = waypoints.get(activeMission);
 
-  let wps: Node[] = [];
-  let wpsIds: number[] = [];
-  if (selectedWPs.length === 0) {
-    wps = mission;
-    wpsIds = mission.map((_, index) => index);
-  } else {
-    wps = mission.filter((_, id) => selectedWPs.includes(id));
-    wpsIds = selectedWPs;
-  }
+  // all nodes if selected has none, or selected nodes
+  let wps: Node[] = selectedWPs.length === 0 ? mission : mission.filter((_, id) => selectedWPs.includes(id));
+
+  // all indexes if selected has none, or all selected indexes
+  let wpsIds: number[] = selectedWPs.length === 0 ? mission.map((_, index) => index) : selectedWPs
 
   const leaves = wps.map((x) => waypoints.flattenNode(x)).reduce((cur, acc) => (acc.concat(cur)), [])
 
@@ -32,15 +28,15 @@ export function LatLngEditor() {
 
   function nudge(x: number, y: number) {
     setWaypoints((waypoints) => {
-      for (let i = 0; i < wpsIds.length; i++) {
-        waypoints.changeParam(wpsIds[i], activeMission, (cmd: Command) => {
+      wpsIds.forEach(wpsId => {
+        waypoints.changeParam(wpsId, activeMission, (cmd: Command) => {
           if ("latitude" in cmd.params) {
             cmd.params.latitude += 0.0001 * y;
             cmd.params.longitude += 0.0001 * x;
           }
           return cmd;
         });
-      }
+      })
       return waypoints.clone();
     });
   }
@@ -58,15 +54,15 @@ export function LatLngEditor() {
       if (avgll == undefined) { return waypoints }
       const { lat, lng } = avgll
       let waypointsUpdated = mission.clone();
-      for (let i = 0; i < wps.length; i++) {
-        waypointsUpdated.changeParam(wpsIds[i], activeMission, (cmd: Command) => {
+      wpsIds.forEach(wpsId => {
+        waypointsUpdated.changeParam(wpsId, activeMission, (cmd: Command) => {
           if ("latitude" in cmd.params && "longitude" in cmd.params) {
             cmd.params.latitude += newLat - lat
             cmd.params.longitude += newLng - lng
           }
           return cmd;
         });
-      }
+      })
       return waypointsUpdated;
     })
   }
@@ -76,8 +72,8 @@ export function LatLngEditor() {
     const angleRadians = (deg * Math.PI) / 180;
 
     setWaypoints((waypoints) => {
-      for (let i = 0; i < wps.length; i++) {
-        waypoints.changeParam(wpsIds[i], activeMission, (cmd: Command) => {
+      wpsIds.forEach(wpsId => {
+        waypoints.changeParam(wpsId, activeMission, (cmd: Command) => {
           if ("latitude" in cmd.params) {
 
             const x = (cmd.params.longitude - lng) * Math.cos(lat * Math.PI / 180);
@@ -92,7 +88,7 @@ export function LatLngEditor() {
 
           return cmd;
         });
-      }
+      })
       return waypoints.clone();
     });
   }

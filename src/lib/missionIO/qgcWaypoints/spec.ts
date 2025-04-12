@@ -10,9 +10,10 @@ export function exportqgcWaypoints(mission: Mission) {
   let wps = mission.flatten("Main")
   let mavCommands = convertToMAV(wps, mission.getReferencePoint())
 
-  for (let i = 0; i < wps.length; i++) {
-    returnString += waypointString(i, mavCommands[i])
-  }
+  mavCommands.forEach((x, i) => {
+    returnString += waypointString(i, x)
+  })
+
   return returnString
 }
 
