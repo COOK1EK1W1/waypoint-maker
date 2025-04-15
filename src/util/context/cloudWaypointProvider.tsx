@@ -1,5 +1,5 @@
 "use client";
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { syncStatusKeys, waypointContext } from './WaypointContext';
 import { Tool } from '@/types/tools'
 import { Mission, Node } from "@/lib/mission/mission";
@@ -22,6 +22,11 @@ export default function CloudWaypointProvider({ children, mission, missionId, ow
   const [tool, setTool] = useState<Tool>("Waypoint")
 
   const [syncStatus, setSyncStatus] = useState<typeof syncStatusKeys[number]>("synced")
+
+  useEffect(() => {
+    setSyncStatus("notSynced")
+  }, [waypoints])
+
 
   return (
     <waypointContext.Provider value={{

@@ -2,12 +2,12 @@
 import { useWaypoints } from '@/util/context/WaypointContext';
 import React from 'react';
 import Button from '@/components/toolBar/button';
-import { FaFileUpload } from 'react-icons/fa';
 import { useMap } from '@/util/context/MapContext';
 import { filterLatLngCmds } from '@/lib/commands/commands';
 import { parseMissionString } from '@/lib/missionIO/common';
 import { useVehicle } from '@/util/context/VehicleTypeContext';
 import { avgLatLng, getLatLng } from '@/lib/world/latlng';
+import { Upload } from 'lucide-react';
 
 export default function LoadJson() {
   const { setWaypoints } = useWaypoints();
@@ -57,8 +57,8 @@ export default function LoadJson() {
 
   return <>
     <input type="file" accept=".json, .waypoints" id="fileInput" className="hidden" onChange={handleFileChange} />
-    <Button onClick={() => document.getElementById('fileInput')?.click()}>
-      <FaFileUpload className="inline" />Load JSON
+    <Button className="w-32 items-center justify-start" onClick={() => document.getElementById('fileInput')?.click()}>
+      <Upload className="h-[20px] w-[20px] mr-1" />Load JSON
     </Button>
   </>
 }

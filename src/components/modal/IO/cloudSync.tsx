@@ -1,21 +1,34 @@
 "use client"
 import Button from "@/components/toolBar/button";
-import { useWaypoints } from "@/util/context/WaypointContext";
+import { syncStatusKeys, useWaypoints } from "@/util/context/WaypointContext";
 import { createNewMission, syncMission } from "./syncAction";
-import { useState, useTransition } from "react";
-import { FaCheck, FaSpinner } from "react-icons/fa";
+import { ReactNode, useEffect, useTransition } from "react";
 import { exportwpm2 } from "@/lib/missionIO/wm2/spec";
 import { useVehicle } from "@/util/context/VehicleTypeContext";
 import { useSession } from "@/util/auth-client";
+import { Check, CloudUpload, LoaderIcon } from "lucide-react";
+
+// small map between syncing states and icons
+const icons: { [K in (typeof syncStatusKeys[number])]: ReactNode } = {
+  "synced": <Check className="h-[20px] w-[20px] mr-1" />,
+  "syncing": <LoaderIcon className="h-[20px] w-[20px] mr-1 animate-spin" />,
+  "idle": null,
+  "notSynced": <CloudUpload className="h-[20px] w-[20px] mr-1" />
+}
 
 export default function CloudSync() {
   const { data } = useSession()
 
-  const { waypoints, missionId } = useWaypoints();
+  const { waypoints, missionId, syncStatus, setSyncStatus, ownerId } = useWaypoints();
   const { vehicle } = useVehicle();
 
   const [isPending, startTransition] = useTransition();
-  const [synced, setSynced] = useState(false)
+
+  useEffect(() => {
+    if (isPending) {
+      setSyncStatus("syncing")
+    }
+  }, [isPending])
 
   // don't show anything if user isn't logged in
   if (data?.user == undefined) {
@@ -35,24 +48,30 @@ export default function CloudSync() {
 
   // base url, convert to stored mission
   if (missionId === undefined) {
-    return <Button onClick={handleCreateNew}>Sync Now</Button>
+    return <Button className="w-28" onClick={handleCreateNew}>Sync Now</Button>
   }
 
   const handleSync = () => {
     startTransition(() => {
-      syncMission(missionId, exportwpm2(waypoints, vehicle)).then(() => { setSynced(true) })
+      syncMission(missionId, exportwpm2(waypoints, vehicle)).then(() => { setSyncStatus("synced") })
     })
+  }
+
+  if (data?.user.id !== undefined && data?.user.id !== ownerId) {
+    return (
+      <div className="flex items-center">
+        <Button className="w-28" onClick={handleCreateNew}>Create Copy</Button>
+      </div>
+    )
   }
 
   return (
     <div className="flex items-center">
-      <Button onClick={handleSync}> Sync Now</Button>
-      <span className="pl-1">
-        {isPending ? <FaSpinner className="animate-spin" /> : synced ? <FaCheck /> : null}
-      </span>
+      <Button className="items-center justify-start w-32" onClick={handleSync}>
+        {icons[syncStatus]}
+        Sync Now
+      </Button>
     </div >
-
   )
-
 }
 
