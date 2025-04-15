@@ -10,8 +10,10 @@ export default function MissionIOModal() {
       <DownloadButtons />
       <h2>Import</h2>
       <LoadJson />
-      <h2>Cloud Sync</h2>
-      <CloudSync />
+      {process.env.ALLOWLOGIN ? (<>
+        <h2>Cloud Sync</h2>
+        <CloudSync /></>) : null
+      }
     </div>
   )
 }
