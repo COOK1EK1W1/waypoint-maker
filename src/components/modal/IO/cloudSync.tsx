@@ -15,7 +15,7 @@ export default function CloudSync() {
   const { vehicle } = useVehicle();
 
   const [isPending, startTransition] = useTransition();
-  const [b, setb] = useState(false)
+  const [synced, setSynced] = useState(false)
 
   // don't show anything if user isn't logged in
   if (data?.user == undefined) {
@@ -40,7 +40,7 @@ export default function CloudSync() {
 
   const handleSync = () => {
     startTransition(() => {
-      syncMission(missionId, exportwpm2(waypoints, vehicle)).then(() => { setb(true) })
+      syncMission(missionId, exportwpm2(waypoints, vehicle)).then(() => { setSynced(true) })
     })
   }
 
@@ -48,7 +48,7 @@ export default function CloudSync() {
     <div className="flex items-center">
       <Button onClick={handleSync}> Sync Now</Button>
       <span className="pl-1">
-        {isPending ? <FaSpinner className="animate-spin" /> : b ? <FaCheck /> : null}
+        {isPending ? <FaSpinner className="animate-spin" /> : synced ? <FaCheck /> : null}
       </span>
     </div >
 
