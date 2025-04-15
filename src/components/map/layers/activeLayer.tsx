@@ -1,9 +1,8 @@
 import { LayerGroup, Polyline } from "react-leaflet";
 import { useWaypoints } from "@/util/context/WaypointContext";
-import { toPolyline } from "@/util/waypointToLeaflet";
 import InsertBtn from "@/components/marker/insertBtn";
 import DraggableMarker from "@/components/marker/DraggableMarker";
-import { filterLatLngCmds } from "@/lib/commands/commands";
+import { Command, getCommandDesc, LatLngCommand } from "@/lib/commands/commands";
 import { defaultWaypoint } from "@/lib/mission/defaults";
 import { getLatLng } from "@/lib/world/latlng";
 
@@ -14,22 +13,36 @@ export default function ActiveLayer({ onMove }: { onMove: (lat: number, lng: num
   const { setSelectedWPs, setActiveMission, waypoints, activeMission, setWaypoints, selectedWPs } = useWaypoints()
   if (noshow.includes(activeMission)) return null
 
-  const activeWPs = filterLatLngCmds(waypoints.flatten(activeMission))
+  const commands = waypoints.flatten(activeMission)
+
+  // store each destination in an array, with non destinations in other (to be stacked as they act in the same location)
+  const mainLine: { cmd: LatLngCommand, id: number, other: Command[] }[] = []
+
+  commands.forEach((cmd, id) => {
+    const desc = getCommandDesc(cmd.type)
+    if (desc.isDestination && "latitude" in cmd.params && "longitude" in cmd.params) {
+      // @ts-ignore
+      mainLine.push({ cmd, id, other: [] })
+    } else {
+      if (mainLine.length !== 0) {
+        mainLine[mainLine.length - 1].other.push(cmd)
+      }
+    }
+  })
 
   let insertBtns = []
-  for (let i = 0; i < activeWPs.length - 1; i++) {
-    const midLat = (activeWPs[i].params.latitude + activeWPs[i + 1].params.latitude) / 2
-    const midLng = (activeWPs[i].params.longitude + activeWPs[i + 1].params.longitude) / 2
+  for (let i = 0; i < mainLine.length - 1; i++) {
+    const midLat = (mainLine[i].cmd.params.latitude + mainLine[i + 1].cmd.params.latitude) / 2
+    const midLng = (mainLine[i].cmd.params.longitude + mainLine[i + 1].cmd.params.longitude) / 2
     insertBtns.push(
-      <InsertBtn key={i} lat={midLat} lng={midLng} onClick={() => insert(i, midLat, midLng)} />
+      <InsertBtn key={i} lat={midLat} lng={midLng} onClick={() => insert(mainLine[i + 1].id, midLat, midLng)} />
     )
-
   }
 
   function insert(id: number, lat: number, lng: number) {
     setWaypoints((prevWPS) => {
       const a = prevWPS.clone()
-      a.insert(id + 1, activeMission, { type: "Command", cmd: defaultWaypoint({ lat, lng }) })
+      a.insert(id, activeMission, { type: "Command", cmd: defaultWaypoint({ lat, lng }) })
       return a
     });
   }
@@ -43,16 +56,16 @@ export default function ActiveLayer({ onMove }: { onMove: (lat: number, lng: num
 
   return (
     <LayerGroup>
-      {activeWPs.map((command, idx) => {
+      {mainLine.map((command, idx) => {
         let active = false
-        let x = waypoints.findNthPosition(activeMission, idx)
+        let x = waypoints.findNthPosition(activeMission, command.id)
         if (x) {
           if (x[0] == activeMission && selectedWPs.includes(x[1])) active = true
         }
-        return <DraggableMarker key={idx} position={getLatLng(command)} onMove={(lat, lng) => onMove(lat, lng, idx)} active={active} onClick={() => handleMarkerClick(idx)} />
+        return <DraggableMarker key={idx} position={getLatLng(command.cmd)} onMove={(lat, lng) => onMove(lat, lng, command.id)} active={active} onClick={() => handleMarkerClick(command.id)} />
       })
       }
-      <Polyline pathOptions={limeOptions} positions={toPolyline(activeWPs)} />
+      <Polyline pathOptions={limeOptions} positions={mainLine.map(x => getLatLng(x.cmd))} />
       {insertBtns}
     </LayerGroup>
   )
