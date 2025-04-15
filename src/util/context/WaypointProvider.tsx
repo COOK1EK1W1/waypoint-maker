@@ -1,6 +1,6 @@
 "use client";
 import { useState } from 'react';
-import { waypointContext } from './WaypointContext';
+import { syncStatusKeys, waypointContext } from './WaypointContext';
 import { Tool } from '@/types/tools'
 import { Mission } from "@/lib/mission/mission";
 
@@ -20,6 +20,8 @@ export default function WaypointProvider({ children }: Props) {
 
   const [tool, setTool] = useState<Tool>("Waypoint")
 
+  const [syncStatus, setSyncStatus] = useState<typeof syncStatusKeys[number]>("idle")
+
   return (
     <waypointContext.Provider value={{
       waypoints,
@@ -29,7 +31,9 @@ export default function WaypointProvider({ children }: Props) {
       selectedWPs,
       setSelectedWPs,
       tool,
-      setTool
+      setTool,
+      syncStatus,
+      setSyncStatus
     }} >
       {children}
     </ waypointContext.Provider>

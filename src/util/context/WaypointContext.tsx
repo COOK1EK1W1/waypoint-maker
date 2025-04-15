@@ -3,6 +3,8 @@ import { Dispatch, SetStateAction, createContext, useContext } from 'react';
 import { Tool } from '@/types/tools';
 import { Mission } from "@/lib/mission/mission";
 
+export const syncStatusKeys = ["idle", "synced", "syncing", "notSynced", "error"] as const
+
 type provided = {
   waypoints: Mission,
   setWaypoints: Dispatch<SetStateAction<Mission>>,
@@ -12,7 +14,10 @@ type provided = {
   setActiveMission: Dispatch<SetStateAction<string>>,
   tool: Tool,
   setTool: Dispatch<SetStateAction<Tool>>,
-  missionId?: string
+  missionId?: string,
+  ownerId?: string,
+  syncStatus: typeof syncStatusKeys[number],
+  setSyncStatus: Dispatch<SetStateAction<typeof syncStatusKeys[number]>>
 }
 
 export const waypointContext = createContext<provided>(undefined as any);
