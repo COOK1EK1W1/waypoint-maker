@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { syncStatusKeys, waypointContext } from './WaypointContext';
 import { Tool } from '@/types/tools'
 import { Mission } from "@/lib/mission/mission";
+import { registerServiceWorker } from '@/lib/registerServiceWorker';
 
 type Props = {
   children: React.ReactNode;
@@ -10,6 +11,8 @@ type Props = {
 
 // The provider for the Waypoint State
 export default function WaypointProvider({ children }: Props) {
+
+  registerServiceWorker()
 
   const [waypoints, setWaypoints] = useState<Mission>(new Mission())
 

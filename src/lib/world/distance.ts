@@ -109,42 +109,42 @@ export function worldBearing(a: LatLng, b: LatLng): number {
 
 export function worldOffset(start: LatLng, distance: number, bearing: number): LatLng {
   if (distance === 0) return start;
-  
+
   const R = 6371000; // Earth's radius in meters
   const lat1 = deg2rad(start.lat);
   const lon1 = deg2rad(start.lng);
-  
+
   // Convert distance to angular distance
   const angularDistance = distance / R;
-  
+
   // Calculate new latitude
   const lat2 = Math.asin(
     Math.sin(lat1) * Math.cos(angularDistance) +
     Math.cos(lat1) * Math.sin(angularDistance) * Math.cos(bearing)
   );
-  
+
   // Calculate new longitude
   const lon2 = lon1 + Math.atan2(
     Math.sin(bearing) * Math.sin(angularDistance) * Math.cos(lat1),
     Math.cos(angularDistance) - Math.sin(lat1) * Math.sin(lat2)
   );
-  
+
   // Handle pole crossing
   let finalLat = lat2;
   let finalLon = lon2;
-  
+
   // If we've crossed a pole, adjust longitude
-  if (Math.abs(lat2) > Math.PI/2) {
+  if (Math.abs(lat2) > Math.PI / 2) {
     // Flip latitude to the other side of the pole
     finalLat = Math.sign(lat2) * Math.PI - lat2;
     // Add 180 degrees to longitude
     finalLon = lon2 + Math.PI;
   }
-  
+
   // Normalize longitude to [-π, π]
   while (finalLon > Math.PI) finalLon -= 2 * Math.PI;
   while (finalLon < -Math.PI) finalLon += 2 * Math.PI;
-  
+
   return {
     lat: rad2deg(finalLat),
     lng: rad2deg(finalLon)

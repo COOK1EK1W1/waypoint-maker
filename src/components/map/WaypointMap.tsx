@@ -14,6 +14,7 @@ import { makeCommand } from "@/lib/commands/default";
 import { Command, filterLatLngAltCmds, filterLatLngCmds } from "@/lib/commands/commands";
 import { avgLatLng, getLatLng } from "@/lib/world/latlng";
 import { Node } from "@/lib/mission/mission";
+import { registerServiceWorker } from "@/lib/registerServiceWorker";
 
 export default function MapStuff() {
   const { waypoints, setWaypoints, activeMission, tool, setTool, selectedWPs } = useWaypoints()
