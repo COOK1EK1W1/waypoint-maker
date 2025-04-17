@@ -5,6 +5,8 @@ import DraggableMarker from "@/components/marker/DraggableMarker";
 import { Command, getCommandDesc, LatLngCommand } from "@/lib/commands/commands";
 import { defaultWaypoint } from "@/lib/mission/defaults";
 import { getLatLng } from "@/lib/world/latlng";
+import NonDestChip from "@/components/marker/nonDestChip";
+import { commandName } from "@/util/translationTable";
 
 const limeOptions = { color: 'lime' }
 const noshow = ["Markers", "Geofence"]
@@ -62,7 +64,21 @@ export default function ActiveLayer({ onMove }: { onMove: (lat: number, lng: num
         if (x) {
           if (x[0] == activeMission && selectedWPs.includes(x[1])) active = true
         }
-        return <DraggableMarker key={idx} position={getLatLng(command.cmd)} onMove={(lat, lng) => onMove(lat, lng, command.id)} active={active} onClick={() => handleMarkerClick(command.id)} />
+        const position = getLatLng(command.cmd)
+        return (
+          <>
+            < DraggableMarker key={idx} position={getLatLng(command.cmd)} onMove={(lat, lng) => onMove(lat, lng, command.id)} active={active} onClick={() => handleMarkerClick(command.id)} />
+            {command.other.map((cmd, id) => {
+              let active = false
+              let x = waypoints.findNthPosition(activeMission, command.id + 1 + id)
+              if (x) {
+                if (x[0] == activeMission && selectedWPs.includes(x[1])) active = true
+              }
+              return <NonDestChip name={commandName(getCommandDesc(cmd.type).name)} offset={id} key={"a" + idx + "" + id} position={position} active={active} onClick={() => { handleMarkerClick(command.id + id + 1) }} />
+            }
+            )}
+          </>
+        )
       })
       }
       <Polyline pathOptions={limeOptions} positions={mainLine.map(x => getLatLng(x.cmd))} />
