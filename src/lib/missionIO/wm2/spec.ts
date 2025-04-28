@@ -1,6 +1,7 @@
 import { commands } from "@/lib/commands/commands";
 import { Mission } from "@/lib/mission/mission";
 import { Vehicle } from "@/lib/vehicles/types";
+import { importInterface } from "../common";
 
 const commandInts = commands.map((x) => x.value)
 
@@ -30,17 +31,20 @@ export function isValidMission(mission: Mission): boolean {
   }
 }
 
-export function importwpm2(a: string): { mission: Mission, vehicle: Vehicle } | undefined {
+export const importwpm2: importInterface = (missionStr: string) => {
   try {
-    const parsed = JSON.parse(a)
+    const parsed = JSON.parse(missionStr)
     if ("mission" in parsed && "vehicle" in parsed) {
       return {
-        mission: new Mission(new Map(parsed.mission)),
-        vehicle: parsed.vehicle
+        data: {
+          mission: new Mission(new Map(parsed.mission)),
+          vehicle: parsed.vehicle
+        },
+        error: null
       }
-    } else { return undefined }
+    } else { return { data: null, error: Error("Couldn't parse mission string") } }
   } catch (err) {
-    return undefined
+    return { data: null, error: err as Error }
   }
 }
 

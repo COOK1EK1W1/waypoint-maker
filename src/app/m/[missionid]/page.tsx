@@ -26,9 +26,9 @@ export default async function Mission({ params }: { params: Promise<{ missionid:
   }
 
   // import the mission from the data
-  const mission = importwpm2(missionData.data) || importwpm1(missionData.data)
+  const mission = importwpm2(missionData.data).data || importwpm1(missionData.data).data
 
-  if (mission === undefined || !isValidMission(mission.mission)) {
+  if (mission === null || !isValidMission(mission.mission)) {
     redirect("/no-parse")
   }
 

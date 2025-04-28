@@ -29,10 +29,11 @@ describe('WM1 Spec', () => {
 
       const result = importwpm1(wm1Data);
 
-      expect(result).toBeDefined();
-      expect(result?.vehicle).toBe(defaultPlane);
+      expect(result.error).toBeNull();
+      expect(result.data).not.toBeNull();
+      expect(result.data?.vehicle).toBe(defaultPlane);
 
-      const mission = result?.mission;
+      const mission = result.data?.mission;
       expect(mission?.getMissions()).toContain('main');
 
       const mainMission = mission?.get('main');
@@ -72,8 +73,9 @@ describe('WM1 Spec', () => {
 
       const result = importwpm1(wm1Data);
 
-      expect(result).toBeDefined();
-      const mission = result?.mission;
+      expect(result.error).toBeNull();
+      expect(result.data).not.toBeNull();
+      const mission = result.data?.mission;
       expect(mission?.getMissions()).toContain('main');
 
       const mainMission = mission?.get('main');
@@ -90,9 +92,11 @@ describe('WM1 Spec', () => {
       }
     });
 
-    it('should return undefined for invalid JSON input', () => {
+    it('should return error for invalid JSON input', () => {
       const result = importwpm1('invalid json');
-      expect(result).toBeUndefined();
+      expect(result.data).toBeNull();
+      expect(result.error).not.toBeNull();
+      expect(result.error).toBeInstanceOf(Error);
     });
 
     it('should handle empty missions', () => {
@@ -102,8 +106,9 @@ describe('WM1 Spec', () => {
 
       const result = importwpm1(wm1Data);
 
-      expect(result).toBeDefined();
-      const mission = result?.mission;
+      expect(result.error).toBeNull();
+      expect(result.data).not.toBeNull();
+      const mission = result.data?.mission;
       expect(mission?.getMissions()).toContain('main');
       expect(mission?.get('main')).toHaveLength(0);
     });
