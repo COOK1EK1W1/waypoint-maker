@@ -1,8 +1,11 @@
 "use client";
-import { useEffect, useState } from 'react';
+import { startTransition, useEffect, useState } from 'react';
 import { syncStatusKeys, waypointContext } from './WaypointContext';
 import { Tool } from '@/types/tools'
 import { Mission, Node } from "@/lib/mission/mission";
+import { syncMission } from '@/components/modal/IO/syncAction';
+import { exportwpm2 } from '@/lib/missionIO/wm2/spec';
+import { useVehicle } from './VehicleTypeContext';
 
 type Props = {
   children: React.ReactNode;
@@ -23,8 +26,25 @@ export default function CloudWaypointProvider({ children, mission, missionId, ow
 
   const [syncStatus, setSyncStatus] = useState<typeof syncStatusKeys[number]>("synced")
 
+  const [timeout, sett] = useState<Timer | undefined>()
+  const { vehicle } = useVehicle()
+
   useEffect(() => {
     setSyncStatus("notSynced")
+    clearTimeout(timeout)
+    sett(setTimeout(() => {
+      startTransition(() => {
+        setSyncStatus("syncing")
+        syncMission(missionId, exportwpm2(waypoints, vehicle)).then((x) => {
+          if (x.error !== null) {
+            alert(`There was an error: ${x.error}`)
+            setSyncStatus("error")
+          } else {
+            setSyncStatus("synced")
+          }
+        })
+      })
+    }, 10000))
   }, [waypoints])
 
 

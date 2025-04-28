@@ -33,13 +33,13 @@ export default async function Mission({ params }: { params: Promise<{ missionid:
   }
 
   return (
-    <CloudWaypointProvider mission={mission.mission.destructure()} missionId={missionId} ownerId={missionData.userId}>
-      <VehicleProvider vehicle={mission.vehicle}>
+    <VehicleProvider vehicle={mission.vehicle}>
+      <CloudWaypointProvider mission={mission.mission.destructure()} missionId={missionId} ownerId={missionData.userId}>
         <MapProvider>
           <ToolBar />
           <WMEditor />
         </MapProvider>
-      </VehicleProvider >
-    </CloudWaypointProvider >
+      </CloudWaypointProvider >
+    </VehicleProvider >
   )
 }

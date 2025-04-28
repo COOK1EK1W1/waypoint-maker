@@ -9,12 +9,12 @@ import { useSession } from "@/util/auth-client";
 import { Check, CircleAlert, CloudUpload, LoaderIcon } from "lucide-react";
 
 // small map between syncing states and icons
-const icons: { [K in (typeof syncStatusKeys[number])]: ReactNode } = {
-  "synced": <Check className="h-[20px] w-[20px] mr-1" />,
-  "syncing": <LoaderIcon className="h-[20px] w-[20px] mr-1 animate-spin" />,
+export const syncIcons: { [K in (typeof syncStatusKeys[number])]: ReactNode } = {
+  "synced": <Check className="h-5 w-5 mr-1" />,
+  "syncing": <LoaderIcon className="h-5 w-5 mr-1 animate-spin" />,
   "idle": null,
-  "notSynced": <CloudUpload className="h-[20px] w-[20px] mr-1" />,
-  "error": <CircleAlert className="h-[20px] w-[20px] mr-1" />
+  "notSynced": <CloudUpload className="h-5 w-5 mr-1" />,
+  "error": <CircleAlert className="h-5 w-5 mr-1" />
 }
 
 export default function CloudSync() {
@@ -84,7 +84,7 @@ export default function CloudSync() {
   return (
     <div className="flex items-center">
       <Button className="items-center justify-start w-32" onClick={handleSync}>
-        {icons[syncStatus]}
+        {syncIcons[syncStatus]}
         Sync Now
       </Button>
     </div >
