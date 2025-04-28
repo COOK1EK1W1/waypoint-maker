@@ -8,6 +8,7 @@ import { importwpm1 } from "./wm1/spec";
 import { Mission } from "@/lib/mission/mission";
 import { Vehicle } from "../vehicles/types";
 import { makeCommand } from "../commands/default";
+import { Result } from "@/util/try-catch";
 
 export function simplifyDubinsWaypoints(wps: Command[]) {
   // simplify dubins runs
@@ -106,24 +107,25 @@ export function downloadTextAsFile(filename: string, text: string) {
   document.body.removeChild(link);
 }
 
+export type importInterface = (missionStr: string) => Result<{ mission: Mission, vehicle: Vehicle }>
+
 // parse a generic mission string
-export function parseMissionString(a: string): { mission: Mission, vehicle: Vehicle } | undefined {
-  const importFuncs = [
+export function parseMissionString(a: string): Result<{ mission: Mission, vehicle: Vehicle }> {
+  const importFuncs: importInterface[] = [
     importqgcWaypoints,
     importwpm2,
     importwpm1
   ]
   for (let i = 0; i < importFuncs.length; i++) {
-    let res = undefined
+    const curAlg = importFuncs[i]
     try {
-      res = importFuncs[i](a)
-      if (res !== undefined && isValidMission(res.mission)) {
-        console.log("found with ", importFuncs[i])
+      const res = curAlg(a)
+      if (res.data !== null && isValidMission(res.data.mission)) {
         return res
       }
     } catch (err) {
       continue
     }
   }
-  return undefined
+  return { data: null, error: Error("No valid import methods") }
 }

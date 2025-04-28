@@ -1,7 +1,6 @@
 
 import { LayerGroup, Polygon } from "react-leaflet";
 import { useWaypoints } from "@/util/context/WaypointContext";
-import { toPolyline } from "@/util/waypointToLeaflet";
 import DraggableMarker from "@/components/marker/DraggableMarker";
 import { filterLatLngCmds } from "@/lib/commands/commands";
 import { getLatLng } from "@/lib/world/latlng";
@@ -22,7 +21,7 @@ export default function GeofenceLayer({ onMove }: { onMove: (lat: number, lng: n
         return <DraggableMarker key={idx} position={getLatLng(waypoint)} onMove={(lat, lng) => onMove(lat, lng, idx)} active={active} />
       }) : null
       }
-      <Polygon pathOptions={fenceOptions} positions={toPolyline(waypoints.flatten("Geofence"))} />
+      <Polygon pathOptions={fenceOptions} positions={filterLatLngCmds(waypoints.flatten("Geofence")).map(x => getLatLng(x))} />
     </LayerGroup>
   )
 
