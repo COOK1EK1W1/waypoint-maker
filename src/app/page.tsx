@@ -9,7 +9,7 @@ export default async function Home() {
     <VehicleProvider>
       <WaypointProvider>
         <MapProvider>
-          <ToolBar />
+          <ToolBar isStatic={false} />
           <WMEditor />
         </MapProvider>
       </WaypointProvider>
