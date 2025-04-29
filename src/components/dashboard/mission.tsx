@@ -11,7 +11,7 @@ export default function MissionTile({ mission }: { mission: { title: string, mod
   const { missionId } = useWaypoints()
   const router = useRouter()
   function handleDelete() {
-    deleteMission(mission.id).then(() => router.refresh())
+    deleteMission(mission.id).then(() => router.push("/"))
   }
 
   return (
