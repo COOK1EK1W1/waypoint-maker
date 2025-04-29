@@ -15,6 +15,8 @@ export default async function Mission({ params }: { params: Promise<{ missionid:
 
   // get the user data
   let userData = await auth.api.getSession({ headers: await headers() })
+
+  // get the mission data
   const missionData = await prisma.mission.findUnique({ where: { id: missionId } })
   if (missionData == null) {
     redirect("/no-exist")
@@ -34,7 +36,7 @@ export default async function Mission({ params }: { params: Promise<{ missionid:
 
   return (
     <VehicleProvider vehicle={mission.vehicle}>
-      <CloudWaypointProvider mission={mission.mission.destructure()} missionId={missionId} ownerId={missionData.userId}>
+      <CloudWaypointProvider mission={mission.mission.destructure()} missionId={missionId} ownerId={missionData.userId} userId={userData?.user.id}>
         <MapProvider>
           <ToolBar isStatic={false} />
           <WMEditor />

@@ -11,10 +11,11 @@ type Props = {
   children: React.ReactNode;
   mission: Map<string, Node[]>;
   missionId: string,
-  ownerId: string
+  ownerId: string,
+  userId: string | undefined
 };
 
-export default function CloudWaypointProvider({ children, mission, missionId, ownerId }: Props) {
+export default function CloudWaypointProvider({ children, mission, missionId, ownerId, userId }: Props) {
 
   const [waypoints, setWaypoints] = useState<Mission>(new Mission(mission))
 
@@ -31,20 +32,22 @@ export default function CloudWaypointProvider({ children, mission, missionId, ow
 
   useEffect(() => {
     setSyncStatus("notSynced")
-    clearTimeout(timeout)
-    sett(setTimeout(() => {
-      startTransition(() => {
-        setSyncStatus("syncing")
-        syncMission(missionId, exportwpm2(waypoints, vehicle)).then((x) => {
-          if (x.error !== null) {
-            alert(`There was an error: ${x.error}`)
-            setSyncStatus("error")
-          } else {
-            setSyncStatus("synced")
-          }
+    if (process.env.AUTOSYNC && userId === ownerId) {
+      clearTimeout(timeout)
+      sett(setTimeout(() => {
+        startTransition(() => {
+          setSyncStatus("syncing")
+          syncMission(missionId, exportwpm2(waypoints, vehicle)).then((x) => {
+            if (x.error !== null) {
+              alert(`There was an error: ${x.error}`)
+              setSyncStatus("error")
+            } else {
+              setSyncStatus("synced")
+            }
+          })
         })
-      })
-    }, 10000))
+      }, 10000))
+    }
   }, [waypoints])
 
 
