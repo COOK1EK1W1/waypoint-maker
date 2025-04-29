@@ -220,7 +220,7 @@ export function wpCheck(wps: Command[], waypoints: Mission): Fault[] {
 
   let angles: number[] = []
 
-  for (let i = 0; i < wps.length - 2; i++) {
+  for (let i = 0; i < missionLocs.length - 2; i++) {
     angles.push(angleBetweenPoints(
       missionLocs[i],
       missionLocs[i + 1],

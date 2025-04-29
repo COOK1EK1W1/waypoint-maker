@@ -12,7 +12,7 @@ export default function ToolBar({ isStatic }: { isStatic: boolean }) {
         <div className="flex bg-white items-center shadow-lg rounded-lg overflow-auto">
           <Image width={46} height={32} className="h-9 px-2" src="/logo-192x192.png" alt="Waypoint Maker Logo" />
           <h1 className="mx-4 py-0 hidden lg:flex items-center">Waypoint Maker</h1>
-          <MissionIO isStatic={isStatic} />
+          <MissionIO />
           <WPCheck />
           <VehicleTypeButton />
           {process.env.ALLOWLOGIN && !isStatic ? <Suspense fallback={<UserSkeleton />}><User /></Suspense> : null}
