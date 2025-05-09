@@ -54,5 +54,5 @@ export function exportwpm2(mission: Mission, vehicle: Vehicle) {
     vehicle: vehicle,
     mission: Array.from(mission.destructure())
   }
-  return JSON.stringify(a, null, 2)
+  return JSON.stringify(a)
 }

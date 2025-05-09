@@ -6,13 +6,13 @@ import ToolBar from "@/components/toolBar/ToolBar";
 
 export default async function Home() {
   return (
-    <WaypointProvider>
-      <VehicleProvider>
+    <VehicleProvider>
+      <WaypointProvider>
         <MapProvider>
-          <ToolBar />
+          <ToolBar isStatic={false} />
           <WMEditor />
         </MapProvider>
-      </VehicleProvider>
-    </WaypointProvider>
+      </WaypointProvider>
+    </VehicleProvider>
   );
 }
