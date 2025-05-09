@@ -32,14 +32,14 @@ export default function CloudWaypointProvider({ children, mission, missionId, ow
 
   useEffect(() => {
     setSyncStatus("notSynced")
-    if (process.env.AUTOSYNC && userId === ownerId) {
+    if (process.env.NEXT_PUBLIC_AUTOSYNC && userId === ownerId) {
       clearTimeout(timeout)
       sett(setTimeout(() => {
         startTransition(() => {
           setSyncStatus("syncing")
           syncMission(missionId, exportwpm2(waypoints, vehicle)).then((x) => {
             if (x.error !== null) {
-              alert(`There was an error: ${x.error}`)
+              alert(`There was an error syncing: ${x.error}`)
               setSyncStatus("error")
             } else {
               setSyncStatus("synced")
