@@ -1,18 +1,43 @@
 "use client"
 import { useRouter } from "next/navigation";
 import Button from "../toolBar/button";
-import { deleteMission } from "./actions";
+import { changeMissionName, changeMissionVisibility, copyMission, deleteMission } from "./actions";
 import { timeAgo } from "@/util/time";
 import { cn } from "@/lib/utils";
 import { useWaypoints } from "@/util/context/WaypointContext";
-import { Copy, EllipsisVertical, Eye, Pencil, Share, Trash } from "lucide-react";
+import { Copy, EllipsisVertical, Eye, Globe, Lock, Pencil, Share, Trash } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "../ui/dropdown-menu";
 
-export default function MissionTile({ mission }: { mission: { title: string, modifiedAt: Date, id: string } }) {
+export default function MissionTile({ mission }: { mission: { title: string, modifiedAt: Date, id: string, public: boolean } }) {
   const { missionId } = useWaypoints()
   const router = useRouter()
+
   function handleDelete() {
+    const res = confirm("Are you sure?")
+    if (!res) return
     deleteMission(mission.id).then(() => router.push("/"))
+  }
+
+  function handleEditName() {
+    const newName = prompt("Enter new Name")
+    if (newName !== null && newName !== "") {
+      changeMissionName(mission.id, newName).then(() => router.refresh())
+    }
+  }
+
+  function toggleVisibility() {
+    changeMissionVisibility(mission.id, !mission.public).then(() => router.refresh())
+  }
+
+  function handleCopy() {
+    const newName = prompt("Enter new Name")
+    if (newName !== null && newName !== "") {
+      copyMission(mission.id, newName).then((res) => router.push(`/m/${res.id}`))
+    }
+  }
+
+  async function handleShare() {
+    await navigator.clipboard.writeText(`https://waypointmaker.app/m/${mission.id}`)
   }
 
   return (
@@ -20,7 +45,10 @@ export default function MissionTile({ mission }: { mission: { title: string, mod
       <div onClick={() => { router.push(`/m/${mission.id}`) }} className="flex w-full flex-col items-start">
         <p>{mission.title}</p>
 
-        <p className="text-muted-foreground">Last Modified: {timeAgo(mission.modifiedAt)}</p>
+        <p className="text-muted-foreground align-center">
+          {mission.public ? <Globe className="inline h-5 w-5 mr-2" /> : <Lock className="inline h-5 w-5 mr-2" />}
+          Last Modified: {timeAgo(mission.modifiedAt)}
+        </p>
       </div>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
@@ -29,24 +57,24 @@ export default function MissionTile({ mission }: { mission: { title: string, mod
           </div>
         </DropdownMenuTrigger>
         <DropdownMenuContent >
-          <DropdownMenuItem>
+          <DropdownMenuItem onClick={handleEditName}>
             <Pencil />
             <span>Edit Name</span>
           </DropdownMenuItem>
-          <DropdownMenuItem>
+          <DropdownMenuItem onClick={handleShare}>
             <Share />
-            <span>Share</span>
+            <span>Copy Link</span>
           </DropdownMenuItem>
-          <DropdownMenuItem>
+          <DropdownMenuItem onClick={handleCopy}>
             <Copy />
-            <span>Copy</span>
+            <span>Create Copy</span>
           </DropdownMenuItem>
-          <DropdownMenuItem>
+          <DropdownMenuItem onClick={toggleVisibility}>
             <Eye />
-            <span>Make Public</span>
+            <span>Make {mission.public ? "Private" : "Public"}</span>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={handleDelete}>
+          <DropdownMenuItem onClick={handleDelete} className="text-red-500">
             <Trash />
             <span>Delete</span>
           </DropdownMenuItem>

@@ -20,7 +20,8 @@ export default async function DashboardModal() {
         select: {
           title: true,
           modifiedAt: true,
-          id: true
+          id: true,
+          public: true
         },
         orderBy: {
           modifiedAt: "desc"

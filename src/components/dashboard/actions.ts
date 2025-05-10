@@ -28,3 +28,54 @@ export async function deleteMission(missionId: string) {
   })
   return res
 }
+
+export async function changeMissionName(missionId: string, newName: string) {
+  let data = await auth.api.getSession({ headers: await headers() })
+  const userID = data?.user.id
+  if (!userID) redirect("/")
+  const res = await prisma.mission.update({
+    where: {
+      id: missionId,
+      userId: userID
+    },
+    data: {
+      title: newName
+    }
+  })
+  return res
+}
+
+export async function changeMissionVisibility(missionId: string, isPublic: boolean) {
+  let data = await auth.api.getSession({ headers: await headers() })
+  const userID = data?.user.id
+  if (!userID) redirect("/")
+  const res = await prisma.mission.update({
+    where: {
+      id: missionId,
+      userId: userID
+    },
+    data: {
+      public: isPublic
+    }
+  })
+  return res
+}
+
+export async function copyMission(missionId: string, newName: string) {
+  let data = await auth.api.getSession({ headers: await headers() })
+  const userID = data?.user.id
+  if (!userID) redirect("/")
+  const newData = await prisma.mission.findFirst({
+    where: { id: missionId, userId: userID }
+  })
+  if (newData === null) redirect("/")
+  const res = await prisma.mission.create({
+    data: {
+      title: newName,
+      data: newData.data,
+      userId: userID,
+      public: false,
+    }
+  })
+  return res
+}
