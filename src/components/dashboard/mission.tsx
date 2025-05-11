@@ -15,25 +15,56 @@ export default function MissionTile({ mission }: { mission: { title: string, mod
   function handleDelete() {
     const res = confirm("Are you sure?")
     if (!res) return
-    deleteMission(mission.id).then(() => router.push("/"))
+
+    deleteMission(mission.id).then((res) => {
+      if (res.error !== null) {
+        alert(res.error)
+      }
+      router.push("/")
+    })
+
   }
 
   function handleEditName() {
     const newName = prompt("Enter new Name")
-    if (newName !== null && newName !== "") {
-      changeMissionName(mission.id, newName).then(() => router.refresh())
+    if (newName === null || newName === "") {
+      alert("please enter a valid name")
+      return
     }
+
+    changeMissionName(mission.id, newName).then((res) => {
+      if (res.error !== null) {
+        alert(res.error)
+        return
+      }
+      router.refresh()
+    })
   }
 
   function toggleVisibility() {
-    changeMissionVisibility(mission.id, !mission.public).then(() => router.refresh())
+    changeMissionVisibility(mission.id, !mission.public).then((res) => {
+      if (res.error !== null) {
+        alert(res.error)
+        return
+      }
+      router.refresh()
+    })
   }
 
   function handleCopy() {
     const newName = prompt("Enter new Name")
-    if (newName !== null && newName !== "") {
-      copyMission(mission.id, newName).then((res) => router.push(`/m/${res.id}`))
+    if (newName === null || newName === "") {
+      alert("please enter a valid name")
+      return
     }
+
+    copyMission(mission.id, newName).then((res) => {
+      if (res.error !== null) {
+        alert(res.error)
+        return
+      }
+      router.push(`/m/${res.data.id}`)
+    })
   }
 
   async function handleShare() {
