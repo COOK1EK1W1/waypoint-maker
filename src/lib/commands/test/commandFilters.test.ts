@@ -1,6 +1,6 @@
 import { expect, test } from "bun:test";
 import { makeCommand } from "../default";
-import { filterLatLngCmds, filterLatLngAltCmds } from "../commands";
+import { filterLatLngCmds, filterLatLngAltCmds, filterAltCmds } from "../commands";
 
 const waypoint = makeCommand("MAV_CMD_NAV_WAYPOINT", {
   latitude: 52,
@@ -31,6 +31,16 @@ test("filterLatLngCmds filters commands with latitude and longitude", () => {
 
 test("filterLatLngAltCmds filters commands with latitude, longitude and altitude", () => {
   const filtered = filterLatLngAltCmds(commands);
+
+  expect(filtered.length).toBe(2);
+  expect(filtered).toContain(waypoint);
+  expect(filtered).toContain(dubins);
+  expect(filtered).not.toContain(vtol);
+  expect(filtered).not.toContain(setServo);
+});
+
+test("filterAltCmds filters commands with altitude", () => {
+  const filtered = filterAltCmds(commands);
 
   expect(filtered.length).toBe(2);
   expect(filtered).toContain(waypoint);
