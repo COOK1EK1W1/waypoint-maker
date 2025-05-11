@@ -5,8 +5,31 @@ import { Result, tryCatch } from "@/util/try-catch";
 import { Mission } from "@prisma/client";
 import { headers } from "next/headers";
 
-export async function newProj(title: string): Promise<Result<Mission, string>> {
+async function checkUserMissionLimit(userID: string): Promise<{ message: string, status: boolean }> {
+  const missionLimitRaw = process.env.MAX_MISSIONS_PER_USER
+  const missionLimit = parseInt(missionLimitRaw ?? "")
 
+  if (!Number.isFinite(missionLimit) || missionLimit <= 0) {
+    return { message: "", status: true }
+  }
+
+  const userMissionCount = await tryCatch<number>(prisma.mission.count({ where: { userId: userID } }))
+
+  if (userMissionCount.error !== null)  return {
+      message: "Failed to check mission count for user",
+      status: false,
+    }
+
+  if (userMissionCount.data >= missionLimit) return {
+      message: `Max number of missions for user has been reached (limit of ${missionLimit})`,
+      status: false,
+    }
+
+  return { message: "", status: true }
+}
+
+
+export async function newProj(title: string): Promise<Result<Mission, string>> {
   const userData = await tryCatch(auth.api.getSession({ headers: await headers() }))
   if (userData.error !== null) {
     return { error: "Could not authenticate", data: null }
@@ -16,6 +39,9 @@ export async function newProj(title: string): Promise<Result<Mission, string>> {
   if (!userID) {
     return { error: "User not authenticated", data: null }
   }
+
+  const missionLimitResult = await checkUserMissionLimit(userID)
+  if (!missionLimitResult.status) return { error: missionLimitResult.message, data: null }
 
   const res = await tryCatch(prisma.mission.create({
     data: {
@@ -122,12 +148,16 @@ export async function copyMission(missionId: string, newName: string): Promise<R
     return { error: "User not authenticated", data: null }
   }
 
-  const newData = await tryCatch(prisma.mission.findFirst({
+  const newData = await tryCatch<Mission | null>(prisma.mission.findFirst({
     where: { id: missionId, userId: userID }
   }))
   if (newData.error !== null || newData.data === null) {
     return { error: "Could not find mission", data: null }
   }
+
+  const missionLimitResult = await checkUserMissionLimit(userID)
+  if (!missionLimitResult.status) return { error: missionLimitResult.message, data: null }
+
 
   const res = await tryCatch(prisma.mission.create({
     data: {
