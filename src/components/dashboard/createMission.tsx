@@ -6,13 +6,20 @@ import { newProj } from "./actions"
 
 export default function CreateMission() {
   const router = useRouter()
+
   function handleCreate() {
     const title = prompt("Enter Mission Name")
-    if (title && title != "") {
-      newProj(title).then((e) => {
-        router.push("/m/" + e.id)
-      })
+    if (title === null || title === "") {
+      alert("Please use a valid name")
+      return
     }
+    newProj(title).then((res) => {
+      if (res.error !== null) {
+        alert(res.error)
+        return
+      }
+      router.push("/m/" + res.data.id)
+    })
 
   }
   return (
