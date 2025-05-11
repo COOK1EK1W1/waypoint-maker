@@ -38,9 +38,7 @@ export async function newProj(title: string): Promise<Result<Mission, string>> {
   }
 
   const missionLimitResult = await checkUserMissionLimit(userID)
-  if (missionLimitResult.error !== null) {
-    return { error: missionLimitResult.error, data: null }
-  }
+  if (missionLimitResult.error !== null) return missionLimitResult
 
   const res = await tryCatch(prisma.mission.create({
     data: {
@@ -155,9 +153,7 @@ export async function copyMission(missionId: string, newName: string): Promise<R
   }
 
   const missionLimitResult = await checkUserMissionLimit(userID)
-  if (missionLimitResult.error !== null) {
-    return { error: missionLimitResult.error, data: null }
-  }
+  if (missionLimitResult.error !== null)  return missionLimitResult
 
   const res = await tryCatch(prisma.mission.create({
     data: {
