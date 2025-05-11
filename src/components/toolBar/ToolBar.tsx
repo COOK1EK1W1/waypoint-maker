@@ -15,7 +15,9 @@ export default function ToolBar({ isStatic }: { isStatic: boolean }) {
           <MissionIO />
           <WPCheck />
           <VehicleTypeButton />
-          {process.env.ALLOWLOGIN && !isStatic ? <Suspense fallback={<UserSkeleton />}><User /></Suspense> : null}
+          {process.env.ALLOWLOGIN && !isStatic ? <Suspense fallback={<UserSkeleton />}>
+            <User />
+          </Suspense> : null}
 
         </div>
       </div>

@@ -1,5 +1,4 @@
 import Button from "./button";
-import { FaUser } from "react-icons/fa";
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import DashboardModal from "../modal/dashboard";
 import { Suspense } from "react";
@@ -19,7 +18,7 @@ export default async function User() {
   return (< Dialog >
     <DialogTrigger asChild>
       {data?.user ?
-        <Button className="w-28">{<FaUser />}{data.user?.name}</Button> :
+        <Button className="w-28 justify-start"><img height={20} width={20} className="rounded-full" alt="profile picture" src={data.user.image || ""} /><span className="grow">Account</span></Button> :
         <Button className="w-28">Sign In</Button>
       }
     </DialogTrigger>
