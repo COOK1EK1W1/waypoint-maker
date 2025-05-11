@@ -1,28 +1,32 @@
 "use client"
+
+import { useTransition } from "react"
 import { useRouter } from "next/navigation";
 import Button from "../toolBar/button";
 import { changeMissionName, changeMissionVisibility, copyMission, deleteMission } from "./actions";
 import { timeAgo } from "@/util/time";
 import { cn } from "@/lib/utils";
 import { useWaypoints } from "@/util/context/WaypointContext";
-import { Copy, EllipsisVertical, Eye, Globe, Lock, Pencil, Share, Trash } from "lucide-react";
+import { Copy, EllipsisVertical, Eye, Globe, Lock, Loader2, Pencil, Share, Trash } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "../ui/dropdown-menu";
 
 export default function MissionTile({ mission }: { mission: { title: string, modifiedAt: Date, id: string, public: boolean } }) {
   const { missionId } = useWaypoints()
   const router = useRouter()
+  const [isPending, startTransition] = useTransition()
 
   function handleDelete() {
     const res = confirm("Are you sure?")
     if (!res) return
 
-    deleteMission(mission.id).then((res) => {
-      if (res.error !== null) {
-        alert(res.error)
-      }
-      router.push("/")
+    startTransition(() => {
+      deleteMission(mission.id).then((res) => {
+        if (res.error !== null) {
+          alert(res.error)
+        }
+        router.push("/")
+      })
     })
-
   }
 
   function handleEditName() {
@@ -32,22 +36,26 @@ export default function MissionTile({ mission }: { mission: { title: string, mod
       return
     }
 
-    changeMissionName(mission.id, newName).then((res) => {
-      if (res.error !== null) {
-        alert(res.error)
-        return
-      }
-      router.refresh()
+    startTransition(() => {
+      changeMissionName(mission.id, newName).then((res) => {
+        if (res.error !== null) {
+          alert(res.error)
+          return
+        }
+        router.refresh()
+      })
     })
   }
 
   function toggleVisibility() {
-    changeMissionVisibility(mission.id, !mission.public).then((res) => {
-      if (res.error !== null) {
-        alert(res.error)
-        return
-      }
-      router.refresh()
+    startTransition(() => {
+      changeMissionVisibility(mission.id, !mission.public).then((res) => {
+        if (res.error !== null) {
+          alert(res.error)
+          return
+        }
+        router.refresh()
+      })
     })
   }
 
@@ -58,12 +66,14 @@ export default function MissionTile({ mission }: { mission: { title: string, mod
       return
     }
 
-    copyMission(mission.id, newName).then((res) => {
-      if (res.error !== null) {
-        alert(res.error)
-        return
-      }
-      router.push(`/m/${res.data.id}`)
+    startTransition(() => {
+      copyMission(mission.id, newName).then((res) => {
+        if (res.error !== null) {
+          alert(res.error)
+          return
+        }
+        router.push(`/m/${res.data.id}`)
+      })
     })
   }
 
@@ -85,11 +95,13 @@ export default function MissionTile({ mission }: { mission: { title: string, mod
         </p>
       </div>
       <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <div className="p-1 hover:bg-slate-100 rounded-full transition-colors">
-            <EllipsisVertical className="h-5 w-5 text-slate-500" />
-          </div>
-        </DropdownMenuTrigger>
+        {isPending ? (
+          <Loader2 className="h-5 w-5 animate-spin text-slate-500" />) 
+          : (<DropdownMenuTrigger asChild>
+            <div className="p-1 hover:bg-slate-100 rounded-full transition-colors" >
+              <EllipsisVertical className="h-5 w-5 text-slate-500" />
+            </div>
+          </DropdownMenuTrigger>)}
         <DropdownMenuContent align="end" className="w-48">
           <DropdownMenuItem onClick={handleEditName} className="gap-2">
             <Pencil className="h-4 w-4" />
