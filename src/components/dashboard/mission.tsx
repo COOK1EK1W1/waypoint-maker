@@ -74,44 +74,46 @@ export default function MissionTile({ mission }: { mission: { title: string, mod
   return (
     <Button className={cn("w-full px-2 bg-white p-2 m-2 flex-row", missionId == mission.id ? "bg-slate-100" : "")}>
       <div onClick={() => { router.push(`/m/${mission.id}`) }} className="flex w-full flex-col items-start">
-        <p>{mission.title}</p>
+        <p className="font-medium">{mission.title}</p>
 
-        <p className="text-muted-foreground align-center">
-          {mission.public ? <Globe className="inline h-5 w-5 mr-2" /> : <Lock className="inline h-5 w-5 mr-2" />}
+        <p className="text-sm text-muted-foreground flex items-center">
+          {mission.public ? 
+            <Globe className="inline h-4 w-4 mr-2" /> : 
+            <Lock className="inline h-4 w-4 mr-2" />
+          }
           Last Modified: {timeAgo(mission.modifiedAt)}
         </p>
       </div>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <div>
-            <EllipsisVertical />
+          <div className="p-1 hover:bg-slate-100 rounded-full transition-colors">
+            <EllipsisVertical className="h-5 w-5 text-slate-500" />
           </div>
         </DropdownMenuTrigger>
-        <DropdownMenuContent >
-          <DropdownMenuItem onClick={handleEditName}>
-            <Pencil />
+        <DropdownMenuContent align="end" className="w-48">
+          <DropdownMenuItem onClick={handleEditName} className="gap-2">
+            <Pencil className="h-4 w-4" />
             <span>Edit Name</span>
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={handleShare}>
-            <Share />
+          <DropdownMenuItem onClick={handleShare} className="gap-2">
+            <Share className="h-4 w-4" />
             <span>Copy Link</span>
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={handleCopy}>
-            <Copy />
+          <DropdownMenuItem onClick={handleCopy} className="gap-2">
+            <Copy className="h-4 w-4" />
             <span>Create Copy</span>
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={toggleVisibility}>
-            <Eye />
+          <DropdownMenuItem onClick={toggleVisibility} className="gap-2">
+            <Eye className="h-4 w-4" />
             <span>Make {mission.public ? "Private" : "Public"}</span>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={handleDelete} className="text-red-500">
-            <Trash />
+          <DropdownMenuItem onClick={handleDelete} className="text-red-500 gap-2 focus:text-red-500">
+            <Trash className="h-4 w-4" />
             <span>Delete</span>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-
     </Button>
   )
 
