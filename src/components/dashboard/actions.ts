@@ -5,27 +5,24 @@ import { Result, tryCatch } from "@/util/try-catch";
 import { Mission } from "@prisma/client";
 import { headers } from "next/headers";
 
-async function checkUserMissionLimit(userID: string): Promise<{ message: string, status: boolean }> {
+async function checkUserMissionLimit(userID: string): Promise<Result<boolean, string>> {
   const missionLimitRaw = process.env.MAX_MISSIONS_PER_USER
   const missionLimit = parseInt(missionLimitRaw ?? "")
 
-  if (!Number.isFinite(missionLimit) || missionLimit <= 0) {
-    return { message: "", status: true }
-  }
+  if (!Number.isFinite(missionLimit) || missionLimit <= 0) 
+    return { data: true, error: null }
 
-  const userMissionCount = await tryCatch<number>(prisma.mission.count({ where: { userId: userID } }))
+  const userMissionCount = await tryCatch<number>(
+    prisma.mission.count({ where: { userId: userID } })
+  )
 
-  if (userMissionCount.error !== null)  return {
-      message: "Failed to check mission count for user",
-      status: false,
-    }
+  if (userMissionCount.error !== null) 
+    return { data: null, error: "Failed to check mission count for user" }
 
-  if (userMissionCount.data >= missionLimit) return {
-      message: `Max number of missions for user has been reached (limit of ${missionLimit})`,
-      status: false,
-    }
-
-  return { message: "", status: true }
+  if (userMissionCount.data >= missionLimit) 
+    return { data: null, error: `Max number of missions for user has been reached (limit of ${missionLimit})` }
+  
+  return { data: true, error: null }
 }
 
 
@@ -41,7 +38,9 @@ export async function newProj(title: string): Promise<Result<Mission, string>> {
   }
 
   const missionLimitResult = await checkUserMissionLimit(userID)
-  if (!missionLimitResult.status) return { error: missionLimitResult.message, data: null }
+  if (missionLimitResult.error !== null) {
+    return { error: missionLimitResult.error, data: null }
+  }
 
   const res = await tryCatch(prisma.mission.create({
     data: {
@@ -156,8 +155,9 @@ export async function copyMission(missionId: string, newName: string): Promise<R
   }
 
   const missionLimitResult = await checkUserMissionLimit(userID)
-  if (!missionLimitResult.status) return { error: missionLimitResult.message, data: null }
-
+  if (missionLimitResult.error !== null) {
+    return { error: missionLimitResult.error, data: null }
+  }
 
   const res = await tryCatch(prisma.mission.create({
     data: {
