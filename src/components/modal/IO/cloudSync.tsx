@@ -5,8 +5,8 @@ import { createNewMission, syncMission } from "./syncAction";
 import { ReactNode, useEffect, useTransition } from "react";
 import { exportwpm2 } from "@/lib/missionIO/wm2/spec";
 import { useVehicle } from "@/util/context/VehicleTypeContext";
-import { useSession } from "@/util/auth-client";
 import { Check, CircleAlert, CloudUpload, LoaderIcon } from "lucide-react";
+import { Session } from "better-auth";
 
 // small map between syncing states and icons
 export const syncIcons: { [K in (typeof syncStatusKeys[number])]: ReactNode } = {
@@ -17,8 +17,7 @@ export const syncIcons: { [K in (typeof syncStatusKeys[number])]: ReactNode } = 
   "error": <CircleAlert className="h-5 w-5 mr-1" />
 }
 
-export default function CloudSync() {
-  const { data } = useSession()
+export default function CloudSync({ data }: { data: { session: Session, user: { id: string } } | null }) {
 
   const { waypoints, missionId, syncStatus, setSyncStatus, ownerId } = useWaypoints();
   const { vehicle } = useVehicle();
