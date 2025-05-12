@@ -5,8 +5,8 @@ import { createNewMission, syncMission } from "./syncAction";
 import { ReactNode, useEffect, useTransition } from "react";
 import { exportwpm2 } from "@/lib/missionIO/wm2/spec";
 import { useVehicle } from "@/util/context/VehicleTypeContext";
-import { useSession } from "@/util/auth-client";
 import { Check, CircleAlert, CloudUpload, LoaderIcon } from "lucide-react";
+import { Session } from "better-auth";
 
 // small map between syncing states and icons
 export const syncIcons: { [K in (typeof syncStatusKeys[number])]: ReactNode } = {
@@ -17,8 +17,7 @@ export const syncIcons: { [K in (typeof syncStatusKeys[number])]: ReactNode } = 
   "error": <CircleAlert className="h-5 w-5 mr-1" />
 }
 
-export default function CloudSync() {
-  const { data } = useSession()
+export default function CloudSync({ data }: { data: { session: Session, user: { id: string } } }) {
 
   const { waypoints, missionId, syncStatus, setSyncStatus, ownerId } = useWaypoints();
   const { vehicle } = useVehicle();
@@ -32,10 +31,6 @@ export default function CloudSync() {
     }
   }, [isPending])
 
-  // don't show anything if user isn't logged in
-  if (data?.user == undefined) {
-    return <div>Please sign in to use cloud syncing</div>
-  }
 
   // on base url create a new mission in DB
   const handleCreateNew = () => {
@@ -58,6 +53,7 @@ export default function CloudSync() {
     return <Button className="w-28" onClick={handleCreateNew}>Sync Now</Button>
   }
 
+  // sync handler for button click
   const handleSync = () => {
     startTransition(() => {
       syncMission(missionId, exportwpm2(waypoints, vehicle)).then((x) => {
@@ -72,7 +68,7 @@ export default function CloudSync() {
   }
 
   // If the current user doens't own the mission, allow them to make a copy
-  if (data?.user.id !== undefined && data?.user.id !== ownerId) {
+  if (data.user.id !== ownerId) {
     return (
       <div className="">
         You are currently viewing a mission owned by someone else.
