@@ -38,7 +38,15 @@ export default function MissionIO({ isStatic }: { isStatic: boolean }) {
   )
 
 }
+
+// grab the headers for session and forward to the client side
 async function CloudSyncHeaders() {
   let data = await auth.api.getSession({ headers: await headers() })
+
+  // don't show anything if user isn't logged in
+  if (data === null) {
+    return <div>Please sign in to use cloud syncing</div>
+  }
+
   return <CloudSync data={data} />
 }
