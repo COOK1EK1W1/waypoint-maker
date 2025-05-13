@@ -12,6 +12,7 @@ export const auth = betterAuth({
       clientSecret: process.env.GITHUB_SECRET as string
     },
     google: {
+      prompt: "select_account",
       clientId: process.env.GOOGLE_ID as string,
       clientSecret: process.env.GOOGLE_SECRET as string
     }
