@@ -25,12 +25,20 @@ export default async function User() {
     <DialogContent>
       {data?.user ? (
         <>
-          <DialogTitle>My Projects</DialogTitle>
-          <DialogDescription>
-            You are logged in as {data.user.name}
-          </DialogDescription>
+          <DialogTitle>My Account</DialogTitle>
+          <DialogDescription asChild>
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              Logged in as:
+              <span className="flex items-center gap-2 bg-gray-100 px-2 py-1 rounded-md shadow-sm max-w-[210px]">
+                <img height={20} width={20} className="rounded-full" alt="profile picture" src={data.user.image || ""} />
+                <span className="truncate whitespace-nowrap overflow-hidden">{data.user.name}</span>
+              </span>
+            </div>
+            <div className="ml-auto"><SignOut /></div>
+          </div>
+        </DialogDescription>
           <Suspense fallback={<p>loading</p>}>
-            <SignOut />
             <DashboardModal />
           </Suspense>
         </>
