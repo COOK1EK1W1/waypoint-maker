@@ -26,7 +26,7 @@ export default function MissionIO({ isStatic }: { isStatic: boolean }) {
           <DownloadButtons />
           <h2>Import</h2>
           <LoadJson />
-          {process.env.ALLOWLOGIN && !isStatic ? (
+          {!isStatic ? (
             <Suspense fallback={<div>loading</div>}>
               <h2>Cloud Sync</h2>
               <CloudSyncHeaders />
