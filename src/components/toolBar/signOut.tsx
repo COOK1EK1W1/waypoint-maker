@@ -11,7 +11,11 @@ export default function SignOut() {
 
   return (
     <Button
-      onClick={() => {signOut(); router.refresh()}}
+      onClick={() => {
+        signOut().then(() => {
+          router.refresh()
+        })
+      }}
       className="w-28 bg-white text-red-500 hover:bg-slate-100 flex items-center justify-center gap-2"
     >
       <LogOut className="h-4 w-4" />
