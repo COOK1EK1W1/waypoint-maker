@@ -1,10 +1,10 @@
 "use client"
 import { useWaypoints } from "@/util/context/WaypointContext";
-import { CollectionType } from "@/types/waypoints";
 import ListItem from "../waypointList/ListItem";
 import { TbFence, TbTopologyRing } from "react-icons/tb";
 import { FaMapMarkedAlt, FaTrashAlt } from "react-icons/fa";
 import { FaArrowTurnUp } from "react-icons/fa6";
+import { CollectionType } from "@/lib/mission/mission";
 
 const noAddNames = ["Main", "Geofence", "Takeoff", "Landing", "Markers"]
 

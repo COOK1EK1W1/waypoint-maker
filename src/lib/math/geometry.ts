@@ -1,4 +1,4 @@
-import { XY } from "@/types/dubins"
+import { XY } from "./types"
 
 /**
  * Converts degrees to radians
@@ -72,3 +72,33 @@ export function offset(a: XY, dist: number, angle: number): XY {
     y: a.y + dist * Math.cos(angle)
   }
 }
+
+
+export function isPointInPolygon(polygon: XY[], point: XY) {
+  const num_vertices = polygon.length;
+  let inside = false;
+
+  let p1 = polygon[0];
+  let p2;
+
+  for (let i = 1; i <= num_vertices; i++) {
+    p2 = polygon[i % num_vertices];
+
+    if (point.y > Math.min(p1.y, p2.y)) {
+      if (point.y <= Math.max(p1.y, p2.y)) {
+        if (point.x <= Math.max(p1.x, p2.x)) {
+          const x_intersection = ((point.y - p1.y) * (p2.x - p1.x)) / (p2.y - p1.y) + p1.x;
+
+          if (p1.x === p2.x || point.x <= x_intersection) {
+            inside = !inside;
+          }
+        }
+      }
+    }
+
+    p1 = p2;
+  }
+
+  return inside;
+}
+

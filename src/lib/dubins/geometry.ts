@@ -1,5 +1,6 @@
-import { Segment, Path, XY } from "@/types/dubins";
 import { dist } from "@/lib/math/geometry";
+import { XY } from "../math/types";
+import { Path, Segment } from "./types";
 
 /**
  * Calculates the length of a segment in a Dubins path
@@ -16,16 +17,17 @@ export function segmentLength(seg: Segment<XY>): number {
 }
 
 /**
- * Calculate the energy requirement for a curve segment
+ * Calculate the load factor for a curve segment
  * @param {number} radius - The radius of the curve
  * @param {number} velocity - The velocity of the vehicle
- * @returns {number} The energy requirement for the curve segment
+ * @returns {number} The load factor for the curve segment
  */
-export function energyRequirement(radius: number, velocity: number): number {
+export function loadFactor(radius: number, velocity: number): number {
   if (radius == 0) {
     return 0
   }
-  return (Math.sqrt(radius * radius * 9.81 * 9.81 + Math.pow(velocity, 4))) / (radius * 9.81)
+  //return (Math.sqrt(radius * radius * 9.81 * 9.81 + Math.pow(velocity, 4))) / (radius * 9.81)
+  return Math.sqrt(1 + (Math.pow(velocity, 4) / (radius * radius * 9.81 * 9.81)))
 }
 
 /**
@@ -41,14 +43,14 @@ export function pathEnergyRequirements(path: Path<XY>, velocity: number, energyC
     let segLength = segmentLength(seg)
     switch (seg.type) {
       case "Curve":
-        totalEnergy += segLength * energyRequirement(seg.radius, velocity) * energyConstant
+        totalEnergy += segLength * loadFactor(seg.radius, velocity)
         continue;
       case "Straight":
-        totalEnergy += segLength * energyConstant
+        totalEnergy += segLength
         continue;
     }
   }
-  return totalEnergy
+  return energyConstant * totalEnergy
 }
 
 /**

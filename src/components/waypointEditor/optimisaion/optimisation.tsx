@@ -1,5 +1,3 @@
-
-
 import { useWaypoints } from "@/util/context/WaypointContext";
 import { bakeDubins, staticEvaluate } from "@/components/toolBar/bakeDubins";
 import { pathEnergyRequirements, pathLength } from "@/lib/dubins/geometry";
@@ -7,23 +5,28 @@ import { geneticOptimise } from "@/lib/optimisation/genetic";
 import { particleOptimise } from "@/lib/optimisation/particleSwarm";
 import { useState } from "react";
 import Button from "@/components/toolBar/button";
-import { useVehicleTypeContext } from "@/util/context/VehicleTypeContext";
-import { Path, XY } from "@/types/dubins";
-import { Plane } from "@/types/vehicleType";
+import { useVehicle } from "@/util/context/VehicleTypeContext";
 import { cn } from "@/lib/utils";
 import { gradientOptimise } from "@/lib/optimisation/gradient";
 import { splitDubinsRuns } from "@/lib/dubins/dubinWaypoints";
+import { Path } from "@/lib/dubins/types";
+import { XY } from "@/lib/math/types";
+import { Plane } from "@/lib/vehicles/types";
 
 
 export function Optimise() {
-  const { vehicle } = useVehicleTypeContext()
+  const { vehicle } = useVehicle()
 
 
   const { waypoints, setWaypoints, activeMission } = useWaypoints()
   const [optimiseRes, setOptimiseRes] = useState<{ s: number, e: number, t: number } | null>(null)
+
+  // use before definition, but it works because JS :skull:
   const [algorithm, setAlgorithm] = useState<keyof typeof algorithms>("Particle")
   const [metric, setMetric] = useState<keyof typeof metrics>("Length")
+
   if (vehicle.type != "Plane") return <div>only planes are supported with optimisation</div>
+
   const metrics = { "Length": pathLength, "Energy": (x: Path<XY>) => pathEnergyRequirements(x, vehicle.cruiseAirspeed, vehicle.energyConstant) }
   const algorithms = { "Particle": particleOptimise, "Genetic": geneticOptimise, "Gradient": gradientOptimise }
 

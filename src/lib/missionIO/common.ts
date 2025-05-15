@@ -1,33 +1,59 @@
-import { Waypoint } from "@/types/waypoints";
 import { dubinsBetweenDubins, localisePath, splitDubinsRuns, waypointToDubins } from "@/lib/dubins/dubinWaypoints";
-import { LatLng } from "@/types/dubins";
+import { LatLng } from "../world/latlng";
+import { Command, MavCommand } from "../commands/commands";
+import { WPM2MAV } from "../commands/convert";
+import { importqgcWaypoints } from "./qgcWaypoints/spec";
+import { importwpm2, isValidMission } from "./wm2/spec";
+import { importwpm1 } from "./wm1/spec";
+import { Mission } from "@/lib/mission/mission";
+import { Vehicle } from "../vehicles/types";
+import { makeCommand } from "../commands/default";
+import { Result } from "@/util/try-catch";
 
-export function simplifyDubinsWaypoints(wps: Waypoint[]) {
+export function simplifyDubinsWaypoints(wps: Command[]) {
   // simplify dubins runs
-  let simplifiedMavWP: Waypoint[] = []
+  const simplifiedMavWP: Command[] = []
   for (let i = 0; i < wps.length - 1; i++) {
-    if (wps[i].type == 18 && wps[i + 1].type == 18 && wps[i].param5 == wps[i + 1].param5 && wps[i].param6 == wps[i + 1].param6 && wps[i].param3 == wps[i + 1].param3) {
-      simplifiedMavWP.push({ frame: 3, type: 18, param1: wps[i].param1 + wps[i + 1].param1, param2: 0, param3: wps[i].param3, param4: 1, param5: wps[i].param5, param6: wps[i].param6, param7: wps[i + 1].param7, autocontinue: 1 })
+    const cur = wps[i]
+    const next = wps[i + 1]
+    // if current and next are both loiter turns and are in the same place, combine them
+    if (cur.type == 18 && next.type == 18 && cur.params.longitude == next.params.longitude
+      && cur.params.latitude == cur.params.latitude
+      && cur.params.radius == cur.params.radius) {
+      simplifiedMavWP.push(makeCommand("MAV_CMD_NAV_LOITER_TURNS", {
+        latitude: cur.params.latitude,
+        longitude: cur.params.longitude,
+        radius: cur.params.radius,
+        turns: cur.params.turns + cur.params.turns,
+        altitude: next.params.altitude,
+        "": 1
+      }))
+      i++
+    } else if (cur.type == 16 && next.type == 16 && cur.params.longitude == next.params.longitude && cur.params.longitude == cur.params.latitude) {
+      // two consecutive waypoints, add one and skip the next
+      simplifiedMavWP.push(wps[i])
       i++
     } else {
+      // else just add waypoint
       simplifiedMavWP.push(wps[i])
     }
   }
-  simplifiedMavWP = simplifiedMavWP.filter((x) => (x.type != 18 || x.param1 > 0.03 || x.param3 > 0))
-  return simplifiedMavWP
+
+  // remove loiter turns with small turn amounts and with no radius
+  return simplifiedMavWP.filter((x) => (x.type != 18 || x.params.turns > 0.03 && Math.abs(x.params.radius) > 0))
 }
 
-export function convertToMAV(wps: Waypoint[], reference: LatLng): Waypoint[] {
+export function convertToMAV(wps: Command[], reference: LatLng): MavCommand[] {
 
   // render the dubins runs to waypoints
-  let convertedRuns: { start: number, wps: Waypoint[], length: number }[] = []
+  let convertedRuns: { start: number, wps: Command[], length: number }[] = []
 
   const runs = splitDubinsRuns(wps)
   for (const run of runs) {
     const dubinsPoints = run.wps.map((x) => waypointToDubins(x, reference))
     const path = dubinsBetweenDubins(dubinsPoints)
     const worldPath = localisePath(path, reference)
-    let newMavWP: Waypoint[] = []
+    let newMavWP: Command[] = []
     for (let i = 0; i < worldPath.length; i++) {
       const section = worldPath[i]
       const curWaypoint = Math.floor(i / 3)
@@ -35,11 +61,13 @@ export function convertToMAV(wps: Waypoint[], reference: LatLng): Waypoint[] {
         case "Curve": {
           const absTheta = Math.abs(section.theta / (Math.PI * 2))
           const dir = absTheta / (section.theta / (Math.PI * 2))
-          newMavWP.push({ frame: 3, type: 18, param1: absTheta, param2: 0, param3: section.radius * dir, param4: 1, param5: section.center.lat, param6: section.center.lng, param7: run.wps[curWaypoint].param7, autocontinue: 1 })
+          //@ts-ignore
+          newMavWP.push(makeCommand("MAV_CMD_NAV_LOITER_TURNS", { turns: absTheta, "": 1, altitude: run.wps[curWaypoint].params.altitude, radius: section.radius * dir, latitude: section.center.lat, longitude: section.center.lng }))
           break
         }
         case "Straight": {
-          newMavWP.push({ frame: 3, type: 16, param1: 0, param2: 0, param3: 0, param4: 0, param5: section.end.lat, param6: section.end.lng, param7: run.wps[curWaypoint].param7, autocontinue: 1 })
+          //@ts-ignore
+          newMavWP.push(makeCommand("MAV_CMD_NAV_WAYPOINT", { yaw: 0, "accept radius": 0, latitude: section.end.lat, longitude: section.end.lng, hold: 0, altitude: run.wps[curWaypoint].params.altitude, "pass radius": 0 }))
           break
         }
 
@@ -53,7 +81,7 @@ export function convertToMAV(wps: Waypoint[], reference: LatLng): Waypoint[] {
   }
 
   // compile into single mission
-  let ret: Waypoint[] = []
+  let ret: Command[] = []
   for (let i = 0; i < wps.length; i++) {
     let run = convertedRuns.find((x) => x.start == i)
     if (run == undefined) {
@@ -65,9 +93,10 @@ export function convertToMAV(wps: Waypoint[], reference: LatLng): Waypoint[] {
   }
 
   ret.map((x) => { console.assert(x.type != 69, "dubins found :skull: ") })
-  return ret
+  return WPM2MAV(ret)
 }
 
+// helper function to download some text as a file
 export function downloadTextAsFile(filename: string, text: string) {
   const blob = new Blob([text], { type: 'text/plain' });
   const link = document.createElement('a');
@@ -76,4 +105,27 @@ export function downloadTextAsFile(filename: string, text: string) {
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
+}
+
+export type importInterface = (missionStr: string) => Result<{ mission: Mission, vehicle: Vehicle }>
+
+// parse a generic mission string
+export function parseMissionString(a: string): Result<{ mission: Mission, vehicle: Vehicle }> {
+  const importFuncs: importInterface[] = [
+    importqgcWaypoints,
+    importwpm2,
+    importwpm1
+  ]
+  for (let i = 0; i < importFuncs.length; i++) {
+    const curAlg = importFuncs[i]
+    try {
+      const res = curAlg(a)
+      if (res.data !== null && isValidMission(res.data.mission)) {
+        return res
+      }
+    } catch (err) {
+      continue
+    }
+  }
+  return { data: null, error: Error("No valid import methods") }
 }

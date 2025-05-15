@@ -2,12 +2,12 @@ import { useWaypoints } from "@/util/context/WaypointContext";
 import CreateCollection from "./createCollection";
 import CollectionItem from "./collectionItem";
 import ListItem from "./ListItem";
-import { CollectionType } from "@/types/waypoints";
 import { TfiTarget } from "react-icons/tfi";
 import { commandName } from "@/util/translationTable";
-import { commands } from "@/util/commands";
 import { FaArrowRight, FaTrashAlt } from "react-icons/fa";
 import { useState } from "react";
+import { getCommandDesc } from "@/lib/commands/commands";
+import { CollectionType } from "@/lib/mission/mission";
 
 export default function MissionList({ onHide }: { onHide: () => void }) {
   const { setActiveMission, waypoints, setSelectedWPs, selectedWPs, setWaypoints, activeMission, setTool } = useWaypoints()
@@ -93,7 +93,7 @@ export default function MissionList({ onHide }: { onHide: () => void }) {
             <button className="pl-4" onMouseDown={() => onDelete(i)} key={0} name="delete"><FaTrashAlt /></button>
           ]}>
             <div className="flex justify-between">
-              <span><TfiTarget className="inline m-1" />{commandName(commands[commands.findIndex(a => a.value == waypoint.wps.type)].name)}</span>
+              <span><TfiTarget className="inline m-1" />{commandName(getCommandDesc(waypoint.cmd.type).name)}</span>
             </div>
           </ListItem>
         }

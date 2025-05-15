@@ -1,47 +1,70 @@
-import { avgLatLng, MoveWPsAvgTo } from "@/util/WPCollection";
 import { useWaypoints } from "@/util/context/WaypointContext";
-import { Node, Waypoint } from "@/types/waypoints";
 import { FaArrowDown, FaArrowLeft, FaArrowRight, FaArrowUp } from "react-icons/fa";
 import { FaArrowRotateLeft, FaArrowRotateRight } from "react-icons/fa6";
 import { LuMousePointerClick } from "react-icons/lu";
 import { TfiTarget } from "react-icons/tfi";
+import { Command, filterLatLngCmds } from "@/lib/commands/commands";
+import { avgLatLng, getLatLng } from "@/lib/world/latlng";
+import { Node } from "@/lib/mission/mission";
 
 export function LatLngEditor() {
   const { selectedWPs, waypoints, setWaypoints, activeMission, setTool } = useWaypoints();
 
   const mission = waypoints.get(activeMission);
 
-  let wps: Node[] = [];
-  let wpsIds: number[] = [];
-  if (selectedWPs.length === 0) {
-    wps = mission;
-    wpsIds = mission.map((_, index) => index);
-  } else {
-    wps = mission.filter((_, id) => selectedWPs.includes(id));
-    wpsIds = selectedWPs;
-  }
+  // all nodes if selected has none, or selected nodes
+  let wps: Node[] = selectedWPs.length === 0 ? mission : mission.filter((_, id) => selectedWPs.includes(id));
+
+  // all indexes if selected has none, or all selected indexes
+  let wpsIds: number[] = selectedWPs.length === 0 ? mission.map((_, index) => index) : selectedWPs
 
   const leaves = wps.map((x) => waypoints.flattenNode(x)).reduce((cur, acc) => (acc.concat(cur)), [])
 
-  const { lat, lng } = avgLatLng(leaves)
+  const avgll = avgLatLng(filterLatLngCmds(leaves).map(getLatLng))
+  if (avgll == undefined) {
+    return null
+  }
+  const { lat, lng } = avgll
 
   function nudge(x: number, y: number) {
     setWaypoints((waypoints) => {
-      for (let i = 0; i < wpsIds.length; i++) {
-        waypoints.changeParam(wpsIds[i], activeMission, (wp: Waypoint) => {
-          wp.param5 += 0.0001 * y;
-          wp.param6 += 0.0001 * x;
-          return wp;
+      wpsIds.forEach(wpsId => {
+        waypoints.changeParam(wpsId, activeMission, (cmd: Command) => {
+          if ("latitude" in cmd.params) {
+            cmd.params.latitude += 0.0001 * y;
+            cmd.params.longitude += 0.0001 * x;
+          }
+          return cmd;
         });
-      }
+      })
       return waypoints.clone();
     });
   }
 
   function move() {
-    const newLat = prompt("Enter latitude");
-    const newLng = prompt("Enter Longitude");
-    setWaypoints(MoveWPsAvgTo({ lat: Number(newLat), lng: Number(newLng) }, waypoints, selectedWPs, activeMission))
+    const inLat = prompt("Enter latitude");
+    const inLng = prompt("Enter Longitude");
+    if (inLat === null || inLng === null) { return }
+    const newLat = parseFloat(inLat)
+    const newLng = parseFloat(inLng)
+    setWaypoints((mission) => {
+      const leaves = wps.map((x) => waypoints.flattenNode(x)).reduce((cur, acc) => (acc.concat(cur)), [])
+
+      const avgll = avgLatLng(filterLatLngCmds(leaves).map(getLatLng))
+      if (avgll == undefined) { return waypoints }
+      const { lat, lng } = avgll
+      let waypointsUpdated = mission.clone();
+      wpsIds.forEach(wpsId => {
+        waypointsUpdated.changeParam(wpsId, activeMission, (cmd: Command) => {
+          if ("latitude" in cmd.params && "longitude" in cmd.params) {
+            cmd.params.latitude += newLat - lat
+            cmd.params.longitude += newLng - lng
+          }
+          return cmd;
+        });
+      })
+      return waypointsUpdated;
+    })
   }
 
   function rotateDeg(deg: number) {
@@ -49,20 +72,23 @@ export function LatLngEditor() {
     const angleRadians = (deg * Math.PI) / 180;
 
     setWaypoints((waypoints) => {
-      for (let i = 0; i < wps.length; i++) {
-        waypoints.changeParam(wpsIds[i], activeMission, (wp: Waypoint) => {
-          const x = (wp.param6 - lng) * Math.cos(lat * Math.PI / 180);
-          const y = wp.param5 - lat;
+      wpsIds.forEach(wpsId => {
+        waypoints.changeParam(wpsId, activeMission, (cmd: Command) => {
+          if ("latitude" in cmd.params) {
 
-          const newX = x * Math.cos(angleRadians) - y * Math.sin(angleRadians);
-          const newY = x * Math.sin(angleRadians) + y * Math.cos(angleRadians);
+            const x = (cmd.params.longitude - lng) * Math.cos(lat * Math.PI / 180);
+            const y = cmd.params.latitude - lat;
 
-          wp.param6 = newX / Math.cos(lat * Math.PI / 180) + lng;
-          wp.param5 = newY + lat;
+            const newX = x * Math.cos(angleRadians) - y * Math.sin(angleRadians);
+            const newY = x * Math.sin(angleRadians) + y * Math.cos(angleRadians);
 
-          return wp;
+            cmd.params.longitude = newX / Math.cos(lat * Math.PI / 180) + lng;
+            cmd.params.latitude = newY + lat;
+          }
+
+          return cmd;
         });
-      }
+      })
       return waypoints.clone();
     });
   }

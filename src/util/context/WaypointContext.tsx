@@ -1,18 +1,23 @@
 "use client";
 import { Dispatch, SetStateAction, createContext, useContext } from 'react';
 import { Tool } from '@/types/tools';
-import { WaypointCollection } from '@/lib/waypoints/waypointCollection';
+import { Mission } from "@/lib/mission/mission";
+
+export const syncStatusKeys = ["idle", "synced", "syncing", "notSynced", "error"] as const
 
 type provided = {
-  waypoints: WaypointCollection,
-  setWaypoints: Dispatch<SetStateAction<WaypointCollection>>,
+  waypoints: Mission,
+  setWaypoints: Dispatch<SetStateAction<Mission>>,
   selectedWPs: number[]
   setSelectedWPs: Dispatch<SetStateAction<number[]>>,
   activeMission: string,
   setActiveMission: Dispatch<SetStateAction<string>>,
   tool: Tool,
   setTool: Dispatch<SetStateAction<Tool>>,
-  missionId?: string
+  missionId?: string,
+  ownerId?: string,
+  syncStatus: typeof syncStatusKeys[number],
+  setSyncStatus: Dispatch<SetStateAction<typeof syncStatusKeys[number]>>
 }
 
 export const waypointContext = createContext<provided>(undefined as any);

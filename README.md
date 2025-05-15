@@ -1,4 +1,16 @@
-# Waypoint Maker
+<p align="center">
+   <img src="https://github.com/COOK1EK1W1/waypoint-maker/blob/main/public/logo-192x192.png?raw=true">
+</p>
+
+<h1 align="center"> Waypoint Maker</h1>
+
+<p align="center">
+   <img src="https://img.shields.io/github/actions/workflow/status/COOK1EK1W1/waypoint-maker/bun-test.yml">
+   <img src="https://img.shields.io/github/license/COOK1EK1W1/waypoint-maker">
+   <img src="https://img.shields.io/badge/platform-web--app-blue">
+   <img src="https://img.shields.io/badge/PRs-Welcome-brightgreen">
+   <a href="https://waypointmaker.app"><img src="https://img.shields.io/badge/website-waypointmaker.app-brightgreen"></a>
+</p>
 
 Waypoint Maker is an open-source Next.js project designed to simplify the creation of waypoint missions for autonomous UAVs. With powerful features like waypoint grouping, validation, and a Photoshop-inspired layering system, Waypoint Maker is a tool built for developers and UAV enthusiasts alike.
 
@@ -7,6 +19,10 @@ Waypoint Maker is an open-source Next.js project designed to simplify the creati
 - **Grouping and Nesting**: Organize waypoints into subgroups, allowing for reusable and nested mission components.
 - **Waypoint Validation**: Ensure missions are valid and flyable with an integrated waypoint check feature.
 - **Layering System**: Similar to Photoshop, toggle visibility for layers of waypoints to manage complex missions effectively.
+
+## Website
+
+The current deployment is hosted at [waypointmaker.app](https://waypointmaker.app)
 
 ## Getting Started
 
@@ -37,17 +53,17 @@ Follow these steps to set up and run Waypoint Maker locally.
 
 1. **Start the Development Server**:
    ```bash
-   bun dev
+   bun run dev
    ```
 
 2. **Build for Production**:
    ```bash
-   bun build
+   bun run build
    ```
 
 3. **Run the Production Build**:
    ```bash
-   bun start
+   bun run start
    ```
 
 ### Testing

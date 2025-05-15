@@ -1,21 +1,22 @@
 "use client"
 import VehicleTypeModal from "./vehicleTypeModal"
 import { FaHelicopter, FaPlane } from "react-icons/fa"
-import { useVehicleTypeContext } from "@/util/context/VehicleTypeContext"
+import { useVehicle } from "@/util/context/VehicleTypeContext"
 import Button from "../toolBar/button"
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "../ui/dialog"
 import { DialogDescription } from "@radix-ui/react-dialog"
+import { Plane } from "lucide-react"
 
 export default function VehicleTypeButton() {
-  let { vehicle } = useVehicleTypeContext()
+  let { vehicle } = useVehicle()
   let button = <></>
   switch (vehicle.type) {
     case "Plane": {
-      button = <><FaPlane /><span> Plane</span></>
+      button = <><Plane className="w-[20px] h-[20px] mr-1" /><span className="grow">Plane</span></>
       break
     }
     case "Copter": {
-      button = <><FaHelicopter /><span>Coper</span></>
+      button = <><FaHelicopter className="w-[20px] h-[20px] mr-1" /><span>Coper</span></>
       break;
     }
     default: {
@@ -27,7 +28,7 @@ export default function VehicleTypeButton() {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button className="w-28">
+        <Button className="w-28 justify-start">
           {button}
         </Button>
       </DialogTrigger>

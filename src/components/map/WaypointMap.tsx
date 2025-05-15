@@ -6,20 +6,21 @@ import { useWaypoints } from "../../util/context/WaypointContext";
 import { Tool } from "@/types/tools";
 import { LeafletMouseEvent, Map } from "leaflet";
 import { useEffect, useRef } from "react";
-import ActiveLayer from "./activeLayer";
-import GeofenceLayer from "./geofenceLayer";
-import MarkerLayer from "./markerLayer";
-import DubinsLayer from "./dunbinsLayer";
-import { MoveWPsAvgTo } from "@/util/WPCollection";
-import { defaultDoLandStart, defaultTakeoff, defaultWaypoint } from "@/lib/waypoints/defaults";
+import { defaultDoLandStart, defaultTakeoff, defaultWaypoint } from "@/lib/mission/defaults";
 import { useMap } from '@/util/context/MapContext';
 import MapController from "./mapController";
+import MapLayers from "./layers/layers";
+import { makeCommand } from "@/lib/commands/default";
+import { Command, filterLatLngAltCmds, filterLatLngCmds } from "@/lib/commands/commands";
+import { avgLatLng, getLatLng } from "@/lib/world/latlng";
+import { Node } from "@/lib/mission/mission";
 
 export default function MapStuff() {
   const { waypoints, setWaypoints, activeMission, tool, setTool, selectedWPs } = useWaypoints()
   const { moveMap } = useMap();
 
   const mapRef = useRef<Map | null>(null)
+
 
   useEffect(() => {
     moveMap.move = (lat, lng) => {
@@ -38,7 +39,7 @@ export default function MapStuff() {
 
 
           setWaypoints((waypoints) => {
-            waypoints.pushToMission(activeMission, { type: "Waypoint", wps: defaultWaypoint({ lat: Number(newLat), lng: Number(newLng) }) })
+            waypoints.pushToMission(activeMission, { type: "Command", cmd: defaultWaypoint({ lat: Number(newLat), lng: Number(newLng) }) })
             return waypoints.clone()
           })
           break;
@@ -56,12 +57,35 @@ export default function MapStuff() {
 
   }, [activeMission, setWaypoints, waypoints, moveMap])
 
+  useEffect(() => {
+    const pos = avgLatLng(filterLatLngAltCmds(waypoints.flatten("Main")).map(getLatLng))
+    if (mapRef.current != null && pos !== undefined) {
+      mapRef.current.setView(pos)
+    }
+  }, [mapRef.current, moveMap])
+
   function handleClick(tool: Tool, e: LeafletMouseEvent) {
+    if (activeMission == "Geofence") {
+      setWaypoints((waypoints) => {
+        let waypointsNew = waypoints.clone()
+        waypointsNew.pushToMission(activeMission, { type: "Command", cmd: makeCommand("WM_CMD_FENCE", { latitude: e.latlng.lat, longitude: e.latlng.lng }) })
+        return waypointsNew
+      })
+      return
+    }
+    if (activeMission == "Markers") {
+      setWaypoints((waypoints) => {
+        let waypointsNew = waypoints.clone()
+        waypointsNew.pushToMission(activeMission, { type: "Command", cmd: makeCommand("WM_CMD_MARKER", { latitude: e.latlng.lat, longitude: e.latlng.lng }) })
+        return waypointsNew
+      })
+      return
+    }
     switch (tool) {
       case "Waypoint": {
         setWaypoints((waypoints) => {
           let waypointsNew = waypoints.clone()
-          waypointsNew.pushToMission(activeMission, { type: "Waypoint", wps: defaultWaypoint(e.latlng) })
+          waypointsNew.pushToMission(activeMission, { type: "Command", cmd: defaultWaypoint(e.latlng) })
           return waypointsNew
         })
         break;
@@ -70,7 +94,7 @@ export default function MapStuff() {
         setTool("Waypoint")
         setWaypoints((waypoints) => {
           const a = waypoints.clone()
-          a.pushToMission(activeMission, { type: "Waypoint", wps: defaultTakeoff(e.latlng) })
+          a.pushToMission(activeMission, { type: "Command", cmd: defaultTakeoff(e.latlng) })
           return a
         })
         break;
@@ -79,7 +103,7 @@ export default function MapStuff() {
         setTool("Waypoint")
         setWaypoints((waypoints) => {
           const a = waypoints.clone()
-          a.pushToMission(activeMission, { type: "Waypoint", wps: defaultDoLandStart(e.latlng) })
+          a.pushToMission(activeMission, { type: "Command", cmd: defaultDoLandStart(e.latlng) })
           return a
         })
         break;
@@ -87,8 +111,34 @@ export default function MapStuff() {
       case "Place": {
         setTool("Waypoint")
         setWaypoints((waypoints) => {
-          MoveWPsAvgTo(e.latlng, waypoints, selectedWPs, activeMission)
-          return waypoints
+          const mission = waypoints.get(activeMission);
+
+          let wps: Node[] = [];
+          let wpsIds: number[] = [];
+          if (selectedWPs.length === 0) {
+            wps = mission;
+            wpsIds = mission.map((_, index) => index);
+          } else {
+            wps = mission.filter((_, id) => selectedWPs.includes(id));
+            wpsIds = selectedWPs;
+          }
+
+          const leaves = wps.map((x) => waypoints.flattenNode(x)).reduce((cur, acc) => (acc.concat(cur)), [])
+
+          const avgll = avgLatLng(filterLatLngCmds(leaves).map(getLatLng))
+          if (avgll == undefined) { return waypoints }
+          const { lat, lng } = avgll
+          let waypointsUpdated = waypoints.clone();
+          for (let i = 0; i < wps.length; i++) {
+            waypointsUpdated.changeParam(wpsIds[i], activeMission, (cmd: Command) => {
+              if ("latitude" in cmd.params && "longitude" in cmd.params) {
+                cmd.params.latitude += e.latlng.lat - lat
+                cmd.params.longitude += e.latlng.lng - lng
+              }
+              return cmd;
+            });
+          }
+          return waypointsUpdated;
         })
         break;
       }
@@ -113,7 +163,7 @@ export default function MapStuff() {
     const [mission, pos] = a
     setWaypoints((waypoints2) => {
       const b = waypoints2.clone()
-      b.changeParam(pos, mission, (wp) => { wp.param5 = lat; wp.param6 = lng; return wp })
+      b.changeParam(pos, mission, (wp) => { if ("latitude" in wp.params) { wp.params.latitude = lat; wp.params.longitude = lng } return wp })
       return b
     })
     return
@@ -121,7 +171,6 @@ export default function MapStuff() {
   }
 
   const { zoom, center } = useMap();
-  console.log(center)
 
   if (typeof window != undefined) {
 
@@ -146,10 +195,7 @@ export default function MapStuff() {
 
         <CreateHandler />
 
-        <ActiveLayer onMove={onMove} />
-        <GeofenceLayer onMove={onMove} />
-        <MarkerLayer onMove={onMove} />
-        <DubinsLayer />
+        <MapLayers onMove={onMove} />
       </MapContainer>
     );
   }

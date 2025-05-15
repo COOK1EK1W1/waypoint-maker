@@ -1,6 +1,7 @@
 import { expect, test } from "bun:test";
-import { Path, Segment, XY } from "@/types/dubins";
-import { pathLength, segmentLength } from "@/lib/dubins/geometry";
+import { loadFactor, pathEnergyRequirements, pathLength, segmentLength } from "@/lib/dubins/geometry";
+import { XY } from "@/lib/math/types";
+import { Path, Segment } from "../types";
 
 test("straight line len", () => {
   const a: Segment<XY> = { type: "Straight", start: { x: 0, y: 0 }, end: { x: 3, y: 4 } }
@@ -47,6 +48,25 @@ test("path length", () => {
   expect(pathLength(curves)).toBeCloseTo(10 + 31.4159)
 })
 
-test("point in poly", () => {
 
+test("Load factor", () => {
+  expect(loadFactor(10, 0)).toBeCloseTo(1)
+
+  expect(loadFactor(Infinity, 10)).toBeCloseTo(1)
+
+  expect(loadFactor(34, 24)).toBeCloseTo(2)
+  expect(loadFactor(105, 54)).toBeCloseTo(3)
+
+  //expect(loadFactor(0, 10)).toBeCloseTo(Infinity) // swap these files eventually TODO
+  expect(loadFactor(0, 10)).toBeCloseTo(0)
+})
+
+test("Energy Requirements for path", () => {
+  const path: Path<XY> = [{ type: "Straight", start: { x: 0, y: 0 }, end: { x: 3, y: 4 } }]
+  expect(pathEnergyRequirements(path, 24)).toBe(5)
+  path.push({ type: "Curve", center: { x: 0, y: 0 }, start: 0, theta: Math.PI, radius: 27 })
+  expect(pathEnergyRequirements(path, 24)).toBeCloseTo(208, 1)
+})
+
+test("Energy Requirements for path with constant", () => {
 })

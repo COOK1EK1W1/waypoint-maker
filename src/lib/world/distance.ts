@@ -1,6 +1,6 @@
-import { LatLng } from "@/types/dubins";
-import { deg2rad, mod2pi } from "@/lib/math/geometry";
+import { deg2rad, mod2pi, rad2deg } from "@/lib/math/geometry";
 import { angleBetweenVectors } from "@/lib/math/vector";
+import { LatLng } from "./latlng";
 
 /*
  * Calculate the distance between two points on a globe
@@ -65,7 +65,7 @@ export function latLngToVector(pos: LatLng): [number, number, number] {
  * @param {number} alt2 - The second altitude
  * @returns {number} The gradient in degrees
  */
-export function gradient(distance: number, alt1: number, alt2: number) {
+export function gradient(distance: number, alt1: number, alt2: number): number {
   const altitudeChange = alt2 - alt1;
   const gradientRadians = Math.atan(altitudeChange / distance);
   const gradientDegrees = gradientRadians * (180 / Math.PI);
@@ -76,8 +76,8 @@ export function gradient(distance: number, alt1: number, alt2: number) {
  * Format a distance in meters to a human-readable string
  * @param {number} distanceInMeters - The distance in meters
  * @returns {string} The formatted distance
- */ 
-export function formatDistance(distanceInMeters: number) {
+ */
+export function formatDistance(distanceInMeters: number): string {
   // If the distance is less than 1 kilometer, return in meters rounded to three significant figures
   if (distanceInMeters < 1000) {
     const roundedMeters = Number(distanceInMeters.toPrecision(3));
@@ -107,13 +107,46 @@ export function worldBearing(a: LatLng, b: LatLng): number {
   return normalizedBearing;
 }
 
-export function worldOffset(a: LatLng, dist: number, angle: number): LatLng {
-  const latRad = deg2rad(a.lat)
-  const mpld = 111320.0;
-  const mplo = 111320.0 * Math.cos(latRad);
-  return {
-    lng: a.lng + dist * Math.sin(angle) / mplo,
-    lat: a.lat + dist * Math.cos(angle) / mpld
+export function worldOffset(start: LatLng, distance: number, bearing: number): LatLng {
+  if (distance === 0) return start;
+  
+  const R = 6371000; // Earth's radius in meters
+  const lat1 = deg2rad(start.lat);
+  const lon1 = deg2rad(start.lng);
+  
+  // Convert distance to angular distance
+  const angularDistance = distance / R;
+  
+  // Calculate new latitude
+  const lat2 = Math.asin(
+    Math.sin(lat1) * Math.cos(angularDistance) +
+    Math.cos(lat1) * Math.sin(angularDistance) * Math.cos(bearing)
+  );
+  
+  // Calculate new longitude
+  const lon2 = lon1 + Math.atan2(
+    Math.sin(bearing) * Math.sin(angularDistance) * Math.cos(lat1),
+    Math.cos(angularDistance) - Math.sin(lat1) * Math.sin(lat2)
+  );
+  
+  // Handle pole crossing
+  let finalLat = lat2;
+  let finalLon = lon2;
+  
+  // If we've crossed a pole, adjust longitude
+  if (Math.abs(lat2) > Math.PI/2) {
+    // Flip latitude to the other side of the pole
+    finalLat = Math.sign(lat2) * Math.PI - lat2;
+    // Add 180 degrees to longitude
+    finalLon = lon2 + Math.PI;
   }
+  
+  // Normalize longitude to [-π, π]
+  while (finalLon > Math.PI) finalLon -= 2 * Math.PI;
+  while (finalLon < -Math.PI) finalLon += 2 * Math.PI;
+  
+  return {
+    lat: rad2deg(finalLat),
+    lng: rad2deg(finalLon)
+  };
 }
-

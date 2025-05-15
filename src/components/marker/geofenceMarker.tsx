@@ -1,13 +1,12 @@
 import { Marker } from "react-leaflet"
-import { activeIcon, normalIcon } from "./waypoint"
-import { toLatLng } from "@/util/waypointToLeaflet"
-import { Waypoint } from "@/types/waypoints"
+import { LatLng } from "@/lib/world/types"
+import { createAnimatedIcon } from "./waypoint"
 
-export default function GeofenceMarker({ waypoint, active }: { waypoint: Waypoint, active: boolean }) {
+export default function GeofenceMarker({ position, active }: { position: LatLng, active: boolean }) {
   return (
     <Marker
-      position={toLatLng(waypoint)}
-      icon={active ? activeIcon : normalIcon}>
+      position={position}
+      icon={createAnimatedIcon(active)}>
     </Marker>
   )
 
