@@ -10,7 +10,7 @@ type Props = {
 export default function MapProvider({ children }: Props) {
 
   const mapRef = useRef<Map | null>(null)
-  const [tileProvider, setTileProvider] = useState<string>("https://tile.openstreetmap.org/{z}/{x}/{y}.png")
+  const [tileProvider, setTileProvider] = useState<{ subdomains: string[], url: string }>({ url: "https://tile.openstreetmap.org/{z}/{x}/{y}.png", subdomains: [] })
 
   return (
     <mapContext.Provider value={{

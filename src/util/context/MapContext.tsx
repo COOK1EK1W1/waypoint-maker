@@ -4,8 +4,8 @@ import { Map } from "leaflet";
 
 type MapContextType = {
   mapRef: MutableRefObject<Map | null>;
-  tileProvider: string,
-  setTileProvider: Dispatch<SetStateAction<string>>
+  tileProvider: { subdomains: string[], url: string },
+  setTileProvider: Dispatch<SetStateAction<{ subdomains: string[], url: string }>>
 }
 
 export const mapContext = createContext<MapContextType>(undefined as any);

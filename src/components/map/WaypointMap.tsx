@@ -17,7 +17,7 @@ import { Node } from "@/lib/mission/mission";
 
 export default function MapStuff() {
   const { waypoints, setWaypoints, activeMission, tool, setTool, selectedWPs } = useWaypoints()
-  const { mapRef } = useMap();
+  const { mapRef, tileProvider } = useMap();
 
 
   useEffect(() => {
@@ -156,6 +156,7 @@ export default function MapStuff() {
 
   }
 
+  console.log(tileProvider)
   if (typeof window != undefined) {
 
     return (
@@ -168,11 +169,13 @@ export default function MapStuff() {
         zoomControl={false}
         keyboard={false}
         fadeAnimation={false}
+        ref={mapRef}
       >
         <TileLayer
-          url='https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}'
+          url={tileProvider.url}
+          subdomains={["mt1", "mt2", "mt3"]}
           maxZoom={20}
-          subdomains={['mt1', 'mt2', 'mt3']} />
+        />
 
         <MapController />
 

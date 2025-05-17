@@ -9,7 +9,6 @@ export default function MapController() {
   const map = useMap();
   const { waypoints } = useWaypoints()
 
-  // capture waypoints only once
   const initialWaypoints = useRef(waypoints)
 
   // on load move to average location of waypoints
