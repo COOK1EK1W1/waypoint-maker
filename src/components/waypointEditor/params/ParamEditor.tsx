@@ -20,20 +20,26 @@ export default function ParamEditor() {
   const { activeMission, selectedWPs, waypoints, setWaypoints } = useWaypoints()
 
   const mission = waypoints.get(activeMission)
-  const selected = (selectedWPs.length == 0 ? mission : mission.filter((_, i) => selectedWPs.includes(i))).filter((x) => x.type == "Command")
+  const selected = (selectedWPs.length == 0 ? mission : mission.filter((_, i) => selectedWPs.includes(i))).map((x) => {
+    if (x.type == "Command") {
+      return [x.cmd]
+    } else {
+      return waypoints.flatten(x.name)
+    }
+  }).flat()
 
   if (selected.length == 0) {
     return <div className="h-full w-full text-center content-center"> Select or place a waypoint to begin </div>
   }
 
-  let types = new Set(selected.map(x => x.cmd.type))
+  let types = new Set(selected.map(x => x.type))
   const params = findCommonParamsForTypes(types)
 
   let vals = {}
 
   for (const key of params) {
     //@ts-ignore
-    const values = selected.map(obj => obj.cmd.params[key]);
+    const values = selected.map(obj => obj.params[key]);
     const allSame = values.every(val => val === values[0]);
 
     //@ts-ignore
@@ -57,7 +63,7 @@ export default function ParamEditor() {
 
   return (
     <div className="flex-1 flex flex-wrap overflow-y-auto">
-      <CommandTypeSelector />
+      <CommandTypeSelector selected={selected} />
       {Array.from(params).map((x, i) => {
         if (["longitude", "latitude"].includes(x)) {
           return

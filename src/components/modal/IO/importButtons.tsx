@@ -33,10 +33,10 @@ export default function LoadJson() {
       try {
         if (reader.result == null) return
         let parsed = parseMissionString("" + reader.result)
-        if (parsed === undefined) {
+        if (parsed.data === null) {
           throw new Error("bruh")
         }
-        const mission = parsed.mission
+        const mission = parsed.data.mission
         let main = mission.get("Main")
         if (main) {
           if (moveMap.move) {
@@ -46,7 +46,7 @@ export default function LoadJson() {
             }
           }
           setWaypoints(mission)
-          setVehicle(parsed.vehicle)
+          setVehicle(parsed.data.vehicle)
         }
       } catch (err) {
         console.error(err)

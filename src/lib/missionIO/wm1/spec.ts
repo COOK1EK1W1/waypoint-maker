@@ -1,11 +1,11 @@
 import { CommandValue, getCommandDesc } from "@/lib/commands/commands";
 import { Mission } from "@/lib/mission/mission";
-import { Vehicle } from "@/lib/vehicles/types";
 import { defaultPlane } from "@/lib/vehicles/defaults";
+import { importInterface } from "../common";
 
-export function importwpm1(a: string): { mission: Mission, vehicle: Vehicle } | undefined {
+export const importwpm1: importInterface = (missionStr: string) => {
   try {
-    const newMission: Map<string, any[]> = new Map(JSON.parse(a))
+    const newMission: Map<string, any[]> = new Map(JSON.parse(missionStr))
 
     const newWPC = new Mission();
 
@@ -44,11 +44,12 @@ export function importwpm1(a: string): { mission: Mission, vehicle: Vehicle } | 
       }
     }
     return {
-      mission: newWPC,
-      vehicle: defaultPlane
+      data: {
+        mission: newWPC,
+        vehicle: defaultPlane
+      }, error: null
     }
   } catch (err) {
-    return undefined
-
+    return { data: null, error: err as Error }
   }
 }

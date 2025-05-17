@@ -6,11 +6,10 @@ import { useWaypoints } from "@/util/context/WaypointContext";
 import { ChangeEvent } from "react";
 import { coerceCommand } from "@/lib/commands/convert";
 
-export default function CommandTypeSelector() {
+export default function CommandTypeSelector({ selected }: { selected: Command[] }) {
   const { activeMission, selectedWPs, waypoints, setWaypoints } = useWaypoints()
 
   const mission = waypoints.get(activeMission)
-  let selected = selectedWPs.length == 0 ? mission : mission.filter((_, i) => selectedWPs.includes(i))
   let selectedIDs: number[] = []
   if (selectedWPs.length == 0) {
     for (let i = 0; i < mission.length; i++) {
@@ -25,12 +24,8 @@ export default function CommandTypeSelector() {
 
   const types: Set<number> = new Set();
   selected.forEach((x) => {
-    if (x.type == "Command") {
-      types.add(x.cmd.type)
-    }
+    types.add(x.type)
   })
-
-  let nodes = selected.filter((x) => x.type == "Command")
 
   function onChange(e: ChangeEvent<HTMLSelectElement>) {
     setWaypoints((wps) => {
@@ -51,7 +46,7 @@ export default function CommandTypeSelector() {
     <div className="p-2 flex flex-col">
       <label>
         <span className="block pl-[3.5px]">Type</span>
-        <select className="w-40 h-[25px] border-slate-200 bg-slate-100" onChange={onChange} value={types.size > 1 ? "" : commandName(getCommandDesc(nodes[0].cmd.type).name)}>
+        <select className="w-40 h-[25px] border-slate-200 bg-slate-100" onChange={onChange} value={types.size > 1 ? "" : commandName(getCommandDesc(selected[0].type).name)}>
 
           {types.size > 1 ? <option value="" disabled>--</option> : null}
           {commands.filter((x) => (planeSupported as readonly string[]).includes(x.name)).map((cmd, index) => (

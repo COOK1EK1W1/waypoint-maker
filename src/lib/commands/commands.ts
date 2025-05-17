@@ -1,3 +1,5 @@
+import { LatLng } from "leaflet";
+import { makeCommand } from "./default";
 import { mavCmds } from "./mav/commands";
 import { wpmCmds } from "./wpm/commands";
 
@@ -106,13 +108,28 @@ export type LatLngAltCommand = {
   : never
 }[CommandName]
 
+// commands which have altitude
+export type AltCommand = {
+  [K in CommandName]:
+  "Altitude" extends CommandParamsNames<K> ? ICommand<K> : never
+}[CommandName]
+
 /*
  * Filter commands which contain a latitude and longitude
  * @param {Command[]} cmds - list of commands
  * @returns {LatLngCommand[]} commands which contain lat & lng
  */
-export function filterLatLngCmds(cmds: Command[]): LatLngCommand[] {
-  return cmds.filter((x) => "latitude" in x.params && "longitude" in x.params) as LatLngCommand[]
+export function filterLatLngCmds<T extends Command>(cmds: T[]): Extract<T, LatLngCommand>[] {
+  return cmds.filter((x): x is Extract<T, LatLngCommand> => "latitude" in x.params && "longitude" in x.params)
+}
+
+/*
+ * Filter commands which contain an altitude
+ * @param {Command[]} cmds - list of commands
+ * @returns {LatLngAltCommand[]} commands which contain alt
+ */
+export function filterAltCmds<T extends Command>(cmds: T[]): Extract<T, AltCommand>[] {
+  return cmds.filter((x): x is Extract<T, AltCommand> => "altitude" in x.params)
 }
 
 /*
@@ -120,9 +137,8 @@ export function filterLatLngCmds(cmds: Command[]): LatLngCommand[] {
  * @param {Command[]} cmds - list of commands
  * @returns {LatLngAltCommand[]} commands which contain lat lng & alt
  */
-export function filterLatLngAltCmds(cmds: Command[]): LatLngAltCommand[] {
-  return cmds.filter((x) => "latitude" in x.params && "longitude" in x.params && "altitude" in x.params) as LatLngAltCommand[]
-
+export function filterLatLngAltCmds<T extends Command>(cmds: T[]): Extract<T, LatLngAltCommand>[] {
+  return cmds.filter((x): x is Extract<T, LatLngAltCommand> => "latitude" in x.params && "longitude" in x.params && "altitude" in x.params)
 }
 
 /*

@@ -1,4 +1,4 @@
-import { convertToMAV } from "../common"
+import { convertToMAV, importInterface } from "../common"
 import { Mission } from "@/lib/mission/mission";
 import { commands, CommandValue, MavCommand } from "@/lib/commands/commands"
 import { Vehicle } from "@/lib/vehicles/types";
@@ -21,10 +21,10 @@ function waypointString(i: number, wp: MavCommand): string {
   return `${i}\t${i == 0 ? "1" : "0"}\t${wp.frame}\t${wp.type}\t${wp.param1}\t${wp.param2}\t${wp.param3}\t${wp.param4}\t${wp.param5}\t${wp.param6}\t${wp.param7}\t${wp.autocontinue}\n`
 }
 
-export function importqgcWaypoints(a: string): { mission: Mission, vehicle: Vehicle } | undefined {
+export const importqgcWaypoints: importInterface = (missionStr: string) => {
   const newMission = new Mission()
-  const b = a.trim().split("\n")
-  if (b[0] !== "QGC WPL 110") { return undefined }
+  const b = missionStr.trim().split("\n")
+  if (b[0] !== "QGC WPL 110") { return { data: null, error: Error("incompatible qgc version") } }
   for (let i = 1; i < b.length; i++) {
     const curLine = b[i];
     const params = curLine.split("\t")
@@ -51,6 +51,6 @@ export function importqgcWaypoints(a: string): { mission: Mission, vehicle: Vehi
     })
 
   }
-  return { mission: newMission, vehicle: defaultPlane }
+  return { data: { mission: newMission, vehicle: defaultPlane }, error: null }
 
 }

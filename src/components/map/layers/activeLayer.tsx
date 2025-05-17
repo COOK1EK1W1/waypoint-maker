@@ -4,7 +4,10 @@ import InsertBtn from "@/components/marker/insertBtn";
 import DraggableMarker from "@/components/marker/DraggableMarker";
 import { Command, getCommandDesc, LatLngCommand } from "@/lib/commands/commands";
 import { defaultWaypoint } from "@/lib/mission/defaults";
-import { getLatLng } from "@/lib/world/latlng";
+import { avgLatLng, getLatLng } from "@/lib/world/latlng";
+import NonDestChip from "@/components/marker/nonDestChip";
+import { commandName } from "@/util/translationTable";
+import { LatLng } from "@/lib/world/types";
 
 const limeOptions = { color: 'lime' }
 const noshow = ["Markers", "Geofence"]
@@ -30,16 +33,17 @@ export default function ActiveLayer({ onMove }: { onMove: (lat: number, lng: num
     }
   })
 
+  // create a button between each latlng command
   let insertBtns = []
   for (let i = 0; i < mainLine.length - 1; i++) {
-    const midLat = (mainLine[i].cmd.params.latitude + mainLine[i + 1].cmd.params.latitude) / 2
-    const midLng = (mainLine[i].cmd.params.longitude + mainLine[i + 1].cmd.params.longitude) / 2
+    const avg = avgLatLng([getLatLng(mainLine[i].cmd), getLatLng(mainLine[i + 1].cmd)]) as LatLng
     insertBtns.push(
-      <InsertBtn key={i} lat={midLat} lng={midLng} onClick={() => insert(mainLine[i + 1].id, midLat, midLng)} />
+      <InsertBtn key={i} lat={avg.lat} lng={avg.lng} onClick={() => handleInsert(mainLine[i + 1].id, avg.lat, avg.lng)} />
     )
   }
 
-  function insert(id: number, lat: number, lng: number) {
+  // handle insert at specific id
+  function handleInsert(id: number, lat: number, lng: number) {
     setWaypoints((prevWPS) => {
       const a = prevWPS.clone()
       a.insert(id, activeMission, { type: "Command", cmd: defaultWaypoint({ lat, lng }) })
@@ -47,6 +51,7 @@ export default function ActiveLayer({ onMove }: { onMove: (lat: number, lng: num
     });
   }
 
+  // handle when marker is clicked 
   function handleMarkerClick(id: number) {
     const a = waypoints.findNthPosition(activeMission, id)
     if (!a) return
@@ -54,17 +59,50 @@ export default function ActiveLayer({ onMove }: { onMove: (lat: number, lng: num
     setSelectedWPs([a[1]])
   }
 
+  let a = 0;
+
   return (
     <LayerGroup>
       {mainLine.map((command, idx) => {
-        let active = false
-        let x = waypoints.findNthPosition(activeMission, command.id)
-        if (x) {
-          if (x[0] == activeMission && selectedWPs.includes(x[1])) active = true
-        }
-        return <DraggableMarker key={idx} position={getLatLng(command.cmd)} onMove={(lat, lng) => onMove(lat, lng, command.id)} active={active} onClick={() => handleMarkerClick(command.id)} />
-      })
-      }
+        const position = getLatLng(command.cmd);
+        const isActive = (() => {
+          const x = waypoints.findNthPosition(activeMission, command.id);
+          return x?.[0] === activeMission && selectedWPs.includes(x[1]);
+        })();
+
+        return (
+          <div key={a++}>
+            <DraggableMarker
+              position={position}
+              onMove={(lat, lng) => onMove(lat, lng, command.id)}
+              active={isActive}
+              onClick={() => handleMarkerClick(command.id)}
+            />
+          </div>
+        );
+      })}
+
+      {mainLine.map((command) => {
+        const position = getLatLng(command.cmd);
+        return command.other.map((cmd, id) => {
+          const isActive = (() => {
+            const x = waypoints.findNthPosition(activeMission, command.id + 1 + id);
+            return x?.[0] === activeMission && selectedWPs.includes(x[1]);
+          })();
+
+          return (
+            <NonDestChip
+              key={a++}
+              name={commandName(getCommandDesc(cmd.type).name)}
+              offset={id}
+              position={position}
+              active={isActive}
+              onClick={() => handleMarkerClick(command.id + id + 1)}
+            />
+          );
+        });
+      })}
+
       <Polyline pathOptions={limeOptions} positions={mainLine.map(x => getLatLng(x.cmd))} />
       {insertBtns}
     </LayerGroup>
