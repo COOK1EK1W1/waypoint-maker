@@ -12,7 +12,7 @@ import { Upload } from 'lucide-react';
 export default function LoadJson() {
   const { setWaypoints } = useWaypoints();
   const { setVehicle } = useVehicle();
-  const { moveMap } = useMap();
+  const { mapRef } = useMap();
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (!event.target.files) {
@@ -39,11 +39,9 @@ export default function LoadJson() {
         const mission = parsed.data.mission
         let main = mission.get("Main")
         if (main) {
-          if (moveMap.move) {
-            const avgll = avgLatLng(filterLatLngCmds(mission.flatten("Main")).map(getLatLng))
-            if (avgll !== undefined) {
-              moveMap.move(avgll.lat, avgll.lng)
-            }
+          const avgll = avgLatLng(filterLatLngCmds(mission.flatten("Main")).map(getLatLng))
+          if (avgll !== undefined) {
+            mapRef.current?.panTo(avgll)
           }
           setWaypoints(mission)
           setVehicle(parsed.data.vehicle)

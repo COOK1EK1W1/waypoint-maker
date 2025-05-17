@@ -1,14 +1,6 @@
 
 importScripts('https://cdn.jsdelivr.net/npm/idb-keyval@3/dist/idb-keyval-iife.min.js')
 
-const TILE_URL_PATTERNS = [
-  "tile.openstreetmap.org",
-  "basemaps.cartocdn.com",
-  "google.com",
-  "api.mapbox.com",
-  "services.arcgisonline.com"
-];
-
 self.addEventListener("install", (event) => {
   event.waitUntil(
     Promise.all([
@@ -25,10 +17,12 @@ self.addEventListener("activate", (event) => {
   );
 });
 
-self.addEventListener("fetch", (event) => {
+self.addEventListener("fetch", async (event) => {
   const url = event.request.url;
 
-  if (TILE_URL_PATTERNS.some(p => url.includes(p))) {
+  const mapProvider = await idbKeyVal.get("mapProvider")
+
+  if (url.includes(mapProvider)) {
     event.respondWith(
       (async () => {
         try {
@@ -54,7 +48,7 @@ self.addEventListener("fetch", (event) => {
           };
 
           const response = await fetch(url, fetchOptions);
-          
+
           if (!response.ok) {
             console.warn(`[SW] Network response not ok: ${response.status} for ${url}`);
             return response;
@@ -69,7 +63,7 @@ self.addEventListener("fetch", (event) => {
           } catch (cacheError) {
             console.error('[SW] Failed to cache:', url, cacheError);
           }
-          
+
           return response;
         } catch (err) {
           console.warn("[SW] Network failed, tile not found in IndexedDB:", url, err);
@@ -91,7 +85,7 @@ self.addEventListener("fetch", (event) => {
             console.error("[SW] Fallback fetch also failed:", fallbackErr);
           }
           // Only return 504 if both attempts fail
-          return new Response(null, { 
+          return new Response(null, {
             status: 504,
             statusText: 'Gateway Timeout'
           });

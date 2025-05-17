@@ -4,8 +4,8 @@ import { MapContainer, TileLayer, useMapEvent } from "react-leaflet"
 import 'leaflet/dist/leaflet.css';
 import { useWaypoints } from "../../util/context/WaypointContext";
 import { Tool } from "@/types/tools";
-import { LeafletMouseEvent, Map } from "leaflet";
-import { useEffect, useRef } from "react";
+import { LeafletMouseEvent } from "leaflet";
+import { useEffect } from "react";
 import { defaultDoLandStart, defaultTakeoff, defaultWaypoint } from "@/lib/mission/defaults";
 import { useMap } from '@/util/context/MapContext';
 import MapController from "./mapController";
@@ -14,21 +14,13 @@ import { makeCommand } from "@/lib/commands/default";
 import { Command, filterLatLngAltCmds, filterLatLngCmds } from "@/lib/commands/commands";
 import { avgLatLng, getLatLng } from "@/lib/world/latlng";
 import { Node } from "@/lib/mission/mission";
-import { registerServiceWorker } from "@/lib/registerServiceWorker";
 
 export default function MapStuff() {
   const { waypoints, setWaypoints, activeMission, tool, setTool, selectedWPs } = useWaypoints()
-  const { moveMap } = useMap();
-
-  const mapRef = useRef<Map | null>(null)
+  const { mapRef } = useMap();
 
 
   useEffect(() => {
-    moveMap.move = (lat, lng) => {
-      if (mapRef.current != null) {
-        mapRef.current.setView({ lat, lng })
-      }
-    }
 
     // Keyboard shortcuts
     function handleKeyPress(e: KeyboardEvent) {
@@ -56,14 +48,7 @@ export default function MapStuff() {
       window.removeEventListener('keypress', handleKeyPress)
     }
 
-  }, [activeMission, setWaypoints, waypoints, moveMap])
-
-  useEffect(() => {
-    const pos = avgLatLng(filterLatLngAltCmds(waypoints.flatten("Main")).map(getLatLng))
-    if (mapRef.current != null && pos !== undefined) {
-      mapRef.current.setView(pos)
-    }
-  }, [mapRef.current, moveMap])
+  }, [activeMission, setWaypoints, waypoints])
 
   function handleClick(tool: Tool, e: LeafletMouseEvent) {
     if (activeMission == "Geofence") {
@@ -171,17 +156,14 @@ export default function MapStuff() {
 
   }
 
-  const { zoom, center } = useMap();
-
   if (typeof window != undefined) {
 
     return (
       <MapContainer
-        center={[center.lat, center.lng]}
-        zoom={zoom}
+        center={[55.911879, -3.319938]}
+        zoom={13}
         style={{ width: '100%', height: '100%' }}
         className="z-10"
-        ref={mapRef}
         attributionControl={false}
         zoomControl={false}
         keyboard={false}
