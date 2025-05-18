@@ -14,7 +14,7 @@ export default function SystemModal() {
           <h1 className="mx-4 py-0 hidden lg:flex items-center">Waypoint Maker</h1>
         </div>
       </DialogTrigger>
-      <DialogContent className="h-1/2">
+      <DialogContent className="h-[50dvh] flex flex-col">
         <DialogTitle className="text-4xl">Settings</DialogTitle>
         <Tabs>
           <TabsList>

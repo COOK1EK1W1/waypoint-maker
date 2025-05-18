@@ -24,6 +24,7 @@
     "better-auth": "^1.1.18",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "idb-keyval": "^6.2.2",
     "jsdom": "^22.1.0",
     "leaflet": "^1.9.4",
     "lucide-react": "^0.469.0",
