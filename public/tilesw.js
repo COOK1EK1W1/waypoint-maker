@@ -33,30 +33,29 @@ self.addEventListener("activate", (event) => {
 self.addEventListener("fetch", async (event) => {
   const url = event.request.url;
 
-  const mapProvider = await idbKeyval.get("providerUrl", providerStore)
-  const params = extractTemplateValues(mapProvider, url)
+  // Immediately respond with a promise to prevent race conditions
+  event.respondWith(
+    (async () => {
 
-  if (params !== null && "x" in params && "y" in params && "z" in params) {
-    const tileName = `tile:${params.x}:${params.y}:${params.z}`
-    event.respondWith(
-      (async () => {
-        try {
-          console.log('[SW] Checking cache for:', tileName);
-          // Try to get from cache first
-          const cachedBlob = await idbKeyval.get(tileName, tileStore);
-          if (cachedBlob) {
+      try {
+        const mapProvider = await idbKeyval.get("providerUrl", providerStore);
+        const params = extractTemplateValues(mapProvider, url);
+
+        if (params !== null && "x" in params && "y" in params && "z" in params) {
+          const tileName = `tile:${params.x}:${params.y}:${params.z}`;
+
+          const cachedResponse = await idbKeyval.get(tileName, tileStore)
+
+          if (cachedResponse) {
             console.log('[SW] Cache hit for:', tileName);
-            return new Response(cachedBlob);
+            return new Response(cachedResponse);
           }
-          console.log('[SW] Cache miss for:', tileName);
 
-          // If not in cache, fetch from network with CORS headers
+          // If not in cache or timeout, fetch from network
           const fetchOptions = {
-            ...event.request,
             mode: 'cors',
             credentials: 'omit',
             headers: {
-              ...event.request.headers,
               'Accept': 'image/webp,image/apng,image/*,*/*;q=0.8',
               'Referer': self.location.origin
             }
@@ -65,47 +64,38 @@ self.addEventListener("fetch", async (event) => {
           const response = await fetch(url, fetchOptions);
 
           if (!response.ok) {
-            console.warn(`[SW] Network response not ok: ${response.status} for ${url}`);
             return response;
           }
 
-          // Cache the response
-          console.log('[SW] Caching response for:', url);
-          const blob = await response.clone().blob();
-          try {
-            await idbKeyval.set(tileName, blob, tileStore);
-            console.log('[SW] Successfully cached:', url);
-          } catch (cacheError) {
-            console.error('[SW] Failed to cache:', url, cacheError);
-          }
+          // Cache the response in the background
+          response.clone().blob().then(blob => {
+            idbKeyval.set(tileName, blob, tileStore)
+              .catch(err => console.error('[SW] Cache write failed:', err));
+          });
 
           return response;
-        } catch (err) {
-          console.warn("[SW] Network failed, tile not found in IndexedDB:", url, err);
-          // Instead of returning a 504, try to fetch directly without caching
-          try {
-            const fetchOptions = {
-              mode: 'cors',
-              credentials: 'omit',
-              headers: {
-                'Accept': 'image/webp,image/apng,image/*,*/*;q=0.8',
-                'Referer': self.location.origin
-              }
-            };
-            const response = await fetch(url, fetchOptions);
-            if (response.ok) {
-              return response;
+        }
+      } catch (err) {
+        console.warn("[SW] Error handling request:", err);
+        // Fallback to direct fetch
+        try {
+          const response = await fetch(url, {
+            mode: 'cors',
+            credentials: 'omit',
+            headers: {
+              'Accept': 'image/webp,image/apng,image/*,*/*;q=0.8',
+              'Referer': self.location.origin
             }
-          } catch (fallbackErr) {
-            console.error("[SW] Fallback fetch also failed:", fallbackErr);
-          }
-          // Only return 504 if both attempts fail
+          });
+          return response;
+        } catch (fallbackErr) {
+          console.error("[SW] Fallback fetch failed:", fallbackErr);
           return new Response(null, {
             status: 504,
             statusText: 'Gateway Timeout'
           });
         }
-      })()
-    );
-  }
+      }
+    })()
+  );
 });
