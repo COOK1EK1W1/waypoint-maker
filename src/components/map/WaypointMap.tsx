@@ -4,14 +4,14 @@ import { MapContainer, TileLayer, useMapEvent } from "react-leaflet"
 import 'leaflet/dist/leaflet.css';
 import { useWaypoints } from "../../util/context/WaypointContext";
 import { Tool } from "@/types/tools";
-import { LeafletMouseEvent } from "leaflet";
-import { useEffect } from "react";
+import { LeafletMouseEvent, TileLayer as tl } from "leaflet";
+import { useEffect, useRef } from "react";
 import { defaultDoLandStart, defaultTakeoff, defaultWaypoint } from "@/lib/mission/defaults";
 import { useMap } from '@/util/context/MapContext';
 import MapController from "./mapController";
 import MapLayers from "./layers/layers";
 import { makeCommand } from "@/lib/commands/default";
-import { Command, filterLatLngAltCmds, filterLatLngCmds } from "@/lib/commands/commands";
+import { Command, filterLatLngCmds } from "@/lib/commands/commands";
 import { avgLatLng, getLatLng } from "@/lib/world/latlng";
 import { Node } from "@/lib/mission/mission";
 
@@ -19,6 +19,7 @@ export default function MapStuff() {
   const { waypoints, setWaypoints, activeMission, tool, setTool, selectedWPs } = useWaypoints()
   const { mapRef, tileProvider } = useMap();
 
+  const tileLayerRef = useRef<tl | null>(null)
 
   useEffect(() => {
 
@@ -162,7 +163,7 @@ export default function MapStuff() {
     return (
       <MapContainer
         center={[55.911879, -3.319938]}
-        zoom={13}
+        zoom={15}
         style={{ width: '100%', height: '100%' }}
         className="z-10"
         attributionControl={false}
@@ -172,9 +173,11 @@ export default function MapStuff() {
         ref={mapRef}
       >
         <TileLayer
+          ref={tileLayerRef}
           url={tileProvider.url}
-          subdomains={["mt1", "mt2", "mt3"]}
+          subdomains={tileProvider.subdomains}
           maxZoom={20}
+          key={`${tileProvider.url}-${tileProvider.subdomains?.join('-')}`}
         />
 
         <MapController />

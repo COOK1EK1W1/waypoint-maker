@@ -5,40 +5,52 @@ import { useMap } from "@/util/context/MapContext"
 import Button from "@/components/toolBar/button"
 import { latlngToTile, tilesForRadiusKm } from "@/lib/map/tiles"
 import { get, set, createStore, clear } from 'idb-keyval'
+import { useWaypoints } from "@/util/context/WaypointContext"
+import { filterLatLngCmds } from "@/lib/commands/commands"
+import { avgLatLng, getLatLng } from "@/lib/world/latlng"
 
 const tileStore = createStore('mapStore', 'tileStore')
 
 export default function MapSettings() {
   const { tileProvider, setTileProvider } = useMap()
+  const { waypoints } = useWaypoints()
 
   const urlRef = useRef<HTMLInputElement>(null)
+  const subDomainRef = useRef<HTMLInputElement>(null)
 
   const applyChanges = () => {
     const url = urlRef.current?.value ?? ""
+    const subdomainsInput = subDomainRef.current?.value ?? ""
 
     if (!url || url.trim() === "") return
 
-    setTileProvider({ url, subdomains: ["a", "b", "c"] })
+    const subdomains = subdomainsInput
+      .split(",")
+      .map(s => s.trim())
+      .filter(s => s.length > 0)
+
+    setTileProvider({ url, subdomains })
   }
 
+
   const downloadTiles = () => {
-    const zoomLevels = [13, 14, 15]
+    const zoomLevels = [9, 10, 11, 12, 13, 14, 15, 16, 17]
     const radiusKm = 5;
-    /*
-    const lat = prompt("Enter Latitude")
-    const lng = prompt("Enter Longitude")
-    */
-    const lat = "55.910734"
-    const lng = "-3.319931"
-    if (lat === null || lng === null) return
-    const Lat = Number(lat)
-    const Lng = Number(lng)
-    if (isNaN(Lat) || isNaN(Lng)) return
+    let avg = avgLatLng(filterLatLngCmds(waypoints.flatten("Main")).map(getLatLng))
+    if (avg === undefined) {
+      const lat = prompt("Enter Latitude")
+      const lng = prompt("Enter Longitude")
+      if (lat === null || lng === null) return
+      const Lat = Number(lat)
+      const Lng = Number(lng)
+      if (isNaN(Lat) || isNaN(Lng)) return
+      avg = { lat: Lat, lng: Lng }
+    }
     let counter = 0;
     for (const zoomLevel of zoomLevels) {
-      const a = latlngToTile({ lat: Lat, lng: Lng }, zoomLevel)
+      const a = latlngToTile(avg, zoomLevel)
       console.log(zoomLevel)
-      const numTiles = tilesForRadiusKm(Lat, zoomLevel, radiusKm)
+      const numTiles = tilesForRadiusKm(avg.lat, zoomLevel, radiusKm)
       for (let x = -numTiles / 2; x < numTiles / 2; x++) {
         for (let y = -numTiles / 2; y < numTiles / 2; y++) {
           counter++
@@ -73,7 +85,16 @@ export default function MapSettings() {
           ref={urlRef}
           className="w-full"
           defaultValue={tileProvider.url}
-          placeholder="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+          placeholder="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
+      </div>
+      <div>
+        <label className="">Sub Domains</label>
+        <input
+          ref={subDomainRef}
+          className="w-full"
+          defaultValue={tileProvider.subdomains.join(", ")}
+          placeholder="a, b, c"
         />
       </div>
       <Button className="w-28" onClick={applyChanges}>Apply</Button>
