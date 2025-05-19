@@ -174,7 +174,7 @@ export default function MapStuff() {
       >
         <TileLayer
           ref={tileLayerRef}
-          url={tileProvider.url}
+          url={tileProvider.url + "#tile"}
           subdomains={tileProvider.subdomains}
           maxZoom={20}
           key={`${tileProvider.url}-${tileProvider.subdomains?.join('-')}`}

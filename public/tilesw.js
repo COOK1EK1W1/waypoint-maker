@@ -1,4 +1,4 @@
-importScripts('https://cdn.jsdelivr.net/npm/idb-keyval@6.2.2/dist/umd.min.js')
+importScripts('/idb-keyval.js')
 
 const providerStore = idbKeyval.createStore('mapProvider', 'providerData')
 const tileStore = idbKeyval.createStore('mapStore', 'tileStore')
@@ -33,13 +33,18 @@ self.addEventListener("activate", (event) => {
 self.addEventListener("fetch", async (event) => {
   const url = event.request.url;
 
+  // Only respond to requests that end with #tile
+  if (!url.endsWith('#tile')) {
+    return;
+  }
+
   // Immediately respond with a promise to prevent race conditions
   event.respondWith(
     (async () => {
 
       try {
         const mapProvider = await idbKeyval.get("providerUrl", providerStore);
-        const params = extractTemplateValues(mapProvider, url);
+        const params = extractTemplateValues(mapProvider, url.slice(0, -5));
 
         if (params !== null && "x" in params && "y" in params && "z" in params) {
           const tileName = `tile:${params.x}:${params.y}:${params.z}`;
@@ -61,7 +66,8 @@ self.addEventListener("fetch", async (event) => {
             }
           };
 
-          const response = await fetch(url, fetchOptions);
+          console.log("requesting ", url.slice(0, -5))
+          const response = await fetch(url.slice(0, -4), fetchOptions);
 
           if (!response.ok) {
             return response;

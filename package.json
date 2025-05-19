@@ -6,7 +6,8 @@
     "postinstall": "bunx prisma generate",
     "dev": "next dev",
     "genCommands": "bun src/lib/commands/mav/genCommands.ts",
-    "build": "next build",
+    "copy-idb": "bun scripts/copy-idb.ts",
+    "build": "bun run copy-idb && next build",
     "start": "next start",
     "lint": "next lint"
   },

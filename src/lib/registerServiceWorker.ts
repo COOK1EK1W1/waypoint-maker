@@ -1,5 +1,5 @@
 export const registerServiceWorker = async () => {
-  if ('serviceWorker' in navigator) {
+  if (typeof navigator !== "undefined" && 'serviceWorker' in navigator) {
     try {
       // add the tile cache service worker
       const registration = await navigator.serviceWorker.register('/tilesw.js');
