@@ -1,7 +1,15 @@
+// local version so we can work offline
 importScripts('/idb-keyval.js')
 
+
+// when changing this code, either unregister and refresh or update form the application tab
+// Also firefox doesn't console.log anything so pls use a chromium based browser
+
+// get the two stores from db
 const providerStore = idbKeyval.createStore('mapProvider', 'providerData')
 const tileStore = idbKeyval.createStore('mapStore', 'tileStore')
+
+const DEBUG = false
 
 function extractTemplateValues(template, url) {
   // Convert template to regex by replacing {key} with named capture groups
@@ -52,7 +60,7 @@ self.addEventListener("fetch", async (event) => {
           const cachedResponse = await idbKeyval.get(tileName, tileStore)
 
           if (cachedResponse) {
-            console.log('[SW] Cache hit for:', tileName);
+            if (DEBUG) console.log('[SW] Cache hit for:', tileName);
             return new Response(cachedResponse);
           }
 
@@ -66,7 +74,7 @@ self.addEventListener("fetch", async (event) => {
             }
           };
 
-          console.log("requesting ", url.slice(0, -5))
+          if (DEBUG) console.log("requesting ", url.slice(0, -5))
           const response = await fetch(url.slice(0, -4), fetchOptions);
 
           if (!response.ok) {

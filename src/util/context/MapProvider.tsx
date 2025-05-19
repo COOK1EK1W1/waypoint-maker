@@ -13,19 +13,21 @@ const providerStore = createStore('mapProvider', 'providerData')
 
 export default function MapProvider({ children }: Props) {
 
-  registerServiceWorker()
 
   const mapRef = useRef<Map | null>(null)
 
   // the tile provider for imagery
   const [tileProvider, setTileProvider] = useState<{ subdomains: string[], url: string }>({ url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", subdomains: ["a", "b", "c"] })
 
-  // set the tile provider based on indexDB on first load
   useEffect(() => {
+    // set the tile provider based on indexDB on first load
     getMany(["providerUrl", "providerDomains"], providerStore).then((x) => {
       if (x === undefined) return
       setTileProvider({ url: x[0], subdomains: x[1].split(", ") })
     })
+
+    // register the service worker
+    registerServiceWorker()
   }, [])
 
   // add the tile provider to the indexDB, so the service worker knows what it's looking for 

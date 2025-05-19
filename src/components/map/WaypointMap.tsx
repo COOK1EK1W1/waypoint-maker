@@ -4,7 +4,7 @@ import { MapContainer, TileLayer, useMapEvent } from "react-leaflet"
 import 'leaflet/dist/leaflet.css';
 import { useWaypoints } from "../../util/context/WaypointContext";
 import { Tool } from "@/types/tools";
-import { LeafletMouseEvent, TileLayer as tl } from "leaflet";
+import { LeafletMouseEvent, TileLayer as TileLayerType } from "leaflet";
 import { useEffect, useRef } from "react";
 import { defaultDoLandStart, defaultTakeoff, defaultWaypoint } from "@/lib/mission/defaults";
 import { useMap } from '@/util/context/MapContext';
@@ -19,7 +19,7 @@ export default function MapStuff() {
   const { waypoints, setWaypoints, activeMission, tool, setTool, selectedWPs } = useWaypoints()
   const { mapRef, tileProvider } = useMap();
 
-  const tileLayerRef = useRef<tl | null>(null)
+  const tileLayerRef = useRef<TileLayerType | null>(null)
 
   useEffect(() => {
 
@@ -157,35 +157,33 @@ export default function MapStuff() {
 
   }
 
-  console.log(tileProvider)
-  if (typeof window != undefined) {
+  if (typeof window === undefined) return
 
-    return (
-      <MapContainer
-        center={[55.911879, -3.319938]}
-        zoom={15}
-        style={{ width: '100%', height: '100%' }}
-        className="z-10"
-        attributionControl={false}
-        zoomControl={false}
-        keyboard={false}
-        fadeAnimation={false}
-        ref={mapRef}
-      >
-        <TileLayer
-          ref={tileLayerRef}
-          url={tileProvider.url + "#tile"}
-          subdomains={tileProvider.subdomains}
-          maxZoom={20}
-          key={`${tileProvider.url}-${tileProvider.subdomains?.join('-')}`}
-        />
+  return (
+    <MapContainer
+      center={[55.911879, -3.319938]}
+      zoom={15}
+      style={{ width: '100%', height: '100%' }}
+      className="z-10"
+      attributionControl={false}
+      zoomControl={false}
+      keyboard={false}
+      fadeAnimation={false}
+      ref={mapRef}
+    >
+      <TileLayer
+        ref={tileLayerRef}
+        url={tileProvider.url + "#tile"}
+        subdomains={tileProvider.subdomains}
+        maxZoom={20}
+        key={`${tileProvider.url}-${tileProvider.subdomains?.join('-')}`}
+      />
 
-        <MapController />
+      <MapController />
 
-        <CreateHandler />
+      <CreateHandler />
 
-        <MapLayers onMove={onMove} />
-      </MapContainer>
-    );
-  }
+      <MapLayers onMove={onMove} />
+    </MapContainer>
+  );
 }

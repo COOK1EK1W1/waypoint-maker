@@ -18,8 +18,8 @@ export default function SystemModal() {
         <DialogTitle className="text-4xl">Settings</DialogTitle>
         <Tabs>
           <TabsList>
-            <TabsTrigger value="system">System</TabsTrigger>
-            <TabsTrigger value="map">Map</TabsTrigger>
+            <TabsTrigger value="system" className="w-28">System</TabsTrigger>
+            <TabsTrigger value="map" className="w-28">Map</TabsTrigger>
           </TabsList>
           <TabsContent value="system">
 

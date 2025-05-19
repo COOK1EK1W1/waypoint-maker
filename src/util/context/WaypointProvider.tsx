@@ -12,8 +12,6 @@ type Props = {
 // The provider for the Waypoint State
 export default function WaypointProvider({ children }: Props) {
 
-  registerServiceWorker()
-
   const [waypoints, setWaypoints] = useState<Mission>(new Mission())
 
   // the selected waypoints | list of indexes of active mission

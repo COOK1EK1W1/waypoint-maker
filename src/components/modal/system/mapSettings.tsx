@@ -69,7 +69,6 @@ export default function MapSettings() {
       const numTiles = tilesForRadiusKm(avg.lat, zoomLevel, radiusKm)
       for (let x = Math.floor(-numTiles / 2); x < Math.ceil(numTiles / 2); x++) {
         for (let y = Math.floor(-numTiles / 2); y < Math.ceil(numTiles / 2); y++) {
-          console.log(x, y)
           const tileURL = tileProvider.url.replace("{x}", "" + (a.x + x))
             .replace("{y}", "" + (a.y + y))
             .replace("{z}", "" + zoomLevel)
@@ -150,6 +149,7 @@ export default function MapSettings() {
 
 
       <h2>Offline Support</h2>
+      <p>Download map and terrain data</p>
       <label>
         <Button className="w-28" onClick={downloadTiles} disabled={isDownloading}>
           {isDownloading ? "Downloading" : "Download"}
