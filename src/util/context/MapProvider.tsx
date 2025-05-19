@@ -2,7 +2,8 @@
 import { ReactNode, useEffect, useRef, useState } from 'react';
 import { mapContext } from './MapContext';
 import { Map } from 'leaflet';
-import { createStore, set } from 'idb-keyval'
+import { get, createStore, set, getMany } from 'idb-keyval'
+import { registerServiceWorker } from '@/lib/registerServiceWorker';
 
 type Props = {
   children: ReactNode;
@@ -12,16 +13,26 @@ const providerStore = createStore('mapProvider', 'providerData')
 
 export default function MapProvider({ children }: Props) {
 
+  registerServiceWorker()
+
   const mapRef = useRef<Map | null>(null)
 
   // the tile provider for imagery
   const [tileProvider, setTileProvider] = useState<{ subdomains: string[], url: string }>({ url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", subdomains: ["a", "b", "c"] })
 
-  //TODO: set the tile provider based on indexDB
+  // set the tile provider based on indexDB on first load
+  useEffect(() => {
+    getMany(["providerUrl", "providerDomains"], providerStore).then((x) => {
+      if (x === undefined) return
+      setTileProvider({ url: x[0], subdomains: x[1].split(", ") })
+    })
+  }, [])
 
   // add the tile provider to the indexDB, so the service worker knows what it's looking for 
+  // also for persistence on next load
   useEffect(() => {
     set("providerUrl", tileProvider.url, providerStore)
+    set("providerDomains", tileProvider.subdomains.join(", "), providerStore)
   }, [tileProvider])
 
   return (

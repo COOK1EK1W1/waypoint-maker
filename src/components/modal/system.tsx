@@ -34,7 +34,9 @@ export default function SystemModal() {
               </div>
             </div>
           </TabsContent>
-          <TabsContent value="map"><MapSettings /></TabsContent>
+          <TabsContent value="map">
+            <MapSettings />
+          </TabsContent>
         </Tabs>
       </DialogContent>
     </Dialog>
