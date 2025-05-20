@@ -21,6 +21,7 @@ function extractTemplateValues(template, url) {
 }
 
 
+// skip waiting phase of service worker
 self.addEventListener("install", (event) => {
   event.waitUntil(
     Promise.all([
@@ -29,6 +30,7 @@ self.addEventListener("install", (event) => {
   );
 });
 
+// allow service worker to work on first load
 self.addEventListener("activate", (event) => {
   event.waitUntil(
     Promise.all([
@@ -49,20 +51,24 @@ self.addEventListener("fetch", async (event) => {
   // Immediately respond with a promise to prevent race conditions
   event.respondWith(
     (async () => {
-
       try {
+
+        // find the tile coordinates
         const mapProvider = await idbKeyval.get("providerUrl", providerStore);
-        const params = extractTemplateValues(mapProvider, url.slice(0, -5));
+        const coords = extractTemplateValues(mapProvider, url.slice(0, -5));
 
-        if (params !== null && "x" in params && "y" in params && "z" in params) {
-          const tileName = `tile:${params.x}:${params.y}:${params.z}`;
+        // if we found the coordinates
+        if (coords !== null && "x" in coords && "y" in coords && "z" in coords) {
 
+          const tileName = `tile:${coords.x}:${coords.y}:${coords.z}`;
           const cachedResponse = await idbKeyval.get(tileName, tileStore)
 
+          // CACHE HIT
           if (cachedResponse) {
             if (DEBUG) console.log('[SW] Cache hit for:', tileName);
             return new Response(cachedResponse);
           }
+
 
           // If not in cache or timeout, fetch from network
           const fetchOptions = {
@@ -74,6 +80,7 @@ self.addEventListener("fetch", async (event) => {
             }
           };
 
+          // fetch the request
           if (DEBUG) console.log("requesting ", url.slice(0, -5))
           const response = await fetch(url.slice(0, -4), fetchOptions);
 
@@ -89,26 +96,11 @@ self.addEventListener("fetch", async (event) => {
 
           return response;
         }
+
       } catch (err) {
-        console.warn("[SW] Error handling request:", err);
-        // Fallback to direct fetch
-        try {
-          const response = await fetch(url, {
-            mode: 'cors',
-            credentials: 'omit',
-            headers: {
-              'Accept': 'image/webp,image/apng,image/*,*/*;q=0.8',
-              'Referer': self.location.origin
-            }
-          });
-          return response;
-        } catch (fallbackErr) {
-          console.error("[SW] Fallback fetch failed:", fallbackErr);
-          return new Response(null, {
-            status: 504,
-            statusText: 'Gateway Timeout'
-          });
-        }
+
+        // Fallback, do the request and return the repsonse
+        return new Response(await fetch(url))
       }
     })()
   );

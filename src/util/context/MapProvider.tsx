@@ -2,18 +2,16 @@
 import { ReactNode, useEffect, useRef, useState } from 'react';
 import { mapContext } from './MapContext';
 import { Map } from 'leaflet';
-import { get, createStore, set, getMany } from 'idb-keyval'
+import { createStore, set, getMany } from 'idb-keyval'
 import { registerServiceWorker } from '@/lib/registerServiceWorker';
+
+const providerStore = createStore('mapProvider', 'providerData')
 
 type Props = {
   children: ReactNode;
 };
 
-const providerStore = createStore('mapProvider', 'providerData')
-
 export default function MapProvider({ children }: Props) {
-
-
   const mapRef = useRef<Map | null>(null)
 
   // the tile provider for imagery

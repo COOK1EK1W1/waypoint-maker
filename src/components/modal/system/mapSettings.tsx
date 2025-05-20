@@ -28,6 +28,7 @@ export default function MapSettings() {
   // verify and save the tile provider url and subdomains
   const applyTileProviderChanges = () => {
 
+    // check for tile provider URL
     const url = urlRef.current?.value ?? ""
     if (!url || url.trim() === "") return
 
@@ -52,8 +53,11 @@ export default function MapSettings() {
   }
 
   const downloadTiles = async () => {
+
+    // find where we should download, try average of waypoitns first
     let avg = avgLatLng(filterLatLngCmds(waypoints.flatten("Main")).map(getLatLng))
     if (avg === undefined) {
+      // if not, use center of map
       const currentCenter = mapRef.current?.getCenter()
       if (currentCenter == undefined) return
       avg = currentCenter
@@ -62,16 +66,24 @@ export default function MapSettings() {
     const downloadQueue: (() => Promise<void>)[] = []
     let completedTiles = 0
 
+    // go through each of the zoom levels 
     for (const zoomLevel of ZOOM_LEVELS) {
+
+      // get the center tile for zoom level
       const a = latlngToTile(avg, zoomLevel)
+      // get how many tiles we should extend in each direction from center
       const numTiles = tilesForRadiusKm(avg.lat, zoomLevel, RADIUS_KM)
+
       for (let x = Math.floor(-numTiles / 2); x < Math.ceil(numTiles / 2); x++) {
         for (let y = Math.floor(-numTiles / 2); y < Math.ceil(numTiles / 2); y++) {
+
+          // generate the url
           const tileURL = tileProvider.url.replace("{x}", "" + (a.x + x))
             .replace("{y}", "" + (a.y + y))
             .replace("{z}", "" + zoomLevel)
             .replace("{s}", tileProvider.subdomains[downloadQueue.length % tileProvider.subdomains.length])
 
+          // add the url to the queue as callback
           downloadQueue.push(async () => {
             try {
               await fetch(tileURL + "#tile")
@@ -85,6 +97,7 @@ export default function MapSettings() {
       }
     }
 
+    // update ui
     setTotalTiles(downloadQueue.length)
     setDownloadProgress(0)
     setIsDownloading(true)
@@ -93,16 +106,21 @@ export default function MapSettings() {
     const RATE_LIMIT = 10 // tiles per second
     const DELAY = 1000 / RATE_LIMIT
 
+    // actually download
     for (const download of downloadQueue) {
       await download()
       //await new Promise(resolve => setTimeout(resolve, DELAY))
     }
 
+    // were done :)
     setIsDownloading(false)
   }
 
+  // handle clearing cache
   const clearCache = async () => {
+
     await clear(tileStore)
+
     // Force re-render by updating size
     navigator.storage.estimate().then((a) => {
       setSize({ size: a.usage || 0 })
