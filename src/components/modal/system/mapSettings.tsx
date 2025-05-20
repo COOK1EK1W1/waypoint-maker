@@ -4,15 +4,18 @@ import { useRef, useState, useEffect } from "react"
 import { useMap } from "@/util/context/MapContext"
 import Button from "@/components/toolBar/button"
 import { latlngToTile, tilesForRadiusKm } from "@/lib/map/tiles"
-import { get, set, createStore, clear } from 'idb-keyval'
+import { createStore, clear } from 'idb-keyval'
 import { useWaypoints } from "@/util/context/WaypointContext"
 import { filterLatLngCmds } from "@/lib/commands/commands"
 import { avgLatLng, getLatLng } from "@/lib/world/latlng"
 
 const tileStore = createStore('mapStore', 'tileStore')
 
+const ZOOM_LEVELS = [9, 10, 11, 12, 13, 14, 15, 16, 17]
+const RADIUS_KM = 7;
+
 export default function MapSettings() {
-  const { tileProvider, setTileProvider } = useMap()
+  const { tileProvider, setTileProvider, mapRef } = useMap()
   const { waypoints } = useWaypoints()
   const [size, setSize] = useState({ size: 0 })
   const [downloadProgress, setDownloadProgress] = useState(0)
@@ -39,6 +42,7 @@ export default function MapSettings() {
     setTileProvider({ url, subdomains })
   }
 
+  // reset the tile provider
   const handleReset = () => {
     setTileProvider({ url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", subdomains: ["a", "b", "c"] })
     // Force re-render by updating size
@@ -48,25 +52,19 @@ export default function MapSettings() {
   }
 
   const downloadTiles = async () => {
-    const zoomLevels = [9, 10, 11, 12, 13, 14, 15, 16, 17]
-    const radiusKm = 5;
     let avg = avgLatLng(filterLatLngCmds(waypoints.flatten("Main")).map(getLatLng))
     if (avg === undefined) {
-      const lat = prompt("Enter Latitude")
-      const lng = prompt("Enter Longitude")
-      if (lat === null || lng === null) return
-      const Lat = Number(lat)
-      const Lng = Number(lng)
-      if (isNaN(Lat) || isNaN(Lng)) return
-      avg = { lat: Lat, lng: Lng }
+      const currentCenter = mapRef.current?.getCenter()
+      if (currentCenter == undefined) return
+      avg = currentCenter
     }
 
     const downloadQueue: (() => Promise<void>)[] = []
     let completedTiles = 0
 
-    for (const zoomLevel of zoomLevels) {
+    for (const zoomLevel of ZOOM_LEVELS) {
       const a = latlngToTile(avg, zoomLevel)
-      const numTiles = tilesForRadiusKm(avg.lat, zoomLevel, radiusKm)
+      const numTiles = tilesForRadiusKm(avg.lat, zoomLevel, RADIUS_KM)
       for (let x = Math.floor(-numTiles / 2); x < Math.ceil(numTiles / 2); x++) {
         for (let y = Math.floor(-numTiles / 2); y < Math.ceil(numTiles / 2); y++) {
           const tileURL = tileProvider.url.replace("{x}", "" + (a.x + x))
@@ -76,9 +74,7 @@ export default function MapSettings() {
 
           downloadQueue.push(async () => {
             try {
-              const res = await fetch(tileURL)
-              const blob = await res.blob()
-              await set(`tile:${a.x + x}:${a.y + y}:${zoomLevel}`, blob, tileStore)
+              await fetch(tileURL + "#tile")
               completedTiles++
               setDownloadProgress(completedTiles)
             } catch (error) {
