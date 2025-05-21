@@ -5,7 +5,7 @@ import { exportqgcWaypoints } from "@/lib/missionIO/qgcWaypoints/spec";
 import { exportwpm2 } from "@/lib/missionIO/wm2/spec";
 import { useVehicle } from "@/util/context/VehicleTypeContext";
 import { useWaypoints } from "@/util/context/WaypointContext";
-import { FaFileDownload } from "react-icons/fa";
+import { FileDown } from "lucide-react";
 
 export default function DownloadButtons() {
   const { waypoints } = useWaypoints()
@@ -22,8 +22,8 @@ export default function DownloadButtons() {
 
   return (
     <>
-      <Button onClick={downloadQGC}><FaFileDownload className="inline mx-2" />.waypoints (QGC, MP) download</Button>
-      <Button onClick={downloadWM}><FaFileDownload className="inline mx-2" />.json (WM) download</Button>
+      <Button onClick={downloadQGC}><FileDown className="h-5 w-5 inline mx-2" />.waypoints (QGC, MP) download</Button>
+      <Button onClick={downloadWM}><FileDown className="h-5 w-5 inline mx-2" />.json (WM) download</Button>
     </>
   )
 }

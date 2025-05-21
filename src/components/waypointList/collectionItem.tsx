@@ -1,9 +1,8 @@
 import { useWaypoints } from "@/util/context/WaypointContext";
 import { useState } from "react";
-import { FaPlus, FaTrashAlt } from "react-icons/fa";
-import { TbTopologyRing } from "react-icons/tb";
 import ListItem from "./ListItem";
 import { ColNode } from "@/lib/mission/mission";
+import { Plus, Route, Trash2 } from "lucide-react";
 
 export default function CollectionItem({ node, selected, onMouseDown, onDelete }: { node: ColNode, selected: boolean, onMouseDown: (e: React.MouseEvent<HTMLDivElement>) => void, onDelete: () => void }) {
   const [expand, setExpand] = useState(false)
@@ -17,11 +16,11 @@ export default function CollectionItem({ node, selected, onMouseDown, onDelete }
 
   return (
     <ListItem onMouseDown={onMouseDown} selected={selected} actions={[
-      (<button onMouseDown={() => { setExpand(!expand) }} key={2} name="expand"><FaPlus /></button>),
-      (<button onMouseDown={remove} key={1} name="delete"><FaTrashAlt /></button>)
+      (<button onMouseDown={() => { setExpand(!expand) }} key={2} name="expand"><Plus className="h-5 w-5" /></button>),
+      (<button onMouseDown={remove} key={1} name="delete"><Trash2 className="h-5 w-5" /></button>)
     ]}>
       <div className="flex justify-between">
-        <span><TbTopologyRing className="inline m-1" />{node.name}</span>
+        <span><Route className="inline h-5 w-5 mx-1" />{node.name}</span>
       </div>
       <div className={`overflow-hidden duration-200 ${expand ? `h-20` : `h-0`}`}>
         {wps.map((wp, id) => (

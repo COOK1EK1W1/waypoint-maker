@@ -1,10 +1,8 @@
 "use client"
 import { useWaypoints } from "@/util/context/WaypointContext";
 import ListItem from "../waypointList/ListItem";
-import { TbFence, TbTopologyRing } from "react-icons/tb";
-import { FaMapMarkedAlt, FaTrashAlt } from "react-icons/fa";
-import { FaArrowTurnUp } from "react-icons/fa6";
 import { CollectionType } from "@/lib/mission/mission";
+import { CornerLeftUp, Fence, MapPin, Route, Trash2 } from "lucide-react";
 
 const noAddNames = ["Main", "Geofence", "Takeoff", "Landing", "Markers"]
 
@@ -49,18 +47,20 @@ export default function SubMissionList() {
         const wp = waypoints.get(mission)
         const canAdd = !noAddNames.includes(mission)
 
-        return <ListItem key={id} onMouseDown={() => click(mission)} selected={activeMission == mission} actions={[
-          (<>{canAdd ? <button onMouseDown={(e) => addSub(e, mission)} key={0}><FaArrowTurnUp /></button> : null}</>),
-          (<button onMouseDown={() => deleteMission(mission)} key={1}><FaTrashAlt /></button>)
-        ]}>
-          <div>
-            {mission == "Geofence" ? <span><TbFence className="inline m-1" /></span>
-              : mission == "Markers" ? <span><FaMapMarkedAlt className="inline m-1" /></span>
-                : <span><TbTopologyRing className="inline m-1" /></span>
-            }
-            {mission} ({wp.length})
-          </div>
-        </ListItem>
+        return (
+          <ListItem key={id} onMouseDown={() => click(mission)} selected={activeMission == mission} actions={[
+            (<>{canAdd ? <button onMouseDown={(e) => addSub(e, mission)} key={0}><CornerLeftUp className="h-5 w-5" /></button> : null}</>),
+            (<button onMouseDown={() => deleteMission(mission)} key={1}><Trash2 className="h-5 w-5" /></button>)
+          ]}>
+            <div>
+              {mission == "Geofence" ? <span><Fence className="h-5 w-5 inline m-1" /></span>
+                : mission == "Markers" ? <span><MapPin className="h-5 w-5 inline m-1" /></span>
+                  : <span><Route className="h-5 w-5 inline m-1" /></span>
+              }
+              {mission} ({wp.length})
+            </div>
+          </ListItem>
+        )
 
       })}
 

@@ -56,7 +56,7 @@ export default function LoadJson() {
   return <>
     <input type="file" accept=".json, .waypoints" id="fileInput" className="hidden" onChange={handleFileChange} />
     <Button className="w-32 items-center justify-start" onClick={() => document.getElementById('fileInput')?.click()}>
-      <Upload className="h-[20px] w-[20px] mr-1" />Load JSON
+      <Upload className="h-5 w-5 mr-1" />Load JSON
     </Button>
   </>
 }

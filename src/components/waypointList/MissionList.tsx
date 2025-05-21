@@ -2,12 +2,11 @@ import { useWaypoints } from "@/util/context/WaypointContext";
 import CreateCollection from "./createCollection";
 import CollectionItem from "./collectionItem";
 import ListItem from "./ListItem";
-import { TfiTarget } from "react-icons/tfi";
 import { commandName } from "@/util/translationTable";
-import { FaArrowRight, FaTrashAlt } from "react-icons/fa";
 import { useState } from "react";
 import { getCommandDesc } from "@/lib/commands/commands";
 import { CollectionType } from "@/lib/mission/mission";
+import { ArrowRight, Locate, Trash2 } from "lucide-react";
 
 export default function MissionList({ onHide }: { onHide: () => void }) {
   const { setActiveMission, waypoints, setSelectedWPs, selectedWPs, setWaypoints, activeMission, setTool } = useWaypoints()
@@ -73,7 +72,7 @@ export default function MissionList({ onHide }: { onHide: () => void }) {
 
   return (
     <div className="flex-grow overflow-auto select-none">
-      <h2 className="px-2 text-lg pb-0 justify-between flex">{activeMission}<button onMouseDown={onHide} name="hide"><FaArrowRight className="w-6 h-6" /></button></h2>
+      <h2 className="px-2 text-lg pb-0 justify-between flex">{activeMission}<button onMouseDown={onHide} name="hide"><ArrowRight className="w-6 h-6" /></button></h2>
       <div className="m-2 h-[1px] bg-slate-200"></div>
 
       {!hasTakeoff && activeMission == "Main" ?
@@ -90,10 +89,10 @@ export default function MissionList({ onHide }: { onHide: () => void }) {
 
         } else {
           return <ListItem key={i} selected={selectedWPs.includes(i)} onMouseDown={(e) => handleClick(i, e)} actions={[
-            <button className="pl-4" onMouseDown={() => onDelete(i)} key={0} name="delete"><FaTrashAlt /></button>
+            <button className="pl-4" onMouseDown={() => onDelete(i)} key={0} name="delete"><Trash2 className="h-5 w-5" /></button>
           ]}>
             <div className="flex justify-between">
-              <span><TfiTarget className="inline m-1" />{commandName(getCommandDesc(waypoint.cmd.type).name)}</span>
+              <span><Locate className="h-5 w-5 inline mx-1" />{commandName(getCommandDesc(waypoint.cmd.type).name)}</span>
             </div>
           </ListItem>
         }

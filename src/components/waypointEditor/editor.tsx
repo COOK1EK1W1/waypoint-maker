@@ -4,8 +4,8 @@ import { cn } from "@/lib/utils";
 import Button from "../toolBar/button";
 import HeightMap from "@/components/waypointEditor/terrain/heightMap";
 import ParamEditor from "./params/ParamEditor";
-import { FaArrowDown } from "react-icons/fa";
 import { Optimise } from "./optimisaion/optimisation";
+import { ArrowDown } from "lucide-react";
 
 const tabs = {
   "Params": <ParamEditor />,
@@ -29,7 +29,7 @@ export default function Editor() {
                 <Button key={i} onClick={() => setTab(x as keyof typeof tabs)} className={cn("w-28", x != tab ? "bg-white" : null)}>{x}</Button>
               ))}
             </div>
-            <Button onClick={() => setHidden(true)} className={cn("w-28 bg-white")}>Hide <FaArrowDown className="ml-2" /></Button>
+            <Button onClick={() => setHidden(true)} className={cn("w-28 bg-white")}>Hide <ArrowDown className="ml-2 h-5 w-5" /></Button>
           </div>
           <div className="p-2">
             <div className="w-full h-[2px] bg-slate-200 md:h-full md:w-[2px]"></div>
