@@ -7,6 +7,7 @@ import { useState } from "react";
 import { getCommandDesc } from "@/lib/commands/commands";
 import { CollectionType } from "@/lib/mission/mission";
 import { ArrowRight, Locate, Trash2 } from "lucide-react";
+import { Button } from "../ui/button";
 
 export default function MissionList({ onHide }: { onHide: () => void }) {
   const { setActiveMission, waypoints, setSelectedWPs, selectedWPs, setWaypoints, activeMission, setTool } = useWaypoints()
@@ -76,9 +77,11 @@ export default function MissionList({ onHide }: { onHide: () => void }) {
       <div className="m-2 h-[1px] bg-slate-200"></div>
 
       {!hasTakeoff && activeMission == "Main" ?
-        <ListItem onClick={createTakeoff} className="text-center my-2">
-          Add Takeoff
-        </ListItem> : null
+        <div className="px-2 py-1">
+          <Button name="Add Takeoff" onClick={createTakeoff} className="text-center w-full my-2 mx-0">
+            Add Takeoff
+          </Button>
+        </div> : null
       }
 
 
@@ -89,26 +92,24 @@ export default function MissionList({ onHide }: { onHide: () => void }) {
 
         } else {
           return (
-            <ListItem key={i} selected={selectedWPs.includes(i)} onClick={(e) => handleClick(i, e)} className="justify-start"
+            <ListItem name={commandName(getCommandDesc(waypoint.cmd.type).name)} icon={<Locate />} key={i} selected={selectedWPs.includes(i)} onClick={(e) => handleClick(i, e)} className="justify-start"
               actions={[
                 <button className="pl-4" onMouseDown={() => onDelete(i)} key={0} name="delete">
                   <Trash2 />
                 </button>
               ]}
-            >
-              <div className="flex">
-                <Locate className="inline mr-1" />{commandName(getCommandDesc(waypoint.cmd.type).name)}
-              </div>
-            </ListItem>
+            />
           )
         }
       })}
       {selectedWPs.length > 1 && <CreateCollection />}
 
       {!hasLanding && activeMission == "Main" ?
-        <ListItem onClick={createLanding} className="my-2">
-          Add Landing
-        </ListItem> : null
+        <div className="px-2 py-1">
+          <Button onClick={createLanding} className="w-full my-2 mx-0">
+            Add Landing
+          </Button>
+        </div> : null
       }
     </div>
   )
