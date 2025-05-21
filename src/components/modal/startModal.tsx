@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { Dialog, DialogContent, DialogFooter, DialogTitle } from "@/components/ui/dialog";
-import Button from "@/components/toolBar/button";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import { Button } from "../ui/button";
 
 const displayName = "seenPopUpv2"
 
@@ -44,7 +44,7 @@ export default function StartModal() {
 					</p>
 				</div>
 				<DialogFooter>
-					<Button className="hover:scale-105 w-32" onClick={handleClose}>Get Started<ArrowRight className="ml-1 w-5 h-5" /></Button>
+					<Button variant="active" className="w-36" onClick={handleClose}>Get Started<ArrowRight className="ml-1 w-5 h-5" /></Button>
 				</DialogFooter>
 			</DialogContent>
 		</Dialog>

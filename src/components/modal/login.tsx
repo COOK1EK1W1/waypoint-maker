@@ -1,8 +1,8 @@
 "use client"
 
-import Button from "../toolBar/button"
 import { authClient } from "@/util/auth-client"
 import { cn } from "@/lib/utils"
+import { Button } from "../ui/button"
 
 export default function LoginModal() {
   const { signIn } = authClient

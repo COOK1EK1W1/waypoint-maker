@@ -1,6 +1,6 @@
 import { useWaypoints } from "@/util/context/WaypointContext";
-import Button from "../toolBar/button";
 import { Locate, Route } from "lucide-react";
+import { Button } from "../ui/button";
 
 export default function CurEdit({ onHide }: { onHide: () => void }) {
   const { activeMission, selectedWPs, waypoints } = useWaypoints()

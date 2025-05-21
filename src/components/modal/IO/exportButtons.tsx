@@ -1,5 +1,5 @@
 "use client"
-import Button from "@/components/toolBar/button";
+import { Button } from "@/components/ui/button";
 import { downloadTextAsFile } from "@/lib/missionIO/common";
 import { exportqgcWaypoints } from "@/lib/missionIO/qgcWaypoints/spec";
 import { exportwpm2 } from "@/lib/missionIO/wm2/spec";
@@ -22,8 +22,12 @@ export default function DownloadButtons() {
 
   return (
     <>
-      <Button onClick={downloadQGC}><FileDown className="h-5 w-5 inline mx-2" />.waypoints (QGC, MP) download</Button>
-      <Button onClick={downloadWM}><FileDown className="h-5 w-5 inline mx-2" />.json (WM) download</Button>
+      <div>
+        <Button variant="active" className="w-80 justify-start" onClick={downloadQGC}><FileDown className="inline mx-2" />.waypoints (QGC, MP) download</Button>
+      </div>
+      <div>
+        <Button variant="active" className="w-80 justify-start" onClick={downloadWM}><FileDown className="inline mx-2" />.json (WM) download</Button>
+      </div>
     </>
   )
 }

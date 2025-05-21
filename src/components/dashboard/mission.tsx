@@ -2,13 +2,12 @@
 
 import { useTransition } from "react"
 import { useRouter } from "next/navigation";
-import Button from "../toolBar/button";
 import { changeMissionName, changeMissionVisibility, copyMission, deleteMission } from "./actions";
 import { timeAgo } from "@/util/time";
-import { cn } from "@/lib/utils";
 import { useWaypoints } from "@/util/context/WaypointContext";
 import { Copy, EllipsisVertical, Eye, Globe, Lock, Loader2, Pencil, Share, Trash } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "../ui/dropdown-menu";
+import { Button } from "../ui/button";
 
 export default function MissionTile({ mission }: { mission: { title: string, modifiedAt: Date, id: string, public: boolean } }) {
   const { missionId } = useWaypoints()
@@ -82,13 +81,13 @@ export default function MissionTile({ mission }: { mission: { title: string, mod
   }
 
   return (
-    <Button className={cn("w-full px-2 bg-white p-2 m-2 flex-row", missionId == mission.id ? "bg-slate-100" : "")}>
+    <Button variant={missionId == mission.id ? "active" : "default"} className={"w-full m-2 h-16 flex-row"}>
       <div onClick={() => { router.push(`/m/${mission.id}`) }} className="flex w-full flex-col items-start">
         <p className="font-medium">{mission.title}</p>
 
         <p className="text-sm text-muted-foreground flex items-center">
-          {mission.public ? 
-            <Globe className="inline h-4 w-4 mr-2" /> : 
+          {mission.public ?
+            <Globe className="inline h-4 w-4 mr-2" /> :
             <Lock className="inline h-4 w-4 mr-2" />
           }
           Last Modified: {timeAgo(mission.modifiedAt)}
@@ -96,7 +95,7 @@ export default function MissionTile({ mission }: { mission: { title: string, mod
       </div>
       <DropdownMenu>
         {isPending ? (
-          <Loader2 className="h-5 w-5 animate-spin text-slate-500" />) 
+          <Loader2 className="h-5 w-5 animate-spin text-slate-500" />)
           : (<DropdownMenuTrigger asChild>
             <div className="p-1 hover:bg-slate-100 rounded-full transition-colors" >
               <EllipsisVertical className="h-5 w-5 text-slate-500" />

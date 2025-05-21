@@ -2,12 +2,12 @@
 
 import { useRef, useState, useEffect } from "react"
 import { useMap } from "@/util/context/MapContext"
-import Button from "@/components/toolBar/button"
 import { latlngToTile, tilesForRadiusKm } from "@/lib/map/tiles"
 import { createStore, clear } from 'idb-keyval'
 import { useWaypoints } from "@/util/context/WaypointContext"
 import { filterLatLngCmds } from "@/lib/commands/commands"
 import { avgLatLng, getLatLng } from "@/lib/world/latlng"
+import { Button } from "@/components/ui/button"
 
 const tileStore = createStore('mapStore', 'tileStore')
 
@@ -157,22 +157,26 @@ export default function MapSettings() {
       </div>
 
       <div className="flex flex-row w-full justify-center">
-        <Button className="w-28" onClick={applyTileProviderChanges}>Apply</Button>
-        <Button className="w-28" onClick={handleReset}>Reset</Button>
+        <Button variant="active" onClick={applyTileProviderChanges}>Apply</Button>
+        <Button variant="active" onClick={handleReset}>Reset</Button>
       </div>
 
 
       <h2>Offline Support</h2>
-      <p>Download map and terrain data</p>
-      <label>
-        <Button className="w-28" onClick={downloadTiles} disabled={isDownloading}>
-          {isDownloading ? "Downloading" : "Download"}
-        </Button>
-      </label>
-      <label>
-        Cache Size: {(Math.floor(size.size / 100000) / 10)}mb
-        <Button className="w-28" onClick={clearCache}>Clear Cache</Button>
-      </label>
+      <div>
+        <p>Download map and terrain data</p>
+        <label>
+          <Button variant="active" onClick={downloadTiles} disabled={isDownloading}>
+            {isDownloading ? "Downloading" : "Download"}
+          </Button>
+        </label>
+      </div>
+      <div>
+        <p> Cache Size: {(Math.floor(size.size / 100000) / 10)}mb</p>
+        <label>
+          <Button variant="active" onClick={clearCache}>Clear Cache</Button>
+        </label>
+      </div>
       {isDownloading && (
         <div className="w-full bg-gray-200 rounded-full h-2.5">
           <div
