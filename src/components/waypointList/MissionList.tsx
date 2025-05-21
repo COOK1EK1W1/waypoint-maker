@@ -8,6 +8,7 @@ import { getCommandDesc } from "@/lib/commands/commands";
 import { CollectionType } from "@/lib/mission/mission";
 import { ArrowRight, Locate, Trash2 } from "lucide-react";
 import { Button } from "../ui/button";
+import { DropdownMenuItem } from "../ui/dropdown-menu";
 
 export default function MissionList({ onHide }: { onHide: () => void }) {
   const { setActiveMission, waypoints, setSelectedWPs, selectedWPs, setWaypoints, activeMission, setTool } = useWaypoints()
@@ -74,7 +75,7 @@ export default function MissionList({ onHide }: { onHide: () => void }) {
   return (
     <div className="flex-grow overflow-auto select-none">
       <h2 className="px-2 text-lg pb-0 justify-between flex">{activeMission}<button onMouseDown={onHide} name="hide"><ArrowRight className="w-6 h-6" /></button></h2>
-      <div className="m-2 h-[1px] bg-slate-200"></div>
+      <div className="m-2 h-[2px] bg-slate-200"></div>
 
       {!hasTakeoff && activeMission == "Main" ?
         <div className="px-2 py-1">
@@ -93,11 +94,14 @@ export default function MissionList({ onHide }: { onHide: () => void }) {
         } else {
           return (
             <ListItem name={commandName(getCommandDesc(waypoint.cmd.type).name)} icon={<Locate />} key={i} selected={selectedWPs.includes(i)} onClick={(e) => handleClick(i, e)} className="justify-start"
-              actions={[
-                <button className="pl-4" onMouseDown={() => onDelete(i)} key={0} name="delete">
-                  <Trash2 />
-                </button>
-              ]}
+              menuItems={
+                <>
+                  <DropdownMenuItem onClick={() => onDelete(i)} className="gap-2">
+                    <Trash2 className="h-4 w-4" />
+                    <span>Delete</span>
+                  </DropdownMenuItem>
+                </>
+              }
             />
           )
         }

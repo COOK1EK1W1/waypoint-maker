@@ -2,14 +2,15 @@
 import { useWaypoints } from "@/util/context/WaypointContext";
 import ListItem from "../waypointList/ListItem";
 import { CollectionType } from "@/lib/mission/mission";
-import { CornerLeftUp, Fence, MapPin, Route, Trash2 } from "lucide-react";
+import { CornerLeftUp, Fence, MapPin, PlaneLanding, PlaneTakeoff, Route, Trash2 } from "lucide-react";
+import { DropdownMenuItem } from "../ui/dropdown-menu";
 
 const noAddNames = ["Main", "Geofence", "Takeoff", "Landing", "Markers"]
 
 export default function SubMissionList() {
   const { waypoints, activeMission, setActiveMission, setWaypoints, setSelectedWPs } = useWaypoints()
 
-  function addSub(e: React.MouseEvent<HTMLButtonElement>, name: string) {
+  function addSub(e: React.MouseEvent<HTMLDivElement>, name: string) {
     e.stopPropagation()
     if (activeMission != name) {
       setWaypoints((waypoints) => {
@@ -50,15 +51,24 @@ export default function SubMissionList() {
         return (
           <ListItem name={`${mission} (${wp.length})`} icon={mission == "Geofence" ? <span><Fence className=" inline m-1" /></span>
             : mission == "Markers" ? <span><MapPin className=" inline m-1" /></span>
-              : <span><Route className="inline m-1" /></span>
-          } className="justify-start" key={id} onClick={() => click(mission)} selected={activeMission == mission} actions={[
-            (<>{canAdd ? <button onMouseDown={(e) => addSub(e, mission)} key={0}><CornerLeftUp /></button> : null}</>),
-            (<button onMouseDown={() => deleteMission(mission)} key={1}><Trash2 /></button>)
-          ]} />
+              : mission == "Landing" ? <span><PlaneLanding /></span>
+                : mission == "Takeoff" ? <span><PlaneTakeoff /></span>
+                  : <span><Route className="inline m-1" /></span>
+          }
+            className="justify-start" key={id} onClick={() => click(mission)} selected={activeMission == mission}
+            menuItems={<>
+              {canAdd ? (<DropdownMenuItem onClick={(e) => addSub(e, mission)} className="gap-2">
+                <CornerLeftUp className="h-4 w-4" />
+                <span>Add to Mission</span>
+              </DropdownMenuItem>) : null}
+              <DropdownMenuItem onClick={() => deleteMission(mission)} className="gap-2">
+                <Trash2 className="h-4 w-4" />
+                <span>Delete</span>
+              </DropdownMenuItem>
+            </>
+            } />
         )
-
       })}
-
     </div>
 
   )
