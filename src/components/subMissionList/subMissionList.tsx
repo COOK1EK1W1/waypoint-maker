@@ -48,14 +48,14 @@ export default function SubMissionList() {
         const canAdd = !noAddNames.includes(mission)
 
         return (
-          <ListItem key={id} onMouseDown={() => click(mission)} selected={activeMission == mission} actions={[
-            (<>{canAdd ? <button onMouseDown={(e) => addSub(e, mission)} key={0}><CornerLeftUp className="h-5 w-5" /></button> : null}</>),
-            (<button onMouseDown={() => deleteMission(mission)} key={1}><Trash2 className="h-5 w-5" /></button>)
+          <ListItem className="justify-start" key={id} onClick={() => click(mission)} selected={activeMission == mission} actions={[
+            (<>{canAdd ? <button onMouseDown={(e) => addSub(e, mission)} key={0}><CornerLeftUp /></button> : null}</>),
+            (<button onMouseDown={() => deleteMission(mission)} key={1}><Trash2 /></button>)
           ]}>
-            <div>
-              {mission == "Geofence" ? <span><Fence className="h-5 w-5 inline m-1" /></span>
-                : mission == "Markers" ? <span><MapPin className="h-5 w-5 inline m-1" /></span>
-                  : <span><Route className="h-5 w-5 inline m-1" /></span>
+            <div className="flex">
+              {mission == "Geofence" ? <span><Fence className=" inline m-1" /></span>
+                : mission == "Markers" ? <span><MapPin className=" inline m-1" /></span>
+                  : <span><Route className="inline m-1" /></span>
               }
               {mission} ({wp.length})
             </div>

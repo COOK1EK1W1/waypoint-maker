@@ -4,7 +4,7 @@ import ListItem from "./ListItem";
 import { ColNode } from "@/lib/mission/mission";
 import { Plus, Route, Trash2 } from "lucide-react";
 
-export default function CollectionItem({ node, selected, onMouseDown, onDelete }: { node: ColNode, selected: boolean, onMouseDown: (e: React.MouseEvent<HTMLDivElement>) => void, onDelete: () => void }) {
+export default function CollectionItem({ node, selected, onClick, onDelete }: { node: ColNode, selected: boolean, onClick: (e: React.MouseEvent<HTMLButtonElement>) => void, onDelete: () => void }) {
   const [expand, setExpand] = useState(false)
   const { waypoints } = useWaypoints()
 
@@ -15,7 +15,7 @@ export default function CollectionItem({ node, selected, onMouseDown, onDelete }
   const wps = waypoints.get(node.collectionID)
 
   return (
-    <ListItem onMouseDown={onMouseDown} selected={selected} actions={[
+    <ListItem onClick={onClick} selected={selected} actions={[
       (<button onMouseDown={() => { setExpand(!expand) }} key={2} name="expand"><Plus className="h-5 w-5" /></button>),
       (<button onMouseDown={remove} key={1} name="delete"><Trash2 className="h-5 w-5" /></button>)
     ]}>

@@ -14,7 +14,7 @@ export default function MissionList({ onHide }: { onHide: () => void }) {
 
   const mainMission = waypoints.get(activeMission)
 
-  function handleClick(id: number, e: React.MouseEvent<HTMLDivElement>) {
+  function handleClick(id: number, e: React.MouseEvent<HTMLButtonElement>) {
     if (e.shiftKey && lastSelectedIndex !== null) {
       e.stopPropagation()
       const range = [lastSelectedIndex, id].sort((a, b) => a - b)
@@ -76,7 +76,7 @@ export default function MissionList({ onHide }: { onHide: () => void }) {
       <div className="m-2 h-[1px] bg-slate-200"></div>
 
       {!hasTakeoff && activeMission == "Main" ?
-        <ListItem onMouseDown={createTakeoff} className="text-center my-4">
+        <ListItem onClick={createTakeoff} className="text-center my-2">
           Add Takeoff
         </ListItem> : null
       }
@@ -85,22 +85,28 @@ export default function MissionList({ onHide }: { onHide: () => void }) {
 
       {mainMission.map((waypoint, i) => {
         if (waypoint.type == "Collection") {
-          return <CollectionItem node={waypoint} selected={selectedWPs.includes(i)} onMouseDown={(e) => handleClick(i, e)} key={i} onDelete={() => onDelete(i)} />
+          return <CollectionItem node={waypoint} selected={selectedWPs.includes(i)} onClick={(e) => handleClick(i, e)} key={i} onDelete={() => onDelete(i)} />
 
         } else {
-          return <ListItem key={i} selected={selectedWPs.includes(i)} onMouseDown={(e) => handleClick(i, e)} actions={[
-            <button className="pl-4" onMouseDown={() => onDelete(i)} key={0} name="delete"><Trash2 className="h-5 w-5" /></button>
-          ]}>
-            <div className="flex justify-between">
-              <span><Locate className="h-5 w-5 inline mx-1" />{commandName(getCommandDesc(waypoint.cmd.type).name)}</span>
-            </div>
-          </ListItem>
+          return (
+            <ListItem key={i} selected={selectedWPs.includes(i)} onClick={(e) => handleClick(i, e)} className="justify-start"
+              actions={[
+                <button className="pl-4" onMouseDown={() => onDelete(i)} key={0} name="delete">
+                  <Trash2 />
+                </button>
+              ]}
+            >
+              <div className="flex">
+                <Locate className="inline mr-1" />{commandName(getCommandDesc(waypoint.cmd.type).name)}
+              </div>
+            </ListItem>
+          )
         }
       })}
       {selectedWPs.length > 1 && <CreateCollection />}
 
       {!hasLanding && activeMission == "Main" ?
-        <ListItem onMouseDown={createLanding} className="text-center my-4">
+        <ListItem onClick={createLanding} className="my-2">
           Add Landing
         </ListItem> : null
       }
