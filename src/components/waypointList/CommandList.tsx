@@ -1,20 +1,23 @@
 import { useWaypoints } from "@/util/context/WaypointContext";
-import CreateCollection from "./createCollection";
-import CollectionItem from "./collectionItem";
 import ListItem from "./ListItem";
 import { commandName } from "@/util/translationTable";
 import { useState } from "react";
 import { getCommandDesc } from "@/lib/commands/commands";
 import { CollectionType } from "@/lib/mission/mission";
-import { ArrowRight, Locate, Trash2 } from "lucide-react";
+import { ArrowRight, Locate, Route, Trash2 } from "lucide-react";
 import { Button } from "../ui/button";
 import { DropdownMenuItem } from "../ui/dropdown-menu";
 
-export default function MissionList({ onHide }: { onHide: () => void }) {
+export default function CommandList({ onHide }: { onHide: () => void }) {
   const { setActiveMission, waypoints, setSelectedWPs, selectedWPs, setWaypoints, activeMission, setTool } = useWaypoints()
   const [lastSelectedIndex, setLastSelectedIndex] = useState<number | null>(null);
 
-  const mainMission = waypoints.get(activeMission)
+  const curMission = waypoints.get(activeMission)
+
+  const missions = Array.from(waypoints.getMissions())
+
+  const hasLanding = missions.includes("Landing")
+  const hasTakeoff = missions.includes("Takeoff")
 
   function handleClick(id: number, e: React.MouseEvent<HTMLButtonElement>) {
     if (e.shiftKey && lastSelectedIndex !== null) {
@@ -42,10 +45,36 @@ export default function MissionList({ onHide }: { onHide: () => void }) {
     setSelectedWPs([])
   }
 
-  const missions = Array.from(waypoints.getMissions())
 
-  const hasLanding = missions.includes("Landing")
-  const hasTakeoff = missions.includes("Takeoff")
+  function handleGroup() {
+    // get name for mission
+    let name: string | null = null
+    name = prompt("enter name")
+    if (name == null) return
+
+    // remove all selected
+    const newCmds = curMission.filter((_, id) => selectedWPs.includes(id))
+
+    // get the nodes for sub mission
+    const subMissionCmds = curMission.filter((_, id) => !selectedWPs.includes(id))
+
+    // if _ at the start of the name, don't add to the main mission
+    if (name.charAt(0) != '_') {
+      subMissionCmds.splice(Math.min(...selectedWPs), 0, { type: "Collection", name: name, ColType: CollectionType.Mission, collectionID: name, offsetLng: 0, offsetLat: 0 })
+      setSelectedWPs([Math.min(...selectedWPs)])
+    } else {
+      setSelectedWPs([])
+    }
+
+    // update the actual waypoints
+    setWaypoints((waypoints) => {
+      waypoints.set(activeMission, subMissionCmds)
+      waypoints.set(name, newCmds)
+      return waypoints.clone()
+    })
+
+  }
+
 
   function createTakeoff() {
 
@@ -79,7 +108,7 @@ export default function MissionList({ onHide }: { onHide: () => void }) {
 
       {!hasTakeoff && activeMission == "Main" ?
         <div className="px-2 py-1">
-          <Button name="Add Takeoff" onClick={createTakeoff} className="text-center w-full my-2 mx-0">
+          <Button name="Add Takeoff" onClick={createTakeoff} className="text-center w-full my-2 mx-0 h-12">
             Add Takeoff
           </Button>
         </div> : null
@@ -87,10 +116,21 @@ export default function MissionList({ onHide }: { onHide: () => void }) {
 
 
 
-      {mainMission.map((waypoint, i) => {
+      {curMission.map((waypoint, i) => {
         if (waypoint.type == "Collection") {
-          return <CollectionItem node={waypoint} selected={selectedWPs.includes(i)} onClick={(e) => handleClick(i, e)} key={i} onDelete={() => onDelete(i)} />
+          return (
+            <ListItem key={i} icon={<Route />} name={waypoint.name} onClick={(e) => handleClick(i, e)} selected={selectedWPs.includes(i)}
+              menuItems={
+                <>
+                  <DropdownMenuItem onClick={() => onDelete(i)} className="gap-2">
+                    <Trash2 className="h-4 w-4" />
+                    <span>Delete</span>
+                  </DropdownMenuItem>
+                </>
+              }
+            />
 
+          )
         } else {
           return (
             <ListItem name={commandName(getCommandDesc(waypoint.cmd.type).name)} icon={<Locate />} key={i} selected={selectedWPs.includes(i)} onClick={(e) => handleClick(i, e)} className="justify-start"
@@ -106,11 +146,17 @@ export default function MissionList({ onHide }: { onHide: () => void }) {
           )
         }
       })}
-      {selectedWPs.length > 1 && <CreateCollection />}
+
+      {selectedWPs.length > 1 ? (
+        <div className="w-full flex justify-center">
+          <button onMouseDown={handleGroup} className="text-center p-1 m-1 border-2 border-slate-200 rounded-lg bg-slate-100">Group {selectedWPs.length} waypoints</button>
+
+        </div>
+      ) : null}
 
       {!hasLanding && activeMission == "Main" ?
         <div className="px-2 py-1">
-          <Button onClick={createLanding} className="w-full my-2 mx-0">
+          <Button onClick={createLanding} className="w-full my-2 mx-0 h-12">
             Add Landing
           </Button>
         </div> : null

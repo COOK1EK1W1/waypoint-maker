@@ -43,8 +43,8 @@ export default function SubMissionList() {
 
 
   return (
-    <div className="">
-      {Array.from(waypoints.getMissions()).map((mission, id) => {
+    <div>
+      {waypoints.getMissions().map((mission, id) => {
         const wp = waypoints.get(mission)
         const canAdd = !noAddNames.includes(mission)
 
