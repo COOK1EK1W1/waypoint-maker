@@ -1,10 +1,10 @@
 "use client"
 
 import { useRouter } from "next/navigation"
-import Button from "../toolBar/button"
 import { Loader2 } from "lucide-react"
 import { useTransition } from "react"
 import { newProj } from "./actions"
+import { Button } from "../ui/button"
 
 export default function CreateMission() {
   const router = useRouter()
@@ -28,7 +28,7 @@ export default function CreateMission() {
     })
   }
   return (
-    <Button onClick={handleCreate} className="bg-white w-full justify-center p-2 my-3" disabled={isPending}>
+    <Button onClick={handleCreate} className="w-full h-12" disabled={isPending}>
       {isPending ? (
         <Loader2 className="animate-spin h-5 w-5 text-gray-700" />
       ) : (

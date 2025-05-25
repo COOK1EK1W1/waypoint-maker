@@ -1,21 +1,20 @@
 import { useWaypoints } from "@/util/context/WaypointContext";
-import { TbTopologyRing } from "react-icons/tb";
-import { TfiTarget } from "react-icons/tfi";
-import Button from "../toolBar/button";
+import { Locate, Route } from "lucide-react";
+import { Button } from "../ui/button";
 
 export default function CurEdit({ onHide }: { onHide: () => void }) {
   const { activeMission, selectedWPs, waypoints } = useWaypoints()
 
   let item = <span>
-    <TfiTarget className="inline m-1" /> 1 waypoint
+    <Locate className="inline m-1" /> 1 waypoint
   </span>
   if (selectedWPs.length == 0) {
     item = <span>
-      <TbTopologyRing className="inline m-1" /> {activeMission} ({waypoints.get(activeMission).length})
+      <Route className="inline m-1" /> {activeMission} ({waypoints.get(activeMission).length})
     </span>
   } else if (selectedWPs.length > 1) {
     item = <span>
-      <TbTopologyRing className="inline m-1" /> {selectedWPs.length} waypoints
+      <Route className="inline m-1" /> {selectedWPs.length} waypoints
     </span>
 
 

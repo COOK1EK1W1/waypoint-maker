@@ -4,7 +4,6 @@ import { pathEnergyRequirements, pathLength } from "@/lib/dubins/geometry";
 import { geneticOptimise } from "@/lib/optimisation/genetic";
 import { particleOptimise } from "@/lib/optimisation/particleSwarm";
 import { useState } from "react";
-import Button from "@/components/toolBar/button";
 import { useVehicle } from "@/util/context/VehicleTypeContext";
 import { cn } from "@/lib/utils";
 import { gradientOptimise } from "@/lib/optimisation/gradient";
@@ -12,6 +11,7 @@ import { splitDubinsRuns } from "@/lib/dubins/dubinWaypoints";
 import { Path } from "@/lib/dubins/types";
 import { XY } from "@/lib/math/types";
 import { Plane } from "@/lib/vehicles/types";
+import { Button } from "@/components/ui/button";
 
 
 export function Optimise() {
@@ -47,21 +47,21 @@ export function Optimise() {
   return (
     <div className="flex">
 
-      <div className="mx-2">
+      <div className="mx-2 flex flex-col">
         <h2>Algorithm</h2>
-        <Button className={cn("w-28", algorithm == "Particle" ? "border-green-300 bg-green-200" : "")} onClick={() => setAlgorithm("Particle")}>Particle</Button>
-        <Button className={cn("w-28", algorithm == "Genetic" ? "border-green-300 bg-green-200" : "")} onClick={() => setAlgorithm("Genetic")}>Genetic</Button>
-        <Button className={cn("w-28", algorithm == "Gradient" ? "border-green-300 bg-green-200" : "")} onClick={() => setAlgorithm("Gradient")}>Gradient</Button>
-      </div>
-      <div className="mx-2">
+        <Button className={algorithm == "Particle" ? "border-green-300 bg-green-200" : ""} onClick={() => setAlgorithm("Particle")}>Particle</Button>
+        <Button className={algorithm == "Genetic" ? "border-green-300 bg-green-200" : ""} onClick={() => setAlgorithm("Genetic")}>Genetic</Button>
+        <Button className={algorithm == "Gradient" ? "border-green-300 bg-green-200" : ""} onClick={() => setAlgorithm("Gradient")}>Gradient</Button>
+      </div >
+      <div className="mx-2 flex flex-col">
         <h2>Fitness</h2>
-        <Button className={cn("w-28", metric == "Energy" ? "border-green-300 bg-green-200" : "")} onClick={() => setMetric("Energy")}>Energy</Button>
-        <Button className={cn("w-28", metric == "Length" ? "border-green-300 bg-green-200" : "")} onClick={() => setMetric("Length")}>Length</Button>
+        <Button className={metric == "Energy" ? "border-green-300 bg-green-200" : ""} onClick={() => setMetric("Energy")}>Energy</Button>
+        <Button className={metric == "Length" ? "border-green-300 bg-green-200" : ""} onClick={() => setMetric("Length")}>Length</Button>
       </div>
 
       <div className="w-40 mx-2">
         <h2>Optimise</h2>
-        <Button className="w-28" onClick={() => runOptimisation()}>Optimise</Button>
+        <Button onClick={() => runOptimisation()}>Optimise</Button>
         {optimiseRes ? <div>
           <p>Starting: <span className="text-red-600">{optimiseRes.s.toFixed(1)}</span></p>
           <p>Ending: <span className="text-green-600">{optimiseRes.e.toFixed(1)}</span></p>
@@ -77,7 +77,7 @@ export function Optimise() {
         <p>Energy: {(energy / 1000).toFixed(1)}wh</p>
       </div>
 
-    </div>
+    </div >
   )
 
 }
