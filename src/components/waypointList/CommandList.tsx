@@ -4,7 +4,7 @@ import { commandName } from "@/util/translationTable";
 import { useState } from "react";
 import { getCommandDesc } from "@/lib/commands/commands";
 import { CollectionType } from "@/lib/mission/mission";
-import { ArrowRight, Locate, Route, Trash2 } from "lucide-react";
+import { ArrowDownNarrowWide, ArrowRight, Locate, Route, Trash2 } from "lucide-react";
 import { Button } from "../ui/button";
 import { DropdownMenuItem } from "../ui/dropdown-menu";
 
@@ -19,9 +19,8 @@ export default function CommandList({ onHide }: { onHide: () => void }) {
   const hasLanding = missions.includes("Landing")
   const hasTakeoff = missions.includes("Takeoff")
 
-  function handleClick(id: number, e: React.MouseEvent<HTMLButtonElement>) {
+  function handleClick(id: number, e: React.MouseEvent<HTMLDivElement>) {
     if (e.shiftKey && lastSelectedIndex !== null) {
-      e.stopPropagation()
       const range = [lastSelectedIndex, id].sort((a, b) => a - b)
       const newSelection = []
       for (let i = range[0]; i <= range[1]; i++) newSelection.push(i)
@@ -46,7 +45,7 @@ export default function CommandList({ onHide }: { onHide: () => void }) {
   }
 
   // delete all selected waypoints
-  function onDeleteSelected(e: React.MouseEvent<HTMLDivElement>) {
+  function onDeleteSelected() {
     setWaypoints((mission) => {
       const temp = mission.clone()
       const minID = Math.min(...selectedWPs)
@@ -66,6 +65,10 @@ export default function CommandList({ onHide }: { onHide: () => void }) {
     setSelectedWPs([])
   }
 
+  function goToSubMission(name: string) {
+    setActiveMission(name)
+    setSelectedWPs([])
+  }
 
 
   function handleGroup() {
@@ -138,19 +141,29 @@ export default function CommandList({ onHide }: { onHide: () => void }) {
 
 
 
-      {curMission.map((waypoint, i) => {
-        if (waypoint.type == "Collection") {
+      {curMission.map((node, i) => {
+        if (node.type == "Collection") {
 
           return (
-            <ListItem key={i} icon={<Route />} name={waypoint.name} onClick={(e) => handleClick(i, e)} selected={selectedWPs.includes(i)}
+            <ListItem key={i} icon={<Route />} name={node.name} onClick={(e) => handleClick(i, e)} selected={selectedWPs.includes(i)}
               menuItems={
                 <>
+                  <DropdownMenuItem onClick={() => goToSubMission(node.name)} className="gap-2">
+                    <ArrowDownNarrowWide className="h-4 w-4" />
+                    <span>Go To Mission</span>
+                  </DropdownMenuItem>
+
+                  {selectedWPs.length > 1 ? <DropdownMenuItem onClick={() => handleGroup()} className="gap-2">
+                    <Route className="h-4 w-4" />
+                    <span>Group ({selectedWPs.length})</span>
+                  </DropdownMenuItem> : null}
+
                   <DropdownMenuItem onClick={() => onDelete(i)} className="gap-2 text-red-500 hover:text-red-500">
                     <Trash2 className="h-4 w-4" />
                     <span>Delete</span>
                   </DropdownMenuItem>
 
-                  {selectedWPs.length > 1 ? <DropdownMenuItem onClick={(e) => onDeleteSelected(e)} className="gap-2 text-red-500 hover:text-red-500">
+                  {selectedWPs.length > 1 ? <DropdownMenuItem onClick={() => onDeleteSelected()} className="gap-2 text-red-500 hover:text-red-500">
                     <Trash2 className="h-4 w-4" />
                     <span>Delete ({selectedWPs.length})</span>
                   </DropdownMenuItem> : null}
@@ -161,15 +174,21 @@ export default function CommandList({ onHide }: { onHide: () => void }) {
         } else {
 
           return (
-            <ListItem name={commandName(getCommandDesc(waypoint.cmd.type).name)} icon={<Locate />} key={i} selected={selectedWPs.includes(i)} onClick={(e) => handleClick(i, e)} className="justify-start"
+            <ListItem name={commandName(getCommandDesc(node.cmd.type).name)} icon={<Locate />} key={i} selected={selectedWPs.includes(i)} onClick={(e) => handleClick(i, e)} className="justify-start"
               menuItems={
                 <>
+
+                  {selectedWPs.length > 1 ? <DropdownMenuItem onClick={() => handleGroup()} className="gap-2">
+                    <Route className="h-4 w-4" />
+                    <span>Group ({selectedWPs.length})</span>
+                  </DropdownMenuItem> : null}
+
                   <DropdownMenuItem onClick={() => onDelete(i)} className="gap-2 text-red-500 hover:text-red-500">
                     <Trash2 className="h-4 w-4" />
                     <span>Delete</span>
                   </DropdownMenuItem>
 
-                  {selectedWPs.length > 1 ? <DropdownMenuItem onClick={(e) => onDeleteSelected(e)} className="gap-2 text-red-500 hover:text-red-500">
+                  {selectedWPs.length > 1 ? <DropdownMenuItem onClick={() => onDeleteSelected()} className="gap-2 text-red-500 hover:text-red-500">
                     <Trash2 className="h-4 w-4" />
                     <span>Delete ({selectedWPs.length})</span>
                   </DropdownMenuItem> : null}

@@ -125,6 +125,19 @@ export class Mission {
   removeSubMission(name: string) {
     this.collection.delete(name)
 
+    // loop over all sub missions
+    for (const missionKey of Array.from(this.collection.keys())) {
+      const currentMissionNodes = this.collection.get(missionKey);
+      if (currentMissionNodes) {
+        const filteredNodes = currentMissionNodes.filter(node => {
+          if (node.type === "Collection") {
+            return node.collectionID !== name;
+          }
+          return true;
+        });
+        this.collection.set(missionKey, filteredNodes);
+      }
+    }
   }
 
   contains(missionName: string, A: string): boolean {
