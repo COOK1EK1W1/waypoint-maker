@@ -5,6 +5,7 @@ import { Map } from "leaflet";
 export const mapElements = [
   "markers",
   "geofence",
+  "loiter radius"
 ] as const
 
 type MapContextType = {
