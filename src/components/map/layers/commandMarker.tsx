@@ -46,6 +46,26 @@ export default function CommandMarker({ basePosition, onMove, command, onClick, 
     />)
   }
 
+  // draw accept radius around waypoints
+  if (viewable["accept radius"] && command.cmd.type === 16) {
+
+    // make sure the right radius is used, default to plane specific, otherwise use command param
+    let radius = command.cmd.params["accept radius"]
+    if (radius === 0) {
+      // default aparently ??
+      radius = 90
+    }
+
+    items.push(<Circle
+      key={a++}
+      center={basePosition}
+      radius={radius}
+      fill={undefined}
+      dashArray={"10, 10"}
+    />)
+
+  }
+
   return (
     <div>
       <DraggableMarker
