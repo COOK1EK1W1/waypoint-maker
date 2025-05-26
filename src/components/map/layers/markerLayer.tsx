@@ -4,19 +4,26 @@ import DraggableMarker from "@/components/marker/DraggableMarker";
 import GeofenceMarker from "@/components/marker/geofenceMarker";
 import { filterLatLngCmds } from "@/lib/commands/commands";
 import { getLatLng } from "@/lib/world/latlng";
+import { useMap } from "@/util/context/MapContext";
 
 
 export default function MarkerLayer({ onMove }: { onMove: (lat: number, lng: number, id: number) => void }) {
   const { waypoints, activeMission, selectedWPs } = useWaypoints()
+  const { viewable } = useMap()
+
+  // check if they are visible
+  if (!viewable["markers"] && activeMission !== "Markers") return null
 
   return (
     <LayerGroup>
       {filterLatLngCmds(waypoints.flatten("Markers")).map((waypoint, idx) => {
         let active = false
-        let x = waypoints.findNthPosition("Geofence", idx)
-        if (x) {
-          if (x[0] == activeMission && selectedWPs.includes(x[1])) active = true
+        let x = waypoints.findNthPosition("Markers", idx)
+
+        if (x && x[0] == activeMission && selectedWPs.includes(x[1])) {
+          active = true
         }
+
         if (activeMission == "Markers") {
           return <DraggableMarker key={idx} position={getLatLng(waypoint)} onMove={(lat, lng) => onMove(lat, lng, idx)} active={false} />
         } else {

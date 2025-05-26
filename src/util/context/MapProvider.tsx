@@ -14,6 +14,8 @@ type Props = {
 export default function MapProvider({ children }: Props) {
   const mapRef = useRef<Map | null>(null)
 
+  const [viewable, setViewable] = useState({ "markers": true, "geofence": true })
+
   // the tile provider for imagery
   const [tileProvider, setTileProvider] = useState<{ subdomains: string[], url: string }>({ url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", subdomains: ["a", "b", "c"] })
 
@@ -40,6 +42,8 @@ export default function MapProvider({ children }: Props) {
       mapRef,
       tileProvider,
       setTileProvider,
+      viewable,
+      setViewable,
     }}>
       {children}
     </mapContext.Provider>

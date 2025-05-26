@@ -4,6 +4,7 @@ import MissionIO from "@/components/toolBar/missionIO"
 import User, { UserSkeleton } from "@/components/toolBar/user"
 import { Suspense } from "react"
 import SystemModal from "../modal/system"
+import MapControlls from "./mapControlls"
 
 export default function ToolBar({ isStatic }: { isStatic: boolean }) {
   return (
@@ -20,7 +21,10 @@ export default function ToolBar({ isStatic }: { isStatic: boolean }) {
 
         </div>
       </div>
-    </div>
+      <div className="p-2">
+        <MapControlls />
+      </div>
+    </div >
   )
 
 }
