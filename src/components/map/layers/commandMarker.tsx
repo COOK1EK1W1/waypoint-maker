@@ -9,6 +9,8 @@ import { useWaypoints } from "@/util/context/WaypointContext"
 import { commandName } from "@/util/translationTable"
 import { ReactNode } from "react"
 import { Circle } from "react-leaflet"
+import ArrowHead from "./arrows"
+import { worldOffset } from "@/lib/world/distance"
 
 type props = {
   basePosition: LatLng,
@@ -37,12 +39,31 @@ export default function CommandMarker({ basePosition, onMove, command, onClick, 
       radius = getMinTurnRadius(vehicle.maxBank, vehicle.cruiseAirspeed)
     }
 
+    let direction = 0;
+
+    if (radius < 0) {
+      direction = 180
+      radius *= -1
+    }
+
     items.push(<Circle
       key={a++}
       center={basePosition}
       radius={radius}
       fill={undefined}
+      color={"#5353FA"}
       dashArray={"10, 10"}
+    />)
+
+    items.push(<ArrowHead
+      key={a++}
+      center={worldOffset(basePosition, radius, 0)}
+      direction={90 + direction}
+    />)
+    items.push(<ArrowHead
+      key={a++}
+      center={worldOffset(basePosition, radius, Math.PI)}
+      direction={270 + direction}
     />)
   }
 
