@@ -25,9 +25,9 @@ export default function MarkerLayer({ onMove }: { onMove: (lat: number, lng: num
         }
 
         if (activeMission == "Markers") {
-          return <DraggableMarker key={idx} position={getLatLng(waypoint)} onMove={(lat, lng) => onMove(lat, lng, idx)} active={false} />
+          return <DraggableMarker key={idx} text={"" + idx} position={getLatLng(waypoint)} onMove={(lat, lng) => onMove(lat, lng, idx)} active={false} />
         } else {
-          return <GeofenceMarker key={idx} position={getLatLng(waypoint)} active={false} />
+          return <GeofenceMarker key={idx} text={"" + idx} position={getLatLng(waypoint)} active={false} />
 
         }
       })
