@@ -1,4 +1,4 @@
-import { copterSupported, planeSupported } from "../supported";
+import { copterSupported, planeSupported } from "@/lib/commands/supported";
 
 const jsdom = require('jsdom');
 const { JSDOM } = jsdom;

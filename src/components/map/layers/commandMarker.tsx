@@ -31,7 +31,7 @@ export default function CommandMarker({ basePosition, onMove, command, onClick, 
   let a = 0
 
   // Add loiter radius
-  if (viewable["loiter radius"] && command.cmd.type === 17 || command.cmd.type === 18 || command.cmd.type === 19) {
+  if (viewable["loiter radius"] && (command.cmd.type === 17 || command.cmd.type === 18 || command.cmd.type === 19)) {
 
     // make sure the right radius is used, default to plane specific, otherwise use command param
     let radius = command.cmd.params.radius

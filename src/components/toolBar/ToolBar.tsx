@@ -21,7 +21,7 @@ export default function ToolBar({ isStatic }: { isStatic: boolean }) {
 
         </div>
       </div>
-      <div className="p-2">
+      <div className="px-2">
         <MapControlls />
       </div>
     </div >
