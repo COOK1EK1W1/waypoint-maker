@@ -53,22 +53,25 @@ export default function SubMissionList() {
 
   return (
     <div className="pb-1">
+      <div className="w-full p-2">
+        <div className="w-full h-[2px] bg-slate-200"></div>
+      </div>
       {waypoints.getMissions().map((mission, id) => {
         const wp = waypoints.get(mission)
         const canAdd = !noAddNames.includes(mission)
 
         return (
-          <ListItem name={`${mission} (${wp.length})`} icon={mission == "Geofence" ? <span><Fence className=" inline m-1" /></span>
-            : mission == "Markers" ? <span><MapPin className=" inline m-1" /></span>
+          <ListItem name={`${mission} (${wp.length})`} icon={mission == "Geofence" ? <span><Fence /></span>
+            : mission == "Markers" ? <span><MapPin /></span>
               : mission == "Landing" ? <span><PlaneLanding /></span>
                 : mission == "Takeoff" ? <span><PlaneTakeoff /></span>
-                  : <span><Route className="inline m-1" /></span>
+                  : <span><Route /></span>
           }
             className="justify-start" key={id} onClick={() => click(mission)} selected={activeMission == mission}
             menuItems={<>
 
-              {canAdd ? (<DropdownMenuItem 
-                onClick={() => addSub(mission)} 
+              {canAdd ? (<DropdownMenuItem
+                onClick={() => addSub(mission)}
                 className="gap-2"
                 disabled={activeMission === mission}
               >
