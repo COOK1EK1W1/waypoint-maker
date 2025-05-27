@@ -1,5 +1,6 @@
 import { CollectionType } from "@/lib/mission/mission"
 import { useWaypoints } from "@/util/context/WaypointContext"
+import { Button } from "../ui/button"
 
 export default function CreateCollection() {
   const { selectedWPs, waypoints, setWaypoints, activeMission, setSelectedWPs } = useWaypoints()
@@ -28,8 +29,5 @@ export default function CreateCollection() {
 
   }
 
-  return <div className="w-full flex justify-center">
-    <button onMouseDown={handleGroup} className="text-center p-1 m-1 border-2 border-slate-200 rounded-lg bg-slate-100">Group {selectedWPs.length} waypoints</button>
-
-  </div>
+  return <Button onClick={handleGroup} className="text-center p-1 m-1 ">Group {selectedWPs.length} waypoints</Button>
 }

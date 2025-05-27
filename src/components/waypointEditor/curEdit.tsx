@@ -27,13 +27,13 @@ export default function CurEdit({ onHide }: { onHide: () => void }) {
       <div className="flex flex-col">
         <Button onClick={onHide}>Hide</Button>
         <label className="mr-2"><span className="ml-[4px]">Editing</span>
-          <div className="border-2 border-slate-200 rounded-lg w-40 flex overflow-hidden h-[25px]">
+          <div className="border-2 border-input rounded-lg w-40 flex overflow-hidden h-[25px]">
             {item}
           </div>
         </label>
 
       </div>
-      <div className="bg-slate-200 h-full w-[2px]" />
+      <div className="bg-input h-full w-[2px]" />
     </div>
   )
 

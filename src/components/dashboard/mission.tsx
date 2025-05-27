@@ -98,7 +98,7 @@ export default function MissionTile({ mission }: { mission: { title: string, mod
           {isPending ? (
             <Loader2 className="h-5 w-5 animate-spin text-slate-500" />)
             : (<DropdownMenuTrigger asChild>
-              <div className="p-1 hover:bg-slate-100 rounded-full transition-colors" >
+              <div className="p-1 hover:bg-muted rounded-full transition-colors" >
                 <EllipsisVertical className="h-5 w-5 text-slate-500" />
               </div>
             </DropdownMenuTrigger>)}

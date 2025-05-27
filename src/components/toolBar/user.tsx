@@ -9,7 +9,7 @@ import { headers } from "next/headers";
 import { Button } from "../ui/button";
 
 export function UserSkeleton() {
-  return <Button variant="active"><span className="h-6 rounded-full animate-pulse w-20 bg-slate-300" /></Button>
+  return <Button variant="active"><span className="h-6 rounded-full animate-pulse w-20 bg-muted" /></Button>
 }
 
 export default async function User() {
@@ -30,7 +30,7 @@ export default async function User() {
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2">
                 Logged in as:
-                <span className="flex items-center gap-2 bg-gray-100 px-2 py-1 rounded-md shadow-sm max-w-[210px]">
+                <span className="flex items-center gap-2 bg-muted px-2 py-1 rounded-md shadow-sm max-w-[210px]">
                   <img height={20} width={20} className="rounded-full" alt="profile picture" src={data.user.image || ""} />
                   <span className="truncate whitespace-nowrap overflow-hidden">{data.user.name}</span>
                 </span>

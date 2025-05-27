@@ -1,6 +1,5 @@
 "use client"
 import { useWaypoints } from "@/util/context/WaypointContext"
-import { cn } from "@/lib/utils"
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import WPCheckModal from "../modal/WPCheckModal"
 import { DialogDescription } from "@radix-ui/react-dialog"
@@ -16,24 +15,24 @@ export default function WPCheck() {
   const bad = msg.filter((x) => x.severity == Severity.Bad)
 
   let text: ReactNode = ""
-  let color = ""
+  let variant: "green" | "amber" | "red" = "green"
   if (bad.length == 0) {
     if (msg.length == 0) {
-      color = "bg-green-200 border-green-300"
+      variant = "green"
       text = <ShieldCheck className="" />
     } else {
-      color = "bg-amber-200 border-amber-300"
+      variant = "amber"
       text = <ShieldAlert className="" />
     }
   } else {
-    color = "bg-red-200 border-red-300"
+    variant = "red"
     text = <ShieldX className="" />
   }
 
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button className={color}>
+        <Button variant={variant}>
           {text} < span className="grow"> Check</span>
         </Button >
       </DialogTrigger>

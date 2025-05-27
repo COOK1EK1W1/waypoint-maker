@@ -46,7 +46,7 @@ export default function CommandTypeSelector({ selected }: { selected: Command[] 
     <div className="p-2 flex flex-col">
       <label>
         <span className="block pl-[3.5px]">Type</span>
-        <select className="w-40 h-[25px] border-slate-200 bg-slate-100" onChange={onChange} value={types.size > 1 ? "" : commandName(getCommandDesc(selected[0].type).name)}>
+        <select className="w-40 h-[25px] border-input bg-card" onChange={onChange} value={types.size > 1 ? "" : commandName(getCommandDesc(selected[0].type).name)}>
 
           {types.size > 1 ? <option value="" disabled>--</option> : null}
           {commands.filter((x) => (planeSupported as readonly string[]).includes(x.name)).map((cmd, index) => (

@@ -30,7 +30,7 @@ export default function StartModal() {
 				<DialogTitle>Waypoint Maker</DialogTitle>
 				<div>
 					<p className="py-2">Welcome to waypoint maker, the software developed to make it easier to write complex waypoint missions, yet keep them error free.</p>
-					{//<p className="py-2">Please read over the help page for tips<button className="mx-2 px-2 bg-slate-200 rounded-lg" onMouseDown={()=>router.push("/help")}><FaArrowRightLong/></button></p>
+					{//<p className="py-2">Please read over the help page for tips<button className="mx-2 px-2 bg-card rounded-lg" onMouseDown={()=>router.push("/help")}><FaArrowRightLong/></button></p>
 
 					}
 					<h2 className="py-2">Ethical Use Statement</h2>

@@ -13,7 +13,7 @@ const DraggableNumberInput: React.FC<DraggableNumberInputProps> = ({
   value: externalValue = 0,
   name,
   onChange,
-  className = 'w-40 border-slate-200',
+  className = 'w-40 border-input',
   min = -Infinity,
   max = Infinity
 }) => {
@@ -110,7 +110,7 @@ const DraggableNumberInput: React.FC<DraggableNumberInputProps> = ({
         onBlur={handleBlur}
         min={min || -Infinity}
         max={max || Infinity}
-        className={`cursor-move ${className} ${internalValue === null ? 'text-center' : ''}`}
+        className={`bg-card cursor-move ${className} ${internalValue === null ? 'text-center' : ''}`}
       />
       {isDragging && (
         <div className="fixed inset-0 z-50 cursor-move" />
