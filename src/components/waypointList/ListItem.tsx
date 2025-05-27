@@ -16,10 +16,10 @@ export default function ListItem({ icon, name, onClick, className, selected, men
 
   return (
     <div className="px-2 py-1">
-      <Button variant={selected ? "active" : "default"} className={cn("w-full p-2 m-0 h-auto flex", className)
+      <Button variant={selected ? "active" : "default"} className={cn("w-full m-0 p-0 h-auto flex", className)
       }  >
-        <div className="flex-grow text-start flex items-center" onClick={onClick}>
-          <span className="inline-block mr-1">{icon}</span><span className="inline-block">{name}</span>
+        <div className="flex-grow text-start flex items-center py-2 px-3" onClick={onClick}>
+          <span className="inline m-1">{icon}</span><span className="inline-block">{name}</span>
         </div>
         <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
 

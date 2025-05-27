@@ -1,6 +1,6 @@
 "use client";
 import { ReactNode, useEffect, useRef, useState } from 'react';
-import { mapContext } from './MapContext';
+import { mapContext, mapElements } from './MapContext';
 import { Map } from 'leaflet';
 import { createStore, set, getMany } from 'idb-keyval'
 import { registerServiceWorker } from '@/lib/registerServiceWorker';
@@ -13,6 +13,8 @@ type Props = {
 
 export default function MapProvider({ children }: Props) {
   const mapRef = useRef<Map | null>(null)
+
+  const [viewable, setViewable] = useState<{ [K in (typeof mapElements)[number]]: boolean }>({ "markers": true, "geofence": true, "loiter radius": true, "accept radius": false })
 
   // the tile provider for imagery
   const [tileProvider, setTileProvider] = useState<{ subdomains: string[], url: string }>({ url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", subdomains: ["a", "b", "c"] })
@@ -40,6 +42,8 @@ export default function MapProvider({ children }: Props) {
       mapRef,
       tileProvider,
       setTileProvider,
+      viewable,
+      setViewable,
     }}>
       {children}
     </mapContext.Provider>

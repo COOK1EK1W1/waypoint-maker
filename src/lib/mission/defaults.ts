@@ -5,7 +5,7 @@ export const defaultWaypoint = (pos: LatLng): ICommand<"MAV_CMD_NAV_WAYPOINT"> =
   frame: 3,
   type: 16,
   params: {
-    "accept radius": 20,
+    "accept radius": 0,
     yaw: 0,
     hold: 0,
     "pass radius": 0,

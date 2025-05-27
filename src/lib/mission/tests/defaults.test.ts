@@ -8,11 +8,11 @@ describe('Mission Defaults', () => {
   describe('defaultWaypoint', () => {
     it('should create a waypoint command with correct parameters', () => {
       const waypoint = defaultWaypoint(testPosition);
-      
+
       expect(waypoint.frame).toBe(3);
       expect(waypoint.type).toBe(16);
       expect(waypoint.autocontinue).toBe(1);
-      expect(waypoint.params['accept radius']).toBe(20);
+      expect(waypoint.params['accept radius']).toBe(0);
       expect(waypoint.params.yaw).toBe(0);
       expect(waypoint.params.hold).toBe(0);
       expect(waypoint.params['pass radius']).toBe(0);
@@ -25,7 +25,7 @@ describe('Mission Defaults', () => {
   describe('defaultTakeoff', () => {
     it('should create a takeoff command with correct parameters', () => {
       const takeoff = defaultTakeoff(testPosition);
-      
+
       expect(takeoff.frame).toBe(3);
       expect(takeoff.type).toBe(22);
       expect(takeoff.autocontinue).toBe(1);
@@ -40,7 +40,7 @@ describe('Mission Defaults', () => {
   describe('defaultDoLandStart', () => {
     it('should create a land start command with correct parameters', () => {
       const landStart = defaultDoLandStart(testPosition);
-      
+
       expect(landStart.frame).toBe(0);
       expect(landStart.type).toBe(189);
       expect(landStart.params.latitude).toBe(testPosition.lat);

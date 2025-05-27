@@ -14,7 +14,7 @@ const DraggableNumberInput: React.FC<DraggableNumberInputProps> = ({
   name,
   onChange,
   className = 'w-40 border-slate-200',
-  min = 0,
+  min = -Infinity,
   max = Infinity
 }) => {
   const [internalValue, setInternalValue] = useState<number | null>(externalValue);

@@ -2,10 +2,19 @@
 import { createContext, Dispatch, MutableRefObject, SetStateAction, useContext } from 'react';
 import { Map } from "leaflet";
 
+export const mapElements = [
+  "markers",
+  "geofence",
+  "loiter radius",
+  "accept radius"
+] as const
+
 type MapContextType = {
   mapRef: MutableRefObject<Map | null>;
   tileProvider: { subdomains: string[], url: string },
   setTileProvider: Dispatch<SetStateAction<{ subdomains: string[], url: string }>>
+  viewable: { [K in (typeof mapElements)[number]]: boolean },
+  setViewable: Dispatch<SetStateAction<{ [K in (typeof mapElements)[number]]: boolean }>>
 }
 
 export const mapContext = createContext<MapContextType>(undefined as any);
