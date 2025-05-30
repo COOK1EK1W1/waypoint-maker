@@ -4,7 +4,7 @@ import { commandName } from "@/util/translationTable";
 import { useState } from "react";
 import { getCommandDesc } from "@/lib/commands/commands";
 import { CollectionType } from "@/lib/mission/mission";
-import { ArrowDownNarrowWide, ArrowRight, Locate, Route, Trash2 } from "lucide-react";
+import { ArrowDownNarrowWide, ArrowRight, Locate, MoveDown, MoveUp, Route, Trash2 } from "lucide-react";
 import { Button } from "../ui/button";
 import { DropdownMenuItem } from "../ui/dropdown-menu";
 
@@ -126,6 +126,27 @@ export default function CommandList({ onHide }: { onHide: () => void }) {
     setTool("Landing")
   }
 
+  function moveUp(i: number) {
+    setWaypoints((waypoints) => {
+      const temp = waypoints.clone()
+      const cur = waypoints.get(activeMission)[i]
+      temp.get(activeMission).splice(i, 1)
+      temp.get(activeMission).splice(i - 1, 0, cur)
+      return temp
+    })
+  }
+
+  function moveDown(i: number) {
+    setWaypoints((waypoints) => {
+      const temp = waypoints.clone()
+      const cur = waypoints.get(activeMission)[i]
+      temp.get(activeMission).splice(i, 1)
+      temp.get(activeMission).splice(i + 1, 0, cur)
+      return temp
+    })
+  }
+
+
   return (
     <div className="flex-grow overflow-auto select-none">
       <h2 className="px-2 text-lg pb-0 justify-between flex">{activeMission}<button onMouseDown={onHide} name="hide"><ArrowRight className="w-6 h-6" /></button></h2>
@@ -152,6 +173,16 @@ export default function CommandList({ onHide }: { onHide: () => void }) {
                     <ArrowDownNarrowWide className="h-4 w-4" />
                     <span>Go To Mission</span>
                   </DropdownMenuItem>
+
+                  {i > 1 ? <DropdownMenuItem onClick={() => moveUp(i)} className="gap-2">
+                    <MoveUp className="h-4 w-4" />
+                    <span>Move Up</span>
+                  </DropdownMenuItem> : null}
+
+                  {i < curMission.length - 1 ? <DropdownMenuItem onClick={() => moveDown(i)} className="gap-2">
+                    <MoveDown className="h-4 w-4" />
+                    <span>Move Down</span>
+                  </DropdownMenuItem> : null}
 
                   {selectedWPs.length > 1 ? <DropdownMenuItem onClick={() => handleGroup()} className="gap-2">
                     <Route className="h-4 w-4" />
@@ -181,6 +212,16 @@ export default function CommandList({ onHide }: { onHide: () => void }) {
                   {selectedWPs.length > 1 ? <DropdownMenuItem onClick={() => handleGroup()} className="gap-2">
                     <Route className="h-4 w-4" />
                     <span>Group ({selectedWPs.length})</span>
+                  </DropdownMenuItem> : null}
+
+                  {i > 1 ? <DropdownMenuItem onClick={() => moveUp(i)} className="gap-2">
+                    <MoveUp className="h-4 w-4" />
+                    <span>Move Up</span>
+                  </DropdownMenuItem> : null}
+
+                  {i < curMission.length - 1 ? <DropdownMenuItem onClick={() => moveDown(i)} className="gap-2">
+                    <MoveDown className="h-4 w-4" />
+                    <span>Move Down</span>
                   </DropdownMenuItem> : null}
 
                   <DropdownMenuItem onClick={() => onDelete(i)} className="gap-2 text-red-500 hover:text-red-500">
