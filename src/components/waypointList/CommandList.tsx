@@ -129,7 +129,7 @@ export default function CommandList({ onHide }: { onHide: () => void }) {
   return (
     <div className="flex-grow overflow-auto select-none">
       <h2 className="px-2 text-lg pb-0 justify-between flex">{activeMission}<button onMouseDown={onHide} name="hide"><ArrowRight className="w-6 h-6" /></button></h2>
-      <div className="m-2 h-[2px] bg-slate-200"></div>
+      <div className="m-2 h-[2px] bg-input"></div>
 
       {!hasTakeoff && activeMission == "Main" ?
         <div className="px-2 py-1">
@@ -201,7 +201,7 @@ export default function CommandList({ onHide }: { onHide: () => void }) {
 
       {selectedWPs.length > 1 ? (
         <div className="w-full flex justify-center">
-          <button onMouseDown={handleGroup} className="text-center p-1 m-1 border-2 border-slate-200 rounded-lg bg-slate-100">Group {selectedWPs.length} waypoints</button>
+          <Button variant="active" onMouseDown={handleGroup} className="text-center p-1 m-1 w-44">Group {selectedWPs.length} waypoints</Button>
 
         </div>
       ) : null}

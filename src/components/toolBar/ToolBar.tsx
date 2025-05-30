@@ -10,7 +10,7 @@ export default function ToolBar({ isStatic }: { isStatic: boolean }) {
   return (
     <div className="z-20 absolute top-0 left-0 overflow-hidden w-full md:w-fit">
       <div className="p-2">
-        <div className="flex bg-white items-center shadow-lg rounded-lg overflow-auto">
+        <div className="flex bg-card items-center shadow-lg rounded-lg overflow-auto">
           <SystemModal />
           <MissionIO isStatic={isStatic} />
           <WPCheck />

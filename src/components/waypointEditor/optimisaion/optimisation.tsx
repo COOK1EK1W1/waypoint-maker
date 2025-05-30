@@ -49,23 +49,23 @@ export function Optimise() {
 
       <div className="mx-2 flex flex-col">
         <h2>Algorithm</h2>
-        <Button className={algorithm == "Particle" ? "border-green-300 bg-green-200" : ""} onClick={() => setAlgorithm("Particle")}>Particle</Button>
-        <Button className={algorithm == "Genetic" ? "border-green-300 bg-green-200" : ""} onClick={() => setAlgorithm("Genetic")}>Genetic</Button>
-        <Button className={algorithm == "Gradient" ? "border-green-300 bg-green-200" : ""} onClick={() => setAlgorithm("Gradient")}>Gradient</Button>
+        <Button variant={algorithm == "Particle" ? "green" : "default"} onClick={() => setAlgorithm("Particle")}>Particle</Button>
+        <Button variant={algorithm == "Genetic" ? "green" : "default"} onClick={() => setAlgorithm("Genetic")}>Genetic</Button>
+        <Button variant={algorithm == "Gradient" ? "green" : "default"} onClick={() => setAlgorithm("Gradient")}>Gradient</Button>
       </div >
       <div className="mx-2 flex flex-col">
         <h2>Fitness</h2>
-        <Button className={metric == "Energy" ? "border-green-300 bg-green-200" : ""} onClick={() => setMetric("Energy")}>Energy</Button>
-        <Button className={metric == "Length" ? "border-green-300 bg-green-200" : ""} onClick={() => setMetric("Length")}>Length</Button>
+        <Button variant={metric == "Energy" ? "green" : "default"} onClick={() => setMetric("Energy")}>Energy</Button>
+        <Button variant={metric == "Length" ? "green" : "default"} onClick={() => setMetric("Length")}>Length</Button>
       </div>
 
       <div className="w-40 mx-2">
         <h2>Optimise</h2>
         <Button onClick={() => runOptimisation()}>Optimise</Button>
         {optimiseRes ? <div>
-          <p>Starting: <span className="text-red-600">{optimiseRes.s.toFixed(1)}</span></p>
-          <p>Ending: <span className="text-green-600">{optimiseRes.e.toFixed(1)}</span></p>
-          <p>Reduced: <span className="text-green-600">{(100 - optimiseRes.e / optimiseRes.s * 100).toFixed(1)}%</span></p>
+          <p>Starting: <span className="text-red-500">{optimiseRes.s.toFixed(1)}</span></p>
+          <p>Ending: <span className="text-green-500">{optimiseRes.e.toFixed(1)}</span></p>
+          <p>Reduced: <span className="text-green-500">{(100 - optimiseRes.e / optimiseRes.s * 100).toFixed(1)}%</span></p>
           <p>Time: {optimiseRes.t}ms</p>
         </div> : null
         }

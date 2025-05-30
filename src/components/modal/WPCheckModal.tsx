@@ -72,7 +72,7 @@ export default function WPCheckModal() {
           <FaultItem fault={{ message: "Terrain check is complete", severity: Severity.Good }} key={faultId++} onMouseDown={close} />
           : null
       }
-      <p className="text-slate-800">(Beware waypoint sub-stepping is not implemented yet)</p>
+      <p className="text-slate-500">(Beware waypoint sub-stepping is not implemented yet)</p>
     </div>
   )
 }

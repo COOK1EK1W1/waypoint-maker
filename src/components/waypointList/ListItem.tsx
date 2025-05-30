@@ -24,7 +24,7 @@ export default function ListItem({ icon, name, onClick, className, selected, men
         <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
 
           <DropdownMenuTrigger asChild>
-            <div className="p-1 hover:bg-slate-100 rounded-full transition-colors" onClick={() => setDropdownOpen(true)}>
+            <div className="p-1 hover:bg-muted rounded-full transition-colors" onClick={() => setDropdownOpen(true)}>
               <EllipsisVertical className="h-5 w-5 text-slate-500" />
             </div>
           </DropdownMenuTrigger>

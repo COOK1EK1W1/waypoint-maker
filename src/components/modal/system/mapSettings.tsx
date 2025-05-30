@@ -40,6 +40,9 @@ export default function MapSettings() {
       .map(s => s.trim())
       .filter(s => s.length > 0)
 
+    // remove cache for previous provider
+    clearCache();
+
     setTileProvider({ url, subdomains })
   }
 
@@ -141,7 +144,7 @@ export default function MapSettings() {
         <label className="">Tile URL</label>
         <input
           ref={urlRef}
-          className="w-full"
+          className="w-full bg-card"
           defaultValue={tileProvider.url}
           placeholder="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
@@ -150,7 +153,7 @@ export default function MapSettings() {
         <label className="">Sub Domains</label>
         <input
           ref={subDomainRef}
-          className="w-full"
+          className="w-full bg-card"
           defaultValue={tileProvider.subdomains.join(", ")}
           placeholder="a, b, c"
         />

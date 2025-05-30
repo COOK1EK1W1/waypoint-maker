@@ -22,17 +22,17 @@ export default function Editor() {
     <>
       {hidden ? <Button variant="active" className="absolute z-20 rounded-lg left-2 bottom-2" onClick={() => setHidden(false)}>Editor</Button> : null}
       <div className={cn("z-20 p-2 absolute bottom-0 w-full md:w-[600px] lg:w-[920px] ease-in-out duration-200", hidden ? "bottom-[-100dvh]" : "")}>
-        <div className={cn("bg-white w-full rounded-lg shadow-lg shadow-black flex h-72 md:h-60 flex-col md:flex-row")}>
+        <div className={cn("bg-card w-full rounded-lg shadow-lg shadow-black flex h-72 md:h-60 flex-col md:flex-row")}>
           <div className="flex flex-row md:flex-col">
             <div className="flex-grow flex flex-row md:flex-col">
               {Object.keys(tabs).filter((x) => process.env.NEXT_PUBLIC_ALLOWDUBINS || x !== "Optimise").map((x, i) => (
                 <Button variant={x === tab ? "active" : "default"} key={i} onClick={() => setTab(x as keyof typeof tabs)}>{x}</Button>
               ))}
             </div>
-            <Button onClick={() => setHidden(true)} className={cn("w-28 bg-white")}>Hide <ArrowDown className="ml-2 h-5 w-5" /></Button>
+            <Button onClick={() => setHidden(true)}>Hide <ArrowDown className="ml-2 h-5 w-5" /></Button>
           </div>
           <div className="p-2">
-            <div className="w-full h-[2px] bg-slate-200 md:h-full md:w-[2px]"></div>
+            <div className="w-full h-[2px] bg-muted md:h-full md:w-[2px]"></div>
           </div>
           <div className="flex-1 flex min-h-0">
             {tabs[tab]}

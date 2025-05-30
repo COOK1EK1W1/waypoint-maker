@@ -3,6 +3,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs"
 import MapSettings from "./system/mapSettings"
+import { ThemeToggle } from "./system/themeSettings"
 
 export default function SystemModal() {
 
@@ -29,10 +30,14 @@ export default function SystemModal() {
               <p className="text-muted-foreground">Version 2.0 - 2025</p>
               <div className="flex items-center pt-2">
                 <Link className="text-muted-foreground" href="https://github.com/COOK1EK1W1/waypoint-maker">Source</Link>
-                <div className="rounded-full mx-2 w-2 h-2 bg-slate-400"></div>
+                <div className="rounded-full mx-2 w-2 h-2 bg-muted"></div>
                 <Link className="text-muted-foreground" href="https://github.com/COOK1EK1W1/waypoint-maker/issues">Report an issue</Link>
               </div>
+
             </div>
+            <h2>Apperance</h2>
+            <p>Change Theme</p>
+            <ThemeToggle />
           </TabsContent>
           <TabsContent value="map">
             <div className="">

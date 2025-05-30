@@ -5,7 +5,7 @@ export default function Parameter({ name, onChange, value }: { name: string, val
     <div className="p-2">
       <label>
         <span className="block">{name}</span>
-        <DraggableNumberInput className="w-40 border-slate-200" name={name} onChange={onChange} value={value} />
+        <DraggableNumberInput className="w-40 border-input" name={name} onChange={onChange} value={value} />
       </label>
     </div>
   );

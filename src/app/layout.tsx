@@ -4,6 +4,7 @@ import './globals.css'
 import { Analytics } from "@vercel/analytics/react"
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import { cn } from '@/lib/utils'
+import { ThemeProvider } from '@/components/providers/theme-provider'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -26,9 +27,16 @@ export default function RootLayout({
       <link rel="preload" href="/marker-shadow.png" as="image" />
       <link rel="preload" href="/insert.png" as="image" />
       <body className={cn(inter.className, "fixed overflow-hidden h-[100dvh] w-full select-none")}>
-        <Analytics />
-        <SpeedInsights />
-        {children}
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <Analytics />
+          <SpeedInsights />
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   )

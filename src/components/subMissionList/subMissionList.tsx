@@ -54,7 +54,7 @@ export default function SubMissionList() {
   return (
     <div className="pb-1">
       <div className="w-full p-2">
-        <div className="w-full h-[2px] bg-slate-200"></div>
+        <div className="w-full h-[2px] bg-muted"></div>
       </div>
       {waypoints.getMissions().map((mission, id) => {
         const wp = waypoints.get(mission)
