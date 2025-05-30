@@ -40,6 +40,9 @@ export default function MapSettings() {
       .map(s => s.trim())
       .filter(s => s.length > 0)
 
+    // remove cache for previous provider
+    clearCache();
+
     setTileProvider({ url, subdomains })
   }
 
