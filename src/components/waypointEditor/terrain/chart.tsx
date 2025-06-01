@@ -12,21 +12,16 @@ import {
   ResponsiveContainer,
   Area,
 } from "recharts";
+import CommandDot from "./commandDot";
 
 // Extend LatLngAlt to include originalIndex for our specific use case in the chart
 interface CommandPositionForChart extends LatLngAlt {
-  originalIndex: number;
+  id: number;
   selected: boolean;
 }
 
-interface TerrainChartProps {
-  commandPositions: CommandPositionForChart[];
-  terrainProfile: Array<{ distance: number; elevation: number }>;
-  onCommandClick?: (originalIndex: number) => void; // Add the onClick handler prop
-}
-
 // Custom Tooltip Content
-const CustomTooltipContent = ({ active, payload, label }: any) => {
+const CustomTooltipContent = ({ active, payload }: any) => {
   if (active && payload && payload.length) {
     const commandEntry = payload.find(
       (pld: any) => pld.dataKey === 'commandHeight' && pld.value !== undefined && pld.value !== null
@@ -43,77 +38,11 @@ const CustomTooltipContent = ({ active, payload, label }: any) => {
   return null;
 };
 
-// Custom Scatter Dot for Commands
-const CustomCommandDot = (props: any) => {
-  const { cx, cy, stroke, payload, fill, yAxis, onCommandClick } = props;
-
-  // Don't render if commandHeight is not present or coordinates are invalid
-  if (payload.commandHeight === undefined || payload.commandHeight === null || isNaN(cx) || isNaN(cy)) {
-    return null;
-  }
-
-  const markerRadius = 6; // Increased size for clickability
-  const yAxisBottom = yAxis.y + yAxis.height; // Bottom of the Y-axis plot area
-  const isSelected = payload.selected; // Get selected status
-
-  const handleClick = () => {
-    if (onCommandClick && payload.originalIndex !== undefined) {
-      onCommandClick(payload.originalIndex);
-    }
-  };
-
-  return (
-    <g onClick={handleClick} style={{ cursor: onCommandClick ? 'pointer' : 'default' }}> {/* Add onClick and cursor style */}
-      {/* Vertical Line from point to X-axis */}
-      <line 
-        x1={cx} 
-        y1={cy} 
-        x2={cx} 
-        y2={yAxisBottom} 
-        stroke={fill} // Use the fill color for the line for consistency
-        strokeWidth="1" 
-        strokeDasharray="3 3" // Dashed line style
-      />
-      {/* Command Marker Circle */}
-      <circle 
-        cx={cx} 
-        cy={cy} 
-        r={markerRadius} 
-        stroke={stroke || fill} 
-        strokeWidth="1.5" 
-        fill={fill} 
-      />
-      {/* Pulsing border for selected commands */}
-      {isSelected && (
-        <circle
-          cx={cx}
-          cy={cy}
-          r={markerRadius} // Start at the marker radius
-          fill="none"
-          stroke="hsl(var(--border))"
-          strokeWidth="2"
-        >
-          <animate 
-            attributeName="r" 
-            from={markerRadius.toString()} 
-            to={(markerRadius * 2.5).toString()} 
-            dur="1.5s" 
-            repeatCount="indefinite" 
-          />
-          <animate 
-            attributeName="stroke-opacity" 
-            from="1" 
-            to="0" 
-            dur="1.5s" 
-            repeatCount="indefinite" 
-          />
-        </circle>
-      )}
-    </g>
-  );
-};
-
-export default function TerrainChart({ commandPositions, terrainProfile, onCommandClick }: TerrainChartProps){
+export default function TerrainChart({ commandPositions, terrainProfile, onCommandClick }: {
+  commandPositions: CommandPositionForChart[];
+  terrainProfile: Array<{ distance: number; elevation: number }>;
+  onCommandClick: (e: React.MouseEvent<SVGElement>, originalIndex: number) => void; // Add the onClick handler prop
+}) {
 
   // check if there is enough data to display the chart
   if (commandPositions.length < 1 && terrainProfile.length === 0) { // Changed to < 1 for commandPositions
@@ -125,37 +54,37 @@ export default function TerrainChart({ commandPositions, terrainProfile, onComma
   }
 
   // 1. Process commandPositions to get points with distances
-  const commandPointsWithDistance: Array<{ 
-    distance: number; 
-    commandHeight: number; 
-    lat: number; 
-    lng: number; 
-    originalIndex: number; 
+  const commandPointsWithDistance: Array<{
+    distance: number;
+    commandHeight: number;
+    lat: number;
+    lng: number;
+    id: number;
     selected: boolean; // Add selected status here
   }> = [];
   let cumulativeCmdDistance = 0;
   commandPositions.forEach((pos) => { // Removed unused index parameter
     if (commandPointsWithDistance.length > 0) { // Check based on array instead of index
       const prevPos = commandPositions[commandPointsWithDistance.length - 1]; // Get actual previous position
-      cumulativeCmdDistance += haversineDistance({lat: prevPos.lat, lng: prevPos.lng}, { lat: pos.lat, lng: pos.lng });
+      cumulativeCmdDistance += haversineDistance({ lat: prevPos.lat, lng: prevPos.lng }, { lat: pos.lat, lng: pos.lng });
     }
     commandPointsWithDistance.push({
       distance: parseFloat(cumulativeCmdDistance.toFixed(1)),
       commandHeight: pos.alt,
       lat: pos.lat,
       lng: pos.lng,
-      originalIndex: pos.originalIndex,
+      id: pos.id,
       selected: pos.selected, // Pass selected status
     });
   });
 
   // 2. Combine command points and terrain profile points
-  const distanceMap = new Map<number, { 
-    commandHeight?: number; 
-    terrainElevation?: number; 
-    lat?: number; 
-    lng?: number; 
-    originalIndex?: number; 
+  const distanceMap = new Map<number, {
+    commandHeight?: number;
+    terrainElevation?: number;
+    lat?: number;
+    lng?: number;
+    id?: number;
     selected?: boolean; // Add selected status here
   }>();
 
@@ -166,7 +95,7 @@ export default function TerrainChart({ commandPositions, terrainProfile, onComma
       commandHeight: cp.commandHeight,
       lat: cp.lat,
       lng: cp.lng,
-      originalIndex: cp.originalIndex,
+      id: cp.id,
       selected: cp.selected, // Pass selected status
     });
   });
@@ -185,7 +114,7 @@ export default function TerrainChart({ commandPositions, terrainProfile, onComma
       ...values,
     }))
     .sort((a, b) => a.distance - b.distance);
-    
+
   let minChartYValue = 0; // Default baseline if no data or all data is at/above 0
   const yValues = chartData
     .flatMap(d => [d.terrainElevation, d.commandHeight])
@@ -234,7 +163,9 @@ export default function TerrainChart({ commandPositions, terrainProfile, onComma
           dataKey="commandHeight"
           name="Command Height"
           fill="rgba(70, 151, 208, 1)"
-          shape={<CustomCommandDot onCommandClick={onCommandClick} />} // Pass onCommandClick to the shape
+          shape={
+            // @ts-ignore
+            <CommandDot onCmdClick={onCommandClick} />} // Pass onCommandClick to the shape
         />
       </ComposedChart>
     </ResponsiveContainer>

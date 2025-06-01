@@ -106,7 +106,7 @@ export default function HeightMap() {
   }));
 
   const commandPositionsForChart = wps.map((wp, i) => ({
-    originalIndex: i,
+    id: i,
     selected: selectedWPs.includes(i),
     ...getLatLngAlt(wp)
   }));
@@ -139,9 +139,9 @@ export default function HeightMap() {
     })
   }
 
-  const handleCommandClick = (index: number) => {
+  const handleCommandClick = (e: React.MouseEvent<SVGElement>, id: number) => {
     setSelectedWPs((prev) => {
-      return [index]
+      return [id]
     });
   };
 
