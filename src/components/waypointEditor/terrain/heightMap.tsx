@@ -2,12 +2,12 @@ import { useWaypoints } from "@/util/context/WaypointContext";
 import { getTerrain } from "@/util/terrain";
 import { useThrottle } from "@uidotdev/usehooks";
 import { useEffect, useState } from "react";
-import { Area, CartesianGrid, ComposedChart, Line, XAxis, YAxis, Layer } from "recharts";
-import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+import { ChartConfig } from "@/components/ui/chart";
 import { gradient, haversineDistance } from "@/lib/world/distance";
 import { filterLatLngAltCmds } from "@/lib/commands/commands";
-import { getLatLng, LatLng } from "@/lib/world/latlng";
+import { getLatLng, getLatLngAlt, LatLng } from "@/lib/world/latlng";
 import DraggableNumberInput from "@/components/ui/draggableNumericInput";
+import TerrainChart from "./chart";
 
 function interpolate(a: LatLng, b: LatLng, c: number) {
   return { lat: a.lat * (1 - c) + b.lat * c, lng: a.lng * (1 - c) + b.lng * c }
@@ -39,7 +39,7 @@ export default function HeightMap() {
 
   if (wps.length < 2) {
     return (
-        <div className="h-[150px] flex w-full items-center justify-center">Place two or more waypoints for height map</div>
+      <div className="h-[150px] flex w-full items-center justify-center">Place two or more waypoints for height map</div>
     );
   }
 
@@ -61,34 +61,32 @@ export default function HeightMap() {
   let prevDistance = 0;
   for (let i = 1; i < wps.length; i++) {
     let distance = haversineDistance(getLatLng(wps[i - 1]), getLatLng(wps[i]));
+    if (i === 1) {
+      heights.push(wps[0].params.altitude);
+      gradients.push(0);
+    }
+    heights.push(wps[i].params.altitude);
+    gradients.push(gradient(distance, wps[i - 1].params.altitude, wps[i].params.altitude));
+
     for (let j = 0; j < distance / interpolatedist; j++) {
-      distances.push(Math.round(prevDistance + (j / (distance / interpolatedist)) * distance));
       const a = interpolate(getLatLng(wps[i - 1]), getLatLng(wps[i]), j / (distance / interpolatedist));
       locations.push(a);
-      if (j == 0) {
-        let curHeight = wps[i - 1].params.altitude;
-        if (wps[i - 1].type == 22) {
-          curHeight = 0;
-        }
-        heights.push(curHeight);
-        if (i != 1) {
-          let prevHeight = wps[i - 2].params.altitude;
-          if (wps[i - 2].type == 22) {
-            prevHeight = 0;
-          }
-          gradients.push(gradient(distance, prevHeight, curHeight));
-        }
-      } else {
-        heights.push(null);
-        gradients.push(null);
-      }
     }
     prevDistance += distance;
   }
 
-  heights.push(wps[wps.length - 1].params.altitude);
-  let distance = haversineDistance(getLatLng(wps[wps.length - 2]), getLatLng(wps[wps.length - 1]));
-  gradients.push(gradient(distance, wps[wps.length - 2].params.altitude, wps[wps.length - 1].params.altitude));
+  if (wps.length === 1) {
+    heights.push(wps[0].params.altitude);
+    gradients.push(0);
+    locations.push(getLatLng(wps[0]));
+  }
+
+  if (wps.length > 1 && locations.length > 0) {
+    const lastWpLatLng = getLatLng(wps[wps.length - 1]);
+    if (locations[locations.length - 1].lat !== lastWpLatLng.lat || locations[locations.length - 1].lng !== lastWpLatLng.lng) {
+      locations.push(lastWpLatLng);
+    }
+  }
 
   const chartConfig = {
     desktop: {
@@ -102,20 +100,16 @@ export default function HeightMap() {
     minTerrainHeight = Math.min(terrainData[i].elevation, minTerrainHeight);
   }
 
-  let data: { terrainHeight: number[] | null, waypointHeight: number | null, distance: number }[] = [];
-  for (let i = 0; i < distances.length; i++) {
-    if (i < terrainData.length) {
-      let terrainHeight = terrainData[i].elevation;
-      data.push({
-        terrainHeight: [terrainHeight - terrainData[0].elevation, minTerrainHeight - terrainData[0].elevation - 2],
-        waypointHeight: heights[i],
-        distance: distances[i]
-      });
-    } else {
-      data.push({ terrainHeight: null, waypointHeight: heights[i], distance: distances[i] });
-    }
-  }
+  const terrainProfileForChart = terrainData.map((td, index) => ({
+    distance: parseFloat(terrainDistances[index]?.toFixed(1) || "0"),
+    elevation: td.elevation - terrainData[0].elevation,
+  }));
 
+  const commandPositionsForChart = wps.map((wp, i) => ({
+    originalIndex: i,
+    selected: selectedWPs.includes(i),
+    ...getLatLngAlt(wp)
+  }));
 
   const selected = (selectedWPs.length == 0 ? mission : mission.filter((_, i) => selectedWPs.includes(i))).map((x) => {
     if (x.type == "Command") {
@@ -145,53 +139,24 @@ export default function HeightMap() {
     })
   }
 
+  const handleCommandClick = (index: number) => {
+    setSelectedWPs((prev) => {
+      return [index]
+    });
+  };
+
   return (
-      <div>
-        <label>
-          <span className="block">altitude</span>
-          {/* @ts-ignore */}
-          <DraggableNumberInput name="altitude" onChange={onChange} value={vals}/>
-        </label>
-        <ChartContainer config={chartConfig} className="h-full w-full">
-          <ComposedChart
-              accessibilityLayer
-              data={data}
-          >
-            <CartesianGrid vertical={false} />
-            <XAxis
-                dataKey="distance"
-                tickLine={false}
-                axisLine={false}
-                tickMargin={8}
-            />
-            <YAxis
-                dataKey="waypointHeight"
-                tickLine={false}
-                axisLine={false}
-                tickMargin={8}
-                domain={[minTerrainHeight - terrainData[0]?.elevation || 0 - 2, "dataMax"]}
-            />
-            <ChartTooltip
-                cursor={false}
-                content={<ChartTooltipContent indicator="line" />}
-            />
-            <Area
-                dataKey="terrainHeight"
-                type="natural"
-                fill="var(--color-desktop)"
-                fillOpacity={0.4}
-                stroke="var(--color-desktop)"
-            />
-            <Line
-                dataKey="waypointHeight"
-                type="linear"
-                stroke="var(--color-desktop)"
-                strokeWidth={2}
-                dot={ true }
-                connectNulls={true}
-            />
-          </ComposedChart>
-        </ChartContainer>
-      </div>
+    <div className="w-full p-2">
+      <label>
+        <span className="block">Altitude</span>
+        {/* @ts-ignore */}
+        <DraggableNumberInput name="altitude" onChange={onChange} value={vals} />
+      </label>
+      <TerrainChart
+        commandPositions={commandPositionsForChart}
+        terrainProfile={terrainProfileForChart}
+        onCommandClick={handleCommandClick} // Pass the handler
+      />
+    </div>
   );
 }

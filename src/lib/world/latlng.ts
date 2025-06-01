@@ -1,4 +1,5 @@
-import { Command, LatLngCommand } from "@/lib/commands/commands";
+import { Command, LatLngAltCommand, LatLngCommand } from "@/lib/commands/commands";
+import { LatLngAlt } from "./types";
 
 export type LatLng = {
   lat: number,
@@ -12,6 +13,15 @@ export function getLatLng<T extends Command>(cmd: T): T extends LatLngCommand ? 
     return { lat: cmd.params.latitude, lng: cmd.params.longitude }
   }
   else return undefined as T extends LatLngCommand ? LatLng : (LatLng | undefined);
+}
+
+/* get the latitude, longitude and alitude of a mission command
+ */
+export function getLatLngAlt<T extends Command>(cmd: T): T extends LatLngAltCommand ? LatLngAlt : (LatLngAlt | undefined) {
+  if ("latitude" in cmd.params && "longitude" in cmd.params && "altitude" in cmd.params) {
+    return { lat: cmd.params.latitude, lng: cmd.params.longitude, alt: cmd.params.altitude }
+  }
+  else return undefined as T extends LatLngAltCommand ? LatLngAlt : (LatLngAlt | undefined);
 }
 
 /*
