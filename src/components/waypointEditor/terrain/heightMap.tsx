@@ -2,7 +2,6 @@ import { useWaypoints } from "@/util/context/WaypointContext";
 import { getTerrain } from "@/util/terrain";
 import { useThrottle } from "@uidotdev/usehooks";
 import { useEffect, useState } from "react";
-import { ChartConfig } from "@/components/ui/chart";
 import { gradient, haversineDistance } from "@/lib/world/distance";
 import { filterLatLngAltCmds } from "@/lib/commands/commands";
 import { getLatLng, getLatLngAlt, LatLng } from "@/lib/world/latlng";
@@ -21,6 +20,7 @@ export default function HeightMap() {
   const mission = waypoints.get(activeMission);
 
   const wps = filterLatLngAltCmds(waypoints.flatten(activeMission));
+  const wpsLocs = wps.map(getLatLngAlt)
   const reference = waypoints.getReferencePoint();
 
   let locations: LatLng[] = [];
@@ -43,73 +43,107 @@ export default function HeightMap() {
     );
   }
 
-  let totalDistance = 0;
-  for (let i = 1; i < wps.length; i++) {
-    totalDistance += haversineDistance(getLatLng(wps[i - 1]), getLatLng(wps[i]));
+
+  // 1. Calculate total distance between waypoints
+  let computedTotalDistance = 0;
+  for (let i = 0; i < wps.length - 1; i++) {
+    computedTotalDistance += haversineDistance(getLatLng(wps[i]), getLatLng(wps[i + 1]));
   }
 
-  let terrainDistances = [0];
-  for (let i = 1; i < terrainData.length; i++) {
-    let distance = haversineDistance(terrainData[i - 1].loc, terrainData[i].loc);
-    terrainDistances.push(terrainDistances[i - 1] + distance);
+  // 2. Calculate waypoint altitudes, gradients, and cumulative distances
+  const waypointAltitudes: number[] = [wps[0].params.altitude];
+  const waypointGradients: number[] = [0]; // Gradient at the first waypoint is 0
+  const waypointCumulativeDistances: number[] = [0];
+
+  let currentCumulativeWpDistance = 0;
+  for (let i = 0; i < wps.length - 1; i++) {
+    const wp1 = wps[i];
+    const wp2 = wps[i + 1];
+    const loc1 = getLatLng(wp1);
+    const loc2 = getLatLng(wp2);
+    const segmentDistance = haversineDistance(loc1, loc2);
+
+    waypointAltitudes.push(wp2.params.altitude);
+    waypointGradients.push(gradient(segmentDistance, wp1.params.altitude, wp2.params.altitude));
+
+    currentCumulativeWpDistance += segmentDistance;
+    waypointCumulativeDistances.push(currentCumulativeWpDistance);
   }
 
-  const interpolatedist = totalDistance / 100;
-  let distances = [0];
-  let heights: (number | null)[] = [];
-  let gradients: (number | null)[] = [0];
-  let prevDistance = 0;
-  for (let i = 1; i < wps.length; i++) {
-    let distance = haversineDistance(getLatLng(wps[i - 1]), getLatLng(wps[i]));
-    if (i === 1) {
-      heights.push(wps[0].params.altitude);
-      gradients.push(0);
-    }
-    heights.push(wps[i].params.altitude);
-    gradients.push(gradient(distance, wps[i - 1].params.altitude, wps[i].params.altitude));
+  // 3. Populate the component-scoped 'locations' array for the getTerrain useEffect hook
+  locations.length = 0; // Clear array before repopulating
 
-    for (let j = 0; j < distance / interpolatedist; j++) {
-      const a = interpolate(getLatLng(wps[i - 1]), getLatLng(wps[i]), j / (distance / interpolatedist));
-      locations.push(a);
-    }
-    prevDistance += distance;
-  }
-
-  if (wps.length === 1) {
-    heights.push(wps[0].params.altitude);
-    gradients.push(0);
+  if (wps.length > 0) { // Should be wps.length >= 2 here
     locations.push(getLatLng(wps[0]));
-  }
+    const interpolatedStepSize = computedTotalDistance > 0 ? computedTotalDistance / 100 : 0;
 
-  if (wps.length > 1 && locations.length > 0) {
-    const lastWpLatLng = getLatLng(wps[wps.length - 1]);
-    if (locations[locations.length - 1].lat !== lastWpLatLng.lat || locations[locations.length - 1].lng !== lastWpLatLng.lng) {
-      locations.push(lastWpLatLng);
+    if (interpolatedStepSize > 0) {
+      for (let i = 0; i < wps.length - 1; i++) { // Iterate through segments
+        const p1 = getLatLng(wps[i]);
+        const p2 = getLatLng(wps[i + 1]);
+        const segmentDist = haversineDistance(p1, p2);
+
+        if (segmentDist > 0) {
+          // Calculate number of interpolation points strictly between p1 and p2
+          const numInterpolationIntervals = Math.floor(segmentDist / interpolatedStepSize);
+          for (let j = 1; j < numInterpolationIntervals; j++) {
+            const fraction = j / numInterpolationIntervals;
+            locations.push(interpolate(p1, p2, fraction));
+          }
+        }
+        // Add p2, ensuring it's distinct from the last point added to 'locations'
+        if (locations.length === 0 || locations[locations.length - 1].lat !== p2.lat || locations[locations.length - 1].lng !== p2.lng) {
+          locations.push(p2);
+        }
+      }
+    } else { // No valid step size for interpolation (e.g., totalDistance is 0)
+      // Add all unique waypoints to locations if not already present.
+      for (let i = 1; i < wps.length; i++) {
+        const nextLoc = getLatLng(wps[i]);
+        if (locations.length === 0 || locations[locations.length - 1].lat !== nextLoc.lat || locations[locations.length - 1].lng !== nextLoc.lng) {
+          locations.push(nextLoc);
+        }
+      }
     }
   }
 
-  const chartConfig = {
-    desktop: {
-      label: "Elevation",
-      color: "hsl(var(--chart-1))",
-    },
-  } satisfies ChartConfig;
 
-  let minTerrainHeight = terrainData[0]?.elevation || 0;
-  for (let i = 1; i < terrainData.length; i++) {
-    minTerrainHeight = Math.min(terrainData[i].elevation, minTerrainHeight);
+  // 4. Calculate terrain distances (cumulative distances along the fetched terrain path)
+  let currentTerrainDistances: number[] = [];
+  if (terrainData.length > 0) {
+    currentTerrainDistances.push(0);
+    for (let i = 0; i < terrainData.length - 1; i++) {
+      const distance = haversineDistance(terrainData[i].loc, terrainData[i + 1].loc);
+      currentTerrainDistances.push(currentTerrainDistances[i] + distance);
+    }
+  } else {
+    currentTerrainDistances.push(0); // Default if no terrain data
   }
 
+  // 5. Calculate minimum terrain height
+  let minOverallTerrainHeight = terrainData[0]?.elevation ?? 0;
+  for (let i = 1; i < terrainData.length; i++) {
+    minOverallTerrainHeight = Math.min(terrainData[i].elevation, minOverallTerrainHeight);
+  }
+
+  // 6. Prepare terrain profile for the chart (normalized elevation)
   const terrainProfileForChart = terrainData.map((td, index) => ({
-    distance: parseFloat(terrainDistances[index]?.toFixed(1) || "0"),
-    elevation: td.elevation - terrainData[0].elevation,
+    distance: parseFloat(currentTerrainDistances[index]?.toFixed(1) || "0"),
+    elevation: td.elevation - (terrainData[0]?.elevation ?? 0), // Normalize to first terrain point
   }));
 
-  const commandPositionsForChart = wps.map((wp, i) => ({
-    id: i,
-    selected: selectedWPs.includes(i),
-    ...getLatLngAlt(wp)
-  }));
+  // 7. Prepare command positions for the chart
+  const commandPositionsForChart = wpsLocs.map(({ alt, lat, lng }, index) => {
+    return {
+      id: index, // Use index for selection, consistent with handleCommandClick
+      distance: waypointCumulativeDistances[index],
+      altitude: alt,
+      alt: alt,
+      lat,
+      lng,
+      selected: selectedWPs.includes(index),
+    };
+  });
 
   const selected = (selectedWPs.length == 0 ? mission : mission.filter((_, i) => selectedWPs.includes(i))).map((x) => {
     if (x.type == "Command") {
@@ -147,11 +181,20 @@ export default function HeightMap() {
 
   return (
     <div className="w-full p-2">
-      <label>
-        <span className="block">Altitude</span>
-        {/* @ts-ignore */}
-        <DraggableNumberInput name="altitude" onChange={onChange} value={vals} />
-      </label>
+      <div className="flex flex-row gap-2">
+        <label>
+          <span className="block">Altitude</span>
+          {/* @ts-ignore */}
+          <DraggableNumberInput name="altitude" onChange={onChange} value={vals} />
+        </label>
+        <label>
+          <span className="block">Frame</span>
+          <select className="w-40 h-[25px] border-input bg-card">
+            <option >Relative</option>
+            <option >AMSL</option>
+          </select>
+        </label>
+      </div>
       <TerrainChart
         commandPositions={commandPositionsForChart}
         terrainProfile={terrainProfileForChart}

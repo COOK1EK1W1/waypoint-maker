@@ -11,6 +11,7 @@ import {
   Scatter,
   ResponsiveContainer,
   Area,
+  LabelList,
 } from "recharts";
 import CommandDot from "./commandDot";
 
@@ -38,10 +39,11 @@ const CustomTooltipContent = ({ active, payload }: any) => {
   return null;
 };
 
-export default function TerrainChart({ commandPositions, terrainProfile, onCommandClick }: {
+export default function TerrainChart({ commandPositions, terrainProfile, onCommandClick, waypointGradients }: {
   commandPositions: CommandPositionForChart[];
   terrainProfile: Array<{ distance: number; elevation: number }>;
   onCommandClick: (e: React.MouseEvent<SVGElement>, originalIndex: number) => void; // Add the onClick handler prop
+  waypointGradients?: number[]; // Add waypointGradients prop
 }) {
 
   // check if there is enough data to display the chart
@@ -61,9 +63,10 @@ export default function TerrainChart({ commandPositions, terrainProfile, onComma
     lng: number;
     id: number;
     selected: boolean; // Add selected status here
+    gradient?: number; // Add gradient property
   }> = [];
   let cumulativeCmdDistance = 0;
-  commandPositions.forEach((pos) => { // Removed unused index parameter
+  commandPositions.forEach((pos, index) => { // Add index for accessing gradient
     if (commandPointsWithDistance.length > 0) { // Check based on array instead of index
       const prevPos = commandPositions[commandPointsWithDistance.length - 1]; // Get actual previous position
       cumulativeCmdDistance += haversineDistance({ lat: prevPos.lat, lng: prevPos.lng }, { lat: pos.lat, lng: pos.lng });
@@ -75,6 +78,7 @@ export default function TerrainChart({ commandPositions, terrainProfile, onComma
       lng: pos.lng,
       id: pos.id,
       selected: pos.selected, // Pass selected status
+      gradient: waypointGradients && waypointGradients[index + 1], // Assign gradient for the segment starting from this point
     });
   });
 
@@ -86,6 +90,7 @@ export default function TerrainChart({ commandPositions, terrainProfile, onComma
     lng?: number;
     id?: number;
     selected?: boolean; // Add selected status here
+    gradient?: number; // Add gradient to map
   }>();
 
   commandPointsWithDistance.forEach(cp => {
@@ -97,6 +102,7 @@ export default function TerrainChart({ commandPositions, terrainProfile, onComma
       lng: cp.lng,
       id: cp.id,
       selected: cp.selected, // Pass selected status
+      gradient: cp.gradient, // Pass gradient
     });
   });
 
@@ -126,16 +132,15 @@ export default function TerrainChart({ commandPositions, terrainProfile, onComma
 
   return (
     <ResponsiveContainer width="100%" height={180}>
-      <ComposedChart data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+      <ComposedChart data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 10 }}>
         <CartesianGrid stroke="#ccc" />
         <XAxis
           dataKey="distance"
           type="number" // Ensure XAxis is treated as numerical
           domain={['dataMin', 'dataMax']} // Ensure full range is shown
-          label={{ value: "Distance (m)", position: "insideBottom", offset: -10 }}
         />
         <YAxis
-          label={{ value: "Elevation (m)", angle: -90, position: "insideLeft" }}
+          label={{ value: "Elevation (m Rel)", angle: -90, position: "insideBottomLeft" }}
           domain={[minChartYValue, 'dataMax']} // Set Y-axis to start at minChartYValue and extend to dataMax
         />
         <Tooltip content={<CustomTooltipContent />} />
@@ -158,7 +163,19 @@ export default function TerrainChart({ commandPositions, terrainProfile, onComma
           dot={false}
           name="Command Height"
           connectNulls={true}
-        />
+        >
+          {waypointGradients && (
+            <LabelList
+              dataKey="gradient" // Use the gradient data
+              position="right" // Position label above the point
+              formatter={(value: number) => value !== undefined && value !== 0 ? `${value.toFixed(1)}°` : ''} // Format as percentage
+              style={{ fill: "black", fontSize: "10px" }} // Style the label
+              // Offset the label to be between points
+              // This requires knowing the next point's position or calculating midpoints
+              // For simplicity, this example places it on the point; more complex positioning might be needed.
+            />
+          )}
+        </Line>
         <Scatter
           dataKey="commandHeight"
           name="Command Height"
