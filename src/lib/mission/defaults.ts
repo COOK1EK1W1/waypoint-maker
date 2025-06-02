@@ -31,7 +31,7 @@ export const defaultTakeoff = (pos: LatLng): ICommand<"MAV_CMD_NAV_TAKEOFF"> => 
 })
 
 export const defaultDoLandStart = (pos: LatLng): ICommand<"MAV_CMD_DO_LAND_START"> => ({
-  frame: 0,
+  frame: 3,
   type: 189,
   params: {
     latitude: pos.lat,

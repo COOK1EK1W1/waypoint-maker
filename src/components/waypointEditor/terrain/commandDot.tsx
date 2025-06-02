@@ -9,7 +9,6 @@ export default function CommandDot({ cx, cy, stroke, payload, fill, yAxis, onCmd
   const isSelected = payload.selected; // Get selected status
 
   const handleClick = (e: React.MouseEvent<SVGElement>) => {
-    console.log(payload)
     if (onCmdClick && payload.id !== undefined) {
       onCmdClick(e, payload.id);
     }
@@ -43,7 +42,7 @@ export default function CommandDot({ cx, cy, stroke, payload, fill, yAxis, onCmd
           cy={cy}
           r={markerRadius} // Start at the marker radius
           fill="none"
-          stroke="hsl(var(--border))"
+          stroke="hsl(var(--secondary-foreground))"
           strokeWidth="2"
         >
           <animate

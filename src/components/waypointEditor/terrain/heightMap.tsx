@@ -1,15 +1,34 @@
 import { useWaypoints } from "@/util/context/WaypointContext";
 import { getTerrain } from "@/util/terrain";
 import { useThrottle } from "@uidotdev/usehooks";
-import { useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { gradient, haversineDistance } from "@/lib/world/distance";
-import { filterLatLngAltCmds } from "@/lib/commands/commands";
+import { altFrame, filterLatLngAltCmds } from "@/lib/commands/commands";
 import { getLatLng, getLatLngAlt, LatLng } from "@/lib/world/latlng";
 import DraggableNumberInput from "@/components/ui/draggableNumericInput";
 import TerrainChart from "./chart";
 
 function interpolate(a: LatLng, b: LatLng, c: number) {
   return { lat: a.lat * (1 - c) + b.lat * c, lng: a.lng * (1 - c) + b.lng * c }
+}
+
+// Helper function to get terrain elevation at a specific point
+function getTerrainElevationAtPoint(terrainData: { loc: LatLng, elevation: number }[], point: LatLng): number {
+  if (!terrainData.length) return 0;
+
+  // Find the closest terrain point
+  let closestPoint = terrainData[0];
+  let minDistance = haversineDistance(point, terrainData[0].loc);
+
+  for (const terrainPoint of terrainData) {
+    const distance = haversineDistance(point, terrainPoint.loc);
+    if (distance < minDistance) {
+      minDistance = distance;
+      closestPoint = terrainPoint;
+    }
+  }
+
+  return closestPoint.elevation;
 }
 
 export default function HeightMap() {
@@ -43,7 +62,6 @@ export default function HeightMap() {
     );
   }
 
-
   // 1. Calculate total distance between waypoints
   let computedTotalDistance = 0;
   for (let i = 0; i < wps.length - 1; i++) {
@@ -51,23 +69,43 @@ export default function HeightMap() {
   }
 
   // 2. Calculate waypoint altitudes, gradients, and cumulative distances
-  const waypointAltitudes: number[] = [wps[0].params.altitude];
+  const waypointAltitudes: number[] = [];
   const waypointGradients: number[] = [0]; // Gradient at the first waypoint is 0
   const waypointCumulativeDistances: number[] = [0];
 
+  // Get the first command's altitude for relative frame calculations
+  const firstCommandAltitude = wps[0].params.altitude;
+
   let currentCumulativeWpDistance = 0;
-  for (let i = 0; i < wps.length - 1; i++) {
-    const wp1 = wps[i];
-    const wp2 = wps[i + 1];
-    const loc1 = getLatLng(wp1);
-    const loc2 = getLatLng(wp2);
-    const segmentDistance = haversineDistance(loc1, loc2);
+  for (let i = 0; i < wps.length; i++) {
+    const wp = wps[i];
+    const loc = getLatLng(wp);
+    let altitude = wp.params.altitude;
 
-    waypointAltitudes.push(wp2.params.altitude);
-    waypointGradients.push(gradient(segmentDistance, wp1.params.altitude, wp2.params.altitude));
+    // Adjust altitude based on frame
+    switch (wp.frame) {
+      case 3: // Relative to first command
+        altitude += firstCommandAltitude;
+        break;
+      case 10: // Relative to terrain
+        altitude += getTerrainElevationAtPoint(terrainData, loc);
+        break;
+      // case 0 (AMSL) doesn't need adjustment
+    }
 
-    currentCumulativeWpDistance += segmentDistance;
-    waypointCumulativeDistances.push(currentCumulativeWpDistance);
+    waypointAltitudes.push(altitude);
+
+    if (i < wps.length - 1) {
+      const wp2 = wps[i + 1];
+      const loc2 = getLatLng(wp2);
+      const segmentDistance = haversineDistance(loc, loc2);
+
+      // Calculate gradient using the adjusted altitudes
+      waypointGradients.push(gradient(segmentDistance, altitude, waypointAltitudes[i + 1]));
+
+      currentCumulativeWpDistance += segmentDistance;
+      waypointCumulativeDistances.push(currentCumulativeWpDistance);
+    }
   }
 
   // 3. Populate the component-scoped 'locations' array for the getTerrain useEffect hook
@@ -129,16 +167,30 @@ export default function HeightMap() {
   // 6. Prepare terrain profile for the chart (normalized elevation)
   const terrainProfileForChart = terrainData.map((td, index) => ({
     distance: parseFloat(currentTerrainDistances[index]?.toFixed(1) || "0"),
-    elevation: td.elevation - (terrainData[0]?.elevation ?? 0), // Normalize to first terrain point
+    elevation: td.elevation - (terrainData[0]?.elevation ?? 0)
   }));
 
   // 7. Prepare command positions for the chart
   const commandPositionsForChart = wpsLocs.map(({ alt, lat, lng }, index) => {
+    const wp = wps[index];
+    let adjustedAltitude = alt - (terrainData[0]?.elevation ?? 0);
+
+    // Adjust altitude based on frame for display
+    switch (wp.frame) {
+      case 3: // Relative to first command
+        adjustedAltitude += firstCommandAltitude;
+        break;
+      case 10: // Relative to terrain
+        adjustedAltitude += getTerrainElevationAtPoint(terrainData, { lat, lng });
+        break;
+      // case 0 (AMSL) doesn't need adjustment
+    }
+
     return {
-      id: index, // Use index for selection, consistent with handleCommandClick
+      id: index,
       distance: waypointCumulativeDistances[index],
-      altitude: alt,
-      alt: alt,
+      altitude: adjustedAltitude,
+      alt: adjustedAltitude,
       lat,
       lng,
       selected: selectedWPs.includes(index),
@@ -153,10 +205,14 @@ export default function HeightMap() {
     }
   }).flat()
 
-  const values = filterLatLngAltCmds(selected).map(obj => obj.params["altitude"]);
-  const allSame = values.every(val => val === values[0]);
+  const frameValues = filterLatLngAltCmds(selected).map(obj => obj.frame);
+  const frameAllSame = frameValues.every(val => val === frameValues[0]);
+  const frameVal = frameAllSame ? frameValues[0] : null
 
-  const vals = allSame ? values[0] : null
+  const altValues = filterLatLngAltCmds(selected).map(obj => obj.params["altitude"]);
+  const altAllSame = altValues.every(val => val === altValues[0]);
+  const altVal = altAllSame ? altValues[0] : null
+
 
 
   function onChange(event: { target: { name: string, value: number } }) {
@@ -179,19 +235,53 @@ export default function HeightMap() {
     });
   };
 
+  function changeFrame(e: ChangeEvent<HTMLSelectElement>) {
+    if (![0, 3, 10].includes(Number(e.target.value))) return
+    const val = Number(e.target.value) as 0 | 3 | 10
+
+    setWaypoints((prevMission) => {
+      const temp = prevMission.clone()
+      const cur = temp.get(activeMission)
+      if (selectedWPs.length > 0) {
+        for (let i = 0; i < selectedWPs.length; i++) {
+          temp.changeParam(selectedWPs[i], activeMission, (x) => {
+            let b = { ...x }
+            if ("altitude" in x.params) {
+              b.frame = val
+            }
+            return b
+          })
+        }
+      } else {
+        for (let i = 0; i < cur.length; i++) {
+          temp.changeParam(i, activeMission, (x) => {
+            let b = { ...x }
+            if ("altitude" in x.params) {
+              b.frame = val
+            }
+            return b
+          })
+        }
+      }
+      return temp
+    })
+  }
+
   return (
     <div className="w-full p-2">
       <div className="flex flex-row gap-2">
         <label>
           <span className="block">Altitude</span>
           {/* @ts-ignore */}
-          <DraggableNumberInput name="altitude" onChange={onChange} value={vals} />
+          <DraggableNumberInput name="altitude" onChange={onChange} value={altVal} />
         </label>
         <label>
           <span className="block">Frame</span>
-          <select className="w-40 h-[25px] border-input bg-card">
-            <option >Relative</option>
-            <option >AMSL</option>
+          <select value={frameAllSame ? "" + frameVal : ""} onChange={changeFrame} className="w-40 h-[25px] border-input bg-card">
+            {!frameAllSame ? <option value="" disabled>--</option> : null}
+            <option value="3">Relative</option>
+            <option value="0">AMSL</option>
+            <option value="10">Terrain</option>
           </select>
         </label>
       </div>

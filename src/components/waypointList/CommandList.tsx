@@ -174,7 +174,7 @@ export default function CommandList({ onHide }: { onHide: () => void }) {
                     <span>Go To Mission</span>
                   </DropdownMenuItem>
 
-                  {i > 1 ? <DropdownMenuItem onClick={() => moveUp(i)} className="gap-2">
+                  {i > 0 ? <DropdownMenuItem onClick={() => moveUp(i)} className="gap-2">
                     <MoveUp className="h-4 w-4" />
                     <span>Move Up</span>
                   </DropdownMenuItem> : null}
@@ -214,7 +214,7 @@ export default function CommandList({ onHide }: { onHide: () => void }) {
                     <span>Group ({selectedWPs.length})</span>
                   </DropdownMenuItem> : null}
 
-                  {i > 1 ? <DropdownMenuItem onClick={() => moveUp(i)} className="gap-2">
+                  {i > 0 ? <DropdownMenuItem onClick={() => moveUp(i)} className="gap-2">
                     <MoveUp className="h-4 w-4" />
                     <span>Move Up</span>
                   </DropdownMenuItem> : null}
