@@ -42,7 +42,7 @@ export default function CommandDot({ cx, cy, stroke, payload, fill, yAxis, onCmd
           cy={cy}
           r={markerRadius} // Start at the marker radius
           fill="none"
-          stroke="hsl(var(--muted-foreground))"
+          stroke="hsl(var(--secondary-foreground))"
           strokeWidth="2"
         >
           <animate
