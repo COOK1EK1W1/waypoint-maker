@@ -138,10 +138,12 @@ export default function TerrainChart({ commandPositions, terrainProfile, onComma
           dataKey="distance"
           type="number" // Ensure XAxis is treated as numerical
           domain={['dataMin', 'dataMax']} // Ensure full range is shown
+          style={{ color: "--text-muted" }}
         />
         <YAxis
           label={{ value: "Elevation (m Rel)", angle: -90, position: "insideBottomLeft" }}
           domain={[minChartYValue, 'dataMax']} // Set Y-axis to start at minChartYValue and extend to dataMax
+          style={{ color: "--text-muted" }}
         />
         <Tooltip content={<CustomTooltipContent />} />
         <Area
@@ -170,9 +172,9 @@ export default function TerrainChart({ commandPositions, terrainProfile, onComma
               position="right" // Position label above the point
               formatter={(value: number) => value !== undefined && value !== 0 ? `${value.toFixed(1)}°` : ''} // Format as percentage
               style={{ fill: "black", fontSize: "10px" }} // Style the label
-              // Offset the label to be between points
-              // This requires knowing the next point's position or calculating midpoints
-              // For simplicity, this example places it on the point; more complex positioning might be needed.
+            // Offset the label to be between points
+            // This requires knowing the next point's position or calculating midpoints
+            // For simplicity, this example places it on the point; more complex positioning might be needed.
             />
           )}
         </Line>
