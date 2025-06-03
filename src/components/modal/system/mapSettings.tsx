@@ -6,13 +6,16 @@ import { latlngToTile, tilesForRadiusKm } from "@/lib/map/tiles"
 import { createStore, clear } from 'idb-keyval'
 import { useWaypoints } from "@/util/context/WaypointContext"
 import { filterLatLngCmds } from "@/lib/commands/commands"
-import { avgLatLng, getLatLng } from "@/lib/world/latlng"
+import { avgLatLng, getLatLng, LatLng } from "@/lib/world/latlng"
 import { Button } from "@/components/ui/button"
+import { getTerrain } from "@/lib/world/terrain"
+import { worldOffset } from "@/lib/world/distance"
 
 const tileStore = createStore('mapStore', 'tileStore')
+const terStore = createStore('terStore', 'terStore')
 
 const ZOOM_LEVELS = [9, 10, 11, 12, 13, 14, 15, 16, 17]
-const RADIUS_KM = 7;
+const RADIUS_KM = 6;
 
 export default function MapSettings() {
   const { tileProvider, setTileProvider, mapRef } = useMap()
@@ -55,6 +58,7 @@ export default function MapSettings() {
     })
   }
 
+
   const downloadTiles = async () => {
 
     // find where we should download, try average of waypoitns first
@@ -65,6 +69,19 @@ export default function MapSettings() {
       if (currentCenter == undefined) return
       avg = currentCenter
     }
+
+    // terrain data
+    const northWest = worldOffset(avg, 8000, 7 * Math.PI / 4)
+    const southEast = worldOffset(avg, 8000, 3 * Math.PI / 4)
+    console.log(northWest)
+    console.log(southEast)
+    let locs: LatLng[] = []
+    for (let x = southEast.lat; x < northWest.lat; x += 0.01) {
+      for (let y = northWest.lng; y < southEast.lng; y += 0.01) {
+        locs.push({ lat: x, lng: y })
+      }
+    }
+    getTerrain(locs)
 
     const downloadQueue: (() => Promise<void>)[] = []
     let completedTiles = 0
@@ -115,6 +132,10 @@ export default function MapSettings() {
       //await new Promise(resolve => setTimeout(resolve, DELAY))
     }
 
+
+
+
+
     // were done :)
     setIsDownloading(false)
   }
@@ -123,6 +144,7 @@ export default function MapSettings() {
   const clearCache = async () => {
 
     await clear(tileStore)
+    await clear(terStore)
 
     // Force re-render by updating size
     navigator.storage.estimate().then((a) => {
