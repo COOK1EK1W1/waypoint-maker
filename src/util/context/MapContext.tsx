@@ -7,7 +7,8 @@ export const mapElements = [
   "geofence",
   "loiter radius",
   "accept radius",
-  "terrain"
+  "terrain",
+  "imagery"
 ] as const
 
 type MapContextType = {
