@@ -3,10 +3,7 @@ import { useWaypoints } from "@/util/context/WaypointContext";
 import InsertBtn from "@/components/marker/insertBtn";
 import { Command, getCommandDesc, LatLngCommand } from "@/lib/commands/commands";
 import { defaultWaypoint } from "@/lib/mission/defaults";
-import { avgLatLng, getLatLng } from "@/lib/world/latlng";
-import NonDestChip from "@/components/marker/nonDestChip";
-import { commandName } from "@/util/translationTable";
-import { LatLng } from "@/lib/world/types";
+import { avgLatLng, getLatLng, LatLng } from "@/lib/world/latlng";
 import CommandMarker from "./commandMarker";
 
 const limeOptions = { color: 'lime' }

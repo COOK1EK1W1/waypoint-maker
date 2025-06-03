@@ -1,8 +1,8 @@
 import { Marker } from "react-leaflet"
-import { LatLng } from "@/lib/world/types"
 import { createAnimatedIcon } from "./waypoint"
 import { useMemo } from "react"
 import * as Leaflet from "leaflet"
+import { LatLng } from "@/lib/world/latlng"
 
 export default function GeofenceMarker({ text, position, active }: { position: LatLng, active: boolean, text?: string }) {
 

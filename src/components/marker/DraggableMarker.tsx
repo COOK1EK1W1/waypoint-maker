@@ -2,7 +2,7 @@ import { useMemo, useRef } from "react"
 import { Marker } from "react-leaflet"
 import * as Leaflet from "leaflet"
 import { circleOverlayIcon, createAnimatedIcon } from "./waypoint"
-import { LatLng } from "@/lib/world/types"
+import { LatLng } from "@/lib/world/latlng"
 
 export default function DraggableMarker({ text, position, active, onMove, onClick }: { text?: string, position: LatLng, active: boolean, onMove?: (lat: number, lng: number) => void, onClick?: () => void }) {
 

@@ -2,7 +2,7 @@
 import { useMemo } from "react";
 import { Marker } from "react-leaflet";
 import L from "leaflet";
-import { LatLng } from "@/lib/world/types";
+import { LatLng } from "@/lib/world/latlng";
 
 type ArrowHeadProps = {
   center: LatLng;

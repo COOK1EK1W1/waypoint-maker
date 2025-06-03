@@ -1,40 +1,40 @@
 import { useWaypoints } from "@/util/context/WaypointContext";
-import { getTerrain } from "@/util/terrain";
 import { useThrottle } from "@uidotdev/usehooks";
 import { ChangeEvent, useEffect, useState } from "react";
 import { gradient, haversineDistance } from "@/lib/world/distance";
-import { altFrame, filterLatLngAltCmds } from "@/lib/commands/commands";
-import { getLatLng, getLatLngAlt, LatLng } from "@/lib/world/latlng";
+import { filterLatLngAltCmds } from "@/lib/commands/commands";
+import { getLatLng, getLatLngAlt, LatLng, LatLngAlt } from "@/lib/world/latlng";
 import DraggableNumberInput from "@/components/ui/draggableNumericInput";
 import TerrainChart from "./chart";
+import { getTerrain } from "@/lib/world/terrain";
 
 function interpolate(a: LatLng, b: LatLng, c: number) {
   return { lat: a.lat * (1 - c) + b.lat * c, lng: a.lng * (1 - c) + b.lng * c }
 }
 
 // Helper function to get terrain elevation at a specific point
-function getTerrainElevationAtPoint(terrainData: { loc: LatLng, elevation: number }[], point: LatLng): number {
+function getTerrainElevationAtPoint(terrainData: LatLngAlt[], point: LatLng): number {
   if (!terrainData.length) return 0;
 
   // Find the closest terrain point
   let closestPoint = terrainData[0];
-  let minDistance = haversineDistance(point, terrainData[0].loc);
+  let minDistance = haversineDistance(point, terrainData[0]);
 
   for (const terrainPoint of terrainData) {
-    const distance = haversineDistance(point, terrainPoint.loc);
+    const distance = haversineDistance(point, terrainPoint);
     if (distance < minDistance) {
       minDistance = distance;
       closestPoint = terrainPoint;
     }
   }
 
-  return closestPoint.elevation;
+  return closestPoint.alt;
 }
 
 export default function HeightMap() {
   const { activeMission, waypoints, setWaypoints, setSelectedWPs, selectedWPs } = useWaypoints();
-  const [terrainData, setTerrainData] = useState<{ loc: LatLng, elevation: number }[]>([]);
-  const throttledValue = useThrottle(waypoints, 2000);
+  const [terrainData, setTerrainData] = useState<LatLngAlt[]>([]);
+  const throttledValue = useThrottle(waypoints, 1000);
 
   const mission = waypoints.get(activeMission);
 
@@ -49,9 +49,7 @@ export default function HeightMap() {
     if (wps.length < 2) return;
     getTerrain(locations).then((data) => {
       if (data) {
-        setTerrainData(data.map((x) => {
-          return { loc: { lat: x.latitude, lng: x.longitude }, elevation: x.elevation };
-        }));
+        setTerrainData(data);
       }
     });
   }, [throttledValue]);
@@ -151,7 +149,7 @@ export default function HeightMap() {
   if (terrainData.length > 0) {
     currentTerrainDistances.push(0);
     for (let i = 0; i < terrainData.length - 1; i++) {
-      const distance = haversineDistance(terrainData[i].loc, terrainData[i + 1].loc);
+      const distance = haversineDistance(terrainData[i], terrainData[i + 1]);
       currentTerrainDistances.push(currentTerrainDistances[i] + distance);
     }
   } else {
@@ -159,21 +157,21 @@ export default function HeightMap() {
   }
 
   // 5. Calculate minimum terrain height
-  let minOverallTerrainHeight = terrainData[0]?.elevation ?? 0;
+  let minOverallTerrainHeight = terrainData[0]?.alt ?? 0;
   for (let i = 1; i < terrainData.length; i++) {
-    minOverallTerrainHeight = Math.min(terrainData[i].elevation, minOverallTerrainHeight);
+    minOverallTerrainHeight = Math.min(terrainData[i].alt, minOverallTerrainHeight);
   }
 
   // 6. Prepare terrain profile for the chart (normalized elevation)
   const terrainProfileForChart = terrainData.map((td, index) => ({
     distance: parseFloat(currentTerrainDistances[index]?.toFixed(1) || "0"),
-    elevation: td.elevation - (terrainData[0]?.elevation ?? 0)
+    elevation: td.alt - (terrainData[0]?.alt ?? 0)
   }));
 
   // 7. Prepare command positions for the chart
   const commandPositionsForChart = wpsLocs.map(({ alt, lat, lng }, index) => {
     const wp = wps[index];
-    let adjustedAltitude = alt - (terrainData[0]?.elevation ?? 0);
+    let adjustedAltitude = alt - (terrainData[0]?.alt ?? 0);
 
     // Adjust altitude based on frame for display
     switch (wp.frame) {

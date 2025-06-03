@@ -1,5 +1,4 @@
 import { haversineDistance } from "@/lib/world/distance";
-import { LatLngAlt } from "@/lib/world/types"; // Assuming LatLngAlt includes lat, lng, alt
 import React from "react";
 import {
   ComposedChart,
@@ -14,6 +13,7 @@ import {
   LabelList,
 } from "recharts";
 import CommandDot from "./commandDot";
+import { LatLngAlt } from "@/lib/world/latlng";
 
 // Extend LatLngAlt to include originalIndex for our specific use case in the chart
 interface CommandPositionForChart extends LatLngAlt {

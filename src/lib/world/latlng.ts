@@ -1,9 +1,14 @@
 import { Command, LatLngAltCommand, LatLngCommand } from "@/lib/commands/commands";
-import { LatLngAlt } from "./types";
 
 export type LatLng = {
   lat: number,
   lng: number
+}
+
+export type LatLngAlt = {
+  lat: number,
+  lng: number,
+  alt: number
 }
 
 /* get the latitude and longitude of a mission command

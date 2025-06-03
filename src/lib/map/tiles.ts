@@ -1,5 +1,5 @@
 import { deg2rad } from "../math/geometry";
-import { LatLng } from "../world/types";
+import { LatLng } from "../world/latlng";
 
 /**
  * Converts a latitude/longitude coordinate to tile coordinates at a specific zoom level.
