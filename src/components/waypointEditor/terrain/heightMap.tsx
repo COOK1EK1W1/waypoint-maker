@@ -34,7 +34,7 @@ function getTerrainElevationAtPoint(terrainData: LatLngAlt[], point: LatLng): nu
 export default function HeightMap() {
   const { activeMission, waypoints, setWaypoints, setSelectedWPs, selectedWPs } = useWaypoints();
   const [terrainData, setTerrainData] = useState<LatLngAlt[]>([]);
-  const throttledValue = useThrottle(waypoints, 1000);
+  const throttledValue = useThrottle(waypoints, 500);
 
   const mission = waypoints.get(activeMission);
 
@@ -60,68 +60,38 @@ export default function HeightMap() {
     );
   }
 
-  // 1. Calculate total distance between waypoints
-  let computedTotalDistance = 0;
-  for (let i = 0; i < wps.length - 1; i++) {
-    computedTotalDistance += haversineDistance(getLatLng(wps[i]), getLatLng(wps[i + 1]));
-  }
-
-  // 2. Calculate waypoint altitudes, gradients, and cumulative distances
-  const waypointAltitudes: number[] = [];
-  const waypointGradients: number[] = [0]; // Gradient at the first waypoint is 0
+  // calculate total distances
   const waypointCumulativeDistances: number[] = [0];
+  const segmentSizes: number[] = []
+  let totalDistance = 0;
+  for (let i = 0; i < wpsLocs.length - 1; i++) {
 
-  // Get the first command's altitude for relative frame calculations
-  const firstCommandAltitude = wps[0].params.altitude;
+    const loc = wpsLocs[i]
+    const loc2 = wpsLocs[i + 1]
+    const segmentDistance = haversineDistance(loc, loc2);
 
-  let currentCumulativeWpDistance = 0;
-  for (let i = 0; i < wps.length; i++) {
-    const wp = wps[i];
-    const loc = getLatLng(wp);
-    let altitude = wp.params.altitude;
+    segmentSizes.push(segmentDistance)
 
-    // Adjust altitude based on frame
-    switch (wp.frame) {
-      case 3: // Relative to first command
-        altitude += firstCommandAltitude;
-        break;
-      case 10: // Relative to terrain
-        altitude += getTerrainElevationAtPoint(terrainData, loc);
-        break;
-      // case 0 (AMSL) doesn't need adjustment
-    }
-
-    waypointAltitudes.push(altitude);
-
-    if (i < wps.length - 1) {
-      const wp2 = wps[i + 1];
-      const loc2 = getLatLng(wp2);
-      const segmentDistance = haversineDistance(loc, loc2);
-
-      // Calculate gradient using the adjusted altitudes
-      waypointGradients.push(gradient(segmentDistance, altitude, waypointAltitudes[i + 1]));
-
-      currentCumulativeWpDistance += segmentDistance;
-      waypointCumulativeDistances.push(currentCumulativeWpDistance);
-    }
+    totalDistance += segmentDistance;
+    waypointCumulativeDistances.push(totalDistance);
   }
 
-  // 3. Populate the component-scoped 'locations' array for the getTerrain useEffect hook
+  // Populate the component-scoped 'locations' array for the getTerrain useEffect hook
   locations.length = 0; // Clear array before repopulating
 
   if (wps.length > 0) { // Should be wps.length >= 2 here
-    locations.push(getLatLng(wps[0]));
-    const interpolatedStepSize = computedTotalDistance > 0 ? computedTotalDistance / 100 : 0;
+    locations.push(wpsLocs[0]);
+    const interpolatedStepSize = totalDistance > 0 ? totalDistance / 100 : 0;
 
     if (interpolatedStepSize > 0) {
       for (let i = 0; i < wps.length - 1; i++) { // Iterate through segments
-        const p1 = getLatLng(wps[i]);
-        const p2 = getLatLng(wps[i + 1]);
-        const segmentDist = haversineDistance(p1, p2);
+        const p1 = wpsLocs[i]
+        const p2 = wpsLocs[i + 1]
+        const curSegment = segmentSizes[i]
 
-        if (segmentDist > 0) {
+        if (curSegment > 0) {
           // Calculate number of interpolation points strictly between p1 and p2
-          const numInterpolationIntervals = Math.floor(segmentDist / interpolatedStepSize);
+          const numInterpolationIntervals = Math.floor(curSegment / interpolatedStepSize);
           for (let j = 1; j < numInterpolationIntervals; j++) {
             const fraction = j / numInterpolationIntervals;
             locations.push(interpolate(p1, p2, fraction));
@@ -135,7 +105,7 @@ export default function HeightMap() {
     } else { // No valid step size for interpolation (e.g., totalDistance is 0)
       // Add all unique waypoints to locations if not already present.
       for (let i = 1; i < wps.length; i++) {
-        const nextLoc = getLatLng(wps[i]);
+        const nextLoc = wpsLocs[i]
         if (locations.length === 0 || locations[locations.length - 1].lat !== nextLoc.lat || locations[locations.length - 1].lng !== nextLoc.lng) {
           locations.push(nextLoc);
         }
@@ -144,7 +114,7 @@ export default function HeightMap() {
   }
 
 
-  // 4. Calculate terrain distances (cumulative distances along the fetched terrain path)
+  // Calculate terrain distances (cumulative distances along the fetched terrain path)
   let currentTerrainDistances: number[] = [];
   if (terrainData.length > 0) {
     currentTerrainDistances.push(0);
@@ -156,38 +126,38 @@ export default function HeightMap() {
     currentTerrainDistances.push(0); // Default if no terrain data
   }
 
-  // 5. Calculate minimum terrain height
+  // Calculate minimum terrain height
   let minOverallTerrainHeight = terrainData[0]?.alt ?? 0;
   for (let i = 1; i < terrainData.length; i++) {
     minOverallTerrainHeight = Math.min(terrainData[i].alt, minOverallTerrainHeight);
   }
 
-  // 6. Prepare terrain profile for the chart (normalized elevation)
+  // Prepare terrain profile for the chart (normalized elevation)
   const terrainProfileForChart = terrainData.map((td, index) => ({
     distance: parseFloat(currentTerrainDistances[index]?.toFixed(1) || "0"),
     elevation: td.alt - (terrainData[0]?.alt ?? 0)
   }));
 
-  // 7. Prepare command positions for the chart
+  // Prepare command positions for the chart
   const commandPositionsForChart = wpsLocs.map(({ alt, lat, lng }, index) => {
     const wp = wps[index];
-    let adjustedAltitude = alt - (terrainData[0]?.alt ?? 0);
+    let adjustedAltitude = alt;
 
     // Adjust altitude based on frame for display
     switch (wp.frame) {
+      case 0: //AMSL (adjust to relative for graph)
+        adjustedAltitude += -terrainData[0].alt
+        break;
       case 3: // Relative to first command
-        adjustedAltitude += firstCommandAltitude;
         break;
       case 10: // Relative to terrain
-        adjustedAltitude += getTerrainElevationAtPoint(terrainData, { lat, lng });
+        adjustedAltitude += getTerrainElevationAtPoint(terrainData, { lat, lng }) - terrainData[0].alt;
         break;
-      // case 0 (AMSL) doesn't need adjustment
     }
 
     return {
       id: index,
       distance: waypointCumulativeDistances[index],
-      altitude: adjustedAltitude,
       alt: adjustedAltitude,
       lat,
       lng,
@@ -210,7 +180,6 @@ export default function HeightMap() {
   const altValues = filterLatLngAltCmds(selected).map(obj => obj.params["altitude"]);
   const altAllSame = altValues.every(val => val === altValues[0]);
   const altVal = altAllSame ? altValues[0] : null
-
 
 
   function onChange(event: { target: { name: string, value: number } }) {

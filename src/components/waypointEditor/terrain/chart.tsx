@@ -147,6 +147,7 @@ export default function TerrainChart({ commandPositions, terrainProfile, onComma
         />
         <Tooltip content={<CustomTooltipContent />} />
         <Area
+          isAnimationActive={false}
           type="monotone"
           dataKey="terrainElevation"
           fill="#8884d8"
@@ -159,6 +160,7 @@ export default function TerrainChart({ commandPositions, terrainProfile, onComma
         />
         <Line
           type="linear"
+          isAnimationActive={false}
           dataKey="commandHeight"
           stroke="lime"
           strokeWidth={2}
@@ -180,6 +182,7 @@ export default function TerrainChart({ commandPositions, terrainProfile, onComma
         </Line>
         <Scatter
           dataKey="commandHeight"
+          isAnimationActive={false}
           name="Command Height"
           fill="rgba(70, 151, 208, 1)"
           shape={

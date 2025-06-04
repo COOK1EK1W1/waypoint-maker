@@ -19,11 +19,20 @@ export default function WPCheckModal() {
       .then((terrainHeights) => {
         if (!terrainHeights) return
         let ret: Fault[] = []
-        let terrainoffset = terrainHeights[0].alt
         for (let i = 0; i < wps.length; i++) {
           let wp = waypoints.findNthPosition("Main", i)
           if (!wp) { continue }
-          let wpheight = wps[i].params.altitude - (terrainHeights[i].alt - terrainoffset)
+          let wpheight = wps[i].params.altitude
+          switch (wps[i].frame) {
+            case 0: //AMSL (adjust to relative for graph)
+              wpheight += -terrainHeights[0].alt
+              break;
+            case 3: // Relative to first command
+              break;
+            case 10: // Relative to terrain
+              wpheight += terrainHeights[i].alt - terrainHeights[0].alt;
+              break;
+          }
           if (wpheight < 0) {
             ret.push({
               message: "The waypoint is below terrain",
@@ -44,7 +53,7 @@ export default function WPCheckModal() {
         }
         setTerrain(ret)
       })
-  }, [waypoints, wps])
+  }, [waypoints])
 
   //current fault count, used as key for lists
   let faultId = 0;

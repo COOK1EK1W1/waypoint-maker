@@ -73,8 +73,6 @@ export default function MapSettings() {
     // terrain data
     const northWest = worldOffset(avg, 8000, 7 * Math.PI / 4)
     const southEast = worldOffset(avg, 8000, 3 * Math.PI / 4)
-    console.log(northWest)
-    console.log(southEast)
     let locs: LatLng[] = []
     for (let x = southEast.lat; x < northWest.lat; x += 0.01) {
       for (let y = northWest.lng; y < southEast.lng; y += 0.01) {
