@@ -173,6 +173,7 @@ export default function HeightMap() {
     }
   }).flat()
 
+  // for parameters, check which are the same
   const frameValues = filterLatLngAltCmds(selected).map(obj => obj.frame);
   const frameAllSame = frameValues.every(val => val === frameValues[0]);
   const frameVal = frameAllSame ? frameValues[0] : null
@@ -182,6 +183,7 @@ export default function HeightMap() {
   const altVal = altAllSame ? altValues[0] : null
 
 
+  // update in change if altitude
   function onChange(event: { target: { name: string, value: number } }) {
     setWaypoints((wps) => {
       const newWps = wps.clone()
@@ -202,15 +204,15 @@ export default function HeightMap() {
     });
   };
 
+  // change the reference frame of all selected commands
   function changeFrame(e: ChangeEvent<HTMLSelectElement>) {
     if (![0, 3, 10].includes(Number(e.target.value))) return
     const val = Number(e.target.value) as 0 | 3 | 10
 
     setWaypoints((prevMission) => {
       const temp = prevMission.clone()
-      const cur = temp.get(activeMission)
-      if (selectedWPs.length > 0) {
-        for (let i = 0; i < selectedWPs.length; i++) {
+      mission.forEach((_, i) => {
+        if (selectedWPs.length === 0 || selectedWPs.includes(i)) {
           temp.changeParam(selectedWPs[i], activeMission, (x) => {
             let b = { ...x }
             if ("altitude" in x.params) {
@@ -219,17 +221,7 @@ export default function HeightMap() {
             return b
           })
         }
-      } else {
-        for (let i = 0; i < cur.length; i++) {
-          temp.changeParam(i, activeMission, (x) => {
-            let b = { ...x }
-            if ("altitude" in x.params) {
-              b.frame = val
-            }
-            return b
-          })
-        }
-      }
+      })
       return temp
     })
   }

@@ -22,6 +22,10 @@ function toKey(loc: LatLng): string {
 
 
 
+/* get the terrain elevations for data
+ * @param {LatLng[]} locs - the locations at which to get the elevation
+ * @retun {Promise<LatLngAlt[] | null>} - The elevations in AMSL
+*/
 export async function getTerrain(locs: LatLng[]): Promise<LatLngAlt[] | null> {
   const extrapolatedLocs = new Set<string>();
   locs.map((x) => {
