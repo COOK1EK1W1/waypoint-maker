@@ -39,7 +39,7 @@ export default function DubinsLayer() {
     worldPath.map((c, a) => {
       switch (c.type) {
         case "Curve":
-          let rWaypoint: Command = { frame: 0, type: 189, params: { latitude: c.center.lat, longitude: c.center.lng, altitude: 0 }, autocontinue: 0 }
+          let rWaypoint: Command = { frame: 3, type: 189, params: { latitude: c.center.lat, longitude: c.center.lng, altitude: 0 }, autocontinue: 0 }
           //markers.push(<DraggableMarker key={"" + i + a} waypoint={rWaypoint} active={false} />)
           lines.push(<Arc key={key++} curve={c} pathOptions={curveOptions} />)
           break;

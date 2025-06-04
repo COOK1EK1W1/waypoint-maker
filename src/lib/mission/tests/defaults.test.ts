@@ -41,7 +41,7 @@ describe('Mission Defaults', () => {
     it('should create a land start command with correct parameters', () => {
       const landStart = defaultDoLandStart(testPosition);
 
-      expect(landStart.frame).toBe(0);
+      expect(landStart.frame).toBe(3);
       expect(landStart.type).toBe(189);
       expect(landStart.params.latitude).toBe(testPosition.lat);
       expect(landStart.params.longitude).toBe(testPosition.lng);

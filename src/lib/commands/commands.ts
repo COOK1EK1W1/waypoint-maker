@@ -2,6 +2,7 @@ import { LatLng } from "leaflet";
 import { makeCommand } from "./default";
 import { mavCmds } from "./mav/commands";
 import { wpmCmds } from "./wpm/commands";
+import { Simplify } from "@/types/tools";
 
 
 // #####################################################
@@ -52,6 +53,12 @@ export type CommandDescription = {
 // #                    Command Type                   #
 // #####################################################
 
+export const altFrame = {
+  "global": 0,
+  "mission": 2,
+  "relative": 3,
+  "terrain": 10
+} as const
 
 
 // Combine into full command list
@@ -72,7 +79,7 @@ export type CommandParams<T extends CommandName> = {
 
 // specific command type
 export type ICommand<T extends CommandName> = {
-  frame: number
+  frame: "Altitude" extends CommandParamsNames<T> ? Exclude<typeof altFrame[keyof typeof altFrame], typeof altFrame["mission"]> : 2
   type: Extract<typeof commands[number], { name: T }>["value"]
   autocontinue: number
   params: CommandParams<T>
@@ -80,7 +87,6 @@ export type ICommand<T extends CommandName> = {
 
 // generic command type
 export type Command = { [K in CommandName]: ICommand<K> }[CommandName]
-
 
 // some helper types
 export type CommandName = typeof commands[number]["name"]

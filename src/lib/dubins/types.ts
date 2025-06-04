@@ -1,5 +1,5 @@
 import { XY } from "@/lib/math/types"
-import { LatLng } from "@/lib/world/types"
+import { LatLng } from "../world/latlng"
 
 export type bound = {
   min?: number,

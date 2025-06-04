@@ -15,7 +15,6 @@ export function simplifyDubinsWaypoints(wps: Command[]) {
 
   // simplify dubins runs
   const simplifiedMavWP: Command[] = []
-  console.log(wps.length)
   for (let i = 0; i < wps.length; i++) {
     const cur = wps[i]
     const next = wps[i + 1]
@@ -57,7 +56,6 @@ export function convertToMAV(wps: Command[], reference: LatLng): MavCommand[] {
   // render the dubins runs to waypoints
   let convertedRuns: { start: number, wps: Command[], length: number }[] = []
 
-  console.log(wps)
   const runs = splitDubinsRuns(wps)
   for (const run of runs) {
     const dubinsPoints = run.wps.map((x) => waypointToDubins(x, reference))
@@ -97,11 +95,7 @@ export function convertToMAV(wps: Command[], reference: LatLng): MavCommand[] {
 
     }
 
-    console.log("before")
-    console.log(newMavWP)
     const simplifiedWaypoints = simplifyDubinsWaypoints(newMavWP)
-    console.log("after")
-    console.log(simplifiedWaypoints)
 
     convertedRuns.push({ start: run.start, wps: simplifiedWaypoints, length: run.wps.length - run.wps.filter((x) => x.type != 69).length })
   }

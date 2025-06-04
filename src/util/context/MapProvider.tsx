@@ -14,7 +14,7 @@ type Props = {
 export default function MapProvider({ children }: Props) {
   const mapRef = useRef<Map | null>(null)
 
-  const [viewable, setViewable] = useState<{ [K in (typeof mapElements)[number]]: boolean }>({ "markers": true, "geofence": true, "loiter radius": true, "accept radius": false })
+  const [viewable, setViewable] = useState<{ [K in (typeof mapElements)[number]]: boolean }>({ "markers": true, "geofence": true, "loiter radius": true, "accept radius": false, "terrain": false, "imagery": false })
 
   // the tile provider for imagery
   const [tileProvider, setTileProvider] = useState<{ subdomains: string[], url: string }>({ url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", subdomains: ["a", "b", "c"] })
