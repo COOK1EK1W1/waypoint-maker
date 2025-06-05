@@ -16,7 +16,7 @@ import { avgLatLng, getLatLng } from "@/lib/world/latlng";
 import { Node } from "@/lib/mission/mission";
 
 export default function MapStuff() {
-  const { waypoints, setWaypoints, activeMission, tool, setTool, selectedWPs } = useWaypoints()
+  const { waypoints, setWaypoints, activeMission, tool, setTool, selectedWPs, setSelectedWPs } = useWaypoints()
   const { mapRef, tileProvider } = useMap();
 
   const tileLayerRef = useRef<TileLayerType | null>(null)
@@ -39,14 +39,24 @@ export default function MapStuff() {
           break;
 
         }
+        case 'a': {
+          if (e.ctrlKey || e.metaKey) {
+            setSelectedWPs(waypoints.get(activeMission).map((_, i) => i))
+          }
+          break;
+        }
+        case 'Escape': {
+          setSelectedWPs([])
+          break;
+        }
         default: return
       }
 
     }
-    window.addEventListener('keypress', handleKeyPress)
+    window.addEventListener('keydown', handleKeyPress)
 
     return () => {
-      window.removeEventListener('keypress', handleKeyPress)
+      window.removeEventListener('keydown', handleKeyPress)
     }
 
   }, [activeMission, setWaypoints, waypoints])

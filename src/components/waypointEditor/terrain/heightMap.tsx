@@ -199,9 +199,7 @@ export default function HeightMap() {
   }
 
   const handleCommandClick = (e: React.MouseEvent<SVGElement>, id: number) => {
-    setSelectedWPs((prev) => {
-      return [id]
-    });
+    setSelectedWPs([id])
   };
 
   // change the reference frame of all selected commands
@@ -213,12 +211,11 @@ export default function HeightMap() {
       const temp = prevMission.clone()
       mission.forEach((_, i) => {
         if (selectedWPs.length === 0 || selectedWPs.includes(i)) {
-          temp.changeParam(selectedWPs[i], activeMission, (x) => {
-            let b = { ...x }
+          temp.changeParam(i, activeMission, (x) => {
             if ("altitude" in x.params) {
-              b.frame = val
+              x.frame = val
             }
-            return b
+            return x
           })
         }
       })
