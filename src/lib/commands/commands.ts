@@ -2,7 +2,6 @@ import { LatLng } from "leaflet";
 import { makeCommand } from "./default";
 import { mavCmds } from "./mav/commands";
 import { wpmCmds } from "./wpm/commands";
-import { Simplify } from "@/types/tools";
 
 
 // #####################################################
