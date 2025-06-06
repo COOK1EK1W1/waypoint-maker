@@ -126,15 +126,14 @@ export default function MapStuff() {
           if (avgll == undefined) { return waypoints }
           const { lat, lng } = avgll
           let waypointsUpdated = waypoints.clone();
-          for (let i = 0; i < wps.length; i++) {
-            waypointsUpdated.changeParam(wpsIds[i], activeMission, (cmd: Command) => {
-              if ("latitude" in cmd.params && "longitude" in cmd.params) {
-                cmd.params.latitude += e.latlng.lat - lat
-                cmd.params.longitude += e.latlng.lng - lng
-              }
-              return cmd;
-            });
-          }
+
+          waypointsUpdated.changeManyParams(wpsIds, activeMission, (cmd: Command) => {
+            if ("latitude" in cmd.params && "longitude" in cmd.params) {
+              cmd.params.latitude += e.latlng.lat - lat
+              cmd.params.longitude += e.latlng.lng - lng
+            }
+            return cmd;
+          }, true);
           return waypointsUpdated;
         })
         break;

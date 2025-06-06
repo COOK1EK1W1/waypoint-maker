@@ -25,15 +25,13 @@ export function LatLngEditor() {
 
   function nudge(x: number, y: number) {
     setWaypoints((waypoints) => {
-      wpsIds.forEach(wpsId => {
-        waypoints.changeParam(wpsId, activeMission, (cmd: Command) => {
-          if ("latitude" in cmd.params) {
-            cmd.params.latitude += 0.0001 * y;
-            cmd.params.longitude += 0.0001 * x;
-          }
-          return cmd;
-        });
-      })
+      waypoints.changeManyParams(wpsIds, activeMission, (cmd: Command) => {
+        if ("latitude" in cmd.params) {
+          cmd.params.latitude += 0.0001 * y;
+          cmd.params.longitude += 0.0001 * x;
+        }
+        return cmd;
+      }, true);
       return waypoints.clone();
     });
   }
@@ -51,15 +49,13 @@ export function LatLngEditor() {
       if (avgll == undefined) { return waypoints }
       const { lat, lng } = avgll
       let waypointsUpdated = mission.clone();
-      wpsIds.forEach(wpsId => {
-        waypointsUpdated.changeParam(wpsId, activeMission, (cmd: Command) => {
-          if ("latitude" in cmd.params && "longitude" in cmd.params) {
-            cmd.params.latitude += newLat - lat
-            cmd.params.longitude += newLng - lng
-          }
-          return cmd;
-        });
-      })
+      waypointsUpdated.changeManyParams(wpsIds, activeMission, (cmd: Command) => {
+        if ("latitude" in cmd.params && "longitude" in cmd.params) {
+          cmd.params.latitude += newLat - lat
+          cmd.params.longitude += newLng - lng
+        }
+        return cmd;
+      }, true)
       return waypointsUpdated;
     })
   }
@@ -69,23 +65,22 @@ export function LatLngEditor() {
     const angleRadians = (deg * Math.PI) / 180;
 
     setWaypoints((waypoints) => {
-      wpsIds.forEach(wpsId => {
-        waypoints.changeParam(wpsId, activeMission, (cmd: Command) => {
-          if ("latitude" in cmd.params) {
 
-            const x = (cmd.params.longitude - lng) * Math.cos(lat * Math.PI / 180);
-            const y = cmd.params.latitude - lat;
+      waypoints.changeManyParams(wpsIds, activeMission, (cmd: Command) => {
+        if ("latitude" in cmd.params) {
 
-            const newX = x * Math.cos(angleRadians) - y * Math.sin(angleRadians);
-            const newY = x * Math.sin(angleRadians) + y * Math.cos(angleRadians);
+          const x = (cmd.params.longitude - lng) * Math.cos(lat * Math.PI / 180);
+          const y = cmd.params.latitude - lat;
 
-            cmd.params.longitude = newX / Math.cos(lat * Math.PI / 180) + lng;
-            cmd.params.latitude = newY + lat;
-          }
+          const newX = x * Math.cos(angleRadians) - y * Math.sin(angleRadians);
+          const newY = x * Math.sin(angleRadians) + y * Math.cos(angleRadians);
 
-          return cmd;
-        });
-      })
+          cmd.params.longitude = newX / Math.cos(lat * Math.PI / 180) + lng;
+          cmd.params.latitude = newY + lat;
+        }
+
+        return cmd;
+      }, true)
       return waypoints.clone();
     });
   }

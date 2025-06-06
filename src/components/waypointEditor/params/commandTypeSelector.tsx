@@ -30,13 +30,11 @@ export default function CommandTypeSelector({ selected }: { selected: Command[] 
   function onChange(e: ChangeEvent<HTMLSelectElement>) {
     setWaypoints((wps) => {
       const newWPs = wps.clone()
-      for (let i = 0; i < selectedIDs.length; i++) {
-        newWPs.changeParam(selectedIDs[i], activeMission, (cmd) => {
-          let name = e.target.selectedOptions[0].getAttribute('data-cmd') as CommandName
-          if (name === null) return cmd
-          return coerceCommand(cmd, name) as Command
-        })
-      }
+      newWPs.changeManyParams(selectedIDs, activeMission, (cmd) => {
+        let name = e.target.selectedOptions[0].getAttribute('data-cmd') as CommandName
+        if (name === null) return cmd
+        return coerceCommand(cmd, name) as Command
+      }, true)
 
       return newWPs
     })

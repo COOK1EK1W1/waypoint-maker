@@ -58,7 +58,6 @@ export default function CommandList({ onHide }: { onHide: () => void }) {
         }
       }
       nodes.splice(minID, (maxID - minID) + 1)
-      console.log(minID, maxID, (maxID - minID) + 1)
       temp.set(activeMission, nodes)
       return temp
     })

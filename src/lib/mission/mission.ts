@@ -239,7 +239,42 @@ export class Mission {
     rec(0, missionName)
   }
 
-  changeParam(id: number, missionName: string, mod: (cmd: Command) => Command) {
+  findAllSubMissions(missionName: string): Set<string> {
+    let names = new Set<string>()
+    const cur = this.collection.get(missionName)
+    if (!cur) throw new MissingMission(missionName)
+    cur.forEach((x) => {
+      if (x.type == "Collection") {
+        names.add(x.name)
+        names = names.union(this.findAllSubMissions(x.name))
+      }
+    })
+    return names
+  }
+
+  changeAllParams(missionName: string, mod: (cmd: Command) => Command, recurse?: boolean) {
+    const cur = this.collection.get(missionName)
+    if (!cur) throw new MissingMission(missionName)
+    this.changeManyParams(cur.map((_, i) => i), missionName, mod, recurse)
+  }
+
+
+  changeManyParams(ids: number[], missionName: string, mod: (cmd: Command) => Command, recurse?: boolean) {
+    let names = new Set<string>()
+    const cur = this.collection.get(missionName)
+    if (!cur) throw new MissingMission(missionName)
+    for (let x of ids) {
+      if (cur[x].type == "Command") {
+        this.changeParam(x, missionName, mod)
+      } else if (cur[x].type == "Collection" && recurse) {
+        names = names.add(cur[x].name)
+        names = names.union(this.findAllSubMissions(cur[x].name))
+      }
+    }
+    if (recurse) names.forEach(x => this.changeAllParams(x, mod, false))
+  }
+
+  changeParam(id: number, missionName: string, mod: (cmd: Command) => Command, recurse?: boolean) {
     const curMission = this.collection.get(missionName)
     if (curMission == undefined) { throw new MissingMission(missionName) }
 
@@ -250,11 +285,11 @@ export class Mission {
         ...curMission[id],
         cmd: mod(curMission[id].cmd)
       }
-    } else if (updatedWaypoint.type == "Collection") {
+    } else if (updatedWaypoint.type == "Collection" && recurse) {
       const col = this.collection.get(updatedWaypoint.collectionID)
       if (col != null) {
         for (let i = 0; i < col.length; i++) {
-          this.changeParam(i, updatedWaypoint.collectionID, mod)
+          this.changeAllParams(updatedWaypoint.collectionID, mod)
         }
       }
     }
