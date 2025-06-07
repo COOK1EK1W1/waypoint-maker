@@ -1,8 +1,7 @@
 import { expect, test } from "bun:test";
 import { convertToMAV } from "../common";
 import { makeCommand } from "@/lib/commands/default";
-import { Command, LatLngCommand } from "@/lib/commands/commands";
-import { MavCommand } from "@/lib/commands/types";
+import { Command, LatLngCommand, MavCommand } from "@/lib/commands/commands";
 
 test("empty", () => {
   const mission: Command[] = []

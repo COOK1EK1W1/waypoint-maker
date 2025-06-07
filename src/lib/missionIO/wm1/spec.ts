@@ -17,7 +17,6 @@ export const importwpm1: importInterface = (missionStr: string) => {
     for (const subMissionName of Array.from(newMission.keys())) {
       // @ts-ignore
       for (const newCommand of newMission.get(subMissionName)) {
-        console.log(newCommand)
         if (newCommand.type == "Waypoint") {
           let params = {}
           const cmdDef = getCommandDesc(newCommand.wps.type)
@@ -52,6 +51,5 @@ export const importwpm1: importInterface = (missionStr: string) => {
     }
   } catch (err) {
     return { data: null, error: err as Error }
-
   }
 }

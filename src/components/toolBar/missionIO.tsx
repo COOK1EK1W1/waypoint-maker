@@ -1,6 +1,5 @@
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { DialogDescription } from "@radix-ui/react-dialog"
-import Button from "./button"
 import MissionIcon from "./missionButton"
 import DownloadButtons from "../modal/IO/exportButtons"
 import LoadJson from "../modal/IO/importButtons"
@@ -8,12 +7,13 @@ import CloudSync from "../modal/IO/cloudSync"
 import { Suspense } from "react"
 import { auth } from "@/util/auth"
 import { headers } from "next/headers"
+import { Button } from "../ui/button"
 
 export default function MissionIO({ isStatic }: { isStatic: boolean }) {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button className={"w-28 justify-start"}>
+        <Button variant="active">
           <MissionIcon />
           <span className="grow">Mission</span>
         </Button>

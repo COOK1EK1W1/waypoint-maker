@@ -1,18 +1,18 @@
 "use client"
 import { useWaypoints } from '@/util/context/WaypointContext';
 import React from 'react';
-import Button from '@/components/toolBar/button';
 import { useMap } from '@/util/context/MapContext';
 import { filterLatLngCmds } from '@/lib/commands/commands';
 import { parseMissionString } from '@/lib/missionIO/common';
 import { useVehicle } from '@/util/context/VehicleTypeContext';
 import { avgLatLng, getLatLng } from '@/lib/world/latlng';
 import { Upload } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 export default function LoadJson() {
   const { setWaypoints } = useWaypoints();
   const { setVehicle } = useVehicle();
-  const { moveMap } = useMap();
+  const { mapRef } = useMap();
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (!event.target.files) {
@@ -39,11 +39,9 @@ export default function LoadJson() {
         const mission = parsed.data.mission
         let main = mission.get("Main")
         if (main) {
-          if (moveMap.move) {
-            const avgll = avgLatLng(filterLatLngCmds(mission.flatten("Main")).map(getLatLng))
-            if (avgll !== undefined) {
-              moveMap.move(avgll.lat, avgll.lng)
-            }
+          const avgll = avgLatLng(filterLatLngCmds(mission.flatten("Main")).map(getLatLng))
+          if (avgll !== undefined) {
+            mapRef.current?.panTo(avgll)
           }
           setWaypoints(mission)
           setVehicle(parsed.data.vehicle)
@@ -57,8 +55,8 @@ export default function LoadJson() {
 
   return <>
     <input type="file" accept=".json, .waypoints" id="fileInput" className="hidden" onChange={handleFileChange} />
-    <Button className="w-32 items-center justify-start" onClick={() => document.getElementById('fileInput')?.click()}>
-      <Upload className="h-[20px] w-[20px] mr-1" />Load JSON
+    <Button variant="active" className="w-36 justify-start" onClick={() => document.getElementById('fileInput')?.click()}>
+      <Upload className="h-5 w-5 mr-1" />Load JSON
     </Button>
   </>
 }

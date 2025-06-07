@@ -1,30 +1,25 @@
 "use client";
-import { createContext, useContext } from 'react';
+import { createContext, Dispatch, MutableRefObject, SetStateAction, useContext } from 'react';
+import { Map } from "leaflet";
+
+export const mapElements = [
+  "markers",
+  "geofence",
+  "loiter radius",
+  "accept radius",
+  "terrain",
+  "imagery"
+] as const
 
 type MapContextType = {
-  moveMap: {
-    move?: (lat: number, lng: number) => void;
-    zoom?: (level: number) => void;
-    panTo?: (lat: number, lng: number, zoom?: number) => void;
-  };
-  zoom: number;
-  setZoom: (zoom: number) => void;
-  center: {
-    lat: number;
-    lng: number;
-  };
-  setCenter: (center: { lat: number; lng: number }) => void;
+  mapRef: MutableRefObject<Map | null>;
+  tileProvider: { subdomains: string[], url: string },
+  setTileProvider: Dispatch<SetStateAction<{ subdomains: string[], url: string }>>
+  viewable: { [K in (typeof mapElements)[number]]: boolean },
+  setViewable: Dispatch<SetStateAction<{ [K in (typeof mapElements)[number]]: boolean }>>
 }
 
-const defaultContext: MapContextType = {
-  moveMap: {},
-  zoom: 13,
-  setZoom: () => { },
-  center: { lat: 55.911879, lng: -3.319938 },
-  setCenter: () => { }
-};
-
-export const mapContext = createContext<MapContextType>(defaultContext);
+export const mapContext = createContext<MapContextType>(undefined as any);
 
 export function useMap() {
   const context = useContext(mapContext);

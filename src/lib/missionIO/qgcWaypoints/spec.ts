@@ -1,17 +1,20 @@
 import { convertToMAV, importInterface } from "../common"
 import { Mission } from "@/lib/mission/mission";
 import { commands, CommandValue, MavCommand } from "@/lib/commands/commands"
-import { Vehicle } from "@/lib/vehicles/types";
 import { defaultPlane } from "@/lib/vehicles/defaults";
+import { makeCommand } from "@/lib/commands/default";
+import { WPM2MAV } from "@/lib/commands/convert";
 
 export function exportqgcWaypoints(mission: Mission) {
   let returnString = "QGC WPL 110\n"
 
-  let wps = mission.flatten("Main")
-  let mavCommands = convertToMAV(wps, mission.getReferencePoint())
+  const reference = mission.getReferencePoint()
+  const wps = mission.flatten("Main")
+  const mavCommands = convertToMAV(wps, reference)
+  returnString += waypointString(0, WPM2MAV([makeCommand("MAV_CMD_NAV_WAYPOINT", { latitude: reference.lat, longitude: reference.lng })])[0])
 
   mavCommands.forEach((x, i) => {
-    returnString += waypointString(i, x)
+    returnString += waypointString(i + 1, x)
   })
 
   return returnString

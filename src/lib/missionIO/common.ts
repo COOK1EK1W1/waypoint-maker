@@ -9,27 +9,35 @@ import { Mission } from "@/lib/mission/mission";
 import { Vehicle } from "../vehicles/types";
 import { makeCommand } from "../commands/default";
 import { Result } from "@/util/try-catch";
+import { worldOffset } from "../world/distance";
 
 export function simplifyDubinsWaypoints(wps: Command[]) {
+
   // simplify dubins runs
   const simplifiedMavWP: Command[] = []
-  for (let i = 0; i < wps.length - 1; i++) {
+  for (let i = 0; i < wps.length; i++) {
     const cur = wps[i]
     const next = wps[i + 1]
+
+    if (next === undefined) {
+      simplifiedMavWP.push(wps[i])
+      break
+    }
+
     // if current and next are both loiter turns and are in the same place, combine them
     if (cur.type == 18 && next.type == 18 && cur.params.longitude == next.params.longitude
-      && cur.params.latitude == cur.params.latitude
-      && cur.params.radius == cur.params.radius) {
+      && cur.params.latitude == next.params.latitude
+      && cur.params.radius == next.params.radius) {
       simplifiedMavWP.push(makeCommand("MAV_CMD_NAV_LOITER_TURNS", {
         latitude: cur.params.latitude,
         longitude: cur.params.longitude,
         radius: cur.params.radius,
-        turns: cur.params.turns + cur.params.turns,
+        turns: cur.params.turns + next.params.turns,
         altitude: next.params.altitude,
         "": 1
       }))
       i++
-    } else if (cur.type == 16 && next.type == 16 && cur.params.longitude == next.params.longitude && cur.params.longitude == cur.params.latitude) {
+    } else if (cur.type == 16 && next.type == 16 && cur.params.longitude == next.params.longitude && cur.params.longitude == next.params.latitude) {
       // two consecutive waypoints, add one and skip the next
       simplifiedMavWP.push(wps[i])
       i++
@@ -40,7 +48,7 @@ export function simplifyDubinsWaypoints(wps: Command[]) {
   }
 
   // remove loiter turns with small turn amounts and with no radius
-  return simplifiedMavWP.filter((x) => (x.type != 18 || x.params.turns > 0.03 && Math.abs(x.params.radius) > 0))
+  return simplifiedMavWP.filter((x) => (x.type != 18 || x.params.turns > 0.03))
 }
 
 export function convertToMAV(wps: Command[], reference: LatLng): MavCommand[] {
@@ -54,6 +62,7 @@ export function convertToMAV(wps: Command[], reference: LatLng): MavCommand[] {
     const path = dubinsBetweenDubins(dubinsPoints)
     const worldPath = localisePath(path, reference)
     let newMavWP: Command[] = []
+
     for (let i = 0; i < worldPath.length; i++) {
       const section = worldPath[i]
       const curWaypoint = Math.floor(i / 3)
@@ -61,8 +70,18 @@ export function convertToMAV(wps: Command[], reference: LatLng): MavCommand[] {
         case "Curve": {
           const absTheta = Math.abs(section.theta / (Math.PI * 2))
           const dir = absTheta / (section.theta / (Math.PI * 2))
+          if (Math.abs(section.radius) === 0 || absTheta < 0.03) break;
           //@ts-ignore
-          newMavWP.push(makeCommand("MAV_CMD_NAV_LOITER_TURNS", { turns: absTheta, "": 1, altitude: run.wps[curWaypoint].params.altitude, radius: section.radius * dir, latitude: section.center.lat, longitude: section.center.lng }))
+          newMavWP.push(makeCommand("MAV_CMD_NAV_LOITER_TURNS", { turns: Number(absTheta.toFixed(4)), "": 1, altitude: run.wps[curWaypoint].params.altitude, radius: Number((section.radius * dir).toFixed(4)), latitude: section.center.lat, longitude: section.center.lng }))
+
+
+          const next = worldPath[i + 1]
+          if (next !== undefined && next.type === "Curve" && next.theta * section.theta < 0) {
+            const pos = worldOffset(section.center, section.radius, section.start + section.theta)
+            //@ts-ignore
+            newMavWP.push(makeCommand("MAV_CMD_NAV_WAYPOINT", { yaw: 0, "accept radius": 0, latitude: pos.lat, longitude: pos.lng, hold: 0, altitude: run.wps[curWaypoint].params.altitude, "pass radius": 0 }))
+          }
+
           break
         }
         case "Straight": {
@@ -75,6 +94,7 @@ export function convertToMAV(wps: Command[], reference: LatLng): MavCommand[] {
       convertedRuns.push()
 
     }
+
     const simplifiedWaypoints = simplifyDubinsWaypoints(newMavWP)
 
     convertedRuns.push({ start: run.start, wps: simplifiedWaypoints, length: run.wps.length - run.wps.filter((x) => x.type != 69).length })

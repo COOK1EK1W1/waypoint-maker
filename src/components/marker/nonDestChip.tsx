@@ -1,8 +1,7 @@
 import { useMemo, useRef } from "react"
 import { Marker } from "react-leaflet"
 import * as Leaflet from "leaflet"
-import { circleOverlayIcon, createAnimatedIcon } from "./waypoint"
-import { LatLng } from "@/lib/world/types"
+import { LatLng } from "@/lib/world/latlng"
 
 export default function NonDestChip({ name, position, active, onClick, offset }: { name: string, position: LatLng, offset: number, active: boolean, onClick?: () => void }) {
 
@@ -29,6 +28,7 @@ export default function NonDestChip({ name, position, active, onClick, offset }:
           iconAnchor: [12, 41 + (offset + 1) * 30],
           html: `
       <div style="
+        color: black;
         transform: scale(${active ? 1.2 : 1});
         width: 25px;
         height: 25px;

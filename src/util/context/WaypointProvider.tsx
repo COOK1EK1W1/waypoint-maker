@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { syncStatusKeys, waypointContext } from './WaypointContext';
 import { Tool } from '@/types/tools'
 import { Mission } from "@/lib/mission/mission";
+import { registerServiceWorker } from '@/lib/registerServiceWorker';
 
 type Props = {
   children: React.ReactNode;

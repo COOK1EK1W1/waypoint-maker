@@ -1,13 +1,10 @@
 import { LayerGroup, Polyline } from "react-leaflet";
 import { useWaypoints } from "@/util/context/WaypointContext";
 import InsertBtn from "@/components/marker/insertBtn";
-import DraggableMarker from "@/components/marker/DraggableMarker";
 import { Command, getCommandDesc, LatLngCommand } from "@/lib/commands/commands";
 import { defaultWaypoint } from "@/lib/mission/defaults";
-import { avgLatLng, getLatLng } from "@/lib/world/latlng";
-import NonDestChip from "@/components/marker/nonDestChip";
-import { commandName } from "@/util/translationTable";
-import { LatLng } from "@/lib/world/types";
+import { avgLatLng, getLatLng, LatLng } from "@/lib/world/latlng";
+import CommandMarker from "./commandMarker";
 
 const limeOptions = { color: 'lime' }
 const noshow = ["Markers", "Geofence"]
@@ -70,37 +67,17 @@ export default function ActiveLayer({ onMove }: { onMove: (lat: number, lng: num
           return x?.[0] === activeMission && selectedWPs.includes(x[1]);
         })();
 
+
         return (
-          <div key={a++}>
-            <DraggableMarker
-              position={position}
-              onMove={(lat, lng) => onMove(lat, lng, command.id)}
-              active={isActive}
-              onClick={() => handleMarkerClick(command.id)}
-            />
-          </div>
+          <CommandMarker
+            command={command}
+            key={a++}
+            basePosition={position}
+            onMove={onMove}
+            active={isActive}
+            onClick={handleMarkerClick}
+          />
         );
-      })}
-
-      {mainLine.map((command) => {
-        const position = getLatLng(command.cmd);
-        return command.other.map((cmd, id) => {
-          const isActive = (() => {
-            const x = waypoints.findNthPosition(activeMission, command.id + 1 + id);
-            return x?.[0] === activeMission && selectedWPs.includes(x[1]);
-          })();
-
-          return (
-            <NonDestChip
-              key={a++}
-              name={commandName(getCommandDesc(cmd.type).name)}
-              offset={id}
-              position={position}
-              active={isActive}
-              onClick={() => handleMarkerClick(command.id + id + 1)}
-            />
-          );
-        });
       })}
 
       <Polyline pathOptions={limeOptions} positions={mainLine.map(x => getLatLng(x.cmd))} />

@@ -1,4 +1,4 @@
-import { CommandName, CommandParams, commands, ICommand } from "./commands";
+import { Command, CommandName, CommandParams, CommandParamsNames, commands, ICommand } from "./commands";
 
 /*
  * Construct a default command, or specify some parameters to apply
@@ -20,10 +20,13 @@ export function makeCommand<T extends CommandName>(name: T, params: { [K in keyo
     }
   })
 
+  const params2 = newParams as CommandParams<T>
+
   return {
     type: cmd?.value as ICommand<T>["type"],
-    frame: 3,
-    params: newParams as CommandParams<T>,
+    // @ts-ignore
+    frame: "altitude" in params2 ? 3 : 2,
+    params: params2,
     autocontinue: 0
   }
 }
