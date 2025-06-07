@@ -27,14 +27,14 @@ export default function Editor() {
       <div className={cn("z-20 p-2 absolute bottom-0 w-full md:w-[600px] lg:w-[920px] ease-in-out duration-200", hidden ? "bottom-[-100dvh]" : "")}>
         <div className="flex justify-center">
           <svg height="24" width="32">
-            <path d=" M 32 0 C 20 0, 12 24, 0 24 L 32 24 Z " fill="white" />
+            <path d=" M 32 0 C 20 0, 12 24, 0 24 L 32 24 Z " fill="hsl(var(--card))" />
           </svg>
-          <div className="h-[24px] bg-white px-2 flex items-center">
+          <div className="h-[24px] bg-card px-2 flex items-center">
             <span className="inline-block">
               Editing: {amount > 0 ? `${amount} Waypoint${amount > 1 ? "s" : ""}` : `${activeMission} (${waypoints.get(activeMission).length})`}</span>
           </div>
           <svg height="24" width="32">
-            <path d="M 0 0 C 12 0, 20 24, 32 24 L 0 24 Z " fill="white" />
+            <path d="M 0 0 C 12 0, 20 24, 32 24 L 0 24 Z " fill="hsl(var(--card))" />
           </svg>
         </div>
         <div className={cn("bg-card w-full rounded-lg shadow-lg shadow-black flex h-72 md:h-60 flex-col md:flex-row")}>

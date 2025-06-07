@@ -28,6 +28,7 @@ export default function NonDestChip({ name, position, active, onClick, offset }:
           iconAnchor: [12, 41 + (offset + 1) * 30],
           html: `
       <div style="
+        color: black;
         transform: scale(${active ? 1.2 : 1});
         width: 25px;
         height: 25px;

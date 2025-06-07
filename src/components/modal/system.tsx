@@ -27,7 +27,7 @@ export default function SystemModal() {
             <div className="w-full flex flex-col items-center">
               <Image className="hover:animate-spin" width={192} height={192} src="/logo-192x192.png" alt="Waypoint Maker Logo" />
               <p className="text-muted-foreground">Waypoint Maker</p>
-              <p className="text-muted-foreground">Version 2.0 - 2025</p>
+              <p className="text-muted-foreground">Version 2.1 - 2025</p>
               <div className="flex items-center pt-2">
                 <Link className="text-muted-foreground" href="https://github.com/COOK1EK1W1/waypoint-maker">Source</Link>
                 <div className="rounded-full mx-2 w-2 h-2 bg-muted"></div>
@@ -36,8 +36,10 @@ export default function SystemModal() {
 
             </div>
             <h2>Apperance</h2>
-            <p>Change Theme</p>
-            <ThemeToggle />
+            <div className="w-full flex justify-between">
+              <p>Select Theme</p>
+              <ThemeToggle />
+            </div>
           </TabsContent>
           <TabsContent value="map">
             <div className="">
