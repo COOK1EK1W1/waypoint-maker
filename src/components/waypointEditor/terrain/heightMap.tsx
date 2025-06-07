@@ -151,7 +151,7 @@ export default function HeightMap() {
       case 3: // Relative to first command
         break;
       case 10: // Relative to terrain
-        adjustedAltitude += getTerrainElevationAtPoint(terrainData, { lat, lng }) - terrainData[0].alt;
+        adjustedAltitude += getTerrainElevationAtPoint(terrainData, { lat, lng }) - (terrainData[0]?.alt ?? 0);
         break;
     }
 
@@ -187,13 +187,10 @@ export default function HeightMap() {
   function onChange(event: { target: { name: string, value: number } }) {
     setWaypoints((wps) => {
       const newWps = wps.clone()
-      mission.forEach((_, i) => {
-        if (selectedWPs.length == 0 || selectedWPs.includes(i))
-          newWps.changeParam(i, activeMission, (cmd: any) => {
-            cmd.params["altitude"] = event.target.value
-            return cmd
-          })
-      })
+      newWps.changeManyParams(selectedWPs.length === 0 ? mission.map((_, i) => i) : selectedWPs, activeMission, (cmd: any) => {
+        cmd.params["altitude"] = event.target.value
+        return cmd
+      }, true)
       return newWps
     })
   }
@@ -209,16 +206,12 @@ export default function HeightMap() {
 
     setWaypoints((prevMission) => {
       const temp = prevMission.clone()
-      mission.forEach((_, i) => {
-        if (selectedWPs.length === 0 || selectedWPs.includes(i)) {
-          temp.changeParam(i, activeMission, (x) => {
-            if ("altitude" in x.params) {
-              x.frame = val
-            }
-            return x
-          })
+      temp.changeManyParams(selectedWPs.length === 0 ? mission.map((_, i) => i) : selectedWPs, activeMission, (x) => {
+        if ("altitude" in x.params) {
+          x.frame = val
         }
-      })
+        return x
+      }, true)
       return temp
     })
   }

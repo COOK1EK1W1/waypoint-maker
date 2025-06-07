@@ -49,13 +49,10 @@ export default function ParamEditor() {
   function onChange(event: { target: { name: string, value: number } }) {
     setWaypoints((wps) => {
       const newWps = wps.clone()
-      mission.forEach((_, i) => {
-        if (selectedWPs.length == 0 || selectedWPs.includes(i))
-          newWps.changeParam(i, activeMission, (cmd: any) => {
-            cmd.params[event.target.name] = event.target.value
-            return cmd
-          })
-      })
+      newWps.changeManyParams(selectedWPs.length === 0 ? mission.map((_, i) => i) : selectedWPs, activeMission, (cmd: any) => {
+        cmd.params[event.target.name] = event.target.value
+        return cmd
+      }, true)
       return newWps
     })
   }
