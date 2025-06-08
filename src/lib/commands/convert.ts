@@ -50,7 +50,6 @@ export function coerceCommand<T extends CommandName>(cmd: Command, type: T): ICo
 
   // if converting to landing, make altitude 0 
   if (type === "MAV_CMD_NAV_LAND") {
-    // @ts-ignore
     params.altitude = 0;
   }
 

@@ -60,6 +60,7 @@ export function convertToMAV(wps: Command[], reference: LatLng): MavCommand[] {
 
   const runs = splitDubinsRuns(mainLine)
   for (const run of runs) {
+    let otherCount = 0
     const dubinsPoints = run.run.map((x) => waypointToDubins(x.cmd, reference))
     const path = dubinsBetweenDubins(dubinsPoints)
     const worldPath = localisePath(path, reference)
@@ -68,38 +69,38 @@ export function convertToMAV(wps: Command[], reference: LatLng): MavCommand[] {
     for (let i = 0; i < worldPath.length; i++) {
       const section = worldPath[i]
       const curWaypoint = Math.floor(i / 3)
+      const segmentId = i % 3
       switch (section.type) {
         case "Curve": {
           const absTheta = Math.abs(section.theta / (Math.PI * 2))
           const dir = absTheta / (section.theta / (Math.PI * 2))
+          if (segmentId === 0) {
+            newMavWP = newMavWP.concat(run.run[curWaypoint].other)
+            otherCount += run.run[curWaypoint].other.length
+          }
           if (Math.abs(section.radius) === 0 || absTheta < 0.03) break;
-          //@ts-ignore
           newMavWP.push(makeCommand("MAV_CMD_NAV_LOITER_TURNS", { turns: Number(absTheta.toFixed(4)), "": 1, altitude: run.run[curWaypoint].cmd.params.altitude, radius: Number((section.radius * dir).toFixed(4)), latitude: section.center.lat, longitude: section.center.lng }))
 
 
           const next = worldPath[i + 1]
           if (next !== undefined && next.type === "Curve" && next.theta * section.theta < 0) {
             const pos = worldOffset(section.center, section.radius, section.start + section.theta)
-            //@ts-ignore
             newMavWP.push(makeCommand("MAV_CMD_NAV_WAYPOINT", { yaw: 0, "accept radius": 0, latitude: pos.lat, longitude: pos.lng, hold: 0, altitude: run.run[curWaypoint].cmd.params.altitude, "pass radius": 0 }))
           }
+
 
           break
         }
         case "Straight": {
-          //@ts-ignore
           newMavWP.push(makeCommand("MAV_CMD_NAV_WAYPOINT", { yaw: 0, "accept radius": 0, latitude: section.end.lat, longitude: section.end.lng, hold: 0, altitude: run.run[curWaypoint].cmd.params.altitude, "pass radius": 0 }))
           break
         }
-
       }
-      convertedRuns.push()
-
     }
 
     const simplifiedWaypoints = simplifyDubinsWaypoints(newMavWP)
 
-    convertedRuns.push({ start: run.start, wps: simplifiedWaypoints, length: run.run.length - run.run.filter((x) => x.cmd.type != 69).length })
+    convertedRuns.push({ start: run.start, wps: simplifiedWaypoints, length: run.run.length - run.run.filter((x) => x.cmd.type != 69).length + otherCount })
   }
 
   // compile into single mission

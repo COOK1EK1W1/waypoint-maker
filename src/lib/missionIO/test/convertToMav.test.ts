@@ -182,7 +182,7 @@ test("Dubins point with Set Servo", () => {
   expect(mavMission[4].type).toBe(18)
 
   // end
-  expect(mavMission[5].type).toBe(18)
+  expect(mavMission[5].type).toBe(16)
   expect(mavMission[6]).toBeUndefined()
 })
 
@@ -214,7 +214,7 @@ test("Dubins point with multiple Set Servo", () => {
   expect(mavMission[5].type).toBe(18)
 
   // end
-  expect(mavMission[6].type).toBe(18)
+  expect(mavMission[6].type).toBe(16)
   expect(mavMission[7].type).toBe(183)
   expect(mavMission[8]).toBeUndefined()
 })
