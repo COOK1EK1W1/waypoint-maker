@@ -1,6 +1,6 @@
 // src/app/docs/layout.tsx
-import { getAllDocs } from '../docs';
 import Link from 'next/link';
+import { getAllDocs } from './docs';
 
 export default function DocsLayout({
   children,
@@ -8,7 +8,6 @@ export default function DocsLayout({
   children: React.ReactNode;
 }) {
   const docs = getAllDocs();
-  console.log(docs)
 
   return (
     <div className="flex">
@@ -16,8 +15,8 @@ export default function DocsLayout({
         <ul>
           {docs.map(doc => (
             <li key={doc.slug.join('/')}>
-              <Link href={`/docs/${doc.slug.join('/')}`}>
-                {doc.title}
+              <Link href={`/docs/${doc.slug.slice(0, -1).join('/')}`}>
+                {doc.slug.slice(0, -1)}
               </Link>
             </li>
           ))}
