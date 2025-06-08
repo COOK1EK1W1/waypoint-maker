@@ -11,7 +11,7 @@ export function exportqgcWaypoints(mission: Mission) {
   const reference = mission.getReferencePoint()
   const wps = mission.flatten("Main")
   const mavCommands = convertToMAV(wps, reference)
-  returnString += waypointString(0, WPM2MAV([makeCommand("MAV_CMD_NAV_WAYPOINT", { latitude: reference.lat, longitude: reference.lng })])[0])
+  returnString += waypointString(0, WPM2MAV([makeCommand("MAV_CMD_NAV_WAYPOINT", { latitude: reference.lat, longitude: reference.lng, altitude: 0 })])[0])
 
   mavCommands.forEach((x, i) => {
     returnString += waypointString(i + 1, x)

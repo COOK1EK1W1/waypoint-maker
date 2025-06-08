@@ -15,6 +15,12 @@ export function makeCommand<T extends CommandName>(name: T, params: { [K in keyo
     const paramKey = param.label.toLowerCase()
     if (paramKey in params) {
       newParams[paramKey] = params[paramKey as keyof typeof params] ?? 0
+    } else if (defaultParams[name] && defaultParams[name][paramKey as keyof typeof params]
+    ) {
+      const a = defaultParams[name][paramKey as keyof typeof params]
+      if (a !== undefined) {
+        newParams[paramKey] = a
+      }
     } else {
       newParams[paramKey] = param.default ?? 0
     }
@@ -27,6 +33,12 @@ export function makeCommand<T extends CommandName>(name: T, params: { [K in keyo
     // @ts-ignore
     frame: "altitude" in params2 ? 3 : 2,
     params: params2,
-    autocontinue: 0
+    autocontinue: 1
   }
+}
+
+export const defaultParams: { [K in CommandName]?: { [P in keyof CommandParams<K>]?: number } } = {
+  "MAV_CMD_NAV_TAKEOFF": { pitch: 15, altitude: 15 },
+  "MAV_CMD_NAV_WAYPOINT": { altitude: 100 },
+  "MAV_CMD_DO_LAND_START": { altitude: 100 }
 }

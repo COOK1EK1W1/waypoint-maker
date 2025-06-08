@@ -1,13 +1,13 @@
 import { describe, it, expect } from 'bun:test';
-import { defaultWaypoint, defaultTakeoff, defaultDoLandStart } from '../defaults';
 import { LatLng } from '../../world/latlng';
+import { makeCommand } from '@/lib/commands/default';
 
 describe('Mission Defaults', () => {
   const testPosition: LatLng = { lat: 51.5074, lng: -0.1278 }; // London coordinates
 
   describe('defaultWaypoint', () => {
     it('should create a waypoint command with correct parameters', () => {
-      const waypoint = defaultWaypoint(testPosition);
+      const waypoint = makeCommand("MAV_CMD_NAV_WAYPOINT", { latitude: testPosition.lat, longitude: testPosition.lng });
 
       expect(waypoint.frame).toBe(3);
       expect(waypoint.type).toBe(16);
@@ -24,7 +24,7 @@ describe('Mission Defaults', () => {
 
   describe('defaultTakeoff', () => {
     it('should create a takeoff command with correct parameters', () => {
-      const takeoff = defaultTakeoff(testPosition);
+      const takeoff = makeCommand("MAV_CMD_NAV_TAKEOFF", { latitude: testPosition.lat, longitude: testPosition.lng });
 
       expect(takeoff.frame).toBe(3);
       expect(takeoff.type).toBe(22);
@@ -39,7 +39,7 @@ describe('Mission Defaults', () => {
 
   describe('defaultDoLandStart', () => {
     it('should create a land start command with correct parameters', () => {
-      const landStart = defaultDoLandStart(testPosition);
+      const landStart = makeCommand("MAV_CMD_DO_LAND_START", { latitude: testPosition.lat, longitude: testPosition.lng });
 
       expect(landStart.frame).toBe(3);
       expect(landStart.type).toBe(189);
