@@ -1,4 +1,4 @@
-import { Command, filterLatLngCmds } from "@/lib/commands/commands";
+import { Command, filterLatLngCmds, getCommandDesc, LatLngAltCommand } from "@/lib/commands/commands";
 import { getLatLng, LatLng } from "../world/latlng";
 
 export enum CollectionType {
@@ -294,8 +294,36 @@ export class Mission {
       }
     }
   }
+
+
+  mainLine(mission?: string) {
+    const commands = this.flatten(mission ?? "Main")
+
+    // store each destination in an array, with non destinations in other (to be stacked as they act in the same location)
+    return convertToMainLine(commands)
+  }
 }
 
+export type MainLine = MainLineItem[]
+export type MainLineItem = { cmd: LatLngAltCommand, id: number, other: Command[] }
+
+export function convertToMainLine(commands: Command[]) {
+  const mainLine: MainLine = []
+
+  commands.forEach((cmd, id) => {
+
+    const desc = getCommandDesc(cmd.type)
+    if (desc.isDestination && "latitude" in cmd.params && "longitude" in cmd.params) {
+      // @ts-ignore
+      mainLine.push({ cmd, id, other: [] })
+    } else {
+      if (mainLine.length !== 0) {
+        mainLine[mainLine.length - 1].other.push(cmd)
+      }
+    }
+  })
+  return mainLine
+}
 
 export class MissingMission extends Error {
   constructor(missionName: string) {

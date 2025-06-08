@@ -1,4 +1,4 @@
-import { Command, CommandName, CommandParams, CommandParamsNames, commands, ICommand } from "./commands";
+import { CommandName, CommandParams, commands, ICommand } from "./commands";
 
 /*
  * Construct a default command, or specify some parameters to apply

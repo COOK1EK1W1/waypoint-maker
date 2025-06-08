@@ -1,4 +1,3 @@
-import { Command } from "@/lib/commands/commands";
 import { applyBounds, dubinsBetweenDubins, getBounds, getTunableDubinsParameters, setTunableDubinsParameter, setTunableParameter, splitDubinsRuns, waypointToDubins } from "@/lib/dubins/dubinWaypoints";
 import { bound, dubinsPoint, Path } from "@/lib/dubins/types";
 import { XY } from "@/lib/math/types";
@@ -24,7 +23,7 @@ export function createEvaluate(wps: dubinsPoint[], optimisationFunction: (path: 
 }
 
 export function staticEvaluate(waypoints: Mission, activeMission: string, optimisationFunction: (path: Path<XY>) => number, vehicle: Plane) {
-  let activeWaypoints: Command[] = waypoints.flatten(activeMission)
+  let activeWaypoints = waypoints.mainLine(activeMission)
 
   const reference = waypoints.getReferencePoint()
 
@@ -34,7 +33,7 @@ export function staticEvaluate(waypoints: Mission, activeMission: string, optimi
   // optimise each section of the path
   for (const section of dubinSections) {
 
-    let dubinsPoints: dubinsPoint[] = section.wps.map((x) => waypointToDubins(x, reference))
+    let dubinsPoints: dubinsPoint[] = section.run.map((x) => waypointToDubins(x.cmd, reference))
 
     let startingParams = [...getTunableDubinsParameters(dubinsPoints)]
     let bounds: bound[] = [...getBounds(dubinsPoints, vehicle)]
@@ -48,14 +47,14 @@ export function staticEvaluate(waypoints: Mission, activeMission: string, optimi
 }
 
 export function bakeDubins(waypoints: Mission, activeMission: string, optimisationmethod: (initialGuess: readonly number[], bounds: bound[], fn: (a: number[]) => number) => res, setWaypoints: Dispatch<SetStateAction<Mission>>, optimisationFunction: (path: Path<XY>) => number, vehicle: Plane) {
-  let activeWaypoints: Command[] = waypoints.flatten(activeMission)
+  let mainLine = waypoints.mainLine(activeMission)
 
   const startTime = performance.now()
 
   // get reference waypoint
   const reference = waypoints.getReferencePoint()
 
-  let dubinSections = splitDubinsRuns(activeWaypoints)
+  let dubinSections = splitDubinsRuns(mainLine)
   let endingFitness = 0
   let startingFitness = 0
 
@@ -64,7 +63,7 @@ export function bakeDubins(waypoints: Mission, activeMission: string, optimisati
   // optimise each section of the path
   for (const section of dubinSections) {
 
-    let dubinsPoints: dubinsPoint[] = section.wps.map((x) => waypointToDubins(x, reference))
+    let dubinsPoints: dubinsPoint[] = section.run.map((x) => waypointToDubins(x.cmd, reference))
 
     let startingParams = [...getTunableDubinsParameters(dubinsPoints)]
     let bounds: bound[] = [...getBounds(dubinsPoints, vehicle)]
@@ -80,10 +79,10 @@ export function bakeDubins(waypoints: Mission, activeMission: string, optimisati
     endingFitness += evaluate(result.finalVals)
     console.log("fitness: ", result.fitness, "  took: ", result.time)
 
-    setTunableParameter(section.wps, result.finalVals)
-    let wps = section.wps
+    setTunableParameter(section.run, result.finalVals)
+    let wps = section.run
 
-    if (wps[0].type != 69) {
+    if (wps[0].cmd.type != 69) {
       wps.shift()
     }
 
@@ -95,8 +94,8 @@ export function bakeDubins(waypoints: Mission, activeMission: string, optimisati
       let curWP = mission[a[1]]
       if (!curWP) continue;
       if (curWP.type == "Command") {
-        console.assert(wps[i].type == curWP.cmd.type, "Waypoint type mismatch")
-        curWP.cmd = wps[i]
+        console.assert(wps[i].cmd.type == curWP.cmd.type, "Waypoint type mismatch")
+        curWP.cmd = wps[i].cmd
       }
     }
   }

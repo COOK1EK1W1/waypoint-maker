@@ -44,13 +44,7 @@ export const importqgcWaypoints: importInterface = (missionStr: string) => {
     newMission.pushToMission("Main", {
       type: "Command",
       //@ts-ignore
-      cmd: {
-        frame: parseInt(params[2], 10),
-        type: parseInt(params[3], 10) as CommandValue,
-        autocontinue: parseInt(params[11]),
-        params: cmdParams
-      }
-
+      cmd: { frame: parseInt(params[2], 10), type: parseInt(params[3], 10) as CommandValue, autocontinue: parseInt(params[11]), params: cmdParams }
     })
 
   }

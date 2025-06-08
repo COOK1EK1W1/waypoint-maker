@@ -5,7 +5,6 @@ import { geneticOptimise } from "@/lib/optimisation/genetic";
 import { particleOptimise } from "@/lib/optimisation/particleSwarm";
 import { useState } from "react";
 import { useVehicle } from "@/util/context/VehicleTypeContext";
-import { cn } from "@/lib/utils";
 import { gradientOptimise } from "@/lib/optimisation/gradient";
 import { splitDubinsRuns } from "@/lib/dubins/dubinWaypoints";
 import { Path } from "@/lib/dubins/types";
@@ -39,7 +38,7 @@ export function Optimise() {
   let energy = staticEvaluate(waypoints, activeMission, metrics["Energy"], vehicle as Plane)
   let length = staticEvaluate(waypoints, activeMission, metrics["Length"], vehicle as Plane)
 
-  let dubinSections = splitDubinsRuns(waypoints.flatten(activeMission))
+  let dubinSections = splitDubinsRuns(waypoints.mainLine(activeMission))
   if (dubinSections.length == 0) {
     return <div className="h-full w-full text-center content-center">Create some dubins waypoints to run optimisations</div>
   }

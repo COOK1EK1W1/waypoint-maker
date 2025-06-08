@@ -5,42 +5,42 @@ import { crossProduct } from "@/lib/mission/fns";
 import { deg2rad } from "@/lib/math/geometry";
 import { bound, dubinsPoint, Path, Segment } from "./types";
 import { XY } from "@/lib/math/types";
-import { Command, filterLatLngCmds, LatLngCommand } from "../commands/commands";
+import { Command, LatLngAltCommand, LatLngCommand } from "../commands/commands";
 import { Plane } from "../vehicles/types";
 import { getLatLng, LatLng } from "../world/latlng";
+import { MainLine } from "../mission/mission";
 
 /*
  * find all the sections of a waypoint list which require a dubins path between
  * include pre + post waypoints to connect
  */
-export function splitDubinsRuns(wps: Command[]): { start: number, wps: LatLngCommand[] }[] {
-  let dubinSections: { start: number, wps: LatLngCommand[] }[] = []
-  const filtered = filterLatLngCmds(wps)
+export function splitDubinsRuns(mainLine: MainLine): { start: number, run: { cmd: LatLngAltCommand, id: number, other: Command[] }[] }[] {
+  let dubinSections: { start: number, run: { cmd: LatLngAltCommand, id: number, other: Command[] }[] }[] = []
 
-  let curSection: LatLngCommand[] = []
+  let curSection: MainLine = []
   let start = 0
-  for (let i = 0; i < filtered.length; i++) {
-    const curWaypoint = wps[i]
+  for (let i = 0; i < mainLine.length; i++) {
+    const curWaypoint = mainLine[i].cmd
     if (curWaypoint.type == 69) {
       if (curSection.length == 0) {
         start = i
         if (i > 0) {
-          curSection.push(filtered[i - 1])
+          curSection.push(mainLine[i - 1])
         }
       }
-      curSection.push(curWaypoint)
+      curSection.push(mainLine[i])
     } else {
       if (curSection.length > 0) {
-        if (i < wps.length) {
-          curSection.push(filtered[i])
+        if (i < mainLine.length) {
+          curSection.push(mainLine[i])
         }
-        dubinSections.push({ start: start, wps: curSection })
+        dubinSections.push({ start: start, run: curSection })
         curSection = []
       }
     }
   }
   if (curSection.length > 0) {
-    dubinSections.push({ start: start, wps: curSection })
+    dubinSections.push({ start: start, run: curSection })
   }
   return dubinSections
 
@@ -189,14 +189,14 @@ export function waypointToDubins(cmd: LatLngCommand, reference: LatLng): dubinsP
  * @param {Waypoint[]} wps - The list of waypoints
  * @param {number[]} params - The tunable parameters
  */
-export function setTunableParameter(wps: Command[], params: number[]): void {
+export function setTunableParameter(wps: MainLine, params: number[]): void {
   let paramI = 0
   for (let i = 0; i < wps.length; i++) {
     let cur = wps[i]
-    if (cur.type == 69) {
+    if (cur.cmd.type == 69) {
       // radians
-      cur.params.heading = modf(params[paramI++], 360)
-      cur.params.radius = params[paramI++]
+      cur.cmd.params.heading = modf(params[paramI++], 360)
+      cur.cmd.params.radius = params[paramI++]
     }
   }
 }

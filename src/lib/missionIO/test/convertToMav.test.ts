@@ -156,3 +156,66 @@ test("split Dubins point", () => {
   expect(mavMission[6].param6).toBeCloseTo(mission[4].params.longitude)
   expect(mavMission[7]).toBeUndefined()
 })
+
+test("Dubins point with Set Servo", () => {
+  const mission: Command[] = [
+    makeCommand("MAV_CMD_NAV_WAYPOINT", { latitude: 55.7, longitude: -3.3, altitude: 100 }),
+    makeCommand("WM_CMD_NAV_DUBINS", { latitude: 55.8, longitude: -3.3, altitude: 100, radius: 100, heading: 40 }),
+    makeCommand("MAV_CMD_DO_SET_SERVO", { pwm: 1500 }),
+    makeCommand("MAV_CMD_NAV_WAYPOINT", { latitude: 55.8, longitude: -3.2, altitude: 100 }),
+  ]
+  const mavMission = convertToMAV(mission, { lat: 55.75, lng: -3.25 })
+
+  //start
+  expect(mavMission[0].type).toBe(16)
+
+  // approach
+  expect(mavMission[1].type).toBe(16)
+
+  // first curve
+  expect(mavMission[2].type).toBe(18)
+
+  // center of arc
+  expect(mavMission[3].type).toBe(183)
+
+  // second arc
+  expect(mavMission[4].type).toBe(18)
+
+  // end
+  expect(mavMission[5].type).toBe(18)
+  expect(mavMission[6]).toBeUndefined()
+})
+
+test("Dubins point with multiple Set Servo", () => {
+  const mission: Command[] = [
+    makeCommand("MAV_CMD_NAV_WAYPOINT", { latitude: 55.7, longitude: -3.3, altitude: 100 }),
+    makeCommand("MAV_CMD_DO_SET_SERVO", { pwm: 1500 }),
+    makeCommand("WM_CMD_NAV_DUBINS", { latitude: 55.8, longitude: -3.3, altitude: 100, radius: 100, heading: 40 }),
+    makeCommand("MAV_CMD_DO_SET_SERVO", { pwm: 1500 }),
+    makeCommand("MAV_CMD_NAV_WAYPOINT", { latitude: 55.8, longitude: -3.2, altitude: 100 }),
+    makeCommand("MAV_CMD_DO_SET_SERVO", { pwm: 1500 }),
+  ]
+  const mavMission = convertToMAV(mission, { lat: 55.75, lng: -3.25 })
+
+  //start
+  expect(mavMission[0].type).toBe(16)
+  expect(mavMission[1].type).toBe(183)
+
+  // approach
+  expect(mavMission[2].type).toBe(16)
+
+  // first curve
+  expect(mavMission[3].type).toBe(18)
+
+  // center of arc
+  expect(mavMission[4].type).toBe(183)
+
+  // second arc
+  expect(mavMission[5].type).toBe(18)
+
+  // end
+  expect(mavMission[6].type).toBe(18)
+  expect(mavMission[7].type).toBe(183)
+  expect(mavMission[8]).toBeUndefined()
+})
+
