@@ -9,7 +9,9 @@ import { convertToMainLine, Mission } from "@/lib/mission/mission";
 import { Vehicle } from "../vehicles/types";
 import { makeCommand } from "../commands/default";
 import { Result } from "@/util/try-catch";
-import { worldOffset } from "../world/distance";
+import { haversineDistance, worldOffset } from "../world/distance";
+import { pathLength } from "../dubins/geometry";
+import { string } from "better-auth";
 
 export function simplifyDubinsWaypoints(wps: Command[]) {
 
@@ -27,7 +29,8 @@ export function simplifyDubinsWaypoints(wps: Command[]) {
     // if current and next are both loiter turns and are in the same place, combine them
     if (cur.type == 18 && next.type == 18 && cur.params.longitude == next.params.longitude
       && cur.params.latitude == next.params.latitude
-      && cur.params.radius == next.params.radius) {
+      && cur.params.radius == next.params.radius
+      && cur.params.altitude == next.params.altitude) {
       simplifiedMavWP.push(makeCommand("MAV_CMD_NAV_LOITER_TURNS", {
         latitude: cur.params.latitude,
         longitude: cur.params.longitude,
@@ -70,16 +73,38 @@ export function convertToMAV(wps: Command[], reference: LatLng): MavCommand[] {
       const section = worldPath[i]
       const curWaypoint = Math.floor(i / 3)
       const segmentId = i % 3
+
+      // @ts-ignore
+      const turnALen = worldPath[curWaypoint * 3].theta * worldPath[curWaypoint * 3].radius
+      // @ts-ignore
+      const straightLen = haversineDistance(worldPath[curWaypoint * 3 + 1].start, worldPath[curWaypoint * 3 + 1].end)
+      // @ts-ignore
+      const turnBLen = worldPath[curWaypoint * 3 + 2].theta * worldPath[curWaypoint * 3 + 2].radius
+
+      const totalDistance = turnALen + straightLen + turnBLen
+
       switch (section.type) {
         case "Curve": {
           const absTheta = Math.abs(section.theta / (Math.PI * 2))
           const dir = absTheta / (section.theta / (Math.PI * 2))
+
+          // add the do commands if we're just beginning a dubins path
           if (segmentId === 0) {
             newMavWP = newMavWP.concat(run.run[curWaypoint].other)
             otherCount += run.run[curWaypoint].other.length
           }
+
+          // no need for a turn as it's bascially nothing
           if (Math.abs(section.radius) === 0 || absTheta < 0.03) break;
-          newMavWP.push(makeCommand("MAV_CMD_NAV_LOITER_TURNS", { turns: Number(absTheta.toFixed(4)), "": 1, altitude: run.run[curWaypoint].cmd.params.altitude, radius: Number((section.radius * dir).toFixed(4)), latitude: section.center.lat, longitude: section.center.lng }))
+
+          newMavWP.push(makeCommand("MAV_CMD_NAV_LOITER_TURNS", {
+            turns: Number(absTheta.toFixed(4)),
+            "": 1, //magic exit tangent lol
+            altitude: segmentId === 0 ? run.run[curWaypoint].cmd.params.altitude + ((turnALen) / totalDistance) * (run.run[curWaypoint + 1].cmd.params.altitude - run.run[curWaypoint].cmd.params.altitude) : run.run[curWaypoint + 1].cmd.params.altitude,
+            radius: Number((section.radius * dir).toFixed(4)),
+            latitude: section.center.lat,
+            longitude: section.center.lng
+          }))
 
 
           const next = worldPath[i + 1]
@@ -92,7 +117,15 @@ export function convertToMAV(wps: Command[], reference: LatLng): MavCommand[] {
           break
         }
         case "Straight": {
-          newMavWP.push(makeCommand("MAV_CMD_NAV_WAYPOINT", { yaw: 0, "accept radius": 0, latitude: section.end.lat, longitude: section.end.lng, hold: 0, altitude: run.run[curWaypoint].cmd.params.altitude, "pass radius": 0 }))
+          newMavWP.push(makeCommand("MAV_CMD_NAV_WAYPOINT", {
+            yaw: 0,
+            "accept radius": 0,
+            latitude: section.end.lat,
+            longitude: section.end.lng,
+            hold: 0,
+            altitude: run.run[curWaypoint].cmd.params.altitude + ((turnALen + straightLen) / totalDistance) * (run.run[curWaypoint + 1].cmd.params.altitude - run.run[curWaypoint].cmd.params.altitude),
+            "pass radius": 0
+          }))
           break
         }
       }

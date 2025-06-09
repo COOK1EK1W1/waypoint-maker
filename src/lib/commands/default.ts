@@ -40,5 +40,6 @@ export function makeCommand<T extends CommandName>(name: T, params: { [K in keyo
 export const defaultParams: { [K in CommandName]?: { [P in keyof CommandParams<K>]?: number } } = {
   "MAV_CMD_NAV_TAKEOFF": { pitch: 15, altitude: 15 },
   "MAV_CMD_NAV_WAYPOINT": { altitude: 100 },
-  "MAV_CMD_DO_LAND_START": { altitude: 100 }
+  "MAV_CMD_DO_LAND_START": { altitude: 100 },
+  "WM_CMD_NAV_DUBINS": { altitude: 100 }
 }
