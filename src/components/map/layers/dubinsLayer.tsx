@@ -1,7 +1,7 @@
 import { Circle, LayerGroup, Polyline } from "react-leaflet";
 import { useWaypoints } from "@/util/context/WaypointContext";
 import { ReactNode } from "react";
-import { dubinsBetweenDubins, localisePath, splitDubinsRuns, waypointToDubins } from "@/lib/dubins/dubinWaypoints";
+import { dubinsBetweenDubins, localiseDubinsPath, localisePath, splitDubinsRuns, waypointToDubins } from "@/lib/dubins/dubinWaypoints";
 import Arc from "@/components/marker/arc";
 import { Command } from "@/lib/commands/commands";
 import { getLatLng } from "@/lib/world/latlng";
@@ -36,18 +36,11 @@ export default function DubinsLayer() {
     })
     let dubinsPoints = section.run.map((x) => waypointToDubins(x.cmd, reference))
     let path = dubinsBetweenDubins(dubinsPoints)
-    const worldPath = localisePath(path, reference)
-    worldPath.map((c, _) => {
-      switch (c.type) {
-        case "Curve":
-          let rWaypoint: Command = { frame: 3, type: 189, params: { latitude: c.center.lat, longitude: c.center.lng, altitude: 0 }, autocontinue: 0 }
-          //markers.push(<DraggableMarker key={"" + i + a} waypoint={rWaypoint} active={false} />)
-          lines.push(<Arc key={key++} curve={c} pathOptions={curveOptions} />)
-          break;
-        case "Straight":
-          lines.push(<Polyline key={key++} pathOptions={straightOptions} positions={[c.start, c.end]} />)
-          break
-      }
+    const localisedPath = path.map((x) => localiseDubinsPath(x, reference))
+    localisedPath.map((c, _) => {
+      lines.push(<Arc key={key++} curve={c.turnA} pathOptions={curveOptions} />)
+      lines.push(<Polyline key={key++} pathOptions={straightOptions} positions={[c.straight.start, c.straight.end]} />)
+      lines.push(<Arc key={key++} curve={c.turnB} pathOptions={straightOptions} />)
     })
   }
 

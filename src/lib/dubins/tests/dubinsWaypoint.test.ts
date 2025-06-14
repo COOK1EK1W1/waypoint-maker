@@ -123,35 +123,24 @@ test("Dubins between dubins", () => {
 
   const path = dubinsBetweenDubins(points)
 
-  expect(path.length).toBe(6)
-  expect(path[0].type).toBe("Curve")
-  expect(path[1].type).toBe("Straight")
-  expect(path[2].type).toBe("Curve")
-  expect(path[3].type).toBe("Curve")
-  expect(path[4].type).toBe("Straight")
-  expect(path[5].type).toBe("Curve")
-
-  if (path[1].type != "Straight") return
-  if (path[4].type != "Straight") return
+  expect(path.length).toBe(2)
 
   //straights
-  expect(path[1].start.x).toBeCloseTo(0)
-  expect(path[1].start.y).toBeCloseTo(0)
-  expect(path[1].end.x).toBeCloseTo(0)
-  expect(path[1].end.y).toBeCloseTo(10)
-  expect(path[4].start.x).toBeCloseTo(4)
-  expect(path[4].start.y).toBeCloseTo(14)
-  expect(path[4].end.x).toBeCloseTo(6)
-  expect(path[4].end.y).toBeCloseTo(14)
+  expect(path[0].straight.start.x).toBeCloseTo(0)
+  expect(path[0].straight.start.y).toBeCloseTo(0)
+  expect(path[0].straight.end.x).toBeCloseTo(0)
+  expect(path[0].straight.end.y).toBeCloseTo(10)
+  expect(path[1].straight.start.x).toBeCloseTo(4)
+  expect(path[1].straight.start.y).toBeCloseTo(14)
+  expect(path[1].straight.end.x).toBeCloseTo(6)
+  expect(path[1].straight.end.y).toBeCloseTo(14)
 
-  if (path[0].type != "Curve") return
-  if (path[5].type != "Curve") return
   //curves
-  expect(path[0].theta).toBeCloseTo(0)
-  expect(path[5].theta).toBeCloseTo(Math.PI / 2)
-  expect(path[5].start).toBeCloseTo(0)
-  expect(path[5].center.x).toBeCloseTo(6)
-  expect(path[5].center.y).toBeCloseTo(10)
+  expect(path[0].turnA.theta).toBeCloseTo(0)
+  expect(path[1].turnB.theta).toBeCloseTo(Math.PI / 2)
+  expect(path[1].turnB.start).toBeCloseTo(0)
+  expect(path[1].turnB.center.x).toBeCloseTo(6)
+  expect(path[1].turnB.center.y).toBeCloseTo(10)
 })
 
 

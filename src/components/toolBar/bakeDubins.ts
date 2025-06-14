@@ -17,7 +17,8 @@ export function createEvaluate(wps: dubinsPoint[], optimisationFunction: (path: 
   function evaluate(x: number[]): number {
     setTunableDubinsParameter(localWPS, x)
     let path = dubinsBetweenDubins(localWPS)
-    return optimisationFunction(path)
+    const flatPath = path.flatMap((x) => [x.turnA, x.straight, x.turnB])
+    return optimisationFunction(flatPath)
   }
   return evaluate
 }

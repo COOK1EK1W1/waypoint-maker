@@ -3,7 +3,7 @@ import { DubinsBetweenDiffRad } from "./dubins";
 import { g2l, l2g } from "@/lib/world/conversion";
 import { crossProduct } from "@/lib/mission/fns";
 import { deg2rad } from "@/lib/math/geometry";
-import { bound, dubinsPoint, Path, Segment } from "./types";
+import { bound, DubinsPath, dubinsPoint, Path, Segment } from "./types";
 import { XY } from "@/lib/math/types";
 import { Command, LatLngAltCommand, LatLngCommand } from "../commands/commands";
 import { Plane } from "../vehicles/types";
@@ -43,7 +43,14 @@ export function splitDubinsRuns(mainLine: MainLine): { start: number, run: { cmd
     dubinSections.push({ start: start, run: curSection })
   }
   return dubinSections
+}
 
+export function localiseDubinsPath(path: DubinsPath<XY>, reference: LatLng): DubinsPath<LatLng> {
+  return {
+    turnA: { ...path.turnA, center: l2g(reference, path.turnA.center) },
+    straight: { ...path.straight, start: l2g(reference, path.straight.start), end: l2g(reference, path.straight.end) },
+    turnB: { ...path.turnB, center: l2g(reference, path.turnB.center) }
+  }
 }
 
 /**
@@ -81,8 +88,8 @@ export function localisePath(path: Path<XY>, reference: LatLng): Path<LatLng> {
  * @param {dubinsPoint[]} wps - The list of waypoints
  * @returns {Path<XY>} The Dubins path
  */
-export function dubinsBetweenDubins(wps: dubinsPoint[]): Path<XY> {
-  let path: Path<XY> = []
+export function dubinsBetweenDubins(wps: dubinsPoint[]): DubinsPath<XY>[] {
+  let path: DubinsPath<XY>[] = []
   for (let i = 0; i < wps.length - 1; i++) {
     const a = wps[i]
     const b = wps[i + 1]
@@ -100,7 +107,12 @@ export function dubinsBetweenDubins(wps: dubinsPoint[]): Path<XY> {
 
     let offsetA = offset(a.pos, a.passbyRadius * adir, deg2rad(a.heading + 90))
     let offsetB = offset(b.pos, b.passbyRadius * bdir, deg2rad(b.heading + 90))
-    path = path.concat(DubinsBetweenDiffRad(offsetA, offsetB, deg2rad(a.heading), deg2rad(b.heading), a.radius, b.radius))
+    const res = DubinsBetweenDiffRad(offsetA, offsetB, deg2rad(a.heading), deg2rad(b.heading), a.radius, b.radius)
+    if (res.error) {
+      console.error(res.error)
+    } else {
+      path.push(res.data)
+    }
   }
   return path
 }

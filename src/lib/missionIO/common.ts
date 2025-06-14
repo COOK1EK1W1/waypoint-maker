@@ -1,4 +1,4 @@
-import { dubinsBetweenDubins, localisePath, splitDubinsRuns, waypointToDubins } from "@/lib/dubins/dubinWaypoints";
+import { dubinsBetweenDubins, localiseDubinsPath, localisePath, splitDubinsRuns, waypointToDubins } from "@/lib/dubins/dubinWaypoints";
 import { LatLng } from "../world/latlng";
 import { Command, MavCommand } from "../commands/commands";
 import { WPM2MAV } from "../commands/convert";
@@ -66,68 +66,79 @@ export function convertToMAV(wps: Command[], reference: LatLng): MavCommand[] {
     let otherCount = 0
     const dubinsPoints = run.run.map((x) => waypointToDubins(x.cmd, reference))
     const path = dubinsBetweenDubins(dubinsPoints)
-    const worldPath = localisePath(path, reference)
+    const dubinsPaths = path.map((x) => localiseDubinsPath(x, reference))
     let newMavWP: Command[] = []
 
-    for (let i = 0; i < worldPath.length; i++) {
-      const section = worldPath[i]
-      const curWaypoint = Math.floor(i / 3)
-      const segmentId = i % 3
+    for (let i = 0; i < dubinsPaths.length; i++) {
+      const section = dubinsPaths[i]
 
-      // @ts-ignore
-      const turnALen = worldPath[curWaypoint * 3].theta * worldPath[curWaypoint * 3].radius
-      // @ts-ignore
-      const straightLen = haversineDistance(worldPath[curWaypoint * 3 + 1].start, worldPath[curWaypoint * 3 + 1].end)
-      // @ts-ignore
-      const turnBLen = worldPath[curWaypoint * 3 + 2].theta * worldPath[curWaypoint * 3 + 2].radius
+      const turnALen = section.turnA.theta * section.turnA.radius
+      const straightLen = haversineDistance(section.straight.start, section.straight.end)
+      const turnBLen = section.turnB.theta * section.turnB.radius
 
       const totalDistance = turnALen + straightLen + turnBLen
 
-      switch (section.type) {
-        case "Curve": {
-          const absTheta = Math.abs(section.theta / (Math.PI * 2))
-          const dir = absTheta / (section.theta / (Math.PI * 2))
+      // ###### Turn A ######
 
-          // add the do commands if we're just beginning a dubins path
-          if (segmentId === 0) {
-            newMavWP = newMavWP.concat(run.run[curWaypoint].other)
-            otherCount += run.run[curWaypoint].other.length
-          }
+      // get the direction of the turn
+      const absThetaA = Math.abs(section.turnA.theta / (Math.PI * 2))
+      const dirA = absThetaA / (section.turnA.theta / (Math.PI * 2))
 
-          // no need for a turn as it's bascially nothing
-          if (Math.abs(section.radius) === 0 || absTheta < 0.03) break;
+      // add the do commands if we're just beginning a dubins path
+      newMavWP = newMavWP.concat(run.run[i].other)
+      otherCount += run.run[i].other.length
 
-          newMavWP.push(makeCommand("MAV_CMD_NAV_LOITER_TURNS", {
-            turns: Number(absTheta.toFixed(4)),
-            "": 1, //magic exit tangent lol
-            altitude: segmentId === 0 ? run.run[curWaypoint].cmd.params.altitude + ((turnALen) / totalDistance) * (run.run[curWaypoint + 1].cmd.params.altitude - run.run[curWaypoint].cmd.params.altitude) : run.run[curWaypoint + 1].cmd.params.altitude,
-            radius: Number((section.radius * dir).toFixed(4)),
-            latitude: section.center.lat,
-            longitude: section.center.lng
-          }))
+      // no need for a turn as it's bascially nothing
+      if (Math.abs(section.turnA.radius) > 0 && absThetaA > 0.03) {
 
+        newMavWP.push(makeCommand("MAV_CMD_NAV_LOITER_TURNS", {
+          turns: Number(absThetaA.toFixed(4)),
+          "": 1, //magic exit tangent lol
+          altitude: run.run[i].cmd.params.altitude + ((turnALen) / totalDistance) * (run.run[i + 1].cmd.params.altitude - run.run[i].cmd.params.altitude),
+          radius: Number((section.turnA.radius * dirA).toFixed(4)),
+          latitude: section.turnA.center.lat,
+          longitude: section.turnA.center.lng
+        }))
 
-          const next = worldPath[i + 1]
-          if (next !== undefined && next.type === "Curve" && next.theta * section.theta < 0) {
-            const pos = worldOffset(section.center, section.radius, section.start + section.theta)
-            newMavWP.push(makeCommand("MAV_CMD_NAV_WAYPOINT", { yaw: 0, "accept radius": 0, latitude: pos.lat, longitude: pos.lng, hold: 0, altitude: run.run[curWaypoint].cmd.params.altitude, "pass radius": 0 }))
-          }
+    }
 
+      // ###### Straight ######
 
-          break
-        }
-        case "Straight": {
-          newMavWP.push(makeCommand("MAV_CMD_NAV_WAYPOINT", {
-            yaw: 0,
-            "accept radius": 0,
-            latitude: section.end.lat,
-            longitude: section.end.lng,
-            hold: 0,
-            altitude: run.run[curWaypoint].cmd.params.altitude + ((turnALen + straightLen) / totalDistance) * (run.run[curWaypoint + 1].cmd.params.altitude - run.run[curWaypoint].cmd.params.altitude),
-            "pass radius": 0
-          }))
-          break
-        }
+      newMavWP.push(makeCommand("MAV_CMD_NAV_WAYPOINT", {
+        yaw: 0,
+        "accept radius": 0,
+        latitude: section.straight.end.lat,
+        longitude: section.straight.end.lng,
+        hold: 0,
+        altitude: run.run[i].cmd.params.altitude + ((turnALen + straightLen) / totalDistance) * (run.run[i + 1].cmd.params.altitude - run.run[i].cmd.params.altitude),
+        "pass radius": 0
+      }))
+
+      // ###### Turn B ######
+
+      // get the direction of the turn
+      const absThetaB = Math.abs(section.turnB.theta / (Math.PI * 2))
+      const dirB = absThetaB / (section.turnB.theta / (Math.PI * 2))
+
+      // no need for a turn as it's bascially nothing
+      if (Math.abs(section.turnB.radius) > 0 && absThetaB > 0.03){
+
+        // add the turn command
+        newMavWP.push(makeCommand("MAV_CMD_NAV_LOITER_TURNS", {
+          turns: Number(absThetaB.toFixed(4)),
+          "": 1, //magic exit tangent lol
+          altitude: run.run[i + 1].cmd.params.altitude,
+          radius: Number((section.turnB.radius * dirB).toFixed(4)),
+          latitude: section.turnB.center.lat,
+          longitude: section.turnB.center.lng
+        }))
+      }
+
+      // place waypoint if the next segment of the next dubins path is a curve going in the other direc
+      const next = dubinsPaths[i + 1]
+      if (next !== undefined && next.turnA.theta * section.turnB.theta < 0) {
+        const pos = worldOffset(section.turnA.center, section.turnA.radius, section.turnA.start + section.turnA.theta)
+        newMavWP.push(makeCommand("MAV_CMD_NAV_WAYPOINT", { yaw: 0, "accept radius": 0, latitude: pos.lat, longitude: pos.lng, hold: 0, altitude: run.run[i].cmd.params.altitude, "pass radius": 0 }))
       }
     }
 
