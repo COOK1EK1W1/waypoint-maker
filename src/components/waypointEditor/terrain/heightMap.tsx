@@ -155,13 +155,16 @@ export default function HeightMap() {
         break;
     }
 
+    const loc = waypoints.findNthPosition(activeMission, index)
+    const isSelected = loc?.[0] === activeMission && selectedWPs.includes(loc[1])
+
     return {
       id: index,
       distance: waypointCumulativeDistances[index],
       alt: adjustedAltitude,
       lat,
       lng,
-      selected: selectedWPs.includes(index),
+      selected: isSelected,
     };
   });
 
@@ -176,11 +179,11 @@ export default function HeightMap() {
   // for parameters, check which are the same
   const frameValues = filterLatLngAltCmds(selected).map(obj => obj.frame);
   const frameAllSame = frameValues.every(val => val === frameValues[0]);
-  const frameVal = frameAllSame ? frameValues[0] : null
+  const frameVal = frameAllSame ? frameValues[0] : undefined
 
   const altValues = filterLatLngAltCmds(selected).map(obj => obj.params["altitude"]);
   const altAllSame = altValues.every(val => val === altValues[0]);
-  const altVal = altAllSame ? altValues[0] : null
+  const altVal = altAllSame ? altValues[0] : undefined
 
 
   // update in change if altitude
@@ -221,7 +224,6 @@ export default function HeightMap() {
       <div className="flex flex-row gap-2">
         <label>
           <span className="block">Altitude</span>
-          {/* @ts-ignore */}
           <DraggableNumberInput name="altitude" onChange={onChange} value={altVal} />
         </label>
         <label>
