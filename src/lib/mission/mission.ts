@@ -159,7 +159,7 @@ export class Mission {
   }
 
   /**
-   * Finds the nth position in a mission.
+   * Finds the nth command's position of a flattened mission.
    * @param missionName - The name of the mission to search in.
    * @param n - The index of the waypoint to find.
    * @returns A tuple containing the mission name and the index of the waypoint, or undefined if the waypoint is not found.

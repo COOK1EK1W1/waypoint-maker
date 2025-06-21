@@ -7,6 +7,7 @@ import { getLatLng, getLatLngAlt, LatLng, LatLngAlt } from "@/lib/world/latlng";
 import DraggableNumberInput from "@/components/ui/draggableNumericInput";
 import TerrainChart from "./chart";
 import { getTerrain } from "@/lib/world/terrain";
+import { set } from "idb-keyval";
 
 function interpolate(a: LatLng, b: LatLng, c: number) {
   return { lat: a.lat * (1 - c) + b.lat * c, lng: a.lng * (1 - c) + b.lng * c }
@@ -32,7 +33,7 @@ function getTerrainElevationAtPoint(terrainData: LatLngAlt[], point: LatLng): nu
 }
 
 export default function HeightMap() {
-  const { activeMission, waypoints, setWaypoints, setSelectedWPs, selectedWPs } = useWaypoints();
+  const { activeMission, setActiveMission, waypoints, setWaypoints, setSelectedWPs, selectedWPs } = useWaypoints();
   const [terrainData, setTerrainData] = useState<LatLngAlt[]>([]);
   const throttledValue = useThrottle(waypoints, 500);
 
@@ -199,7 +200,11 @@ export default function HeightMap() {
   }
 
   const handleCommandClick = (e: React.MouseEvent<SVGElement>, id: number) => {
-    setSelectedWPs([id])
+    const loc = waypoints.findNthPosition(activeMission, id)
+    if (loc !== undefined) {
+      setSelectedWPs([loc[1]])
+      setActiveMission(loc[0])
+    }
   };
 
   // change the reference frame of all selected commands
@@ -217,6 +222,13 @@ export default function HeightMap() {
       }, true)
       return temp
     })
+  }
+
+  // linearly interpolate the heights of the waypoints
+  function autoHeight(){
+    if (mission.length < 2) return 
+    const start = mission[Math.min(...selectedWPs)]
+    const end = mission[Math.max(...selectedWPs)]
   }
 
   return (

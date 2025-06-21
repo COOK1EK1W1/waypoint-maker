@@ -55,6 +55,7 @@ export function simplifyDubinsWaypoints(wps: Command[]) {
 }
 
 export function convertToMAV(wps: Command[], reference: LatLng): MavCommand[] {
+  console.log(wps)
 
   // render the dubins runs to waypoints
   let convertedRuns: { start: number, wps: Command[], length: number }[] = []
