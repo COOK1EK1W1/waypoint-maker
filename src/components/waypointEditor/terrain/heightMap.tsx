@@ -1,13 +1,13 @@
 import { useWaypoints } from "@/util/context/WaypointContext";
 import { useThrottle } from "@uidotdev/usehooks";
 import { ChangeEvent, useEffect, useState } from "react";
-import { gradient, haversineDistance } from "@/lib/world/distance";
+import { haversineDistance } from "@/lib/world/distance";
 import { filterLatLngAltCmds } from "@/lib/commands/commands";
-import { getLatLng, getLatLngAlt, LatLng, LatLngAlt } from "@/lib/world/latlng";
+import { getLatLngAlt, LatLng, LatLngAlt } from "@/lib/world/latlng";
 import DraggableNumberInput from "@/components/ui/draggableNumericInput";
 import TerrainChart from "./chart";
 import { getTerrain } from "@/lib/world/terrain";
-import { set } from "idb-keyval";
+import { Button } from "@/components/ui/button";
 
 function interpolate(a: LatLng, b: LatLng, c: number) {
   return { lat: a.lat * (1 - c) + b.lat * c, lng: a.lng * (1 - c) + b.lng * c }
@@ -39,9 +39,8 @@ export default function HeightMap() {
 
   const mission = waypoints.get(activeMission);
 
-  const wps = filterLatLngAltCmds(waypoints.flatten(activeMission));
-  const wpsLocs = wps.map(getLatLngAlt)
-  const reference = waypoints.getReferencePoint();
+  const wps = waypoints.flatten(activeMission);
+  const wpsLocs = wps.map((x) => getLatLngAlt(x)).filter((x) => x !== undefined)
 
   let locations: LatLng[] = [];
 
@@ -226,9 +225,89 @@ export default function HeightMap() {
 
   // linearly interpolate the heights of the waypoints
   function autoHeight(){
-    if (mission.length < 2) return 
-    const start = mission[Math.min(...selectedWPs)]
-    const end = mission[Math.max(...selectedWPs)]
+    if (selectedWPs.length < 2) return 
+
+    // Get selected commands using the same pattern as elsewhere in the code
+    const selectedNodes = (selectedWPs.length == 0 ? mission : mission.filter((_, i) => selectedWPs.includes(i)))
+    const selectedCommands = selectedNodes.map((x) => {
+      if (x.type == "Command") {
+        return [x.cmd]
+      } else {
+        return waypoints.flatten(x.name)
+      }
+    }).flat()
+
+    // Find indices in the flattened waypoints array that correspond to selected commands with lat/lng/alt
+    const flattenedIDs: number[] = []
+    
+    // Track which commands from selectedCommands we've matched
+    let selectedCommandIndex = 0
+    
+    for (let i = 0; i < wps.length && selectedCommandIndex < selectedCommands.length; i++) {
+      const wp = wps[i]
+      const selectedCmd = selectedCommands[selectedCommandIndex]
+      
+      // Check if this flattened waypoint matches the current selected command
+      if (wp === selectedCmd && "altitude" in wp.params && "latitude" in wp.params && "longitude" in wp.params) {
+        flattenedIDs.push(i)
+        selectedCommandIndex++
+      }
+    }
+
+    if (flattenedIDs.length < 2) return
+
+    // Get start and end altitudes with proper type checking
+    const startWp = wps[Math.min(...flattenedIDs)]
+    const endWp = wps[Math.max(...flattenedIDs)]
+    
+    if (!("altitude" in startWp.params) || !("altitude" in endWp.params)) return
+    
+    const startAlt = startWp.params.altitude
+    const endAlt = endWp.params.altitude
+
+    let totalDistance = 0
+    for (let i = 0; i < flattenedIDs.length - 1; i++) {
+      const wp1 = wps[flattenedIDs[i]]
+      const wp2 = wps[flattenedIDs[i + 1]]
+      
+      // Type guard to ensure we have lat/lng parameters
+      if ("latitude" in wp1.params && "longitude" in wp1.params && 
+          "latitude" in wp2.params && "longitude" in wp2.params) {
+        totalDistance += haversineDistance(
+          { lat: wp1.params.latitude, lng: wp1.params.longitude },
+          { lat: wp2.params.latitude, lng: wp2.params.longitude }
+        )
+      }
+    }
+
+    setWaypoints((mission) => {
+      const newWps = mission.clone()
+      let waypointCumulativeDistances = 0
+      for (let i = 1; i < flattenedIDs.length - 1; i++) {
+        const prevWp = wps[flattenedIDs[i - 1]]
+        const currentWp = wps[flattenedIDs[i]]
+        
+        // Type guard for distance calculation
+        if ("latitude" in prevWp.params && "longitude" in prevWp.params &&
+            "latitude" in currentWp.params && "longitude" in currentWp.params) {
+          waypointCumulativeDistances += haversineDistance(
+            { lat: prevWp.params.latitude, lng: prevWp.params.longitude },
+            { lat: currentWp.params.latitude, lng: currentWp.params.longitude }
+          )
+        }
+        
+        const pos = waypoints.findNthPosition(activeMission, flattenedIDs[i])
+        if (pos === undefined) continue
+        newWps.changeParam(pos[1], pos[0], (x) => {
+          if ("altitude" in x.params) {
+            x.params["altitude"] = startAlt + (endAlt - startAlt) * (waypointCumulativeDistances / totalDistance)
+          }
+          return x
+        }, true)
+      }
+      return newWps
+    })
+
   }
 
   return (
@@ -247,6 +326,9 @@ export default function HeightMap() {
             <option value="10">Terrain</option>
           </select>
         </label>
+        {selected.length > 2 ? 
+          <Button variant="active" onClick={autoHeight} >Auto Height</Button>
+        : null}
       </div>
       <TerrainChart
         commandPositions={commandPositionsForChart}

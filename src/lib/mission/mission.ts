@@ -7,9 +7,9 @@ export enum CollectionType {
   Geofence
 }
 
-export type WPNode = {
+export type WPNode<T extends Command> = {
   type: "Command"
-  cmd: Command
+  cmd: T
 }
 
 export type ColNode = {
@@ -21,7 +21,7 @@ export type ColNode = {
   offsetLng: number
 }
 
-export type Node = WPNode | ColNode
+export type Node<T extends Command = Command> = WPNode<T> | ColNode
 export class Mission {
 
   private collection: Map<string, Node[]>
