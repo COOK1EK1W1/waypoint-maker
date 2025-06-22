@@ -3,47 +3,54 @@ import { DubinsBetweenDiffRad } from "./dubins";
 import { g2l, l2g } from "@/lib/world/conversion";
 import { crossProduct } from "@/lib/mission/fns";
 import { deg2rad } from "@/lib/math/geometry";
-import { bound, dubinsPoint, Path, Segment } from "./types";
+import { bound, DubinsPath, dubinsPoint, Path, Segment } from "./types";
 import { XY } from "@/lib/math/types";
-import { Command, filterLatLngCmds, LatLngCommand } from "../commands/commands";
+import { Command, LatLngAltCommand, LatLngCommand } from "../commands/commands";
 import { Plane } from "../vehicles/types";
 import { getLatLng, LatLng } from "../world/latlng";
+import { MainLine } from "../mission/mission";
 
 /*
  * find all the sections of a waypoint list which require a dubins path between
  * include pre + post waypoints to connect
  */
-export function splitDubinsRuns(wps: Command[]): { start: number, wps: LatLngCommand[] }[] {
-  let dubinSections: { start: number, wps: LatLngCommand[] }[] = []
-  const filtered = filterLatLngCmds(wps)
+export function splitDubinsRuns(mainLine: MainLine): { start: number, run: { cmd: LatLngAltCommand, id: number, other: Command[] }[] }[] {
+  let dubinSections: { start: number, run: { cmd: LatLngAltCommand, id: number, other: Command[] }[] }[] = []
 
-  let curSection: LatLngCommand[] = []
+  let curSection: MainLine = []
   let start = 0
-  for (let i = 0; i < filtered.length; i++) {
-    const curWaypoint = wps[i]
+  for (let i = 0; i < mainLine.length; i++) {
+    const curWaypoint = mainLine[i].cmd
     if (curWaypoint.type == 69) {
       if (curSection.length == 0) {
         start = i
         if (i > 0) {
-          curSection.push(filtered[i - 1])
+          curSection.push(mainLine[i - 1])
         }
       }
-      curSection.push(curWaypoint)
+      curSection.push(mainLine[i])
     } else {
       if (curSection.length > 0) {
-        if (i < wps.length) {
-          curSection.push(filtered[i])
+        if (i < mainLine.length) {
+          curSection.push(mainLine[i])
         }
-        dubinSections.push({ start: start, wps: curSection })
+        dubinSections.push({ start: start, run: curSection })
         curSection = []
       }
     }
   }
   if (curSection.length > 0) {
-    dubinSections.push({ start: start, wps: curSection })
+    dubinSections.push({ start: start, run: curSection })
   }
   return dubinSections
+}
 
+export function localiseDubinsPath(path: DubinsPath<XY>, reference: LatLng): DubinsPath<LatLng> {
+  return {
+    turnA: { ...path.turnA, center: l2g(reference, path.turnA.center) },
+    straight: { ...path.straight, start: l2g(reference, path.straight.start), end: l2g(reference, path.straight.end) },
+    turnB: { ...path.turnB, center: l2g(reference, path.turnB.center) }
+  }
 }
 
 /**
@@ -81,8 +88,8 @@ export function localisePath(path: Path<XY>, reference: LatLng): Path<LatLng> {
  * @param {dubinsPoint[]} wps - The list of waypoints
  * @returns {Path<XY>} The Dubins path
  */
-export function dubinsBetweenDubins(wps: dubinsPoint[]): Path<XY> {
-  let path: Path<XY> = []
+export function dubinsBetweenDubins(wps: dubinsPoint[]): DubinsPath<XY>[] {
+  let path: DubinsPath<XY>[] = []
   for (let i = 0; i < wps.length - 1; i++) {
     const a = wps[i]
     const b = wps[i + 1]
@@ -100,7 +107,12 @@ export function dubinsBetweenDubins(wps: dubinsPoint[]): Path<XY> {
 
     let offsetA = offset(a.pos, a.passbyRadius * adir, deg2rad(a.heading + 90))
     let offsetB = offset(b.pos, b.passbyRadius * bdir, deg2rad(b.heading + 90))
-    path = path.concat(DubinsBetweenDiffRad(offsetA, offsetB, deg2rad(a.heading), deg2rad(b.heading), a.radius, b.radius))
+    const res = DubinsBetweenDiffRad(offsetA, offsetB, deg2rad(a.heading), deg2rad(b.heading), a.radius, b.radius)
+    if (res.error) {
+      console.error(res.error)
+    } else {
+      path.push(res.data)
+    }
   }
   return path
 }
@@ -189,14 +201,14 @@ export function waypointToDubins(cmd: LatLngCommand, reference: LatLng): dubinsP
  * @param {Waypoint[]} wps - The list of waypoints
  * @param {number[]} params - The tunable parameters
  */
-export function setTunableParameter(wps: Command[], params: number[]): void {
+export function setTunableParameter(wps: MainLine, params: number[]): void {
   let paramI = 0
   for (let i = 0; i < wps.length; i++) {
     let cur = wps[i]
-    if (cur.type == 69) {
+    if (cur.cmd.type == 69) {
       // radians
-      cur.params.heading = modf(params[paramI++], 360)
-      cur.params.radius = params[paramI++]
+      cur.cmd.params.heading = modf(params[paramI++], 360)
+      cur.cmd.params.radius = params[paramI++]
     }
   }
 }

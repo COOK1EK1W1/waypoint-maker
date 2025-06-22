@@ -1,46 +1,34 @@
 import { useWaypoints } from "@/util/context/WaypointContext";
 import { useThrottle } from "@uidotdev/usehooks";
 import { ChangeEvent, useEffect, useState } from "react";
-import { gradient, haversineDistance } from "@/lib/world/distance";
+import { haversineDistance } from "@/lib/world/distance";
 import { filterLatLngAltCmds } from "@/lib/commands/commands";
-import { getLatLng, getLatLngAlt, LatLng, LatLngAlt } from "@/lib/world/latlng";
+import { getLatLngAlt, LatLng, LatLngAlt } from "@/lib/world/latlng";
 import DraggableNumberInput from "@/components/ui/draggableNumericInput";
 import TerrainChart from "./chart";
-import { getTerrain } from "@/lib/world/terrain";
+import { getTerrain, getTerrainElevationAtPoint, calculateCumulativeDistances, generateInterpolatedPath, adjustAltitudeForDisplay, calculateInterpolatedAltitudes } from "@/lib/world/terrain";
+import { Button } from "@/components/ui/button";
 
-function interpolate(a: LatLng, b: LatLng, c: number) {
-  return { lat: a.lat * (1 - c) + b.lat * c, lng: a.lng * (1 - c) + b.lng * c }
-}
-
-// Helper function to get terrain elevation at a specific point
-function getTerrainElevationAtPoint(terrainData: LatLngAlt[], point: LatLng): number {
-  if (!terrainData.length) return 0;
-
-  // Find the closest terrain point
-  let closestPoint = terrainData[0];
-  let minDistance = haversineDistance(point, terrainData[0]);
-
-  for (const terrainPoint of terrainData) {
-    const distance = haversineDistance(point, terrainPoint);
-    if (distance < minDistance) {
-      minDistance = distance;
-      closestPoint = terrainPoint;
+// Helper function to get selected commands (keeping this here as it's UI-specific)
+function getSelectedCommands(selectedWPs: number[], mission: any[], waypoints: any) {
+  const selectedNodes = (selectedWPs.length == 0 ? mission : mission.filter((_, i) => selectedWPs.includes(i)))
+  return selectedNodes.map((x) => {
+    if (x.type == "Command") {
+      return [x.cmd]
+    } else {
+      return waypoints.flatten(x.name)
     }
-  }
-
-  return closestPoint.alt;
+  }).flat()
 }
 
 export default function HeightMap() {
-  const { activeMission, waypoints, setWaypoints, setSelectedWPs, selectedWPs } = useWaypoints();
+  const { activeMission, setActiveMission, waypoints, setWaypoints, setSelectedWPs, selectedWPs } = useWaypoints();
   const [terrainData, setTerrainData] = useState<LatLngAlt[]>([]);
   const throttledValue = useThrottle(waypoints, 500);
 
   const mission = waypoints.get(activeMission);
-
-  const wps = filterLatLngAltCmds(waypoints.flatten(activeMission));
-  const wpsLocs = wps.map(getLatLngAlt)
-  const reference = waypoints.getReferencePoint();
+  const wps = waypoints.flatten(activeMission);
+  const wpsLocs = wps.map((x) => getLatLngAlt(x)).filter((x) => x !== undefined)
 
   let locations: LatLng[] = [];
 
@@ -60,77 +48,20 @@ export default function HeightMap() {
     );
   }
 
-  // calculate total distances
-  const waypointCumulativeDistances: number[] = [0];
-  const segmentSizes: number[] = []
-  let totalDistance = 0;
-  for (let i = 0; i < wpsLocs.length - 1; i++) {
+  // Calculate cumulative distances using the extracted function
+  const waypointCumulativeDistances = calculateCumulativeDistances(wpsLocs);
+  const totalDistance = waypointCumulativeDistances[waypointCumulativeDistances.length - 1];
 
-    const loc = wpsLocs[i]
-    const loc2 = wpsLocs[i + 1]
-    const segmentDistance = haversineDistance(loc, loc2);
-
-    segmentSizes.push(segmentDistance)
-
-    totalDistance += segmentDistance;
-    waypointCumulativeDistances.push(totalDistance);
-  }
-
-  // Populate the component-scoped 'locations' array for the getTerrain useEffect hook
-  locations.length = 0; // Clear array before repopulating
-
-  if (wps.length > 0) { // Should be wps.length >= 2 here
-    locations.push(wpsLocs[0]);
-    const interpolatedStepSize = totalDistance > 0 ? totalDistance / 100 : 0;
-
-    if (interpolatedStepSize > 0) {
-      for (let i = 0; i < wps.length - 1; i++) { // Iterate through segments
-        const p1 = wpsLocs[i]
-        const p2 = wpsLocs[i + 1]
-        const curSegment = segmentSizes[i]
-
-        if (curSegment > 0) {
-          // Calculate number of interpolation points strictly between p1 and p2
-          const numInterpolationIntervals = Math.floor(curSegment / interpolatedStepSize);
-          for (let j = 1; j < numInterpolationIntervals; j++) {
-            const fraction = j / numInterpolationIntervals;
-            locations.push(interpolate(p1, p2, fraction));
-          }
-        }
-        // Add p2, ensuring it's distinct from the last point added to 'locations'
-        if (locations.length === 0 || locations[locations.length - 1].lat !== p2.lat || locations[locations.length - 1].lng !== p2.lng) {
-          locations.push(p2);
-        }
-      }
-    } else { // No valid step size for interpolation (e.g., totalDistance is 0)
-      // Add all unique waypoints to locations if not already present.
-      for (let i = 1; i < wps.length; i++) {
-        const nextLoc = wpsLocs[i]
-        if (locations.length === 0 || locations[locations.length - 1].lat !== nextLoc.lat || locations[locations.length - 1].lng !== nextLoc.lng) {
-          locations.push(nextLoc);
-        }
-      }
-    }
-  }
-
+  // Generate interpolated path using the extracted function
+  locations = generateInterpolatedPath(wpsLocs, totalDistance);
 
   // Calculate terrain distances (cumulative distances along the fetched terrain path)
-  let currentTerrainDistances: number[] = [];
-  if (terrainData.length > 0) {
-    currentTerrainDistances.push(0);
-    for (let i = 0; i < terrainData.length - 1; i++) {
-      const distance = haversineDistance(terrainData[i], terrainData[i + 1]);
-      currentTerrainDistances.push(currentTerrainDistances[i] + distance);
-    }
-  } else {
-    currentTerrainDistances.push(0); // Default if no terrain data
-  }
+  const currentTerrainDistances = calculateCumulativeDistances(terrainData);
 
   // Calculate minimum terrain height
-  let minOverallTerrainHeight = terrainData[0]?.alt ?? 0;
-  for (let i = 1; i < terrainData.length; i++) {
-    minOverallTerrainHeight = Math.min(terrainData[i].alt, minOverallTerrainHeight);
-  }
+  const minOverallTerrainHeight = terrainData.length > 0 
+    ? Math.min(...terrainData.map(td => td.alt))
+    : 0;
 
   // Prepare terrain profile for the chart (normalized elevation)
   const terrainProfileForChart = terrainData.map((td, index) => ({
@@ -141,19 +72,18 @@ export default function HeightMap() {
   // Prepare command positions for the chart
   const commandPositionsForChart = wpsLocs.map(({ alt, lat, lng }, index) => {
     const wp = wps[index];
-    let adjustedAltitude = alt;
+    const baseTerrainElevation = terrainData[0]?.alt ?? 0;
+    const terrainElevationAtPoint = getTerrainElevationAtPoint(terrainData, { lat, lng });
+    
+    const adjustedAltitude = adjustAltitudeForDisplay(
+      alt, 
+      wp.frame, 
+      terrainElevationAtPoint, 
+      baseTerrainElevation
+    );
 
-    // Adjust altitude based on frame for display
-    switch (wp.frame) {
-      case 0: //AMSL (adjust to relative for graph)
-        adjustedAltitude += -terrainData[0].alt
-        break;
-      case 3: // Relative to first command
-        break;
-      case 10: // Relative to terrain
-        adjustedAltitude += getTerrainElevationAtPoint(terrainData, { lat, lng }) - (terrainData[0]?.alt ?? 0);
-        break;
-    }
+    const loc = waypoints.findNthPosition(activeMission, index)
+    const isSelected = loc?.[0] === activeMission && selectedWPs.includes(loc[1])
 
     return {
       id: index,
@@ -161,27 +91,21 @@ export default function HeightMap() {
       alt: adjustedAltitude,
       lat,
       lng,
-      selected: selectedWPs.includes(index),
+      selected: isSelected,
     };
   });
 
-  const selected = (selectedWPs.length == 0 ? mission : mission.filter((_, i) => selectedWPs.includes(i))).map((x) => {
-    if (x.type == "Command") {
-      return [x.cmd]
-    } else {
-      return waypoints.flatten(x.name)
-    }
-  }).flat()
+  // Get selected commands for parameter editing
+  const selected = getSelectedCommands(selectedWPs, mission, waypoints);
 
   // for parameters, check which are the same
   const frameValues = filterLatLngAltCmds(selected).map(obj => obj.frame);
   const frameAllSame = frameValues.every(val => val === frameValues[0]);
-  const frameVal = frameAllSame ? frameValues[0] : null
+  const frameVal = frameAllSame ? frameValues[0] : undefined
 
   const altValues = filterLatLngAltCmds(selected).map(obj => obj.params["altitude"]);
   const altAllSame = altValues.every(val => val === altValues[0]);
-  const altVal = altAllSame ? altValues[0] : null
-
+  const altVal = altAllSame ? altValues[0] : undefined
 
   // update in change if altitude
   function onChange(event: { target: { name: string, value: number } }) {
@@ -196,7 +120,11 @@ export default function HeightMap() {
   }
 
   const handleCommandClick = (e: React.MouseEvent<SVGElement>, id: number) => {
-    setSelectedWPs([id])
+    const loc = waypoints.findNthPosition(activeMission, id)
+    if (loc !== undefined) {
+      setSelectedWPs([loc[1]])
+      setActiveMission(loc[0])
+    }
   };
 
   // change the reference frame of all selected commands
@@ -216,12 +144,64 @@ export default function HeightMap() {
     })
   }
 
+  // linearly interpolate the heights of the waypoints
+  function autoHeight(){
+    if (selectedWPs.length < 2) return 
+
+    // Get selected commands using the helper function
+    const selectedCommands = getSelectedCommands(selectedWPs, mission, waypoints);
+
+    // Find indices in the flattened waypoints array that correspond to selected commands with lat/lng/alt
+    const flattenedIDs: number[] = []
+    let selectedCommandIndex = 0
+    
+    for (let i = 0; i < wps.length && selectedCommandIndex < selectedCommands.length; i++) {
+      const wp = wps[i]
+      const selectedCmd = selectedCommands[selectedCommandIndex]
+      
+      // Check if this flattened waypoint matches the current selected command
+      if (wp === selectedCmd && "altitude" in wp.params && "latitude" in wp.params && "longitude" in wp.params) {
+        flattenedIDs.push(i)
+        selectedCommandIndex++
+      }
+    }
+
+    if (flattenedIDs.length < 2) return
+
+    // Filter waypoints to only include those with the required parameters
+    const validWaypoints = wps.filter(wp => 
+      "altitude" in wp.params && "latitude" in wp.params && "longitude" in wp.params
+    ) as Array<{ params: { latitude: number; longitude: number; altitude: number } }>;
+    
+    if (validWaypoints.length < 2) return;
+    
+    const { interpolatedAltitudes } = calculateInterpolatedAltitudes(validWaypoints, 0, validWaypoints.length - 1);
+
+    // Apply the interpolated altitudes to the waypoints
+    setWaypoints((mission) => {
+      const newWps = mission.clone()
+      
+      // Update altitudes for intermediate waypoints
+      for (let i = 1; i < flattenedIDs.length - 1; i++) {
+        const pos = waypoints.findNthPosition(activeMission, flattenedIDs[i])
+        if (pos === undefined || i - 1 >= interpolatedAltitudes.length) continue
+        
+        newWps.changeParam(pos[1], pos[0], (x) => {
+          if ("altitude" in x.params) {
+            x.params["altitude"] = interpolatedAltitudes[i - 1]
+          }
+          return x
+        }, true)
+      }
+      return newWps
+    })
+  }
+
   return (
     <div className="w-full p-2">
       <div className="flex flex-row gap-2">
         <label>
           <span className="block">Altitude</span>
-          {/* @ts-ignore */}
           <DraggableNumberInput name="altitude" onChange={onChange} value={altVal} />
         </label>
         <label>
@@ -233,11 +213,14 @@ export default function HeightMap() {
             <option value="10">Terrain</option>
           </select>
         </label>
+        {selected.length > 2 ? 
+          <Button variant="active" onClick={autoHeight} >Auto Height</Button>
+        : null}
       </div>
       <TerrainChart
         commandPositions={commandPositionsForChart}
         terrainProfile={terrainProfileForChart}
-        onCommandClick={handleCommandClick} // Pass the handler
+        onCommandClick={handleCommandClick}
       />
     </div>
   );

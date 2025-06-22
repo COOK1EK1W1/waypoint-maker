@@ -6,7 +6,6 @@ import { useWaypoints } from "../../util/context/WaypointContext";
 import { Tool } from "@/types/tools";
 import { LeafletMouseEvent, TileLayer as TileLayerType } from "leaflet";
 import { useEffect, useRef } from "react";
-import { defaultDoLandStart, defaultTakeoff, defaultWaypoint } from "@/lib/mission/defaults";
 import { useMap } from '@/util/context/MapContext';
 import MapController from "./mapController";
 import MapLayers from "./layers/layers";
@@ -33,7 +32,7 @@ export default function MapStuff() {
 
 
           setWaypoints((waypoints) => {
-            waypoints.pushToMission(activeMission, { type: "Command", cmd: defaultWaypoint({ lat: Number(newLat), lng: Number(newLng) }) })
+            waypoints.pushToMission(activeMission, { type: "Command", cmd: makeCommand("MAV_CMD_NAV_WAYPOINT", { latitude: Number(newLat), longitude: Number(newLng) }) })
             return waypoints.clone()
           })
           break;
@@ -82,7 +81,7 @@ export default function MapStuff() {
       case "Waypoint": {
         setWaypoints((waypoints) => {
           let waypointsNew = waypoints.clone()
-          waypointsNew.pushToMission(activeMission, { type: "Command", cmd: defaultWaypoint(e.latlng) })
+          waypointsNew.pushToMission(activeMission, { type: "Command", cmd: makeCommand("MAV_CMD_NAV_WAYPOINT", { latitude: e.latlng.lat, longitude: e.latlng.lng }) })
           return waypointsNew
         })
         break;
@@ -91,7 +90,7 @@ export default function MapStuff() {
         setTool("Waypoint")
         setWaypoints((waypoints) => {
           const a = waypoints.clone()
-          a.pushToMission(activeMission, { type: "Command", cmd: defaultTakeoff(e.latlng) })
+          a.pushToMission(activeMission, { type: "Command", cmd: makeCommand("MAV_CMD_NAV_TAKEOFF", { latitude: e.latlng.lat, longitude: e.latlng.lng }) })
           return a
         })
         break;
@@ -100,7 +99,7 @@ export default function MapStuff() {
         setTool("Waypoint")
         setWaypoints((waypoints) => {
           const a = waypoints.clone()
-          a.pushToMission(activeMission, { type: "Command", cmd: defaultDoLandStart(e.latlng) })
+          a.pushToMission(activeMission, { type: "Command", cmd: makeCommand("MAV_CMD_DO_LAND_START", { latitude: e.latlng.lat, longitude: e.latlng.lng }) })
           return a
         })
         break;

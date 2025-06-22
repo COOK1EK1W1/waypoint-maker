@@ -26,17 +26,17 @@ test("waypoints to file", () => {
   expect(exportqgcWaypoints(wps3)).toBe(
     "QGC WPL 110\n" +
     "0\t1\t3\t16\t0\t0\t0\t0\t0\t0\t0\t1\n" +
-    "1\t0\t3\t22\t0\t0\t0\t0\t0\t0\t0\t1\n"
+    "1\t0\t3\t22\t15\t0\t0\t0\t0\t0\t15\t1\n"
   )
 
   // two waypoints
   let wps4: Mission = new Mission()
-  wps4.set("Main", [{ type: "Command", cmd: makeCommand("MAV_CMD_NAV_TAKEOFF", {}) }, { type: "Command", cmd: makeCommand("MAV_CMD_NAV_TAKEOFF", {}) }])
+  wps4.set("Main", [{ type: "Command", cmd: makeCommand("MAV_CMD_NAV_TAKEOFF", {}) }, { type: "Command", cmd: makeCommand("MAV_CMD_NAV_WAYPOINT", {}) }])
   expect(exportqgcWaypoints(wps4)).toBe(
     "QGC WPL 110\n" +
     "0\t1\t3\t16\t0\t0\t0\t0\t0\t0\t0\t1\n" +
-    "1\t0\t3\t22\t0\t0\t0\t0\t0\t0\t0\t1\n" +
-    "2\t0\t3\t22\t0\t0\t0\t0\t0\t0\t0\t1\n"
+    "1\t0\t3\t22\t15\t0\t0\t0\t0\t0\t15\t1\n" +
+    "2\t0\t3\t16\t0\t0\t0\t0\t0\t0\t100\t1\n"
   )
 
   // param check

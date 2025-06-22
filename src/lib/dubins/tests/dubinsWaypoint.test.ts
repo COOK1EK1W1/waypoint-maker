@@ -1,95 +1,88 @@
 import { expect, test } from "bun:test";
 import { applyBounds, dubinsBetweenDubins, getBounds, getMinTurnRadius, getTunableDubinsParameters, localisePath, splitDubinsRuns } from "@/lib/dubins/dubinWaypoints";
-import { defaultWaypoint } from "@/lib/mission/defaults";
 import { XY } from "@/lib/math/types";
 import { dubinsPoint, Path } from "../types";
-import { Command } from "@/lib/commands/commands";
 import { defaultPlane } from "@/lib/vehicles/defaults";
+import { makeCommand } from "@/lib/commands/default";
+import { MainLine } from "@/lib/mission/mission";
 
 
 test("Split Dubins runs empty", () => {
-  const a: Command[] = []
+  const a: MainLine = []
   let runs = splitDubinsRuns(a)
   expect(runs.length).toBe(0)
 })
 
 test("Split Dubins runs no runs", () => {
-  const a: Command[] = []
-  a.push(defaultWaypoint({ lat: 0, lng: 0 }))
-  a.push(defaultWaypoint({ lat: 0, lng: 0 }))
-  a.push(defaultWaypoint({ lat: 0, lng: 0 }))
+  const a: MainLine = []
+  a.push({ cmd: makeCommand("MAV_CMD_NAV_WAYPOINT", { latitude: 0, longitude: 0 }), id: 0, other: [] })
+  a.push({ cmd: makeCommand("MAV_CMD_NAV_WAYPOINT", { latitude: 0, longitude: 0 }), id: 1, other: [] })
+  a.push({ cmd: makeCommand("MAV_CMD_NAV_WAYPOINT", { latitude: 0, longitude: 0 }), id: 2, other: [] })
   let runs = splitDubinsRuns(a)
   expect(runs.length).toBe(0)
 })
 
 test("Split Dubins runs sandwich 1", () => {
-  const a: Command[] = []
-  a.push(defaultWaypoint({ lat: 0, lng: 0 }))
-  a.push(defaultWaypoint({ lat: 0, lng: 0 }))
-  a.push(defaultWaypoint({ lat: 0, lng: 0 }))
-  a[1].type = 69
-  a[1].frame = 33
+  const a: MainLine = []
+  a.push({ cmd: makeCommand("MAV_CMD_NAV_WAYPOINT", { latitude: 0, longitude: 0 }), id: 0, other: [] })
+  a.push({ cmd: makeCommand("WM_CMD_NAV_DUBINS", { latitude: 0, longitude: 0 }), id: 1, other: [] })
+  a.push({ cmd: makeCommand("MAV_CMD_NAV_WAYPOINT", { latitude: 0, longitude: 0 }), id: 2, other: [] })
+  a[1].cmd.frame = 0
   let runs = splitDubinsRuns(a)
 
   expect(runs.length).toBe(1)
   expect(runs[0].start).toBe(1)
-  expect(runs[0].wps.length).toBe(3)
-  expect(runs[0].wps[1].frame).toBe(33)
+  expect(runs[0].run.length).toBe(3)
+  expect(runs[0].run[1].cmd.frame).toBe(0)
 })
 
 
 test("Split Dubins runs end dubins", () => {
-  const a: Command[] = []
-  a.push(defaultWaypoint({ lat: 0, lng: 0 }))
-  a.push(defaultWaypoint({ lat: 0, lng: 0 }))
-  a.push(defaultWaypoint({ lat: 0, lng: 0 }))
-  a[2].type = 69
-  a[2].frame = 33
+  const a: MainLine = []
+  a.push({ cmd: makeCommand("MAV_CMD_NAV_WAYPOINT", { latitude: 0, longitude: 0 }), id: 0, other: [] })
+  a.push({ cmd: makeCommand("MAV_CMD_NAV_WAYPOINT", { latitude: 0, longitude: 0 }), id: 1, other: [] })
+  a.push({ cmd: makeCommand("WM_CMD_NAV_DUBINS", { latitude: 0, longitude: 0 }), id: 2, other: [] })
+  a[2].cmd.frame = 0
   let runs = splitDubinsRuns(a)
 
   expect(runs.length).toBe(1)
   expect(runs[0].start).toBe(2)
-  expect(runs[0].wps.length).toBe(2)
-  expect(runs[0].wps[1].frame).toBe(33)
+  expect(runs[0].run.length).toBe(2)
+  expect(runs[0].run[1].cmd.frame).toBe(0)
 })
 
 test("Split Dubins runs start + end", () => {
-  const a: Command[] = []
-  a.push(defaultWaypoint({ lat: 0, lng: 0 }))
-  a.push(defaultWaypoint({ lat: 0, lng: 0 }))
-  a.push(defaultWaypoint({ lat: 0, lng: 0 }))
-  a[0].type = 69
-  a[0].frame = 31
-  a[2].type = 69
-  a[2].frame = 33
+  const a: MainLine = []
+  a.push({ cmd: makeCommand("WM_CMD_NAV_DUBINS", { latitude: 0, longitude: 0 }), id: 0, other: [] })
+  a.push({ cmd: makeCommand("MAV_CMD_NAV_WAYPOINT", { latitude: 0, longitude: 0 }), id: 1, other: [] })
+  a.push({ cmd: makeCommand("WM_CMD_NAV_DUBINS", { latitude: 0, longitude: 0 }), id: 2, other: [] })
+  a[0].cmd.frame = 0
+  a[2].cmd.frame = 10
   let runs = splitDubinsRuns(a)
 
   expect(runs.length).toBe(2)
   expect(runs[0].start).toBe(0)
-  expect(runs[0].wps.length).toBe(2)
-  expect(runs[0].wps[0].frame).toBe(31)
-  expect(runs[0].wps[1].frame).toBe(3)
+  expect(runs[0].run.length).toBe(2)
+  expect(runs[0].run[0].cmd.frame).toBe(0)
+  expect(runs[0].run[1].cmd.frame).toBe(3)
 
   expect(runs[1].start).toBe(2)
-  expect(runs[1].wps.length).toBe(2)
-  expect(runs[1].wps[0].frame).toBe(3)
-  expect(runs[1].wps[1].frame).toBe(33)
+  expect(runs[1].run.length).toBe(2)
+  expect(runs[1].run[0].cmd.frame).toBe(3)
+  expect(runs[1].run[1].cmd.frame).toBe(10)
 })
 
 
 test("Split Dubins runs all dubins", () => {
-  const a: Command[] = []
-  a.push(defaultWaypoint({ lat: 0, lng: 0 }))
-  a.push(defaultWaypoint({ lat: 0, lng: 0 }))
-  a.push(defaultWaypoint({ lat: 0, lng: 0 }))
-  a[0].type = 69
-  a[1].type = 69
-  a[2].type = 69
+  const a: MainLine = []
+  a.push({ cmd: makeCommand("WM_CMD_NAV_DUBINS", { latitude: 0, longitude: 0 }), id: 0, other: [] })
+  a.push({ cmd: makeCommand("WM_CMD_NAV_DUBINS", { latitude: 0, longitude: 0 }), id: 1, other: [] })
+  a.push({ cmd: makeCommand("WM_CMD_NAV_DUBINS", { latitude: 0, longitude: 0 }), id: 2, other: [] })
   let runs = splitDubinsRuns(a)
 
   expect(runs.length).toBe(1)
   expect(runs[0].start).toBe(0)
-  expect(runs[0].wps.length).toBe(3)
+  expect(runs[0].run.length).toBe(3)
 })
 
 test("get min turn radius", () => {
@@ -130,35 +123,24 @@ test("Dubins between dubins", () => {
 
   const path = dubinsBetweenDubins(points)
 
-  expect(path.length).toBe(6)
-  expect(path[0].type).toBe("Curve")
-  expect(path[1].type).toBe("Straight")
-  expect(path[2].type).toBe("Curve")
-  expect(path[3].type).toBe("Curve")
-  expect(path[4].type).toBe("Straight")
-  expect(path[5].type).toBe("Curve")
-
-  if (path[1].type != "Straight") return
-  if (path[4].type != "Straight") return
+  expect(path.length).toBe(2)
 
   //straights
-  expect(path[1].start.x).toBeCloseTo(0)
-  expect(path[1].start.y).toBeCloseTo(0)
-  expect(path[1].end.x).toBeCloseTo(0)
-  expect(path[1].end.y).toBeCloseTo(10)
-  expect(path[4].start.x).toBeCloseTo(4)
-  expect(path[4].start.y).toBeCloseTo(14)
-  expect(path[4].end.x).toBeCloseTo(6)
-  expect(path[4].end.y).toBeCloseTo(14)
+  expect(path[0].straight.start.x).toBeCloseTo(0)
+  expect(path[0].straight.start.y).toBeCloseTo(0)
+  expect(path[0].straight.end.x).toBeCloseTo(0)
+  expect(path[0].straight.end.y).toBeCloseTo(10)
+  expect(path[1].straight.start.x).toBeCloseTo(4)
+  expect(path[1].straight.start.y).toBeCloseTo(14)
+  expect(path[1].straight.end.x).toBeCloseTo(6)
+  expect(path[1].straight.end.y).toBeCloseTo(14)
 
-  if (path[0].type != "Curve") return
-  if (path[5].type != "Curve") return
   //curves
-  expect(path[0].theta).toBeCloseTo(0)
-  expect(path[5].theta).toBeCloseTo(Math.PI / 2)
-  expect(path[5].start).toBeCloseTo(0)
-  expect(path[5].center.x).toBeCloseTo(6)
-  expect(path[5].center.y).toBeCloseTo(10)
+  expect(path[0].turnA.theta).toBeCloseTo(0)
+  expect(path[1].turnB.theta).toBeCloseTo(Math.PI / 2)
+  expect(path[1].turnB.start).toBeCloseTo(0)
+  expect(path[1].turnB.center.x).toBeCloseTo(6)
+  expect(path[1].turnB.center.y).toBeCloseTo(10)
 })
 
 
