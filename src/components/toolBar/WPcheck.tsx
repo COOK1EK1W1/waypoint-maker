@@ -8,10 +8,12 @@ import { wpCheck } from "@/lib/wpcheck/wpcheck"
 import { Severity } from "@/lib/wpcheck/types"
 import { ShieldAlert, ShieldCheck, ShieldX } from "lucide-react"
 import { Button } from "../ui/button"
+import { useVehicle } from "@/util/context/VehicleTypeContext"
 
 export default function WPCheck() {
   const { waypoints } = useWaypoints()
-  const WPCheckGen = wpCheck(waypoints.flatten("Main"), waypoints)
+  const { vehicle } = useVehicle()
+  const WPCheckGen = wpCheck(waypoints.flatten("Main"), waypoints, vehicle)
 
   const firstMessage = WPCheckGen.next()
 

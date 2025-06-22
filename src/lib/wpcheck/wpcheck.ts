@@ -2,13 +2,15 @@ import { Mission } from "@/lib/mission/mission";
 import { angleBetweenPoints, gradient, haversineDistance } from "@/lib/world/distance";
 import { Command, filterLatLngAltCmds } from "@/lib/commands/commands";
 import { Fault, Severity } from "@/lib/wpcheck/types";
-import { isPointInPolygon } from "../math/geometry";
+import { deg2rad, isPointInPolygon } from "../math/geometry";
 import { g2l } from "../world/conversion";
 import { getLatLng, LatLng } from "../world/latlng";
+import { Vehicle } from "../vehicles/types";
+import { getMinTurnRadius } from "../dubins/dubinWaypoints";
 
 
 
-export function* wpCheck(wps: Command[], waypoints: Mission): Generator<Fault, void, unknown> {
+export function* wpCheck(wps: Command[], waypoints: Mission, vehicle: Vehicle): Generator<Fault, void, unknown> {
 
   if (wps.length == 0) {
     yield {
@@ -27,7 +29,7 @@ export function* wpCheck(wps: Command[], waypoints: Mission): Generator<Fault, v
 
 
   // convert everything to local space
-  const geofenceLocs = waypoints.flatten("Geofence").map(getLatLng).filter((x) => x != null)
+  const geofenceLocs = waypoints.flatten("Geofence").map(getLatLng).filter((x) => x !== undefined)
   const missionLocsCmds = filterLatLngAltCmds(waypoints.flatten("Main"))
   const missionLocs = missionLocsCmds.map(getLatLng) as LatLng[]
   const geofenceLocal = geofenceLocs.map((x) => g2l(waypoints.getReferencePoint(), x))
@@ -66,10 +68,9 @@ export function* wpCheck(wps: Command[], waypoints: Mission): Generator<Fault, v
   }
 
   // check the takeoff has enough pitch
-  for (let i = 0; i < wps.length; i++) {
-    const wp = wps[i]
-    if (wp.type != 22) continue
-    const offender = waypoints.findNthPosition("Main", i)
+  const wp = wps[0]
+  if (wp.type === 22) {
+    const offender = waypoints.findNthPosition("Main", 0)
     if (offender) {
       if (wp.params.pitch < 0) {
         yield {
@@ -103,8 +104,8 @@ export function* wpCheck(wps: Command[], waypoints: Mission): Generator<Fault, v
         }
       }
     }
-  }
 
+  }
 
 
 
@@ -227,16 +228,20 @@ export function* wpCheck(wps: Command[], waypoints: Mission): Generator<Fault, v
       missionLocs[i + 1],
       missionLocs[i + 2]))
   }
-  for (let i = 0; i < angles.length; i++) {
-    const angle = angles[i]
-    const offender = waypoints.findNthPosition("Main", i + 1)
-    if (offender) {
-      if (angle <= 40) {
-        yield {
-          message: "Angle between points is sharp",
-          severity: Severity.Med,
-          offenderMission: offender[0],
-          offenderIndex: offender[1]
+  if (vehicle.type === "Plane"){
+    const minTurnRadius = getMinTurnRadius(vehicle.maxBank, vehicle.cruiseAirspeed)
+    for (let i = 0; i < angles.length; i++) {
+      const angle = angles[i]
+      const distRequired = minTurnRadius * 2.85 * Math.sin(deg2rad(angle) * 0.8 + 0.6) // fancy math using two tangnet circles as the flight path
+      const offender = waypoints.findNthPosition("Main", i + 1)
+      if (offender) {
+        if (distRequired > haversineDistance(missionLocs[i + 1], missionLocs[i + 2])) {
+          yield {
+            message: "Angle between points is sharp",
+            severity: Severity.Med,
+            offenderMission: offender[0],
+            offenderIndex: offender[1]
+          }
         }
       }
     }

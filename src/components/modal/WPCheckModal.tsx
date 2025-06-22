@@ -1,29 +1,37 @@
 import { useWaypoints } from "@/util/context/WaypointContext"
-import { useEffect, useState } from "react"
+import { useEffect, useState, useMemo } from "react"
 import FaultItem from "@/components/toolBar/faultItem"
 import { wpCheck } from "@/lib/wpcheck/wpcheck"
 import { Fault, Severity } from "@/lib/wpcheck/types"
 import { filterLatLngAltCmds } from "@/lib/commands/commands"
 import { getLatLng } from "@/lib/world/latlng"
 import { getTerrain } from "@/lib/world/terrain"
+import { useVehicle } from "@/util/context/VehicleTypeContext"
 
 export default function WPCheckModal() {
   const { waypoints } = useWaypoints()
-  const wps = filterLatLngAltCmds(waypoints.flatten("Main"))
-  const WPCheckGen = wpCheck(wps, waypoints)
-  let results: Fault[] = []
-  let done = false
-  while (!done) {
-    const val = WPCheckGen.next()
-    if (val.done) {
-      done = true
-    } else {
-      results.push(val.value)
-    }
-  }
-  
+  const { vehicle } = useVehicle()
   const [terrain, setTerrain] = useState<Fault[] | null>(null)
-  const locs = wps.map(getLatLng).filter((x) => x !== undefined)
+
+  // Move variable declarations before useEffect and use useMemo for expensive computations
+  const wps = useMemo(() => filterLatLngAltCmds(waypoints.flatten("Main")), [waypoints])
+  const locs = useMemo(() => wps.map(getLatLng).filter((x) => x !== undefined), [wps])
+
+  // Memoize the WP check results to avoid running the while loop on every render
+  const results = useMemo(() => {
+    const WPCheckGen = wpCheck(wps, waypoints, vehicle)
+    let results: Fault[] = []
+    let done = false
+    while (!done) {
+      const val = WPCheckGen.next()
+      if (val.done) {
+        done = true
+      } else {
+        results.push(val.value)
+      }
+    }
+    return results
+  }, [wps, waypoints, vehicle])
 
   useEffect(() => {
     getTerrain(locs)
@@ -64,7 +72,7 @@ export default function WPCheckModal() {
         }
         setTerrain(ret)
       })
-  }, [waypoints])
+  }, [locs, wps, waypoints]) // Add proper dependencies
 
   //current fault count, used as key for lists
   let faultId = 0;
