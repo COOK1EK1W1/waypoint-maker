@@ -11,22 +11,23 @@ import { Button } from "../ui/button"
 
 export default function WPCheck() {
   const { waypoints } = useWaypoints()
-  const msg = wpCheck(waypoints.flatten("Main"), waypoints)
-  const bad = msg.filter((x) => x.severity == Severity.Bad)
+  const WPCheckGen = wpCheck(waypoints.flatten("Main"), waypoints)
+
+  const firstMessage = WPCheckGen.next()
 
   let text: ReactNode = ""
   let variant: "green" | "amber" | "red" = "green"
-  if (bad.length == 0) {
-    if (msg.length == 0) {
+  if (firstMessage.done) {
       variant = "green"
-      text = <ShieldCheck className="" />
+    text = <ShieldCheck className="" />
+  } else {
+    if (firstMessage.value.severity == Severity.Bad) {
+      variant = "red"
+      text = <ShieldX className="" />
     } else {
       variant = "amber"
       text = <ShieldAlert className="" />
     }
-  } else {
-    variant = "red"
-    text = <ShieldX className="" />
   }
 
   return (

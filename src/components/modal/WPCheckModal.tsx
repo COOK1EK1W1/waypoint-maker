@@ -10,7 +10,18 @@ import { getTerrain } from "@/lib/world/terrain"
 export default function WPCheckModal() {
   const { waypoints } = useWaypoints()
   const wps = filterLatLngAltCmds(waypoints.flatten("Main"))
-  const results = wpCheck(wps, waypoints)
+  const WPCheckGen = wpCheck(wps, waypoints)
+  let results: Fault[] = []
+  let done = false
+  while (!done) {
+    const val = WPCheckGen.next()
+    if (val.done) {
+      done = true
+    } else {
+      results.push(val.value)
+    }
+  }
+  
   const [terrain, setTerrain] = useState<Fault[] | null>(null)
   const locs = wps.map(getLatLng).filter((x) => x !== undefined)
 
