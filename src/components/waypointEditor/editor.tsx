@@ -40,7 +40,7 @@ export default function Editor() {
         <div className={cn("bg-card w-full rounded-lg shadow-lg shadow-black flex h-72 md:h-60 flex-col md:flex-row")}>
           <div className="flex flex-row md:flex-col">
             <div className="flex-grow flex flex-row md:flex-col">
-              {Object.keys(tabs).filter((x) => process.env.NEXT_PUBLIC_ALLOWDUBINS || x !== "Optimise").map((x, i) => (
+              {Object.keys(tabs).map((x, i) => (
                 <Button variant={x === tab ? "active" : "default"} key={i} onClick={() => setTab(x as keyof typeof tabs)}>{x}</Button>
               ))}
             </div>
