@@ -81,22 +81,27 @@ export function bakeDubins(waypoints: Mission, activeMission: string, optimisati
     console.log("fitness: ", result.fitness, "  took: ", result.time)
 
     setTunableParameter(section.run, result.finalVals)
-    let wps = section.run
+    // Apply the updated command parameters back onto the cloned waypoint tree.
+    // The `mainLine` representation stores the original flattened index in
+    // `item.id`, so we can use that directly to locate the corresponding
+    // command inside `curWaypoints`.
 
-    if (wps[0].cmd.type != 69) {
-      wps.shift()
-    }
+    for (const item of section.run) {
+      // Only Dubins (type 69) commands have tunable parameters we modified.
+      if (item.cmd.type !== 69) continue;
 
-    for (let i = 0; i < wps.length; i++) {
-      let a = curWaypoints.findNthPosition(activeMission, i + section.start)
-      if (!a) continue;
-      let mission = waypoints.get(a[0])
-      if (!mission) continue;
-      let curWP = mission[a[1]]
-      if (!curWP) continue;
-      if (curWP.type == "Command") {
-        console.assert(wps[i].cmd.type == curWP.cmd.type, "Waypoint type mismatch")
-        curWP.cmd = wps[i].cmd
+      const position = curWaypoints.findNthPosition(activeMission, item.id);
+      if (!position) continue;
+
+      const [missionName, idx] = position;
+      const missionNodes = curWaypoints.get(missionName);
+
+      const targetNode = missionNodes[idx];
+      if (targetNode && targetNode.type === "Command") {
+        // Safety check – ensure we are overwriting the same command type.
+        console.assert(item.cmd.type === targetNode.cmd.type, "Waypoint type mismatch");
+        // Replace the command with the optimised one.
+        targetNode.cmd = { ...item.cmd };
       }
     }
   }
