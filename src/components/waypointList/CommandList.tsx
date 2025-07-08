@@ -99,6 +99,18 @@ export default function CommandList({ onHide }: { onHide: () => void }) {
 
   }
 
+  // ungroup the waypoint group in place in the mission, leaving the sub mission itself alone
+  function ungroup(i: number) {
+    setWaypoints((waypoints) => {
+      if (curMission[i].type != "Collection") return waypoints.clone()
+      const subMission = waypoints.get(curMission[i].name)
+      const mainMission = waypoints.get(activeMission)
+      // Remove the collection node and insert the sub mission commands
+      mainMission.splice(i, 1, ...subMission)
+      waypoints.set(activeMission, mainMission)
+      return waypoints.clone()
+    })
+  }
 
   function createTakeoff() {
 
@@ -187,6 +199,12 @@ export default function CommandList({ onHide }: { onHide: () => void }) {
                     <Route className="h-4 w-4" />
                     <span>Group ({selectedWPs.length})</span>
                   </DropdownMenuItem> : null}
+
+                  <DropdownMenuItem onClick={() => ungroup(i)} className="gap-2">
+                    <Route className="h-4 w-4" />
+                    <span>Ungroup</span>
+                  </DropdownMenuItem>
+
 
                   <DropdownMenuItem onClick={() => onDelete(i)} className="gap-2 text-red-500 hover:text-red-500">
                     <Trash2 className="h-4 w-4" />

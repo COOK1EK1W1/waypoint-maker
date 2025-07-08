@@ -45,7 +45,6 @@ export function DubinsBetweenDiffRad(a: XY, b: XY, thetaA: number, thetaB: numbe
   const b_centers = findCenters(b, thetaB, radB)
 
   let sections: DubinsPath<XY>[] = []
-
   // the angles for first curves
   let left_start = thetaA + Math.PI / 2
   let right_start = thetaA - Math.PI / 2
