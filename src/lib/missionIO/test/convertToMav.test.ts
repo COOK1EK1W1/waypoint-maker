@@ -220,9 +220,8 @@ test("Dubins point with multiple Set Servo", () => {
 
   // end
   expect(mavMission[7].type).toBe(16)
-  expect(mavMission[8].type).toBe(16)
-  expect(mavMission[9].type).toBe(183)
-  expect(mavMission[10]).toBeUndefined()
+  expect(mavMission[8].type).toBe(183)
+  expect(mavMission[9]).toBeUndefined()
 })
 
 test("Dubins adjust height", () => {
@@ -343,4 +342,36 @@ test("waypoint with servo and multiple dubins", () => {
 
   // No more commands
   expect(mavMission[7]).toBeUndefined()
+})
+
+
+test("starting dubins", () => {
+  const mission: Command[] = [
+    makeCommand("WM_CMD_NAV_DUBINS", { latitude: 52.78056, longitude: -0.710619, altitude: 100, heading: 355, radius: 31 }),
+    makeCommand("WM_CMD_NAV_DUBINS", { latitude: 52.78171, longitude: -0.71057, altitude: 100, heading: 32, radius: 31 }),
+    makeCommand("WM_CMD_NAV_DUBINS", { latitude: 52.78176, longitude: -0.709272, altitude: 100, heading: 142, radius: 31 }),
+    makeCommand("WM_CMD_NAV_DUBINS", { latitude: 52.780608, longitude: -0.709272, altitude: 100, heading: 139, radius: 31 }),
+    makeCommand("MAV_CMD_NAV_WAYPOINT", { latitude: 52.78115, longitude: -0.706536, altitude: 100 }),
+  ]
+  const mavMission = convertToMAV(mission, { lat: 55.75, lng: -3.25 })
+
+  // Initial waypoint
+  expect(mavMission[0].type).toBe(16)
+
+  expect(mavMission[1].type).toBe(16)
+
+  expect(mavMission[2].type).toBe(18)
+
+  expect(mavMission[3].type).toBe(16)
+
+  expect(mavMission[4].type).toBe(18)
+
+  expect(mavMission[5].type).toBe(16)
+
+  expect(mavMission[6].type).toBe(18)
+
+  expect(mavMission[7].type).toBe(16)
+
+  // No more commands
+  expect(mavMission[8]).toBeUndefined()
 })

@@ -1,4 +1,4 @@
-import { dubinsBetweenDubins, localiseDubinsPath, localisePath, splitDubinsRuns, waypointToDubins } from "@/lib/dubins/dubinWaypoints";
+import { dubinsBetweenDubins, localiseDubinsPath, splitDubinsRuns, waypointToDubins } from "@/lib/dubins/dubinWaypoints";
 import { LatLng } from "../world/latlng";
 import { Command, MavCommand } from "../commands/commands";
 import { WPM2MAV } from "../commands/convert";
@@ -10,8 +10,6 @@ import { Vehicle } from "../vehicles/types";
 import { makeCommand } from "../commands/default";
 import { Result } from "@/util/try-catch";
 import { haversineDistance, worldOffset } from "../world/distance";
-import { main } from "bun";
-import { only } from "node:test";
 
 /**
  * Checks if two waypoints are at the same location
@@ -22,8 +20,8 @@ import { only } from "node:test";
 function areWaypointsAtSameLocation(wp1: Command, wp2: Command): boolean {
   return 'longitude' in wp1.params && 'latitude' in wp1.params &&
     'longitude' in wp2.params && 'latitude' in wp2.params &&
-    wp1.params.longitude === wp2.params.longitude &&
-    wp1.params.latitude === wp2.params.latitude;
+    Math.abs(wp1.params.longitude - wp2.params.longitude) < 0.000001 &&
+    Math.abs(wp1.params.latitude - wp2.params.latitude) < 0.000001
 }
 
 /**
@@ -113,20 +111,19 @@ export function convertToMAV(wps: Command[], reference: LatLng): MavCommand[] {
 
   if (wps.length === 0) return [];
 
-  // Process Dubins runs and convert to waypoints
-  let convertedRuns: { start: number, wps: Command[], length: number }[] = []
-
   const mainLine = convertToMainLine(wps)
   const runs = splitDubinsRuns(mainLine)
 
   let newMainline: MainLine = []
 
-  for (let i = 0; i < mainLine.length; i++) {
+  let i = 0
+  while (i < mainLine.length) {
 
     // add non-dubins points straight to the mainline
     let run = runs.find((x) => x.start == i)
     if (run == undefined) {
       newMainline.push(mainLine[i])
+      i++
       continue
     }
 
@@ -147,6 +144,18 @@ export function convertToMAV(wps: Command[], reference: LatLng): MavCommand[] {
       // Get altitude values for interpolation
       const startAlt = run.run[j].cmd.params.altitude
       const endAlt = run.run[j + 1].cmd.params.altitude
+
+      if (i === 0 && j === 0) {
+        newMainline.push({
+          id: 0, other: mainLine[i].other, cmd:
+            makeCommand("MAV_CMD_NAV_WAYPOINT", {
+              latitude: mainLine[i].cmd.params.latitude,
+              longitude: mainLine[i].cmd.params.longitude,
+              altitude: mainLine[i].cmd.params.altitude
+            })
+        })
+      }
+
 
       // ###### Turn A ######
       const absThetaA = Math.abs(section.turnA.theta / (Math.PI * 2))
@@ -206,10 +215,10 @@ export function convertToMAV(wps: Command[], reference: LatLng): MavCommand[] {
         })
       }
 
-      // Add waypoint if the next segment curves in the opposite direction
-      const next = dubinsPaths[i + 1]
-      if ((next !== undefined && next.turnA.theta * section.turnB.theta < 0) || mainLine[i + j].other.length > 0) {
-        const pos = worldOffset(section.turnA.center, section.turnA.radius, section.turnA.start + section.turnA.theta)
+      // add the last waypoint of the curve, can be ommited if next in same direction
+      const next = dubinsPaths[j + 1]
+      if ((next === undefined) || (next !== undefined && next.turnA.theta * section.turnB.theta < 0) || mainLine[i + j].other.length > 0) {
+        const pos = worldOffset(section.turnB.center, section.turnB.radius, section.turnB.start + section.turnB.theta)
         newMainline.push({
           id: i, other: mainLine[i + j].other, cmd:
             makeCommand("MAV_CMD_NAV_WAYPOINT", {
@@ -224,7 +233,9 @@ export function convertToMAV(wps: Command[], reference: LatLng): MavCommand[] {
         })
       }
     }
-    i += run.run.length - 3 + (i == 0 ? 0 : 1)
+    let nexti = i + run.run.length - 1
+    if (i == 0) nexti++
+    i = nexti
 
   }
 
@@ -236,130 +247,6 @@ export function convertToMAV(wps: Command[], reference: LatLng): MavCommand[] {
     ret = ret.concat(newMainline[i].other)
   }
   return WPM2MAV(simplifyDubinsWaypoints(ret))
-
-
-  /*
-  for (const run of runs) {
-    let otherCount = 0
-    const dubinsPoints = run.run.map((x) => waypointToDubins(x.cmd, reference))
-    const path = dubinsBetweenDubins(dubinsPoints)
-    const dubinsPaths = path.map((x) => localiseDubinsPath(x, reference))
-   
-    for (let i = 0; i < dubinsPaths.length; i++) {
-      const section = dubinsPaths[i]
-   
-      // Calculate segment lengths
-      const turnALen = Math.abs(section.turnA.theta * section.turnA.radius)
-      const straightLen = haversineDistance(section.straight.start, section.straight.end)
-      const turnBLen = Math.abs(section.turnB.theta * section.turnB.radius)
-      const totalDistance = turnALen + straightLen + turnBLen
-   
-      // Get altitude values for interpolation
-      const startAlt = run.run[i].cmd.params.altitude
-      const endAlt = run.run[i + 1].cmd.params.altitude
-   
-      // ###### Turn A ######
-      const absThetaA = Math.abs(section.turnA.theta / (Math.PI * 2))
-      const dirA = absThetaA !== 0 ? (absThetaA / (section.turnA.theta / (Math.PI * 2))) : 1
-   
-      // Add the do commands if we're just beginning a dubins path
-      newMavWP = newMavWP.concat(run.run[i].other)
-   
-      // Add turn command if significant
-      if (Math.abs(section.turnA.radius) > 0 && absThetaA > 0.03) {
-        const turnAAlt = calculateInterpolatedAltitude(startAlt, endAlt, turnALen, totalDistance)
-   
-        newMavWP.push(makeCommand("MAV_CMD_NAV_LOITER_TURNS", {
-          turns: Number(absThetaA.toFixed(4)),
-          "": 1, // Magic exit tangent
-          altitude: turnAAlt,
-          radius: Number((section.turnA.radius * dirA).toFixed(4)),
-          latitude: section.turnA.center.lat,
-          longitude: section.turnA.center.lng
-        }))
-      }
-   
-   
-   
-      // ###### Straight Section ######
-      // if the turn is insignificant and at the end, just use the next waypoint as target
-      if (Math.abs(section.turnB.radius) < 0.1 && i === dubinsPaths.length - 1) {
-        otherCount--
-        break
-      }
-   
-      const straightAlt = calculateInterpolatedAltitude(startAlt, endAlt, turnALen + straightLen, totalDistance)
-   
-      newMavWP.push(makeCommand("MAV_CMD_NAV_WAYPOINT", {
-        yaw: 0,
-        "accept radius": 0,
-        latitude: section.straight.end.lat,
-        longitude: section.straight.end.lng,
-        hold: 0,
-        altitude: straightAlt,
-        "pass radius": 0
-      }))
-   
-      // ###### Turn B ######
-      const absThetaB = Math.abs(section.turnB.theta / (Math.PI * 2))
-      const dirB = absThetaB !== 0 ? (absThetaB / (section.turnB.theta / (Math.PI * 2))) : 1
-   
-      // Add turn command if significant
-      if (Math.abs(section.turnB.radius) > 0 && absThetaB > 0.03) {
-        newMavWP.push(makeCommand("MAV_CMD_NAV_LOITER_TURNS", {
-          turns: Number(absThetaB.toFixed(4)),
-          "": 1, // Magic exit tangent
-          altitude: endAlt,
-          radius: Number((section.turnB.radius * dirB).toFixed(4)),
-          latitude: section.turnB.center.lat,
-          longitude: section.turnB.center.lng
-        }))
-      }
-   
-      // Add waypoint if the next segment curves in the opposite direction
-      const next = dubinsPaths[i + 1]
-      if (next !== undefined && next.turnA.theta * section.turnB.theta < 0) {
-        const pos = worldOffset(section.turnA.center, section.turnA.radius, section.turnA.start + section.turnA.theta)
-        newMavWP.push(makeCommand("MAV_CMD_NAV_WAYPOINT", {
-          yaw: 0,
-          "accept radius": 0,
-          latitude: pos.lat,
-          longitude: pos.lng,
-          hold: 0,
-          altitude: startAlt,
-          "pass radius": 0
-        }))
-      }
-    }
-   
-    const simplifiedWaypoints = simplifyDubinsWaypoints(newMavWP)
-    convertedRuns.push({
-      start: run.start,
-      wps: simplifiedWaypoints,
-      length: run.run.length - run.run.filter((x) => x.cmd.type !== 69).length + otherCount
-    })
-  }
-   
-  // Compile into single mission
-  let ret: Command[] = []
-  for (let i = 0; i < mainLine.length; i++) {
-    const run = convertedRuns.find((x) => x.start === i)
-    if (run === undefined) {
-      ret.push(mainLine[i].cmd)
-      ret = ret.concat(mainLine[i].other)
-    } else {
-      ret = ret.concat(run.wps)
-      i += run.length
-    }
-  }
-   
-  // Validate that no Dubins commands remain
-  ret.forEach((x) => {
-    console.assert(x.type !== 69, "Dubins command found in final output - this should not happen")
-  })
-   
-  */
-  return WPM2MAV(ret)
 }
 
 /**
