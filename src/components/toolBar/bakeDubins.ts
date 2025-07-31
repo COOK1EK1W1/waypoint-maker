@@ -1,4 +1,3 @@
-import { Command } from "@/lib/commands/commands";
 import { applyBounds, dubinsBetweenDubins, getBounds, getTunableDubinsParameters, setTunableDubinsParameter, setTunableParameter, splitDubinsRuns, waypointToDubins } from "@/lib/dubins/dubinWaypoints";
 import { bound, dubinsPoint, Path } from "@/lib/dubins/types";
 import { XY } from "@/lib/math/types";
@@ -18,13 +17,14 @@ export function createEvaluate(wps: dubinsPoint[], optimisationFunction: (path: 
   function evaluate(x: number[]): number {
     setTunableDubinsParameter(localWPS, x)
     let path = dubinsBetweenDubins(localWPS)
-    return optimisationFunction(path)
+    const flatPath = path.flatMap((x) => [x.turnA, x.straight, x.turnB])
+    return optimisationFunction(flatPath)
   }
   return evaluate
 }
 
 export function staticEvaluate(waypoints: Mission, activeMission: string, optimisationFunction: (path: Path<XY>) => number, vehicle: Plane) {
-  let activeWaypoints: Command[] = waypoints.flatten(activeMission)
+  let activeWaypoints = waypoints.mainLine(activeMission)
 
   const reference = waypoints.getReferencePoint()
 
@@ -34,7 +34,7 @@ export function staticEvaluate(waypoints: Mission, activeMission: string, optimi
   // optimise each section of the path
   for (const section of dubinSections) {
 
-    let dubinsPoints: dubinsPoint[] = section.wps.map((x) => waypointToDubins(x, reference))
+    let dubinsPoints: dubinsPoint[] = section.run.map((x) => waypointToDubins(x.cmd, reference))
 
     let startingParams = [...getTunableDubinsParameters(dubinsPoints)]
     let bounds: bound[] = [...getBounds(dubinsPoints, vehicle)]
@@ -48,14 +48,14 @@ export function staticEvaluate(waypoints: Mission, activeMission: string, optimi
 }
 
 export function bakeDubins(waypoints: Mission, activeMission: string, optimisationmethod: (initialGuess: readonly number[], bounds: bound[], fn: (a: number[]) => number) => res, setWaypoints: Dispatch<SetStateAction<Mission>>, optimisationFunction: (path: Path<XY>) => number, vehicle: Plane) {
-  let activeWaypoints: Command[] = waypoints.flatten(activeMission)
+  let mainLine = waypoints.mainLine(activeMission)
 
   const startTime = performance.now()
 
   // get reference waypoint
   const reference = waypoints.getReferencePoint()
 
-  let dubinSections = splitDubinsRuns(activeWaypoints)
+  let dubinSections = splitDubinsRuns(mainLine)
   let endingFitness = 0
   let startingFitness = 0
 
@@ -64,7 +64,7 @@ export function bakeDubins(waypoints: Mission, activeMission: string, optimisati
   // optimise each section of the path
   for (const section of dubinSections) {
 
-    let dubinsPoints: dubinsPoint[] = section.wps.map((x) => waypointToDubins(x, reference))
+    let dubinsPoints: dubinsPoint[] = section.run.map((x) => waypointToDubins(x.cmd, reference))
 
     let startingParams = [...getTunableDubinsParameters(dubinsPoints)]
     let bounds: bound[] = [...getBounds(dubinsPoints, vehicle)]
@@ -80,23 +80,28 @@ export function bakeDubins(waypoints: Mission, activeMission: string, optimisati
     endingFitness += evaluate(result.finalVals)
     console.log("fitness: ", result.fitness, "  took: ", result.time)
 
-    setTunableParameter(section.wps, result.finalVals)
-    let wps = section.wps
+    setTunableParameter(section.run, result.finalVals)
+    // Apply the updated command parameters back onto the cloned waypoint tree.
+    // The `mainLine` representation stores the original flattened index in
+    // `item.id`, so we can use that directly to locate the corresponding
+    // command inside `curWaypoints`.
 
-    if (wps[0].type != 69) {
-      wps.shift()
-    }
+    for (const item of section.run) {
+      // Only Dubins (type 69) commands have tunable parameters we modified.
+      if (item.cmd.type !== 69) continue;
 
-    for (let i = 0; i < wps.length; i++) {
-      let a = curWaypoints.findNthPosition(activeMission, i + section.start)
-      if (!a) continue;
-      let mission = waypoints.get(a[0])
-      if (!mission) continue;
-      let curWP = mission[a[1]]
-      if (!curWP) continue;
-      if (curWP.type == "Command") {
-        console.assert(wps[i].type == curWP.cmd.type, "Waypoint type mismatch")
-        curWP.cmd = wps[i]
+      const position = curWaypoints.findNthPosition(activeMission, item.id);
+      if (!position) continue;
+
+      const [missionName, idx] = position;
+      const missionNodes = curWaypoints.get(missionName);
+
+      const targetNode = missionNodes[idx];
+      if (targetNode && targetNode.type === "Command") {
+        // Safety check – ensure we are overwriting the same command type.
+        console.assert(item.cmd.type === targetNode.cmd.type, "Waypoint type mismatch");
+        // Replace the command with the optimised one.
+        targetNode.cmd = { ...item.cmd };
       }
     }
   }

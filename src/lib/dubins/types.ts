@@ -32,4 +32,10 @@ export type Straight<S = XY | LatLng> = {
 
 export type Segment<S = XY | LatLng> = Curve<S> | Straight<S>
 
+export type DubinsPath<S = XY | LatLng> = {
+  turnA: Curve<S>
+  straight: Straight<S>
+  turnB: Curve<S>
+}
+
 export type Path<S = XY | LatLng> = Segment<S>[]

@@ -10,7 +10,7 @@ interface DraggableNumberInputProps {
 }
 
 const DraggableNumberInput: React.FC<DraggableNumberInputProps> = ({
-  value: externalValue = 0,
+  value: externalValue = null,
   name,
   onChange,
   className = 'w-40 border-input',
@@ -102,7 +102,7 @@ const DraggableNumberInput: React.FC<DraggableNumberInputProps> = ({
     <div className="relative inline-block">
       <input
         ref={inputRef}
-        type="number"
+        type={internalValue === null ? "text" : "number"}
         name={name}
         value={internalValue === null ? '--' : internalValue}
         onChange={handleInputChange}

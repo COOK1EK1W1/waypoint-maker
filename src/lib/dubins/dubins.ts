@@ -1,7 +1,8 @@
 import { XY } from "../math/types";
-import { pathLength } from "./geometry";
+import { pathLength, segmentLength } from "./geometry";
 import { mod2pi, bearing, offset, dist } from "@/lib/math/geometry"
-import { Curve, Path, Straight } from "./types";
+import { Curve, DubinsPath, Path, Straight } from "./types";
+import { Result } from "@/util/try-catch";
 
 export enum Dir {
   Left,
@@ -33,7 +34,7 @@ export function findCenters(a: XY, heading: number, dist: number): { l: XY, r: X
  * @param {number} dirA - Force pass direction of waypoint A
  * @param {number} dirB - Force pass direction of waypoint B
  */
-export function DubinsBetweenDiffRad(a: XY, b: XY, thetaA: number, thetaB: number, radA: number, radB: number, dirA?: Dir, dirB?: Dir): Path<XY> {
+export function DubinsBetweenDiffRad(a: XY, b: XY, thetaA: number, thetaB: number, radA: number, radB: number, dirA?: Dir, dirB?: Dir): Result<DubinsPath<XY>> {
 
   // nomalise angles
   thetaA = mod2pi(thetaA)
@@ -43,8 +44,7 @@ export function DubinsBetweenDiffRad(a: XY, b: XY, thetaA: number, thetaB: numbe
   const a_centers = findCenters(a, thetaA, radA)
   const b_centers = findCenters(b, thetaB, radB)
 
-  let sections: Path<XY>[] = []
-
+  let sections: DubinsPath<XY>[] = []
   // the angles for first curves
   let left_start = thetaA + Math.PI / 2
   let right_start = thetaA - Math.PI / 2
@@ -72,7 +72,11 @@ export function DubinsBetweenDiffRad(a: XY, b: XY, thetaA: number, thetaB: numbe
       start: a - Math.PI / 2,
       theta: mod2pi(thetaB - a)
     }
-    let RSL: Path<XY> = [c1, s, c2]
+    let RSL: DubinsPath<XY> = {
+      turnA: c1,
+      straight: s,
+      turnB: c2
+    }
     sections.push(RSL)
   }
 
@@ -98,7 +102,11 @@ export function DubinsBetweenDiffRad(a: XY, b: XY, thetaA: number, thetaB: numbe
       radius: radB, start: a - 3 * (Math.PI / 2),
       theta: mod2pi(thetaB - a) - Math.PI * 2
     }
-    let RSL: Path<XY> = [c1, s, c2]
+    let RSL: DubinsPath<XY> = {
+      turnA: c1,
+      straight: s,
+      turnB: c2
+    }
     sections.push(RSL)
   }
 
@@ -125,7 +133,11 @@ export function DubinsBetweenDiffRad(a: XY, b: XY, thetaA: number, thetaB: numbe
       start: a - 3 * (Math.PI / 2),
       theta: mod2pi(thetaB - a) - Math.PI * 2
     }
-    let RSL: Path<XY> = [c1, s, c2]
+    let RSL: DubinsPath<XY> = {
+      turnA: c1,
+      straight: s,
+      turnB: c2
+    }
     sections.push(RSL)
 
   }
@@ -153,15 +165,27 @@ export function DubinsBetweenDiffRad(a: XY, b: XY, thetaA: number, thetaB: numbe
       start: a - Math.PI / 2,
       theta: mod2pi(thetaB - a)
     }
-    let LSR: Path<XY> = [c1, s, c2]
+    let LSR: DubinsPath<XY> = {
+      turnA: c1,
+      straight: s,
+      turnB: c2
+    }
     sections.push(LSR)
   }
 
-  sections.sort((a, b) => pathLength(a) - pathLength(b))
+  sections.sort((a, b) => segmentLength(a.turnA) + segmentLength(a.straight) + segmentLength(a.turnB) - segmentLength(b.turnA) - segmentLength(b.straight) - segmentLength(b.turnB))
   if (sections.length == 0) {
     console.log(thetaA, thetaB)
     console.log(dirA, dirB)
   }
-  console.assert(sections.length > 0);
-  return sections[0]
+  if (sections.length == 0) {
+    return {
+      error: new Error("No path found"),
+      data: null
+    }
+  }
+  return {
+    error: null,
+    data: sections[0]
+  }
 }

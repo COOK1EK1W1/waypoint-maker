@@ -1,7 +1,7 @@
 import { Circle, LayerGroup, Polyline } from "react-leaflet";
 import { useWaypoints } from "@/util/context/WaypointContext";
 import { ReactNode } from "react";
-import { dubinsBetweenDubins, localisePath, splitDubinsRuns, waypointToDubins } from "@/lib/dubins/dubinWaypoints";
+import { dubinsBetweenDubins, localiseDubinsPath, localisePath, splitDubinsRuns, waypointToDubins } from "@/lib/dubins/dubinWaypoints";
 import Arc from "@/components/marker/arc";
 import { Command } from "@/lib/commands/commands";
 import { getLatLng } from "@/lib/world/latlng";
@@ -18,6 +18,7 @@ export default function DubinsLayer() {
   const reference = waypoints.getReferencePoint()
 
   const activeWPs = waypoints.flatten(activeMission)
+  const mainLine = waypoints.mainLine(activeMission)
 
   if (activeWPs.length < 2) {
     return
@@ -27,26 +28,19 @@ export default function DubinsLayer() {
   let passByCircles: ReactNode[] = []
 
   let key = 0
-  let dubinsSections = splitDubinsRuns(activeWPs)
+  let dubinsSections = splitDubinsRuns(mainLine)
   for (const section of dubinsSections) {
-    section.wps.map((x, i) => {
-      if (i != 0 && x.type == 69 && i < section.wps.length - 1 && x.params["fly-by distance"] > 0)
-        passByCircles.push(<Circle center={getLatLng(x)} radius={x.params["fly-by distance"]} key={key++} />)
+    section.run.map((x, i) => {
+      if (i != 0 && x.cmd.type == 69 && i < section.run.length - 1 && x.cmd.params["fly-by distance"] > 0)
+        passByCircles.push(<Circle center={getLatLng(x.cmd)} radius={x.cmd.params["fly-by distance"]} key={key++} />)
     })
-    let dubinsPoints = section.wps.map((x) => waypointToDubins(x, reference))
+    let dubinsPoints = section.run.map((x) => waypointToDubins(x.cmd, reference))
     let path = dubinsBetweenDubins(dubinsPoints)
-    const worldPath = localisePath(path, reference)
-    worldPath.map((c, a) => {
-      switch (c.type) {
-        case "Curve":
-          let rWaypoint: Command = { frame: 3, type: 189, params: { latitude: c.center.lat, longitude: c.center.lng, altitude: 0 }, autocontinue: 0 }
-          //markers.push(<DraggableMarker key={"" + i + a} waypoint={rWaypoint} active={false} />)
-          lines.push(<Arc key={key++} curve={c} pathOptions={curveOptions} />)
-          break;
-        case "Straight":
-          lines.push(<Polyline key={key++} pathOptions={straightOptions} positions={[c.start, c.end]} />)
-          break
-      }
+    const localisedPath = path.map((x) => localiseDubinsPath(x, reference))
+    localisedPath.map((c, _) => {
+      lines.push(<Arc key={key++} curve={c.turnA} pathOptions={curveOptions} />)
+      lines.push(<Polyline key={key++} pathOptions={straightOptions} positions={[c.straight.start, c.straight.end]} />)
+      lines.push(<Arc key={key++} curve={c.turnB} pathOptions={straightOptions} />)
     })
   }
 

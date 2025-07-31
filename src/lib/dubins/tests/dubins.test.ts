@@ -37,26 +37,24 @@ test("find dubins path straight up", () => {
     1,
   )
 
-  expect(path.length).toBe(3)
-  expect(path[0].type).toBe("Curve")
-  expect(path[1].type).toBe("Straight")
-  expect(path[2].type).toBe("Curve")
-
-  if (path[0].type == "Curve") {
-    expect(path[0].theta).toBeCloseTo(0)
-    expect(path[0].radius).toBe(1)
+  expect(path.error).toBeNull()
+  if (path.error){
+    return
   }
 
-  if (path[1].type == "Straight") {
-    expect(path[1].start.x).toBeCloseTo(0)
-    expect(path[1].start.y).toBeCloseTo(0)
-    expect(path[1].end.x).toBeCloseTo(0)
-    expect(path[1].end.y).toBeCloseTo(10)
+  expect(path.data.turnA.theta).toBeCloseTo(0)
+  expect(path.data.turnA.radius).toBe(1)
+
+  if (path.data.straight.type == "Straight") {
+    expect(path.data.straight.start.x).toBeCloseTo(0)
+    expect(path.data.straight.start.y).toBeCloseTo(0)
+    expect(path.data.straight.end.x).toBeCloseTo(0)
+    expect(path.data.straight.end.y).toBeCloseTo(10)
   }
 
-  if (path[2].type == "Curve") {
-    expect(path[2].theta).toBeCloseTo(0)
-    expect(path[2].radius).toBe(1)
+  if (path.data.turnB.type == "Curve") {
+    expect(path.data.turnB.theta).toBeCloseTo(0)
+    expect(path.data.turnB.radius).toBe(1)
   }
 })
 
@@ -70,27 +68,21 @@ test("find dubins path straight east", () => {
     1,
   )
 
-  expect(path.length).toBe(3)
-  expect(path[0].type).toBe("Curve")
-  expect(path[1].type).toBe("Straight")
-  expect(path[2].type).toBe("Curve")
-
-  if (path[0].type == "Curve") {
-    expect(path[0].theta).toBeCloseTo(0)
-    expect(path[0].radius).toBe(1)
+  expect(path.error).toBeNull()
+  if (path.error){
+    return
   }
 
-  if (path[1].type == "Straight") {
-    expect(path[1].start.x).toBeCloseTo(0)
-    expect(path[1].start.y).toBeCloseTo(0)
-    expect(path[1].end.x).toBeCloseTo(10)
-    expect(path[1].end.y).toBeCloseTo(0)
-  }
+  expect(path.data.turnA.theta).toBeCloseTo(0)
+  expect(path.data.turnA.radius).toBe(1)
 
-  if (path[2].type == "Curve") {
-    expect(path[2].theta).toBeCloseTo(0)
-    expect(path[2].radius).toBe(1)
-  }
+  expect(path.data.straight.start.x).toBeCloseTo(0)
+  expect(path.data.straight.start.y).toBeCloseTo(0)
+  expect(path.data.straight.end.x).toBeCloseTo(10)
+  expect(path.data.straight.end.y).toBeCloseTo(0)
+
+  expect(path.data.turnB.theta).toBeCloseTo(0)
+  expect(path.data.turnB.radius).toBe(1)
 })
 
 
@@ -104,27 +96,21 @@ test("find dubins path east", () => {
     1,
   )
 
-  expect(path.length).toBe(3)
-  expect(path[0].type).toBe("Curve")
-  expect(path[1].type).toBe("Straight")
-  expect(path[2].type).toBe("Curve")
-
-  if (path[0].type == "Curve") {
-    expect(Math.abs(path[0].theta)).toBeCloseTo(Math.PI / 2)
-    expect(path[0].radius).toBe(1)
+  expect(path.error).toBeNull()
+  if (path.error){
+    return
   }
 
-  if (path[1].type == "Straight") {
-    expect(path[1].start.x).toBeCloseTo(1)
-    expect(Math.abs(path[1].start.y)).toBeCloseTo(1)
-    expect(path[1].end.x).toBeCloseTo(9)
-    expect(Math.abs(path[1].end.y)).toBeCloseTo(1)
-  }
+  expect(Math.abs(path.data.turnA.theta)).toBeCloseTo(Math.PI / 2)
+  expect(path.data.turnA.radius).toBe(1)
 
-  if (path[2].type == "Curve") {
-    expect(Math.abs(path[2].theta)).toBeCloseTo(Math.PI / 2)
-    expect(path[2].radius).toBe(1)
-  }
+  expect(path.data.straight.start.x).toBeCloseTo(1)
+  expect(Math.abs(path.data.straight.start.y)).toBeCloseTo(1)
+  expect(path.data.straight.end.x).toBeCloseTo(9)
+  expect(Math.abs(path.data.straight.end.y)).toBeCloseTo(1)
+
+  expect(Math.abs(path.data.turnB.theta)).toBeCloseTo(Math.PI / 2)
+  expect(path.data.turnB.radius).toBe(1)
 })
 
 
@@ -138,25 +124,19 @@ test("find dubins path west", () => {
     1,
   )
 
-  expect(path.length).toBe(3)
-  expect(path[0].type).toBe("Curve")
-  expect(path[1].type).toBe("Straight")
-  expect(path[2].type).toBe("Curve")
-
-  if (path[0].type == "Curve") {
-    expect(Math.abs(path[0].theta)).toBeCloseTo(Math.PI / 2)
-    expect(path[0].radius).toBe(1)
+  expect(path.error).toBeNull()
+  if (path.error){
+    return
   }
 
-  if (path[1].type == "Straight") {
-    expect(path[1].start.x).toBeCloseTo(-1)
-    expect(path[1].start.y).toBeCloseTo(1)
-    expect(path[1].end.x).toBeCloseTo(-9)
-    expect(Math.abs(path[1].end.y)).toBeCloseTo(1)
-  }
+  expect(Math.abs(path.data.turnA.theta)).toBeCloseTo(Math.PI / 2)
+  expect(path.data.turnA.radius).toBe(1)
 
-  if (path[2].type == "Curve") {
-    expect(Math.abs(path[2].theta)).toBeCloseTo(Math.PI / 2)
-    expect(path[2].radius).toBe(1)
-  }
+  expect(path.data.straight.start.x).toBeCloseTo(-1)
+  expect(path.data.straight.start.y).toBeCloseTo(1)
+  expect(path.data.straight.end.x).toBeCloseTo(-9)
+  expect(Math.abs(path.data.straight.end.y)).toBeCloseTo(1)
+
+  expect(Math.abs(path.data.turnB.theta)).toBeCloseTo(Math.PI / 2)
+  expect(path.data.turnB.radius).toBe(1)
 })

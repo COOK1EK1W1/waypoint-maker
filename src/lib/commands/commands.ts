@@ -62,12 +62,12 @@ export const altFrame = {
 export const commands = [...mavCmds, ...wpmCmds] as const
 
 // Extract only non-null parameters and map them to an object
-export type CommandParamsNames<T extends CommandName> = NonNullable<
+export type CommandParamsNames<T extends CommandName> = Lowercase<NonNullable<
   Extract<
     typeof commands[number],
     { name: T }
   >["parameters"][number]
->["label"]
+>["label"]>
 
 // Create a type to map command names to parameter objects, excluding `null` entries
 export type CommandParams<T extends CommandName> = {
@@ -76,7 +76,7 @@ export type CommandParams<T extends CommandName> = {
 
 // specific command type
 export type ICommand<T extends CommandName> = {
-  frame: "Altitude" extends CommandParamsNames<T> ? Exclude<typeof altFrame[keyof typeof altFrame], typeof altFrame["mission"]> : 2
+  frame: "altitude" extends CommandParamsNames<T> ? Exclude<typeof altFrame[keyof typeof altFrame], typeof altFrame["mission"]> : 2
   type: Extract<typeof commands[number], { name: T }>["value"]
   autocontinue: number
   params: CommandParams<T>
@@ -98,23 +98,23 @@ export type CommandValue = typeof commands[number]["value"]
 // commands which contain a lat and lng
 export type LatLngCommand = {
   [K in CommandName]:
-  "Latitude" extends CommandParamsNames<K>
-  ? ("Longitude" extends CommandParamsNames<K> ? ICommand<K> : never)
+  "latitude" extends CommandParamsNames<K>
+  ? ("longitude" extends CommandParamsNames<K> ? ICommand<K> : never)
   : never
 }[CommandName]
 
 // commands which contain lat lng and alt
 export type LatLngAltCommand = {
   [K in CommandName]:
-  "Latitude" extends CommandParamsNames<K>
-  ? ("Longitude" extends CommandParamsNames<K> ? ("Altitude" extends CommandParamsNames<K> ? ICommand<K> : never) : never)
+  "latitude" extends CommandParamsNames<K>
+  ? ("longitude" extends CommandParamsNames<K> ? ("altitude" extends CommandParamsNames<K> ? ICommand<K> : never) : never)
   : never
 }[CommandName]
 
 // commands which have altitude
 export type AltCommand = {
   [K in CommandName]:
-  "Altitude" extends CommandParamsNames<K> ? ICommand<K> : never
+  "altitude" extends CommandParamsNames<K> ? ICommand<K> : never
 }[CommandName]
 
 /*

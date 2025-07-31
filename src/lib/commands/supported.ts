@@ -38,6 +38,7 @@ export const planeSupported = [
   "MAV_CMD_DO_FENCE_ENABLE",
   "MAV_CMD_DO_AUTOTUNE_ENABLE",
   "MAV_CMD_STORAGE_FORMAT",
+  "WM_CMD_NAV_DUBINS"
 ] as const satisfies CommandName[]
 
 export const copterSupported = [

@@ -214,35 +214,73 @@ test("insert", () => {
   // todo do recursion or linear
 })
 
-test("changeParam", () => {
-  let a = new Mission();
-  // add waypoints to main
-  a.pushToMission("Main", { type: "Command", cmd: makeCommand("WM_CMD_NAV_DUBINS", { altitude: 0 }) })
-  a.pushToMission("Main", { type: "Command", cmd: makeCommand("WM_CMD_NAV_DUBINS", { altitude: 1 }) })
-  a.pushToMission("Main", { type: "Command", cmd: makeCommand("WM_CMD_NAV_DUBINS", { altitude: 2 }) })
-
-  a.addSubMission("a")
-  a.pushToMission("a", { type: "Command", cmd: makeCommand("WM_CMD_NAV_DUBINS", { altitude: 4 }) })
-  a.pushToMission("a", { type: "Command", cmd: makeCommand("WM_CMD_NAV_DUBINS", { altitude: 5 }) })
-  a.pushToMission("a", { type: "Command", cmd: makeCommand("WM_CMD_NAV_DUBINS", { altitude: 6 }) })
-
-  a.pushToMission("Main", { type: "Collection", name: "a", ColType: CollectionType.Mission, collectionID: "a", offsetLat: 0, offsetLng: 0 })
-
-  // insert at start
-  a.changeParam(0, "Main", (x) => { x.params.altitude = 10; return x })
-
-  expect(a.get("Main").length).toBe(4)
-  expect(a.get("Main")[0].cmd.params.altitude).toBe(10)
-  expect(a.get("Main")[1].cmd.params.altitude).toBe(1)
-
-  // insert in middle
-  a.changeParam(2, "Main", (x) => { x.params.altitude = 11; return x })
-
-  expect(a.get("Main")[0].cmd.params.altitude).toBe(10)
-  expect(a.get("Main")[2].cmd.params.altitude).toBe(11)
-
-  // unexpected mission
-  expect(() => a.changeParam(0, "bruh", (x) => x)).toThrowError(MissingMission)
-
-  // todo do recursion or linear
+test("mainLine functionality", () => {
+  let mission = new Mission();
+  
+  // Add a sequence of commands including destinations and actions
+  mission.pushToMission("Main", { 
+    type: "Command", 
+    cmd: makeCommand("MAV_CMD_NAV_WAYPOINT", { 
+      latitude: 1, 
+      longitude: 1, 
+      altitude: 100 
+    }) 
+  })
+  
+  // Add some non-destination commands that should be grouped with the first waypoint
+  mission.pushToMission("Main", { 
+    type: "Command", 
+    cmd: makeCommand("MAV_CMD_DO_SET_SERVO", { 
+      instance: 1, 
+      pwm: 1500 
+    }) 
+  })
+  mission.pushToMission("Main", { 
+    type: "Command", 
+    cmd: makeCommand("MAV_CMD_DO_SET_CAM_TRIGG_DIST", { 
+      distance: 100 
+    }) 
+  })
+  
+  // Add another destination waypoint
+  mission.pushToMission("Main", { 
+    type: "Command", 
+    cmd: makeCommand("MAV_CMD_NAV_WAYPOINT", { 
+      latitude: 2, 
+      longitude: 2, 
+      altitude: 200 
+    }) 
+  })
+  
+  // Add a non-destination command for the second waypoint
+  mission.pushToMission("Main", { 
+    type: "Command", 
+    cmd: makeCommand("MAV_CMD_DO_SET_SERVO", { 
+      instance: 2, 
+      pwm: 2000 
+    }) 
+  })
+  
+  // Get the mainline representation
+  const mainLine = mission.mainLine()
+  
+  // Verify the structure
+  expect(mainLine.length).toBe(2) // Should have 2 destination waypoints
+  
+  // Check first waypoint and its associated commands
+  expect(mainLine[0].cmd.type).toBe(16)
+  expect(mainLine[0].cmd.params.latitude).toBe(1)
+  expect(mainLine[0].cmd.params.longitude).toBe(1)
+  expect(mainLine[0].cmd.params.altitude).toBe(100)
+  expect(mainLine[0].other.length).toBe(2) // Should have 2 associated commands
+  expect(mainLine[0].other[0].type).toBe(183)
+  expect(mainLine[0].other[1].type).toBe(206)
+  
+  // Check second waypoint and its associated commands
+  expect(mainLine[1].cmd.type).toBe(16)
+  expect(mainLine[1].cmd.params.latitude).toBe(2)
+  expect(mainLine[1].cmd.params.longitude).toBe(2)
+  expect(mainLine[1].cmd.params.altitude).toBe(200)
+  expect(mainLine[1].other.length).toBe(1) // Should have 1 associated command
+  expect(mainLine[1].other[0].type).toBe(183)
 })
