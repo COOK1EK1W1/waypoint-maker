@@ -19,7 +19,7 @@ test("coerce waypoint 2 dubins", () => {
   const command = makeCommand("MAV_CMD_NAV_WAYPOINT", { altitude: 100, longitude: -3.3, latitude: 52 })
   const newDubins = coerceCommand(command, "WM_CMD_NAV_DUBINS")
 
-  expect(newDubins.type).toBe(69)
+  expect(newDubins.type).toBe(70)
   expect(newDubins.params.altitude).toBe(100)
   expect(newDubins.params.longitude).toBe(-3.3)
   expect(newDubins.params.latitude).toBe(52)
@@ -28,20 +28,20 @@ test("coerce waypoint 2 dubins", () => {
 })
 
 test("WPM2MAV converts waypoint command correctly", () => {
-  const command = makeCommand("MAV_CMD_NAV_WAYPOINT", { 
-    altitude: 100, 
-    longitude: -3.3, 
-    latitude: 52, 
-    hold: 10, 
-    yaw: 20, 
+  const command = makeCommand("MAV_CMD_NAV_WAYPOINT", {
+    altitude: 100,
+    longitude: -3.3,
+    latitude: 52,
+    hold: 10,
+    yaw: 20,
     "pass radius": 50,
-    "accept radius": 30 
+    "accept radius": 30
   })
   const mavCommands = WPM2MAV([command])
-  
+
   expect(mavCommands).toHaveLength(1)
   const mavCmd = mavCommands[0]
-  
+
   expect(mavCmd.type).toBe(16) // MAV_CMD_NAV_WAYPOINT
   expect(mavCmd.frame).toBe(3)
   expect(mavCmd.autocontinue).toBe(1)
@@ -55,28 +55,28 @@ test("WPM2MAV converts waypoint command correctly", () => {
 })
 
 test("WPM2MAV converts multiple commands", () => {
-  const waypoint = makeCommand("MAV_CMD_NAV_WAYPOINT", { 
-    altitude: 100, 
-    longitude: -3.3, 
-    latitude: 52 
+  const waypoint = makeCommand("MAV_CMD_NAV_WAYPOINT", {
+    altitude: 100,
+    longitude: -3.3,
+    latitude: 52
   })
-  const land = makeCommand("MAV_CMD_NAV_LAND", { 
-    altitude: 0, 
-    longitude: -3.4, 
+  const land = makeCommand("MAV_CMD_NAV_LAND", {
+    altitude: 0,
+    longitude: -3.4,
     latitude: 52.1,
     "abort alt": 50
   })
-  
+
   const mavCommands = WPM2MAV([waypoint, land])
-  
+
   expect(mavCommands).toHaveLength(2)
-  
+
   // Check waypoint command
   expect(mavCommands[0].type).toBe(16)
   expect(mavCommands[0].param5).toBe(52)
   expect(mavCommands[0].param6).toBe(-3.3)
   expect(mavCommands[0].param7).toBe(100)
-  
+
   // Check land command
   expect(mavCommands[1].type).toBe(21)
   expect(mavCommands[1].param1).toBe(50) // abort alt
@@ -86,16 +86,16 @@ test("WPM2MAV converts multiple commands", () => {
 })
 
 test("WPM2MAV handles commands with missing parameters", () => {
-  const command = makeCommand("MAV_CMD_NAV_WAYPOINT", { 
-    altitude: 100, 
-    longitude: -3.3 
+  const command = makeCommand("MAV_CMD_NAV_WAYPOINT", {
+    altitude: 100,
+    longitude: -3.3
     // latitude is missing
   })
   const mavCommands = WPM2MAV([command])
-  
+
   expect(mavCommands).toHaveLength(1)
   const mavCmd = mavCommands[0]
-  
+
   expect(mavCmd.type).toBe(16)
   expect(mavCmd.param5).toBe(0) // latitude should be 0 when missing
   expect(mavCmd.param6).toBe(-3.3)

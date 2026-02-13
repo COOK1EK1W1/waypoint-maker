@@ -1,7 +1,8 @@
 import { expect, test } from "bun:test";
-import { loadFactor, pathEnergyRequirements, pathLength, segmentLength } from "@/lib/dubins/geometry";
+import { loadFactor, segmentLength } from "@/lib/dubins/geometry";
 import { XY } from "@/lib/math/types";
 import { Path, Segment } from "../types";
+import { pathLength } from "@/components/waypointEditor/optimisaion/optimisation";
 
 test("straight line len", () => {
   const a: Segment<XY> = { type: "Straight", start: { x: 0, y: 0 }, end: { x: 3, y: 4 } }
@@ -59,14 +60,4 @@ test("Load factor", () => {
 
   //expect(loadFactor(0, 10)).toBeCloseTo(Infinity) // swap these files eventually TODO
   expect(loadFactor(0, 10)).toBeCloseTo(0)
-})
-
-test("Energy Requirements for path", () => {
-  const path: Path<XY> = [{ type: "Straight", start: { x: 0, y: 0 }, end: { x: 3, y: 4 } }]
-  expect(pathEnergyRequirements(path, 24)).toBe(5)
-  path.push({ type: "Curve", center: { x: 0, y: 0 }, start: 0, theta: Math.PI, radius: 27 })
-  expect(pathEnergyRequirements(path, 24)).toBeCloseTo(208, 1)
-})
-
-test("Energy Requirements for path with constant", () => {
 })

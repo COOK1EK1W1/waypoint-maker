@@ -1,7 +1,7 @@
 import { XY } from "../math/types";
-import { pathLength, segmentLength } from "./geometry";
+import { segmentLength } from "./geometry";
 import { mod2pi, bearing, offset, dist } from "@/lib/math/geometry"
-import { Curve, DubinsPath, Path, Straight } from "./types";
+import { Curve, DubinsPath, Straight } from "./types";
 import { Result } from "@/util/try-catch";
 
 export enum Dir {

@@ -1,7 +1,7 @@
 import { CommandDescription } from "../commands";
 
 export const wpmCmds = [{
-  value: 69,
+  value: 70,
   name: "WM_CMD_NAV_DUBINS",
   description: "Navigate around waypoint via dubins path",
   hasLocation: true,

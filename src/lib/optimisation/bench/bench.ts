@@ -1,11 +1,11 @@
 import { createEvaluate } from "@/components/toolBar/bakeDubins";
 import { getBounds, getTunableDubinsParameters } from "@/lib/dubins/dubinWaypoints";
-import { pathLength } from "@/lib/dubins/geometry";
 import { dubinsPoint } from "@/lib/dubins/types";
 import { particleOptimise } from "../particleSwarm";
 import { geneticOptimise } from "../genetic";
 import { gradientOptimise } from "../gradient";
 import { Plane } from "@/lib/vehicles/types";
+import { pathLength } from "@/components/waypointEditor/optimisaion/optimisation";
 
 const file = Bun.file("output.txt");
 const writer = file.writer();

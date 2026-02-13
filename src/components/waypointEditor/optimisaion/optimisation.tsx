@@ -1,6 +1,5 @@
 import { useWaypoints } from "@/util/context/WaypointContext";
 import { bakeDubins, staticEvaluate } from "@/components/toolBar/bakeDubins";
-import { pathEnergyRequirements, pathLength } from "@/lib/dubins/geometry";
 import { geneticOptimise } from "@/lib/optimisation/genetic";
 import { particleOptimise } from "@/lib/optimisation/particleSwarm";
 import { useState } from "react";
@@ -13,30 +12,50 @@ import { Plane } from "@/lib/vehicles/types";
 import { Button } from "@/components/ui/button";
 
 
+export function pathLength(path: Path<XY>) {
+  // The Path type can be found in src/lib/dubins/types.ts
+  // It is an array of either straight or curve segments.
+  // XY just means it's defined in 2d cartesian space (that means you can do 
+  // usual geometry to figure out length)
+
+  // Step 2.1 implementation goes here
+
+  return 0
+}
+
 export function Optimise() {
   const { vehicle } = useVehicle()
-
-
   const { waypoints, setWaypoints, activeMission } = useWaypoints()
   const [optimiseRes, setOptimiseRes] = useState<{ s: number, e: number, t: number } | null>(null)
-
-  // use before definition, but it works because JS :skull:
   const [algorithm, setAlgorithm] = useState<keyof typeof algorithms>("Particle")
   const [metric, setMetric] = useState<keyof typeof metrics>("Length")
-
   if (vehicle.type != "Plane") return <div>only planes are supported with optimisation</div>
 
-  const metrics = { "Length": pathLength, "Energy": (x: Path<XY>) => pathEnergyRequirements(x, vehicle.cruiseAirspeed, vehicle.energyConstant) }
-  const algorithms = { "Particle": particleOptimise, "Genetic": geneticOptimise, "Gradient": gradientOptimise }
 
+
+  // This is where you can add additional fitness functions.
+  // They will automatically render
+  const metrics: Record<string, (path: Path<XY>) => number> = {
+    "Length": pathLength,
+    // "Energy": pathEnergy
+  }
+
+  let length = staticEvaluate(waypoints, activeMission, metrics["Length"], vehicle as Plane)
+  //let energy = staticEvaluate(waypoints, activeMission, metrics["Energy"], vehicle as Plane)
+
+
+  const algorithms = {
+    "Particle": particleOptimise,
+    "Genetic": geneticOptimise,
+    "Gradient": gradientOptimise
+  }
 
   function runOptimisation() {
     let res = bakeDubins(waypoints, activeMission, algorithms[algorithm], setWaypoints, metrics[metric], vehicle as Plane)
     setOptimiseRes(res)
   }
 
-  let energy = staticEvaluate(waypoints, activeMission, metrics["Energy"], vehicle as Plane)
-  let length = staticEvaluate(waypoints, activeMission, metrics["Length"], vehicle as Plane)
+  let energy = 0
 
   let dubinSections = splitDubinsRuns(waypoints.mainLine(activeMission))
   if (dubinSections.length == 0) {
@@ -48,14 +67,19 @@ export function Optimise() {
 
       <div className="mx-2 flex flex-col">
         <h2>Algorithm</h2>
-        <Button variant={algorithm == "Particle" ? "green" : "default"} onClick={() => setAlgorithm("Particle")}>Particle</Button>
-        <Button variant={algorithm == "Genetic" ? "green" : "default"} onClick={() => setAlgorithm("Genetic")}>Genetic</Button>
-        <Button variant={algorithm == "Gradient" ? "green" : "default"} onClick={() => setAlgorithm("Gradient")}>Gradient</Button>
+        {
+          Object.keys(algorithms).map((x, i) => (
+            <Button key={i} variant={algorithm == x ? "green" : "default"} onClick={() => setAlgorithm(x as keyof typeof algorithms)}>{x}</Button>
+          ))
+        }
       </div >
       <div className="mx-2 flex flex-col">
         <h2>Fitness</h2>
-        <Button variant={metric == "Energy" ? "green" : "default"} onClick={() => setMetric("Energy")}>Energy</Button>
-        <Button variant={metric == "Length" ? "green" : "default"} onClick={() => setMetric("Length")}>Length</Button>
+        {
+          Object.keys(metrics).map((x, i) => (
+            <Button key={i} variant={metric == x ? "green" : "default"} onClick={() => setMetric(x as keyof typeof metrics)}>{x}</Button>
+          ))
+        }
       </div>
 
       <div className="w-40 mx-2">

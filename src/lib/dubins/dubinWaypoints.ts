@@ -10,6 +10,54 @@ import { Plane } from "../vehicles/types";
 import { getLatLng, LatLng } from "../world/latlng";
 import { MainLine } from "../mission/mission";
 
+
+/**
+ * Extracts the tunable parameters from a list of waypoints
+ * @param {dubinsPoint[]} wps - The list of waypoints
+ * @returns {number[]} The tunable parameters
+ */
+export function getTunableDubinsParameters(wps: dubinsPoint[]): number[] {
+  let ret: number[] = []
+
+  // step-1.1
+
+  return ret
+}
+
+
+/**
+ * Sets the tunable parameters for a list of dubins points
+ * @param {dubinsPoint[]} wps - The list of dubins points
+ * @param {number[]} params - The tunable parameters
+ */
+export function setTunableDubinsParameter(wps: dubinsPoint[], params: number[]): void {
+
+  // step-1.2
+
+}
+
+
+/**
+ * Calculates the bounds for the tunable parameters of a list of waypoints
+ * @param {dubinsPoint[]} wps - The list of waypoints
+ * @param {Plane} vehicle - The vehicle type
+ * @returns {bound[]} The bounds for the tunable parameters
+ */
+export function getBounds(wps: dubinsPoint[], vehicle: Plane): bound[] {
+  const bounds: bound[] = []
+
+  // step-1.3
+
+  return bounds
+}
+
+
+
+
+
+
+
+
 /*
  * find all the sections of a waypoint list which require a dubins path between
  * include pre + post waypoints to connect
@@ -21,7 +69,7 @@ export function splitDubinsRuns(mainLine: MainLine): { start: number, run: { cmd
   let start = 0
   for (let i = 0; i < mainLine.length; i++) {
     const curWaypoint = mainLine[i].cmd
-    if (curWaypoint.type == 69) {
+    if (curWaypoint.type == 70) {
       if (curSection.length == 0) {
         start = i
         if (i > 0) {
@@ -118,23 +166,6 @@ export function dubinsBetweenDubins(wps: dubinsPoint[]): DubinsPath<XY>[] {
 }
 
 /**
- * Extracts the tunable parameters from a list of waypoints
- * @param {dubinsPoint[]} wps - The list of waypoints
- * @returns {number[]} The tunable parameters
- */
-export function getTunableDubinsParameters(wps: dubinsPoint[]): number[] {
-  // heading | radius
-  let ret: number[] = []
-  for (const waypoint of wps) {
-    if (waypoint.tunable) {
-      ret.push(waypoint.heading)
-      ret.push(waypoint.radius)
-    }
-  }
-  return ret
-}
-
-/**
  * Calculates the minimum turn radius based on the maximum bank angle and velocity
  * @param {number} maxBank - The maximum bank angle
  * @param {number} velocity - The velocity
@@ -142,24 +173,6 @@ export function getTunableDubinsParameters(wps: dubinsPoint[]): number[] {
  */
 export function getMinTurnRadius(maxBank: number, velocity: number): number {
   return Math.pow(velocity, 2) / (9.8 * Math.tan(deg2rad(maxBank)))
-}
-
-/**
- * Calculates the bounds for the tunable parameters of a list of waypoints
- * @param {dubinsPoint[]} wps - The list of waypoints
- * @param {Plane} vehicle - The vehicle type
- * @returns {bound[]} The bounds for the tunable parameters
- */
-export function getBounds(wps: dubinsPoint[], vehicle: Plane): bound[] {
-  // heading | radius
-  const bounds = []
-  for (const waypoint of wps) {
-    if (waypoint.tunable) {
-      bounds.push({ min: 0, max: 360, circular: true })
-      bounds.push({ min: Math.max(getMinTurnRadius(vehicle.maxBank, vehicle.cruiseAirspeed), waypoint.passbyRadius) })
-    }
-  }
-  return bounds
 }
 
 /**
@@ -189,7 +202,7 @@ export function applyBounds(params: number[], bounds: bound[]): void {
  * @returns {dubinsPoint} The dubins point
  */
 export function waypointToDubins(cmd: LatLngCommand, reference: LatLng): dubinsPoint {
-  if (cmd.type == 69) {
+  if (cmd.type == 70) {
     return { pos: g2l(reference, getLatLng(cmd)), bounds: {}, radius: cmd.params.radius, heading: cmd.params.heading, tunable: true, passbyRadius: cmd.params["fly-by distance"] }
   } else {
     return { pos: g2l(reference, getLatLng(cmd)), bounds: {}, radius: 0, heading: 0, tunable: false, passbyRadius: 0 }
@@ -201,31 +214,17 @@ export function waypointToDubins(cmd: LatLngCommand, reference: LatLng): dubinsP
  * @param {Waypoint[]} wps - The list of waypoints
  * @param {number[]} params - The tunable parameters
  */
-export function setTunableParameter(wps: MainLine, params: number[]): void {
+export function setTunableParameter(wps: MainLine, params: dubinsPoint[]): void {
   let paramI = 0
   for (let i = 0; i < wps.length; i++) {
     let cur = wps[i]
-    if (cur.cmd.type == 69) {
+    if (cur.cmd.type == 70) {
       // radians
-      cur.cmd.params.heading = modf(params[paramI++], 360)
-      cur.cmd.params.radius = params[paramI++]
+      cur.cmd.params.heading = params[paramI].heading
+      cur.cmd.params["fly-by distance"] = params[paramI].passbyRadius
+      cur.cmd.params.radius = params[paramI].radius
+      paramI++
     }
   }
 }
 
-/**
- * Sets the tunable parameters for a list of dubins points
- * @param {dubinsPoint[]} wps - The list of dubins points
- * @param {number[]} params - The tunable parameters
- */
-export function setTunableDubinsParameter(wps: dubinsPoint[], params: number[]): void {
-  let paramI = 0
-  for (let i = 0; i < wps.length; i++) {
-    let cur = wps[i]
-    if (cur.tunable) {
-      // radians
-      cur.heading = modf(params[paramI++], 360)
-      cur.radius = params[paramI++]
-    }
-  }
-}

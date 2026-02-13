@@ -80,15 +80,17 @@ export function bakeDubins(waypoints: Mission, activeMission: string, optimisati
     endingFitness += evaluate(result.finalVals)
     console.log("fitness: ", result.fitness, "  took: ", result.time)
 
-    setTunableParameter(section.run, result.finalVals)
+    setTunableDubinsParameter(dubinsPoints, result.finalVals)
+
+    setTunableParameter(section.run, dubinsPoints)
     // Apply the updated command parameters back onto the cloned waypoint tree.
     // The `mainLine` representation stores the original flattened index in
     // `item.id`, so we can use that directly to locate the corresponding
     // command inside `curWaypoints`.
 
     for (const item of section.run) {
-      // Only Dubins (type 69) commands have tunable parameters we modified.
-      if (item.cmd.type !== 69) continue;
+      // Only Dubins (type 70) commands have tunable parameters we modified.
+      if (item.cmd.type !== 70) continue;
 
       const position = curWaypoints.findNthPosition(activeMission, item.id);
       if (!position) continue;
