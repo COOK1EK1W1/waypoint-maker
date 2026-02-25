@@ -69,7 +69,7 @@ export function splitDubinsRuns(mainLine: MainLine): { start: number, run: { cmd
   let start = 0
   for (let i = 0; i < mainLine.length; i++) {
     const curWaypoint = mainLine[i].cmd
-    if (curWaypoint.type == 70) {
+    if (curWaypoint.type == 72) {
       if (curSection.length == 0) {
         start = i
         if (i > 0) {
@@ -181,16 +181,34 @@ export function getMinTurnRadius(maxBank: number, velocity: number): number {
  * @param {bound[]} bounds - The bounds for the tunable parameters
  */
 export function applyBounds(params: number[], bounds: bound[]): void {
-  for (let i = 0; i < bounds.length; i++) {
+  if (params.length !== bounds.length) {
+    console.log("Params and bounds are not the same length")
+    return
+  }
+  for (let i = 0; i < params.length; i++) {
     let bound = bounds[i]
-    if (bound.min != undefined && bound.max != undefined && bound.circular) {
+    if (bound.circular !== undefined && bound.circular && bound.min !== undefined && bound.max !== undefined) {
+      // circular bounding
+      if (bound.min == bound.max) {
+        params[i] = bound.min
+        continue
+      }
+      if (bound.max < bound.min) {
+        console.log("bound max is not greater than min")
+        continue
+      }
       let range = bound.max - bound.min
       let diff = params[i] - bound.min
       params[i] = bound.min + modf(diff, range)
-    } else if (bound.min != undefined && params[i] < bound.min) {
-      params[i] = bound.min
-    } else if (bound.max != undefined && params[i] > bound.max) {
-      params[i] = bound.max
+      continue
+    } else {
+      // clamping
+      if (bound.min !== undefined && params[i] < bound.min) {
+        params[i] = bound.min
+      }
+      if (bound.max !== undefined && params[i] > bound.max) {
+        params[i] = bound.max
+      }
     }
   }
 }
@@ -202,7 +220,7 @@ export function applyBounds(params: number[], bounds: bound[]): void {
  * @returns {dubinsPoint} The dubins point
  */
 export function waypointToDubins(cmd: LatLngCommand, reference: LatLng): dubinsPoint {
-  if (cmd.type == 70) {
+  if (cmd.type == 72) {
     return { pos: g2l(reference, getLatLng(cmd)), bounds: {}, radius: cmd.params.radius, heading: cmd.params.heading, tunable: true, passbyRadius: cmd.params["fly-by distance"] }
   } else {
     return { pos: g2l(reference, getLatLng(cmd)), bounds: {}, radius: 0, heading: 0, tunable: false, passbyRadius: 0 }
@@ -218,7 +236,7 @@ export function setTunableParameter(wps: MainLine, params: dubinsPoint[]): void 
   let paramI = 0
   for (let i = 0; i < wps.length; i++) {
     let cur = wps[i]
-    if (cur.cmd.type == 70) {
+    if (cur.cmd.type == 72) {
       // radians
       cur.cmd.params.heading = params[paramI].heading
       cur.cmd.params["fly-by distance"] = params[paramI].passbyRadius

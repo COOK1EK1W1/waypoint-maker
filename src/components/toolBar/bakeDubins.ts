@@ -74,7 +74,7 @@ export function bakeDubins(waypoints: Mission, activeMission: string, optimisati
     startingFitness += evaluate(startingParams)
     console.log(startingFitness)
 
-    let result = optimisationmethod(startingParams, bounds, evaluate) // 2041
+    let result = optimisationmethod(startingParams, bounds, evaluate)
     console.log(result)
     applyBounds(result.finalVals, bounds)
     endingFitness += evaluate(result.finalVals)
@@ -89,8 +89,8 @@ export function bakeDubins(waypoints: Mission, activeMission: string, optimisati
     // command inside `curWaypoints`.
 
     for (const item of section.run) {
-      // Only Dubins (type 70) commands have tunable parameters we modified.
-      if (item.cmd.type !== 70) continue;
+      // Only Dubins (type 72) commands have tunable parameters we modified.
+      if (item.cmd.type !== 72) continue;
 
       const position = curWaypoints.findNthPosition(activeMission, item.id);
       if (!position) continue;

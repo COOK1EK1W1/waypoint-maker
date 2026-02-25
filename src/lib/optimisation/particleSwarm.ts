@@ -17,7 +17,14 @@ export const particleOptimise: optimisationAlgorithm = (initialGuess, bounds, fn
 
 
   const start = performance.now()
-  console.assert(initialGuess.length == bounds.length, `Params are different length to bounds, ${initialGuess.length} ${bounds.length}`)
+  if (initialGuess.length !== bounds.length) {
+    console.error(`Params are different length to bounds, ${initialGuess.length} ${bounds.length}`)
+    return {
+      finalVals: initialGuess,
+      time: 0,
+      fitness: fn(initialGuess as number[])
+    }
+  }
 
   const dims = initialGuess.length
   const population: number[][] = Array.from({ length: popSize })

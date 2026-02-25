@@ -31,7 +31,7 @@ export default function DubinsLayer() {
   let dubinsSections = splitDubinsRuns(mainLine)
   for (const section of dubinsSections) {
     section.run.map((x, i) => {
-      if (i != 0 && x.cmd.type == 70 && i < section.run.length - 1 && x.cmd.params["fly-by distance"] > 0)
+      if (i != 0 && x.cmd.type == 72 && i < section.run.length - 1 && x.cmd.params["fly-by distance"] > 0)
         passByCircles.push(<Circle center={getLatLng(x.cmd)} radius={x.cmd.params["fly-by distance"]} key={key++} />)
     })
     let dubinsPoints = section.run.map((x) => waypointToDubins(x.cmd, reference))

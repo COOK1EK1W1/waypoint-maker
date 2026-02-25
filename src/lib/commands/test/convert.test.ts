@@ -19,7 +19,7 @@ test("coerce waypoint 2 dubins", () => {
   const command = makeCommand("MAV_CMD_NAV_WAYPOINT", { altitude: 100, longitude: -3.3, latitude: 52 })
   const newDubins = coerceCommand(command, "WM_CMD_NAV_DUBINS")
 
-  expect(newDubins.type).toBe(70)
+  expect(newDubins.type).toBe(72)
   expect(newDubins.params.altitude).toBe(100)
   expect(newDubins.params.longitude).toBe(-3.3)
   expect(newDubins.params.latitude).toBe(52)
