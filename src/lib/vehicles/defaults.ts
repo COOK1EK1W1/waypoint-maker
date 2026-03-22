@@ -2,8 +2,8 @@ import { Copter, Plane } from "./types"
 
 export const defaultPlane: Plane = {
   type: "Plane",
-  cruiseAirspeed: 17,
-  maxBank: 30,
+  cruiseAirspeed: 30,
+  maxBank: 50,
   energyConstant: 17
 }
 

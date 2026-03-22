@@ -6,19 +6,29 @@ import { useState } from "react";
 import { useVehicle } from "@/util/context/VehicleTypeContext";
 import { gradientOptimise } from "@/lib/optimisation/gradient";
 import { splitDubinsRuns } from "@/lib/dubins/dubinWaypoints";
-import { Path } from "@/lib/dubins/types";
+import { Curve, Path, Straight } from "@/lib/dubins/types";
 import { XY } from "@/lib/math/types";
 import { Plane } from "@/lib/vehicles/types";
 import { Button } from "@/components/ui/button";
 
 
-export function pathLength(path: Path<XY>) {
+export function pathLength(path: (Straight<XY> | Curve<XY>)[]) {
   // The Path type can be found in src/lib/dubins/types.ts
   // It is an array of either straight or curve segments.
   // XY just means it's defined in 2d cartesian space (that means you can do 
   // usual geometry to figure out length)
 
   // Step 2.1 implementation goes here
+
+  return 0
+}
+
+export function pathEnergy(path: Path<XY>) {
+  // same interface as pathLength
+
+  // Step 2.2 optional
+  //
+  // once completed, uncomment pathEnergy line below in the const metrics
 
   return 0
 }

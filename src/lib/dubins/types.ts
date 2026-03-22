@@ -20,8 +20,8 @@ export type Curve<S = XY | LatLng> = {
   type: "Curve"
   center: S,
   radius: number,
-  start: number, // Radians
-  theta: number // Radians
+  start: number, // Radians from north, clockwise
+  theta: number // Radians from start, positive clockwise, negatvie anti-clockwise
 }
 
 export type Straight<S = XY | LatLng> = {

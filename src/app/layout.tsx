@@ -27,16 +27,9 @@ export default function RootLayout({
       <link rel="preload" href="/marker-shadow.png" as="image" />
       <link rel="preload" href="/insert.png" as="image" />
       <body className={cn(inter.className, "fixed overflow-hidden h-[100dvh] w-full select-none")}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <Analytics />
-          <SpeedInsights />
-          {children}
-        </ThemeProvider>
+        <Analytics />
+        <SpeedInsights />
+        {children}
       </body>
     </html>
   )

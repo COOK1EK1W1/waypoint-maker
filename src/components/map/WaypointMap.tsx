@@ -81,7 +81,7 @@ export default function MapStuff() {
       case "Waypoint": {
         setWaypoints((waypoints) => {
           let waypointsNew = waypoints.clone()
-          waypointsNew.pushToMission(activeMission, { type: "Command", cmd: makeCommand("MAV_CMD_NAV_WAYPOINT", { latitude: e.latlng.lat, longitude: e.latlng.lng }) })
+          waypointsNew.pushToMission(activeMission, { type: "Command", cmd: makeCommand("WM_CMD_NAV_DUBINS", { latitude: e.latlng.lat, longitude: e.latlng.lng, radius: 77.1 }) })
           return waypointsNew
         })
         break;
@@ -170,7 +170,7 @@ export default function MapStuff() {
   return (
     <MapContainer
       center={[55.911879, -3.319938]}
-      zoom={15}
+      zoom={17}
       style={{ width: '100%', height: '100%' }}
       className="z-10"
       attributionControl={false}

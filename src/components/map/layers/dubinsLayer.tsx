@@ -7,7 +7,7 @@ import { Command } from "@/lib/commands/commands";
 import { getLatLng } from "@/lib/world/latlng";
 
 const curveOptions = { color: '#ff0000' }
-const straightOptions = { color: '#bb0000' }
+const straightOptions = { color: '#ffa500' }
 const noshow = ["Markers", "Geofence"]
 
 export default function DubinsLayer() {
@@ -40,7 +40,7 @@ export default function DubinsLayer() {
     localisedPath.map((c, _) => {
       lines.push(<Arc key={key++} curve={c.turnA} pathOptions={curveOptions} />)
       lines.push(<Polyline key={key++} pathOptions={straightOptions} positions={[c.straight.start, c.straight.end]} />)
-      lines.push(<Arc key={key++} curve={c.turnB} pathOptions={straightOptions} />)
+      lines.push(<Arc key={key++} curve={c.turnB} pathOptions={curveOptions} />)
     })
   }
 
