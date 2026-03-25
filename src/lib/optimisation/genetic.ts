@@ -5,21 +5,24 @@ import { bound } from "../dubins/types";
 type populi = { vals: number[], fitness: number }
 
 export const geneticOptimise: optimisationAlgorithm = (initialGuess, bounds, fn) => {
-  // an implementation of the genetic algorithm
-  const start = performance.now()
-  let population: populi[] = []
-  let bestpop: populi = { vals: [...initialGuess], fitness: fn([...initialGuess]) }
 
   const popsize = initialGuess.length * 20
 
   const ELITES = Math.ceil(popsize * 0.1)
   const CHILDREN = Math.ceil((popsize - ELITES) * 0.4)
   const MUTANTS = popsize - (ELITES + CHILDREN)
+
+  const maxIterations = 100
+
+  // an implementation of the genetic algorithm
+  const start = performance.now()
+  let population: populi[] = []
+  let bestpop: populi = { vals: [...initialGuess], fitness: fn([...initialGuess]) }
+
+
   console.assert(ELITES + CHILDREN + MUTANTS == popsize, `${ELITES} ${CHILDREN} ${MUTANTS} ${popsize}`)
   console.assert(ELITES > 0, CHILDREN > 0, MUTANTS > 0)
 
-  let previous_global_best: number[] = []
-  const improvementThreshold = 1e-6
 
   for (let x = 0; x < popsize; x++) {
     let value = []
@@ -29,16 +32,7 @@ export const geneticOptimise: optimisationAlgorithm = (initialGuess, bounds, fn)
     console.assert(value.length == initialGuess.length, `${value.length}`)
     population.push({ vals: value, fitness: fn(value) })
   }
-  for (let i = 0; i < 200; i++) {
-
-    if (previous_global_best.length == 5) {
-      previous_global_best.shift()
-    }
-    previous_global_best.push(bestpop.fitness)
-    if (previous_global_best.length == 5 && (previous_global_best[0] - previous_global_best[4]) < improvementThreshold) {
-      //break;
-    }
-
+  for (let i = 0; i < maxIterations; i++) {
 
     let newpop: { vals: number[], fitness: number }[] = []
     population.sort((x, y) => x.fitness - y.fitness)
@@ -46,8 +40,6 @@ export const geneticOptimise: optimisationAlgorithm = (initialGuess, bounds, fn)
     if (population[0].fitness < bestpop.fitness) {
       bestpop = { vals: [...population[0].vals], fitness: population[0].fitness }
     }
-
-
 
     // copy over elites
     for (let j = 0; j < ELITES; j++) {
