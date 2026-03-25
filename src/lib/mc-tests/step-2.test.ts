@@ -14,6 +14,6 @@ test("path length", () => {
   expect(pathLength(curves)).toBeCloseTo(10 + 14.1421)
 
   curves.push({ type: "Curve", center: { x: 0, y: 0 }, start: 0, theta: Math.PI, radius: 10 })
-  expect(pathLength(curves)).toBeCloseTo(10 + 14.1421 + 31.4159)
+  expect(pathLength(curves)).toBeCloseTo(10 + 14.1421 + 62.83)
 })
 

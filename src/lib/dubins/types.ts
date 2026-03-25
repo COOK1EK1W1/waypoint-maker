@@ -11,7 +11,6 @@ export type dubinsPoint = {
   tunable: boolean,
   pos: XY,
   radius: number,
-  bounds: bound,
   heading: number // degrees
   passbyRadius: number
 }

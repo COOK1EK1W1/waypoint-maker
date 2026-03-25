@@ -20,7 +20,7 @@ export const particleOptimise: optimisationAlgorithm = (initialGuess, bounds, fn
   if (initialGuess.length !== bounds.length) {
     console.error(`Params are different length to bounds, ${initialGuess.length} ${bounds.length}`)
     return {
-      finalVals: initialGuess,
+      finalVals: initialGuess as number[],
       time: 0,
       fitness: fn(initialGuess as number[])
     }

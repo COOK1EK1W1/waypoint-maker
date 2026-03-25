@@ -10,6 +10,8 @@ import { Curve, Path, Straight } from "@/lib/dubins/types";
 import { XY } from "@/lib/math/types";
 import { Plane } from "@/lib/vehicles/types";
 import { Button } from "@/components/ui/button";
+import { dist } from "@/lib/math/geometry";
+import { loadFactor } from "@/lib/dubins/geometry";
 
 
 export function pathLength(path: (Straight<XY> | Curve<XY>)[]) {
@@ -18,20 +20,36 @@ export function pathLength(path: (Straight<XY> | Curve<XY>)[]) {
   // XY just means it's defined in 2d cartesian space (that means you can do 
   // usual geometry to figure out length)
 
-  // Step 2.1 implementation goes here
+  let length = 0
 
-  return 0
+  // Step 2.1 implementation goes here
+  for (let i = 0; i < path.length; i++) {
+    let cur = path[i]
+    if (cur.type == "Straight") {
+      length += dist(cur.start, cur.end)
+    } else {
+      length += cur.radius * Math.abs(cur.theta) * 2
+    }
+  }
+
+  return length
 }
 
 export function pathEnergy(path: Path<XY>) {
   // same interface as pathLength
 
-  // Step 2.2 optional
-  //
-  // if completed, uncomment pathEnergy line below in the const metrics
-  // as well as the const energy = staticEvaluate line
+  let energy = 0
 
-  return 0
+  for (let i = 0; i < path.length; i++) {
+    let cur = path[i]
+    if (cur.type == "Straight") {
+      energy += dist(cur.start, cur.end) * 1
+    } else {
+      energy += (cur.radius * Math.abs(cur.theta) * 2) * loadFactor(cur.radius, 30)
+    }
+  }
+
+  return energy
 }
 
 export function Optimise() {
@@ -48,12 +66,11 @@ export function Optimise() {
   // They will automatically render
   const metrics: Record<string, (path: Path<XY>) => number> = {
     "Length": pathLength,
-    // "Energy": pathEnergy
+    "Energy": pathEnergy
   }
 
   let length = staticEvaluate(waypoints, activeMission, metrics["Length"], vehicle as Plane)
-  // let energy = staticEvaluate(waypoints, activeMission, metrics["Energy"], vehicle as Plane)
-  let energy = 0
+  let energy = staticEvaluate(waypoints, activeMission, metrics["Energy"], vehicle as Plane)
 
 
   const algorithms = {
