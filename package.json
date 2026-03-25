@@ -8,6 +8,9 @@
     "genCommands": "bun scripts/genCommands.ts",
     "copy-idb": "bun scripts/copy-idb.ts",
     "build": "bun run copy-idb && next build",
+    "help-1": "mv src/lib/dubins/dubinWaypoints-c.ts src/lib/dubins/dubinWaypoints.ts",
+    "help-2": "mv src/components/waypointEditor/optimisation/optimisation-c.ts src/components/waypointEditor/optimisation/optimisation.ts",
+    "help": "bun run help-1 && bun run help-2",
     "start": "next start",
     "lint": "next lint"
   },
